@@ -1,0 +1,4 @@
+//#region src/styles/toggle.scss?inline
+var e = ":host{font-family:var(--lw-font-sans);font-size:var(--lw-text-sm);color:var(--lw-color-foreground);display:inline-block}.toggle{cursor:pointer;align-items:flex-start;gap:.625rem;display:inline-flex;position:relative}:host([data-disabled]) .toggle{cursor:not-allowed;opacity:.5}.control{clip-path:inset(50%);white-space:nowrap;width:1px;height:1px;position:absolute;overflow:hidden}.visual{margin-top:calc((1lh - var(--_size,1rem)) / 2);flex:none;place-items:center;display:grid;position:relative}.control:focus-visible+.visual{outline:2px solid var(--lw-color-ring);outline-offset:2px}.text{gap:.125rem;line-height:1.4;display:grid}.label{font-weight:500}:host([required]) .label:after{content:\" *\";color:var(--lw-color-destructive)}.description{font-size:var(--lw-text-xs);color:var(--lw-color-muted-foreground)}.description[hidden]{display:none}";
+//#endregion
+export { e as t };
