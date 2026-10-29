@@ -6,7 +6,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lowersoft/web.git"
+    "url": "git+https://github.com/lowersoft/components.git"
   },
   "keywords": [
     "web-components",
@@ -29,8 +29,10 @@
     "src/styles"
   ],
   "sideEffects": [
-    "dist/**",
-    "*.css"
+    "./dist/**",
+    "./src/**",
+    "*.css",
+    "*.scss"
   ],
   "engines": {
     "node": ">=22"
