@@ -7,7 +7,7 @@
 
   ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/lowersoft/components/ci.yml)
   ![npm version](https://img.shields.io/npm/v/@lowersoft/lw)
-  ![GitHub License](https://img.shields.io/github/license/lowersoft/components)
+  ![GitHub License](https://img.shields.io/github/license/lowersoft/components?)
   ![GitHub Repo stars](https://img.shields.io/github/stars/lowersoft/components)
 
 </div>
