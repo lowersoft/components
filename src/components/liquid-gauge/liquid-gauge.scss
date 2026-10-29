@@ -1,0 +1,144 @@
+@use '../../styles' as lw;
+
+:host {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 18rem;
+  height: 22.5rem;
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1.5rem;
+  background: lw.v(color-background);
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+  cursor: ns-resize;
+  touch-action: none;
+  user-select: none;
+  outline: none;
+}
+
+:host([data-dragging]) {
+  cursor: grabbing;
+}
+
+:host([readonly]) {
+  cursor: default;
+}
+
+:host(:focus-visible) {
+  @include lw.focus-ring;
+}
+
+p {
+  margin: 0;
+}
+
+.dry,
+.rim,
+.liquid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.readout {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  padding: 1.5rem;
+}
+
+.label {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+}
+
+.percent {
+  margin-top: 0.75rem;
+  font-size: 3.75rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.025em;
+}
+
+.sign {
+  margin-left: 0.125rem;
+  font-size: 1.875rem;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+.used {
+  margin-top: 0.25rem;
+  font-size: lw.v(text-sm);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+}
+
+.status {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+}
+
+// Every ten percent, a short tick on the right wall.
+.ticks {
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  width: 1rem;
+
+  span {
+    position: absolute;
+    right: 0;
+    width: 0.375rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.3;
+
+    &.half {
+      width: 0.75rem;
+    }
+  }
+}
+
+// The meniscus, a lighter band just above the liquid.
+.rim {
+  background: lw.v(color-ring);
+  transition: background-color 300ms ease-out;
+
+  :host([data-warn]) & {
+    background: light-dark(#fca5a5, #7f1d1d);
+  }
+}
+
+// The liquid, with a second copy of the text in its own colour.
+.liquid {
+  background: lw.v(color-primary);
+  color: lw.v(color-primary-foreground);
+  transition:
+    background-color 300ms ease-out,
+    color 300ms ease-out;
+
+  :host([data-warn]) & {
+    background: #ef4444;
+    color: #fff;
+  }
+}
+
+.bubble {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: color-mix(in oklab, currentColor 20%, transparent);
+  opacity: 0;
+}

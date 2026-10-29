@@ -1,0 +1,62 @@
+@use '../../styles' as lw;
+
+:host {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.live {
+  @include lw.visually-hidden;
+}
+
+// Morph: a box whose width springs to the text, with each letter drawn on its own.
+.morph {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+.measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.strut {
+  display: inline-block;
+  width: 0;
+}
+
+.glyph {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 50% 80%;
+  will-change: transform, opacity;
+}
+
+// Decode: monospace cells that scramble, then lock left to right.
+.decode {
+  font-family: lw.v(font-mono);
+}
+
+.cell {
+  display: inline-block;
+  width: 1ch;
+  text-align: center;
+
+  &[data-scramble] {
+    opacity: 0.45;
+  }
+
+  &[data-flash] {
+    color: lw.v(color-accent);
+  }
+}

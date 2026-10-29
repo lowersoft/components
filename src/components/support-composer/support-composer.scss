@@ -1,0 +1,322 @@
+@use '../../styles' as lw;
+
+@include lw.picker;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  @include lw.card-shell(30rem, 0.5rem);
+
+  border: 0;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  font-size: lw.v(text-sm);
+}
+
+p,
+h3,
+ul {
+  margin: 0;
+}
+
+a,
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// Who replies and how soon, and the service status.
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.375rem 0.5rem 0.75rem;
+}
+
+.faces {
+  display: flex;
+}
+
+.face {
+  width: 1.5rem;
+  height: 1.5rem;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px lw.v(color-background);
+
+  & + & {
+    margin-left: -0.375rem;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.who {
+  flex: 1;
+  min-width: 0;
+  color: var(--_muted);
+
+  b {
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+  text-decoration: none;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+}
+
+.dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: lw.v(color-accent);
+}
+
+// The message box: subject, message, attachments and the tools.
+.box {
+  border: 1px solid var(--_line);
+  border-radius: 1.125rem;
+  background: lw.v(color-background);
+
+  @include lw.motion {
+    transition:
+      border-color 150ms ease-out,
+      box-shadow 150ms ease-out;
+  }
+
+  &:focus-within {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+  }
+
+  &[data-drop] {
+    border-style: dashed;
+    border-color: lw.v(color-foreground);
+  }
+}
+
+.subject,
+.message {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0;
+  background: none;
+  font: lw.v(text-md) lw.v(font-sans);
+  color: lw.v(color-foreground);
+  outline: none;
+
+  &::placeholder {
+    color: var(--_muted);
+  }
+}
+
+.subject {
+  padding: 1rem 1rem 0.375rem;
+}
+
+.message {
+  min-height: 4.5rem;
+  padding: 0.375rem 1rem;
+  resize: none;
+  field-sizing: content;
+  line-height: 1.5;
+}
+
+.files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding: 0 1rem;
+  list-style: none;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.attached {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.25rem 0.125rem 0.5rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  font-size: lw.v(text-xs);
+}
+
+.file-name {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove {
+  display: grid;
+  place-items: center;
+  padding: 0.125rem;
+  border: 0;
+  border-radius: lw.v(radius-sm);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+}
+
+.attach {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: lw.v(radius-md);
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+  }
+
+  &:focus-within {
+    @include lw.focus-ring;
+  }
+
+  input {
+    @include lw.visually-hidden;
+  }
+}
+
+.send {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: lw.v(color-primary);
+  color: lw.v(color-primary-foreground);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition: opacity 150ms ease-out;
+  }
+
+  &:disabled {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+    color: var(--_muted);
+    cursor: default;
+  }
+}
+
+// Articles that might answer it first, best match on top.
+.articles {
+  padding: 0.75rem 0.5rem 0;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.articles-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem 0.25rem;
+}
+
+.articles-title {
+  font-size: lw.v(text-xs);
+  font-weight: 400;
+  color: var(--_muted);
+}
+
+.hide {
+  display: grid;
+  place-items: center;
+  padding: 0.25rem;
+  border: 0;
+  border-radius: lw.v(radius-sm);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+}
+
+.article-list {
+  padding: 0;
+  list-style: none;
+}
+
+.article {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem;
+  border-radius: lw.v(radius-md);
+  text-decoration: none;
+
+  @include lw.motion {
+    animation: rise 250ms ease-out;
+  }
+
+  svg {
+    flex: none;
+    color: var(--_muted);
+  }
+
+  &:hover {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 5%, transparent);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 0.25rem;
+  }
+}
+
+.article-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.article-time {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.hint,
+.sent {
+  padding: 0.75rem 1rem 0.5rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.sent {
+  color: lw.v(color-foreground);
+}

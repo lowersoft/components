@@ -1,0 +1,242 @@
+@use 'sass:string';
+@use '../../styles' as lw;
+
+// Serrated edges: the bottom was torn off the last receipt, and the top gets
+// the same edge once this one is torn.
+$tooth: 8px;
+
+@function edge($side) {
+  $from: '135deg at 50% 0';
+  $at: '0';
+
+  @if $side == bottom {
+    $from: '-45deg at 50% 100%';
+    $at: '100%';
+  }
+
+  @return string.unquote('conic-gradient(from #{$from}, #0000, #000 1deg 89deg, #0000 90deg) 50% #{$at} / #{$tooth} #{$tooth * 0.5} repeat-x');
+}
+
+:host {
+  position: relative;
+  display: block;
+  width: 18rem;
+  height: 30rem;
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1.5rem;
+  background: lw.v(color-muted);
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+  user-select: none;
+}
+
+p {
+  margin: 0;
+}
+
+// The sheet, clipped at the slot until it is torn free.
+.sheet-box {
+  position: absolute;
+  inset: 64px 0 0;
+  overflow: hidden;
+
+  :host([data-torn]) & {
+    overflow: visible;
+  }
+}
+
+.paper {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 14rem;
+  margin-left: -7rem;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.06),
+    0 8px 24px -12px rgb(0 0 0 / 0.25);
+  transform-origin: 0 0;
+  touch-action: none;
+  mask:
+    edge(bottom),
+    linear-gradient(#000 0 0) 0 0 / 100% calc(100% - #{$tooth * 0.5}) no-repeat;
+
+  :host([data-torn]) & {
+    mask:
+      edge(top),
+      edge(bottom),
+      linear-gradient(#000 0 0) 0 #{$tooth * 0.5} / 100% calc(100% - #{$tooth}) no-repeat;
+  }
+
+  :host([data-phase='hanging']) & {
+    cursor: grab;
+  }
+
+  :host([data-phase='hanging']) &:active,
+  :host([data-phase='held']) & {
+    cursor: grabbing;
+  }
+
+  :host([data-phase='idle'][data-torn]) & {
+    visibility: hidden;
+  }
+}
+
+// The perforation along the slot, where the sheet tears off.
+.perforation {
+  position: absolute;
+  inset-inline: 0.25rem;
+  top: 0.25rem;
+  border-top: 2px dotted #d4d4d8;
+
+  :host([data-torn]) & {
+    display: none;
+  }
+}
+
+// Paper is paper in both themes.
+.receipt {
+  padding: 1.5rem 1.25rem 2rem;
+  font: 11px / 15px lw.v(font-mono);
+  color: #27272a;
+}
+
+.name {
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+
+.center {
+  text-align: center;
+}
+
+.muted {
+  color: #71717a;
+}
+
+.rule {
+  margin-block: 7px;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #a1a1aa;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.total {
+  margin-top: 0.25rem;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.barcode {
+  display: flex;
+  justify-content: center;
+  gap: 1px;
+  height: 2.25rem;
+  margin-top: 1rem;
+
+  .ink {
+    background: #27272a;
+  }
+}
+
+.thanks {
+  margin-top: 0.75rem;
+}
+
+// The printer housing, in front of the paper's top edge.
+.printer {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 4rem;
+  box-sizing: border-box;
+  border-bottom: 1px solid lw.v(color-border);
+  background: lw.v(color-background);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0;
+  font-size: lw.v(text-xs);
+}
+
+.merchant {
+  font-weight: 500;
+}
+
+.status {
+  color: lw.v(color-muted-foreground);
+}
+
+.slot {
+  position: absolute;
+  inset-inline: 2rem;
+  bottom: 0.5rem;
+  height: 0.25rem;
+  border-radius: lw.v(radius-full);
+  background: light-dark(#18181b, #000);
+}
+
+// Shown only when focused, for tearing off by keyboard.
+.tear {
+  @include lw.visually-hidden;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &:focus {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+    overflow: visible;
+    clip: auto;
+    clip-path: none;
+    border: 0;
+    border-radius: lw.v(radius-full);
+    background: lw.v(color-primary);
+    font: lw.v(text-xs) lw.v(font-sans);
+    color: lw.v(color-primary-foreground);
+    white-space: nowrap;
+  }
+}
+
+.actions {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  padding: 1.25rem;
+  transition: opacity 200ms ease-out;
+
+  :host(:not([data-phase='idle'])) & {
+    opacity: 0;
+    pointer-events: none;
+  }
+}

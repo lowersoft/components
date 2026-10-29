@@ -1,0 +1,122 @@
+@use '../../styles' as lw;
+
+:host {
+  --_accent: var(--lw-detent-dial-accent, light-dark(#ea580c, #fb923c));
+
+  display: inline-block;
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+  user-select: none;
+}
+
+:host([disabled]) {
+  opacity: 0.5;
+}
+
+.dial {
+  position: relative;
+  width: var(--_size);
+  height: var(--_size);
+}
+
+.ticks {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+
+  line {
+    stroke: lw.v(color-border);
+    stroke-width: 1.5;
+    transition: stroke 150ms;
+  }
+
+  .lit {
+    stroke: lw.v(color-foreground);
+  }
+
+  .current {
+    stroke: var(--_accent);
+    stroke-width: 2;
+  }
+}
+
+.end {
+  position: absolute;
+  translate: -50% 0;
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+  white-space: nowrap;
+}
+
+.knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 64%;
+  height: 64%;
+  translate: -50% -50%;
+  border: 1px solid lw.v(color-border);
+  border-radius: 50%;
+  background: lw.v(color-background);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.06),
+    0 12px 32px -12px rgb(0 0 0 / 0.25);
+  cursor: grab;
+  outline: none;
+  touch-action: none;
+  transition: border-color 150ms;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: 4px;
+  }
+
+  :host([data-grabbing]) & {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 22%, transparent);
+    cursor: grabbing;
+  }
+
+  &[aria-disabled] {
+    cursor: not-allowed;
+  }
+}
+
+// Only the indicator turns; the readout stays upright.
+.turn {
+  position: absolute;
+  inset: 0;
+}
+
+.indicator {
+  position: absolute;
+  top: 0.625rem;
+  left: 50%;
+  width: 3px;
+  height: 0.75rem;
+  translate: -50% 0;
+  border-radius: 2px;
+  background: lw.v(color-foreground);
+}
+
+.readout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.label {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.value {
+  font-size: 1.875rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}

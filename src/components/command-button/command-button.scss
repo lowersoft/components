@@ -1,0 +1,5 @@
+// The shortcut leads, so the caps sit at the end with a tighter edge.
+.button {
+  gap: 0.75rem;
+  padding-inline-end: calc(var(--_padding)); // i think no need to calc
+}

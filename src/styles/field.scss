@@ -1,0 +1,135 @@
+// Text fields from `core/field.js`: the label, the boxed field and the line
+// under it with the hint, the error and the counter.
+@use 'abstracts/functions' as fn;
+
+:host {
+  --_padding: 0.75rem;
+  --_text: #{fn.v(text-sm)};
+  --_line: color-mix(in oklab, #{fn.v(color-foreground)} 22%, transparent);
+
+  display: block;
+  width: 320px;
+  max-width: 100%;
+  font-family: fn.v(font-sans);
+  font-size: var(--_text);
+  color: fn.v(color-foreground);
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+
+  &[hidden] {
+    display: none;
+  }
+
+  // A required field says so after its label.
+  :host([required]) &::after {
+    content: ' *';
+    color: fn.v(color-destructive);
+  }
+}
+
+.field {
+  border: 1px solid fn.v(color-border);
+  border-radius: fn.v(radius-md);
+  background: fn.v(color-background);
+  cursor: text;
+  transition:
+    border-color 150ms ease-out,
+    box-shadow 150ms ease-out,
+    background-color 150ms ease-out;
+
+  &:hover {
+    border-color: var(--_line);
+  }
+
+  &:focus-within {
+    border-color: var(--_line);
+    box-shadow: 0 0 0 3px color-mix(in oklab, #{fn.v(color-ring)} 30%, transparent);
+  }
+
+  :host([data-invalid]) & {
+    border-color: color-mix(in oklab, #{fn.v(color-destructive)} 70%, transparent);
+
+    &:focus-within {
+      box-shadow: 0 0 0 3px color-mix(in oklab, #{fn.v(color-destructive)} 20%, transparent);
+    }
+  }
+
+  :host([readonly]) & {
+    background: fn.v(color-muted);
+  }
+
+  :host([data-disabled]) & {
+    border-color: fn.v(color-border);
+    background: fn.v(color-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.control {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &::placeholder {
+    color: fn.v(color-muted-foreground);
+    opacity: 0.8;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.below {
+  display: flex;
+  gap: 0.75rem;
+  font-size: fn.v(text-xs);
+  line-height: 1.25rem;
+
+  &:has(:is(.hint, .error, .count):not(:empty, [hidden])) {
+    margin-top: 0.375rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.hint {
+  flex: 1;
+  color: fn.v(color-muted-foreground);
+
+  // The error takes the hint's place.
+  :host([data-invalid]) & {
+    display: none;
+  }
+}
+
+.error {
+  flex: 1;
+  color: fn.v(color-destructive);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.count {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: fn.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}

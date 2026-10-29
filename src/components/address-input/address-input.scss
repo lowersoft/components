@@ -1,0 +1,196 @@
+@use '../../styles' as lw;
+
+:host {
+  width: 440px;
+}
+
+.icon {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  color: lw.v(color-muted-foreground);
+}
+
+// The search box, with the suggestions floating under it.
+.finder {
+  position: relative;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+}
+
+.control {
+  flex: 1;
+  height: 100%;
+}
+
+.listbox {
+  position: absolute;
+  top: calc(2.5rem + 0.375rem);
+  inset-inline: 0;
+  z-index: 10;
+  max-height: 18rem;
+  margin: 0;
+  padding: 0.25rem;
+  overflow-y: auto;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-lg);
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-md);
+  list-style: none;
+  // The sliding highlight must not move the scroll position.
+  overflow-anchor: none;
+
+  &[hidden] {
+    display: none;
+  }
+
+  @include lw.motion {
+    animation: drop 160ms lw.v(ease-out);
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}
+
+// One box slides between the results, under the active one.
+.highlight {
+  @include lw.sliding-highlight;
+}
+
+[role='option'] {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: lw.v(radius-md);
+  cursor: pointer;
+
+  .icon {
+    margin-top: 0.125rem;
+  }
+}
+
+.option-text {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.option-street {
+  color: lw.v(color-muted-foreground);
+}
+
+.option-place {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+// The matched words stand out from the rest.
+mark {
+  background: none;
+  font-weight: 600;
+  color: lw.v(color-foreground);
+}
+
+.credit {
+  padding: 0.375rem 0.625rem 0.125rem;
+  border-top: 1px solid lw.v(color-border);
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  color: lw.v(color-muted-foreground);
+}
+
+.empty {
+  padding: 0.75rem;
+  font-size: lw.v(text-xs);
+  text-align: center;
+  color: lw.v(color-muted-foreground);
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, currentcolor 40%, transparent);
+  text-underline-offset: 3px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    border-radius: 2px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.manual {
+  margin-top: 0.5rem;
+}
+
+// The unfolded lines.
+.lines {
+  &[hidden] {
+    display: none;
+  }
+}
+
+.lines-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.lines-title {
+  font-weight: 500;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem 0.75rem;
+}
+
+.line {
+  width: 100%;
+
+  &.wide {
+    grid-column: 1 / -1;
+  }
+}
+
+// The address title replaces the label once unfolded.
+:host([data-unfolded]) > .label {
+  display: none;
+}
+
+.announce {
+  @include lw.visually-hidden;
+}

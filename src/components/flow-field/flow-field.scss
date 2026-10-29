@@ -1,0 +1,21 @@
+@use '../../styles' as lw;
+
+:host {
+  @include lw.backdrop;
+}
+
+@include lw.hero-copy;
+
+.layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  @include lw.fade-in(700ms);
+}

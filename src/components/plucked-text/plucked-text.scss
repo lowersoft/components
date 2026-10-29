@@ -1,0 +1,81 @@
+@use '../../styles' as lw;
+
+:host {
+  --_string: #{lw.v(color-muted-foreground)};
+
+  display: inline-block;
+  line-height: 1;
+}
+
+:host([data-grabbing]) .stage {
+  cursor: grabbing;
+}
+
+.live {
+  @include lw.visually-hidden;
+}
+
+.stage {
+  position: relative;
+  display: block;
+  padding: 0.7em 0.5em;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.letters {
+  position: relative;
+  display: block;
+  white-space: pre;
+}
+
+.letter {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.probe {
+  display: inline-block;
+  width: 0;
+  height: 0;
+}
+
+// The string runs along the baseline, pinned at both ends.
+.string,
+.peg {
+  position: absolute;
+  top: var(--_baseline, 1.56em);
+  pointer-events: none;
+}
+
+.string {
+  left: 0.25em;
+  width: calc(100% - 0.5em);
+  height: 1px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--_string);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.ghost {
+  opacity: 0.3;
+}
+
+.peg {
+  left: 0.25em;
+  width: 0.12em;
+  height: 0.12em;
+  border-radius: 50%;
+  background: var(--_string);
+  translate: -50% -50%;
+
+  &.end {
+    left: auto;
+    right: 0.25em;
+    translate: 50% -50%;
+  }
+}

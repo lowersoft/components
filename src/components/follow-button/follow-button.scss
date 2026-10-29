@@ -1,0 +1,84 @@
+@use '../../styles' as lw;
+
+$unfollow: ':host([following]) .main:is(.armed:hover, :focus-visible)';
+
+// Following is the quiet state.
+:host([following]) {
+  --_bg: #{lw.v(color-secondary)};
+  --_fg: #{lw.v(color-secondary-foreground)};
+  --_border: transparent;
+}
+
+.main {
+  gap: 0.625rem;
+}
+
+:host([count]) .main {
+  padding-inline-end: 0.375rem;
+}
+
+#{$unfollow} {
+  color: lw.v(color-destructive);
+}
+
+// Follow, Following and Unfollow share one cell and crossfade.
+.labels {
+  display: grid;
+}
+
+.label {
+  display: flex;
+  grid-area: 1 / 1;
+  gap: 0.375rem;
+  align-items: center;
+  justify-content: center;
+  transition: opacity lw.v(duration-fast) lw.v(ease-out);
+}
+
+.following,
+.unfollow,
+:host([following]) .follow,
+#{$unfollow} .following {
+  opacity: 0;
+}
+
+:host([following]) .following,
+#{$unfollow} .unfollow {
+  opacity: 1;
+}
+
+// The bell slides out beside the button once following.
+.bell {
+  flex: none;
+  width: 0;
+  margin-inline-start: 0;
+  padding: 0;
+  border-width: 0;
+  overflow: hidden;
+  opacity: 0;
+
+  @include lw.motion {
+    transition:
+      width lw.v(duration-normal) lw.v(ease-out),
+      margin lw.v(duration-normal) lw.v(ease-out),
+      opacity lw.v(duration-normal) lw.v(ease-out),
+      background-color lw.v(duration-fast) lw.v(ease-out);
+  }
+
+  :host([following]) & {
+    width: var(--_height);
+    margin-inline-start: 0.375rem;
+    border-width: 1px;
+    opacity: 1;
+  }
+
+  .icon {
+    display: none;
+  }
+}
+
+:host(:not([notifications='highlights'], [notifications='none'])) .bell .ring,
+:host([notifications='highlights']) .bell .plain,
+:host([notifications='none']) .bell .off {
+  display: block;
+}

@@ -1,0 +1,98 @@
+@use '../../styles' as lw;
+
+.button {
+  gap: 0.5rem;
+  line-height: 1;
+}
+
+:host([icon-only]) .labels {
+  display: none;
+}
+
+.icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+  overflow: visible;
+  pointer-events: none;
+}
+
+// Sun and moon share one drawing: the disc grows, the rays retract and a
+// masked circle bites the disc into a crescent.
+.bite {
+  translate: 10px -10px;
+}
+
+.disc,
+.ray {
+  transform-box: view-box;
+  transform-origin: 12px 12px;
+}
+
+:host([theme='dark']) {
+  .bite {
+    translate: 0 0;
+  }
+
+  .disc {
+    scale: 1.8;
+  }
+
+  .ray {
+    scale: 0.5;
+    opacity: 0;
+  }
+}
+
+.labels {
+  display: grid;
+}
+
+.label {
+  grid-area: 1 / 1;
+}
+
+:host([theme='dark']) .label-light,
+:host(:not([theme='dark'])) .label-dark {
+  opacity: 0;
+  filter: blur(3px);
+}
+
+// Transition delays come from the destination state: rays retract one after
+// another; on the way back they wait for the bite to clear first.
+@include lw.motion {
+  .bite {
+    transition: translate 380ms lw.v(ease-in-out);
+  }
+
+  .disc {
+    transition: scale 380ms lw.v(ease-out);
+  }
+
+  .ray {
+    transition:
+      scale 260ms lw.v(ease-out),
+      opacity 260ms lw.v(ease-out);
+    transition-delay: calc(140ms + var(--i) * 22ms);
+  }
+
+  .label {
+    transition:
+      opacity 240ms lw.v(ease-out),
+      filter 240ms lw.v(ease-out);
+  }
+
+  :host([theme='dark']) {
+    .bite {
+      transition-delay: 60ms;
+    }
+
+    .disc {
+      transition-delay: 40ms;
+    }
+
+    .ray {
+      transition-delay: calc(var(--i) * 18ms);
+    }
+  }
+}

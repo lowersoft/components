@@ -1,0 +1,226 @@
+@use '../../styles' as lw;
+
+@include lw.testimonial-base;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+p,
+blockquote,
+figure {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// The heading and the rating, the filter on the right.
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  max-width: 24rem;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.faces {
+  display: flex;
+  margin-right: 0.25rem;
+
+  .face {
+    width: 1.5rem;
+    height: 1.5rem;
+    box-shadow: 0 0 0 2px lw.v(color-background);
+
+    & + .face {
+      margin-left: -0.375rem;
+    }
+  }
+}
+
+.stars {
+  letter-spacing: 0.05em;
+  color: lw.v(color-foreground);
+}
+
+.score {
+  font-weight: 600;
+  color: lw.v(color-foreground);
+}
+
+.filters {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.25rem;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 5%, transparent);
+}
+
+.filter-pill {
+  @include lw.sliding-highlight;
+
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+}
+
+.filter {
+  position: relative;
+  display: inline-flex;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: 0;
+  border-radius: lw.v(radius-full);
+  background: none;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+  cursor: pointer;
+
+  &[aria-checked='true'] {
+    color: lw.v(color-foreground);
+  }
+}
+
+.filter-count {
+  opacity: 0.6;
+}
+
+// Quotes and numbers in a bento grid; a wide quote takes two columns.
+.grid {
+  display: grid;
+  grid-auto-flow: dense;
+  gap: 0.75rem;
+
+  @container (min-width: 40rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @container (min-width: 60rem) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card {
+  display: flex;
+  min-height: 14rem;
+  flex-direction: column;
+  padding: 1.25rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 2%, #{lw.v(color-background)});
+
+  &[hidden] {
+    display: none;
+  }
+
+  &.wide {
+    @container (min-width: 40rem) {
+      grid-column: span 2;
+    }
+  }
+
+  .person {
+    margin-top: auto;
+    padding-top: 1.5rem;
+  }
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  font-size: lw.v(text-xs);
+}
+
+.source {
+  color: var(--_muted);
+}
+
+.text {
+  line-height: 1.6;
+  color: var(--_muted);
+  text-wrap: pretty;
+
+  .wide & {
+    font-size: clamp(1.125rem, 2.4vw, 1.5rem);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+}
+
+// A number, and the bars it comes from with the recent ones in colour.
+.figure {
+  font-size: 2.5rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.label {
+  margin-top: 0.5rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.bars {
+  display: flex;
+  height: 3rem;
+  align-items: flex-end;
+  gap: 3px;
+  margin-top: 1.25rem;
+}
+
+.bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 12%, transparent);
+
+  &[data-on] {
+    background: var(--_tint);
+  }
+}
+
+.ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.6875rem;
+  color: var(--_muted);
+}

@@ -1,0 +1,133 @@
+@use '../../styles' as lw;
+
+// One ring: a conic sweep masked to a thin band between two radii.
+@mixin ring($sweep, $inner, $outer, $opacity, $duration) {
+  $band: radial-gradient(circle, transparent $inner, #000 ($inner + 2%), #000 ($outer - 2%), transparent $outer);
+
+  background: $sweep;
+  mask: $band;
+  opacity: $opacity;
+  animation-duration: $duration;
+}
+
+:host {
+  --_size: 8rem;
+  --_gap: 0.75rem;
+  --_title: #{lw.v(text-md)};
+  --_subtitle: #{lw.v(text-sm)};
+  --_max: 14rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+}
+
+:host([size='sm']) {
+  --_size: 5rem;
+  --_gap: 0.5rem;
+  --_title: #{lw.v(text-sm)};
+  --_subtitle: #{lw.v(text-xs)};
+  --_max: 12rem;
+}
+
+:host([size='lg']) {
+  --_size: 10rem;
+  --_gap: 1rem;
+  --_title: #{lw.v(text-lg)};
+  --_subtitle: #{lw.v(text-md)};
+  --_max: 16rem;
+}
+
+.rings {
+  position: relative;
+  width: var(--_size);
+  height: var(--_size);
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+
+  @include lw.motion {
+    animation: spin linear infinite;
+  }
+}
+
+.outer {
+  @include ring(conic-gradient(transparent 0deg, currentcolor 90deg, transparent 180deg), 35%, 41%, 0.8, 3s);
+}
+
+.primary {
+  @include ring(
+    conic-gradient(transparent 0deg, currentcolor 120deg, color-mix(in srgb, currentcolor 50%, transparent) 240deg, transparent 360deg),
+    42%,
+    50%,
+    0.9,
+    1.2s
+  );
+}
+
+.counter {
+  @include ring(conic-gradient(from 180deg, transparent 0deg, color-mix(in srgb, currentcolor 60%, transparent) 45deg, transparent 90deg), 52%, 58%, 0.35, 4s);
+
+  animation-direction: reverse;
+}
+
+.accent {
+  @include ring(conic-gradient(from 270deg, transparent 0deg, color-mix(in srgb, currentcolor 40%, transparent) 20deg, transparent 40deg), 61%, 64%, 0.5, 3.5s);
+}
+
+.text {
+  display: grid;
+  gap: var(--_gap);
+  max-width: var(--_max);
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+  transition: opacity 200ms ease-out;
+
+  @starting-style {
+    opacity: 0;
+  }
+}
+
+.heading {
+  font-size: var(--_title);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: color-mix(in srgb, currentcolor 90%, transparent);
+
+  :host([size='lg']) & {
+    font-weight: 600;
+  }
+}
+
+.subtitle {
+  font-size: var(--_subtitle);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: color-mix(in srgb, currentcolor 60%, transparent);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.4;
+  }
+}

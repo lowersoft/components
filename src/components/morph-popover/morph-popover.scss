@@ -1,0 +1,117 @@
+@use '../../styles' as lw;
+
+$height: 2.25rem;
+$open: ':host(:is([status="open"], [status="sending"]))';
+
+.shell {
+  #{$open} & {
+    border-radius: lw.v(radius-lg);
+    box-shadow: lw.v(shadow-md);
+  }
+}
+
+.trigger,
+.sent {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  height: calc(#{$height} - 2px);
+  padding-inline: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.trigger {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color lw.v(duration-fast) lw.v(ease-out);
+
+  &:hover {
+    background: lw.v(color-muted);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: -3px;
+  }
+
+  // Open, the button is the panel's title.
+  #{$open} &:hover {
+    background: transparent;
+  }
+}
+
+.glyph {
+  display: flex;
+  color: lw.v(color-muted-foreground);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.field {
+  width: 100%;
+  height: 7rem;
+  padding: 0.5rem 0.875rem 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1.625;
+  resize: none;
+  outline: none;
+
+  &::placeholder {
+    color: lw.v(color-muted-foreground);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.footer {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid lw.v(color-border);
+  background: color-mix(in oklab, lw.v(color-muted) 60%, transparent);
+}
+
+.hint {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  color: lw.v(color-muted-foreground);
+  font-size: lw.v(text-xs);
+}
+
+kbd {
+  padding-inline: 0.25rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: 0.25rem;
+  background: lw.v(color-background);
+  font: inherit;
+  font-size: 0.6875rem;
+}
+
+.hint-text {
+  margin-left: 0.25rem;
+}
+
+:host(:not([status='sending'])) .sending {
+  display: none;
+}
+
+.panel.leaving {
+  top: calc(#{$height} - 2px);
+}

@@ -1,0 +1,57 @@
+@use '../../styles' as lw;
+
+.button {
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.value {
+  position: relative;
+  font-family: lw.v(font-mono);
+  font-size: 0.95em;
+  font-weight: 400;
+  white-space: pre;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// The selection tint that sweeps across what was copied.
+.sweep {
+  position: absolute;
+  inset: -0.125rem -0.25rem;
+  border-radius: lw.v(radius-sm);
+  background: color-mix(in oklab, var(--_fg) 18%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.glyph {
+  display: grid;
+  flex: none;
+
+  .icon {
+    grid-area: 1 / 1;
+
+    @include lw.motion {
+      transition:
+        opacity lw.v(duration-fast) lw.v(ease-out),
+        scale lw.v(duration-normal) lw.v(ease-spring);
+    }
+  }
+
+  .check,
+  :host([copied]) & .copy {
+    opacity: 0;
+    scale: 0.6;
+  }
+
+  :host([copied]) & .check {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.live {
+  @include lw.visually-hidden;
+}

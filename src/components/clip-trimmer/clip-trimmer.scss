@@ -1,0 +1,332 @@
+@use 'sass:math';
+@use '../../styles' as lw;
+
+:host {
+  --_trim: light-dark(#ea580c, #f97316);
+  --_veil: color-mix(in oklab, #{lw.v(color-background)} 75%, transparent);
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+
+  @include lw.card-shell(32rem, 1rem);
+
+  user-select: none;
+}
+
+p {
+  margin: 0;
+}
+
+// The preview pans across the shot to the frame at the playhead.
+.preview {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: 1rem;
+  background: lw.v(color-muted);
+}
+
+.shot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.clock,
+.play {
+  position: absolute;
+  bottom: 0.75rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 55%);
+  color: #fff;
+}
+
+.clock {
+  left: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 11px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.play {
+  right: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: background-color 150ms ease-out;
+  }
+
+  &:hover {
+    background: rgb(0 0 0 / 70%);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px #fff;
+  }
+
+  svg {
+    fill: currentColor;
+  }
+}
+
+// The handles sit outside the kept range, so the track leaves them room.
+.track {
+  margin-top: 1.25rem;
+  padding: 0 1rem;
+}
+
+.strip {
+  position: relative;
+  height: 3.5rem;
+  cursor: pointer;
+  touch-action: none;
+}
+
+// The filmstrip: one wide shot, cut into frames.
+.frames,
+.cut {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: lw.v(radius-md);
+}
+
+.frames {
+  display: flex;
+  background: lw.v(color-muted);
+
+  span {
+    flex: 1;
+    border-right: 1px solid rgb(0 0 0 / 10%);
+    background: var(--_src) center / cover no-repeat;
+
+    &:last-child {
+      border-right: 0;
+    }
+
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        background-position: math.percentage(math.div($i - 1, 9)) 50%;
+      }
+    }
+  }
+}
+
+// What gets cut is dimmed: full-width veils moved by transform.
+.cut {
+  pointer-events: none;
+
+  span {
+    position: absolute;
+    inset: 0;
+    background: var(--_veil);
+  }
+}
+
+.before {
+  translate: calc((var(--_start) - 1) * 100%) 0;
+}
+
+.after {
+  translate: calc(var(--_end) * 100%) 0;
+}
+
+.playhead {
+  position: absolute;
+  inset: -0.25rem 0;
+  pointer-events: none;
+  translate: calc(var(--_time) * 100%) 0;
+
+  @include lw.motion {
+    transition: opacity 150ms ease-out;
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    background: lw.v(color-foreground);
+  }
+
+  &::before {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    translate: -50% 0;
+  }
+
+  &::after {
+    top: -0.125rem;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    translate: -50% 0;
+  }
+
+  :host([data-active='start']) &,
+  :host([data-active='end']) & {
+    opacity: 0;
+  }
+}
+
+// The kept range: its frame, two handles and the area that slides it.
+.range {
+  position: absolute;
+  inset: 0 auto;
+  left: calc(var(--_start) * 100%);
+  width: calc((var(--_end) - var(--_start)) * 100%);
+  box-sizing: border-box;
+  border-block: 3px solid var(--_trim);
+  cursor: grab;
+
+  :host([data-active='range']) & {
+    cursor: grabbing;
+  }
+}
+
+.handle {
+  position: absolute;
+  inset-block: -3px;
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  background: var(--_trim);
+  cursor: ew-resize;
+  outline: none;
+
+  &.start {
+    left: -1rem;
+    border-radius: lw.v(radius-md) 0 0 lw.v(radius-md);
+  }
+
+  &.end {
+    right: -1rem;
+    border-radius: 0 lw.v(radius-md) lw.v(radius-md) 0;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.grip {
+  width: 3px;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 60%);
+
+  @include lw.motion {
+    transition: background-color 150ms ease-out;
+  }
+}
+
+// The exact cut point, while trimming.
+.tip {
+  position: absolute;
+  top: -2rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: lw.v(radius-sm);
+  background: lw.v(color-foreground);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: lw.v(color-background);
+  opacity: 0;
+  pointer-events: none;
+
+  @include lw.motion {
+    transition: opacity 150ms ease-out;
+  }
+}
+
+@each $part in start, end {
+  :host([data-active='#{$part}']) .handle.#{$part} {
+    .grip {
+      background: #fff;
+    }
+
+    .tip {
+      opacity: 1;
+    }
+  }
+}
+
+// Whole seconds; the one a handle snapped to lights up.
+.ruler {
+  position: relative;
+  height: 1.25rem;
+  margin-top: 0.5rem;
+
+  span {
+    position: absolute;
+    top: 0;
+    left: calc(var(--_at) * 100%);
+    display: grid;
+    justify-items: center;
+    translate: -50% 0;
+
+    &::before {
+      content: '';
+      width: 1px;
+      height: 0.25rem;
+      background: lw.v(color-border);
+    }
+
+    &[data-label]::before {
+      height: 0.5rem;
+    }
+
+    &[data-snapped]::before {
+      background: var(--_trim);
+    }
+
+    @include lw.motion {
+      &::before,
+      i {
+        transition: color 150ms ease-out, background-color 150ms ease-out;
+      }
+    }
+  }
+
+  i {
+    margin-top: 0.125rem;
+    font-size: 10px;
+    font-style: normal;
+    font-variant-numeric: tabular-nums;
+    color: lw.v(color-muted-foreground);
+
+    [data-snapped] > & {
+      color: var(--_trim);
+    }
+  }
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 0 0.25rem;
+  font-size: lw.v(text-sm);
+}
+
+.length {
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+
+  b {
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+}

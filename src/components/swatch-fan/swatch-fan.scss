@@ -1,0 +1,147 @@
+@use '../../styles' as lw;
+
+:host {
+  --_blade-w: 3.25rem;
+  --_blade-h: 13.5rem;
+
+  display: block;
+  width: 380px;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+  user-select: none;
+}
+
+// The deck: blades turning about one rivet near their foot.
+.deck {
+  position: relative;
+  height: calc(var(--_blade-h) + 2.5rem);
+  overflow: hidden;
+  border-radius: lw.v(radius-lg);
+  cursor: grab;
+  outline: none;
+  touch-action: pan-y;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.blade {
+  position: absolute;
+  bottom: 0.75rem;
+  left: calc(50% - var(--_blade-w) / 2);
+  display: flex;
+  flex-direction: column;
+  width: var(--_blade-w);
+  height: var(--_blade-h);
+  padding: 0.25rem 0.25rem 0;
+  border-radius: 0.5rem 0.5rem 0.625rem 0.625rem;
+  background: lw.v(color-background);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent),
+    0 4px 10px -4px rgb(0 0 0 / 0.25);
+  transform-origin: 50% calc(100% - 1rem);
+}
+
+.swatch {
+  flex: 1;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: box-shadow 150ms ease-out;
+
+  & + & {
+    margin-top: 2px;
+  }
+
+  &:hover {
+    box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.6);
+  }
+
+  // The picked shade: a ring that reads on light and dark.
+  &[aria-selected='true'] {
+    box-shadow:
+      inset 0 0 0 2px #fff,
+      inset 0 0 0 3px rgb(0 0 0 / 0.35);
+  }
+}
+
+.blade-name {
+  display: grid;
+  place-items: start center;
+  height: 1.75rem;
+  padding-top: 0.25rem;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: lw.v(color-muted-foreground);
+}
+
+.rivet {
+  position: absolute;
+  bottom: 1.5rem;
+  left: calc(50% - 0.3125rem);
+  z-index: 20;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff, #a1a1aa 60%, #52525b);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+}
+
+// Shown while the deck is shut.
+.hint {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+  opacity: calc(1 - var(--_spread, 0) * 3);
+  pointer-events: none;
+}
+
+.picked {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-lg);
+}
+
+.chip {
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: lw.v(radius-md);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.08);
+  transition: background-color 200ms ease-out;
+}
+
+.picked-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.picked-name {
+  font-weight: 500;
+}
+
+.picked-hex {
+  font-family: lw.v(font-mono);
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+  user-select: all;
+}
+
+.announce {
+  @include lw.visually-hidden;
+}

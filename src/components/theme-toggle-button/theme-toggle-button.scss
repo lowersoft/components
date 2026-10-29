@@ -1,0 +1,84 @@
+@use '../../styles' as lw;
+
+:host {
+  --_size: 2rem;
+
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+:host([size='sm']) {
+  --_size: 1.75rem;
+}
+
+:host([size='lg']) {
+  --_size: 2.25rem;
+}
+
+.track {
+  position: relative;
+  display: inline-flex;
+  padding: 0.1875rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-muted);
+}
+
+// Slides under the chosen option.
+.thumb {
+  position: absolute;
+  top: 0.1875rem;
+  left: 0.1875rem;
+  width: var(--_size);
+  height: var(--_size);
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+
+  @include lw.motion {
+    transition: translate 300ms lw.v(ease-spring);
+  }
+
+  :host([value='system']) & {
+    translate: 100% 0;
+  }
+
+  :host([value='dark']) & {
+    translate: 200% 0;
+  }
+}
+
+.option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--_size);
+  height: var(--_size);
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-full);
+  background: transparent;
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+  transition: color lw.v(duration-fast) lw.v(ease-out);
+
+  &:hover,
+  &[aria-checked='true'] {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// The System glyph shows the device's theme: a filled screen when it is dark.
+.screen {
+  fill: none;
+  transition: fill lw.v(duration-normal) lw.v(ease-out);
+
+  :host([system='dark']) & {
+    fill: currentColor;
+  }
+}

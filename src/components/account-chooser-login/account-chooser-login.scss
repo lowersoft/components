@@ -1,0 +1,321 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ink: #{lw.v(color-foreground)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_line: #{lw.v(color-border)};
+  --_surface: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+
+  @include lw.card-shell(29rem, 0.5rem);
+
+  font-size: lw.v(text-sm);
+}
+
+@include lw.login-base;
+
+p {
+  margin: 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1rem 0;
+}
+
+.count {
+  color: var(--_muted);
+}
+
+.intro {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.25rem 1rem 1.25rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.title {
+  font-size: 1.25rem;
+}
+
+// The remembered accounts; one highlight slides to the row in focus.
+.list {
+  position: relative;
+  padding: 0.375rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: var(--_surface);
+  outline: none;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.highlight {
+  @include lw.sliding-highlight;
+
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, var(--_ink) 6%, transparent);
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem;
+  cursor: pointer;
+
+  &[data-signed-out] {
+    .portrait,
+    .who {
+      opacity: 0.55;
+    }
+  }
+
+  > svg {
+    flex: none;
+    color: var(--_muted);
+  }
+}
+
+.who {
+  display: grid;
+  flex: 1;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.name {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.workspace {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--_muted);
+}
+
+.badge {
+  flex: none;
+  min-width: 1.125rem;
+  padding: 0 0.3125rem;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, var(--_ink) 10%, transparent);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+// The email, or on the row in focus, the session it belongs to.
+.sub {
+  display: grid;
+  min-width: 0;
+  color: var(--_muted);
+
+  > span {
+    overflow: hidden;
+    grid-area: 1 / 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include lw.motion {
+      transition:
+        opacity 150ms ease-out,
+        translate 150ms ease-out;
+    }
+  }
+}
+
+.session {
+  opacity: 0;
+  translate: 0 0.25rem;
+}
+
+.row[aria-selected='true'] {
+  .email {
+    opacity: 0;
+    translate: 0 -0.25rem;
+  }
+
+  .session {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.method {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}
+
+// Forget: shown on the row in focus.
+.forget {
+  display: grid;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+  opacity: 0;
+  outline: none;
+
+  .row[aria-selected='true'] &,
+  &:focus-visible {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: color-mix(in oklab, var(--_ink) 8%, transparent);
+    color: var(--_ink);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// The chosen account's own step.
+.step {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1rem;
+
+  &[hidden] {
+    display: none;
+  }
+
+  @include lw.motion {
+    animation: step-in 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+@keyframes step-in {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--_muted);
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    color: var(--_ink);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.chosen {
+  --_portrait: 3.5rem;
+
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .who {
+    gap: 0.25rem;
+  }
+
+  .name {
+    font-size: lw.v(text-lg);
+    font-weight: 600;
+  }
+
+  .email {
+    color: var(--_muted);
+  }
+}
+
+.step-form {
+  display: grid;
+  gap: 0.75rem;
+
+  lw-text-input {
+    display: block;
+  }
+
+  .go::part(button) {
+    width: 100%;
+  }
+}
+
+.note {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.signed-in {
+  padding: 0.75rem;
+  border-radius: lw.v(radius-md);
+  background: color-mix(in oklab, light-dark(#059669, #34d399) 14%, transparent);
+  text-align: center;
+  color: light-dark(#047857, #34d399);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.5rem;
+
+  [hidden] {
+    display: none;
+  }
+}
+
+.undo-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--_muted);
+}

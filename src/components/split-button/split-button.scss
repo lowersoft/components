@@ -1,0 +1,28 @@
+@use '../../styles' as lw;
+
+:host {
+  position: relative;
+}
+
+// The main action and the caret read as one control split by a hairline.
+.button:not(.caret) {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.caret {
+  flex: none;
+  padding-inline: 0.625rem;
+  border-inline-start-color: color-mix(in oklab, var(--_fg) 20%, transparent);
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+  box-shadow: inset 1px 0 color-mix(in oklab, var(--_fg) 20%, transparent);
+
+  .icon {
+    transition: rotate lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  &[aria-expanded='true'] .icon {
+    rotate: 180deg;
+  }
+}

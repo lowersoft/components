@@ -1,0 +1,453 @@
+@use '../../styles' as lw;
+
+:host {
+  display: block;
+  width: 100%;
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+  container: rail / inline-size;
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+p,
+h2,
+h3 {
+  margin: 0;
+}
+
+section {
+  --_card: 13.5rem;
+
+  padding-block: 1rem;
+}
+
+@container rail (width >= 28rem) {
+  section {
+    --_card: 15rem;
+  }
+}
+
+@container rail (width >= 48rem) {
+  section {
+    --_card: 16rem;
+  }
+}
+
+.muted {
+  color: lw.v(color-muted-foreground);
+}
+
+.top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  padding-inline: 1rem;
+}
+
+.titles {
+  min-width: 0;
+}
+
+.eyebrow {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+h2 {
+  overflow: hidden;
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.controls {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5rem;
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid lw.v(color-border);
+    border-radius: 50%;
+    background: lw.v(color-background);
+    color: lw.v(color-foreground);
+    cursor: pointer;
+    transition:
+      background-color lw.v(duration-fast) ease-out,
+      opacity lw.v(duration-fast) ease-out;
+
+    &:hover:not([aria-disabled='true']) {
+      background: lw.v(color-muted);
+    }
+
+    &[aria-disabled='true'] {
+      cursor: default;
+      opacity: 0.4;
+    }
+
+    &:focus-visible {
+      @include lw.focus-ring;
+    }
+  }
+}
+
+.count {
+  margin-right: 0.25rem;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+}
+
+.scroller {
+  position: relative;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-block: 1.5rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  outline: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &[data-free] {
+    scroll-snap-type: none;
+  }
+
+  &[data-dragging] {
+    cursor: grabbing;
+  }
+
+  @media (pointer: fine) {
+    cursor: grab;
+    user-select: none;
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px lw.v(color-ring);
+  }
+}
+
+.track {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  margin: 0;
+  padding: 0 calc(50cqw - var(--_card) / 2);
+  list-style: none;
+}
+
+.card {
+  flex: none;
+  width: var(--_card);
+  scroll-snap-align: center;
+}
+
+.tilt {
+  position: relative;
+}
+
+.picture {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: lw.v(color-muted);
+
+  .card:has(.link:focus-visible) & {
+    outline: 2px solid lw.v(color-foreground);
+    outline-offset: 2px;
+  }
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  background: lw.v(color-border);
+}
+
+.layer {
+  position: absolute;
+  inset-block: 0;
+  left: -15%;
+  width: 130%;
+
+  svg,
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  img {
+    object-fit: cover;
+  }
+}
+
+// The scene's tones follow the theme.
+.sun {
+  fill: light-dark(#fff, #a1a1aa);
+}
+
+.far {
+  fill: light-dark(#d4d4d8, #27272a);
+}
+
+.mid {
+  fill: light-dark(#a1a1aa, #18181b);
+}
+
+.near {
+  fill: light-dark(#52525b, #09090b);
+}
+
+.sky {
+  fill: light-dark(#e4e4e7, #3f3f46);
+}
+
+.badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: lw.v(radius-sm);
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+// The heart's fill rises from the base through a clip, with no scale.
+.heart {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: lw.v(color-background);
+  box-shadow:
+    lw.v(shadow-sm),
+    0 0 0 1px rgb(0 0 0 / 0.05);
+  color: lw.v(color-foreground);
+  cursor: pointer;
+  transition: background-color lw.v(duration-fast) ease-out;
+
+  &:hover {
+    background: lw.v(color-muted);
+  }
+
+  &:focus-visible {
+    outline: 2px solid lw.v(color-foreground);
+    outline-offset: 2px;
+  }
+
+  svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    transition: color 200ms ease-out;
+  }
+
+  &[aria-pressed='true'] {
+    color: #f43f5e;
+  }
+}
+
+.glyph {
+  position: relative;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(100% 0 0 0);
+
+  @include lw.motion {
+    transition: clip-path 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  svg {
+    fill: #f43f5e;
+    stroke: #f43f5e;
+  }
+
+  [aria-pressed='true'] & {
+    clip-path: inset(0);
+  }
+}
+
+.text {
+  padding: 0.75rem 0.125rem 0;
+}
+
+h3 {
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The link is stretched over the whole card.
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+  }
+}
+
+.location {
+  overflow: hidden;
+  font-size: lw.v(text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.details {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  font-size: lw.v(text-xs);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.star {
+  width: 0.75rem;
+  height: 0.75rem;
+  fill: currentColor;
+}
+
+.dates {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.price {
+  flex: none;
+  margin-left: auto;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+
+  .muted {
+    font-weight: 400;
+  }
+}
+
+// Depth runs off the main thread: each card is a view timeline on the
+// inline axis (0% entering on the right, 50% centred, 100% leaving on the
+// left). Browsers without scroll-driven animations get flat cards with every
+// detail shown; reduced motion keeps only the details fade.
+@keyframes tilt {
+  0% {
+    transform: perspective(900px) translateZ(-180px) rotateY(-14deg);
+  }
+
+  50% {
+    transform: perspective(900px) translateZ(0) rotateY(0deg);
+  }
+
+  100% {
+    transform: perspective(900px) translateZ(-180px) rotateY(14deg);
+  }
+}
+
+@keyframes parallax {
+  from {
+    transform: translate3d(calc(var(--_depth) * -1), 0, 0);
+  }
+
+  to {
+    transform: translate3d(var(--_depth), 0, 0);
+  }
+}
+
+@keyframes details {
+  0%,
+  32% {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+
+  45%,
+  55% {
+    opacity: 1;
+    transform: none;
+  }
+
+  68%,
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .card {
+    view-timeline: --rail inline;
+  }
+
+  .details {
+    animation: details linear both;
+    animation-timeline: --rail;
+  }
+
+  @include lw.motion {
+    .tilt {
+      animation: tilt linear both;
+      animation-timeline: --rail;
+    }
+
+    .layer {
+      animation: parallax linear both;
+      animation-timeline: --rail;
+    }
+  }
+}

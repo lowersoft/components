@@ -1,0 +1,7 @@
+// Page-level rules for the circular theme reveal. The default crossfade is
+// replaced by a clip-path animation on the new snapshot.
+:root[data-lw-reveal]::view-transition-old(root),
+:root[data-lw-reveal]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}

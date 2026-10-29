@@ -1,0 +1,255 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_accent: #f97316;
+  --_band: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+
+  @include lw.card-shell(24rem, 0.5rem);
+
+  border: 0;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  font-size: lw.v(text-sm);
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.375rem 0.5rem 0.75rem;
+  color: var(--_muted);
+}
+
+.clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    color: lw.v(color-foreground);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid var(--_line);
+  border-radius: 1.25rem;
+  background: lw.v(color-background);
+}
+
+// What is picked, and the quick periods.
+.top {
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--_line);
+}
+
+.summary {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+
+  .count {
+    margin-left: 0.375rem;
+    font-weight: 400;
+    color: var(--_muted);
+  }
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.125rem;
+  margin: 0.625rem -0.5rem 0;
+}
+
+.preset {
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--_band);
+    color: lw.v(color-foreground);
+  }
+}
+
+// The month: a band runs between the first and last day.
+.month-head {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.875rem 0.75rem 0.25rem 1rem;
+}
+
+.month {
+  flex: 1;
+  font-weight: 600;
+}
+
+.nav {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.3;
+  }
+}
+
+.grid {
+  padding: 0 0.75rem 0.75rem;
+}
+
+.weekdays,
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdays span {
+  padding: 0.5rem 0;
+  font-size: lw.v(text-xs);
+  text-align: center;
+  color: var(--_muted);
+}
+
+.week + .week {
+  margin-top: 2px;
+}
+
+.day {
+  position: relative;
+  display: grid;
+  height: 2.5rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: lw.v(text-md);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  cursor: pointer;
+
+  &[data-outside] {
+    color: color-mix(in oklab, var(--_muted) 60%, transparent);
+  }
+
+  &:disabled {
+    color: color-mix(in oklab, var(--_muted) 45%, transparent);
+    cursor: default;
+  }
+
+  &:hover:not(:disabled, [data-edge]) {
+    border-radius: lw.v(radius-md);
+    background: var(--_band);
+  }
+
+  &[data-in] {
+    background: var(--_band);
+  }
+
+  &[data-edge] {
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
+  }
+
+  &[data-edge='start'] {
+    border-radius: lw.v(radius-md) 0 0 lw.v(radius-md);
+  }
+
+  &[data-edge='end'] {
+    border-radius: 0 lw.v(radius-md) lw.v(radius-md) 0;
+  }
+
+  &[data-edge='start'][data-edge='end'] {
+    border-radius: lw.v(radius-md);
+  }
+
+  // Today carries a dot.
+  &[data-today]::after {
+    content: '';
+    position: absolute;
+    bottom: 0.3125rem;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--_accent);
+  }
+
+  small {
+    position: absolute;
+    top: 0.1875rem;
+    font-size: 0.5625rem;
+    color: var(--_muted);
+  }
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.75rem 0.75rem 1rem;
+  border-top: 1px solid var(--_line);
+}
+
+.compare {
+  --lw-color-primary: var(--_accent);
+}
+
+.apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-primary);
+  color: lw.v(color-primary-foreground);
+  cursor: pointer;
+
+  &:disabled {
+    background: var(--_band);
+    color: var(--_muted);
+    cursor: default;
+  }
+}
+
+.hint {
+  padding: 0.75rem 0.75rem 0.25rem;
+  color: var(--_muted);
+}

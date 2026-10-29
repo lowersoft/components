@@ -1,0 +1,238 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ink: #{lw.v(color-foreground)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_line: #{lw.v(color-border)};
+  --_surface: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+
+  @include lw.card-shell(29rem, 0.5rem);
+
+  font-size: lw.v(text-sm);
+}
+
+@include lw.login-base;
+
+p,
+blockquote {
+  margin: 0;
+}
+
+.head {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+  padding: 1rem 1rem 1.25rem;
+}
+
+.inviter {
+  --_portrait: 3.25rem;
+
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-size: 1.25rem;
+}
+
+// The invite: the inviter's note, the people already there, and the locked email.
+.invite {
+  overflow: hidden;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: var(--_surface);
+
+  &[hidden] {
+    display: none;
+  }
+
+  > * {
+    padding: 0.875rem 1rem;
+  }
+
+  > * + * {
+    border-top: 1px solid var(--_line);
+  }
+}
+
+.note {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.quote {
+  font-size: lw.v(text-md);
+  line-height: 1.5;
+}
+
+.by {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.seats {
+  --_portrait: 2rem;
+
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+// The members overlap, like a row of seats.
+.faces {
+  display: flex;
+
+  .portrait + .portrait {
+    margin-left: -0.5rem;
+  }
+
+  .portrait > svg {
+    box-shadow: 0 0 0 2px var(--_surface);
+  }
+}
+
+.more {
+  display: grid;
+  min-width: 2rem;
+  height: 2rem;
+  // Past the row's gap, the count overlaps the last face as the faces overlap.
+  margin-left: -1.5rem;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--_ink) 12%, var(--_surface));
+  box-shadow: 0 0 0 2px var(--_surface);
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// The empty seat: a dashed ring until your name draws you into it.
+.seat {
+  width: var(--_portrait);
+  height: var(--_portrait);
+  border: 1px dashed color-mix(in oklab, var(--_ink) 30%, transparent);
+  border-radius: 50%;
+
+  .portrait {
+    opacity: 0;
+    scale: 0.6;
+
+    @include lw.motion {
+      transition:
+        opacity 250ms ease-out,
+        scale 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+  }
+
+  &[data-taken] {
+    border-color: transparent;
+
+    .portrait {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+
+.seat-text {
+  display: grid;
+  min-width: 0;
+
+  b {
+    overflow: hidden;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.seat-count {
+  color: var(--_muted);
+}
+
+.locked {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--_muted);
+
+  svg {
+    flex: none;
+  }
+}
+
+.email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--_ink);
+}
+
+.from {
+  flex: none;
+}
+
+.not-you,
+.decline {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--_muted);
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    color: var(--_ink);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.not-you {
+  flex: none;
+  margin-left: auto;
+}
+
+// The form: your name and a password, as the email comes from the invite.
+.form {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem 1rem 1rem;
+
+  &[hidden] {
+    display: none;
+  }
+
+  lw-text-input,
+  lw-password-input {
+    display: block;
+    width: 100%;
+  }
+
+  .join::part(button),
+  .google::part(button) {
+    width: 100%;
+  }
+}
+
+.decline {
+  justify-self: center;
+  font-size: lw.v(text-xs);
+}
+
+.state {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem 1rem;
+
+  &[hidden] {
+    display: none;
+  }
+}

@@ -1,0 +1,77 @@
+@use '../../styles' as lw;
+
+// Non-solid variants turn solid while subscribed.
+@include lw.solid-when('[subscribed]');
+
+.button {
+  gap: 0.625rem;
+
+  @include lw.motion {
+    transition:
+      background-color 200ms lw.v(ease-out),
+      border-color 200ms lw.v(ease-out),
+      color 200ms lw.v(ease-out),
+      transform lw.v(duration-fast) lw.v(ease-out);
+  }
+}
+
+:host([count]:not([icon-only])) .button {
+  padding-inline-end: 0.375rem;
+}
+
+:host([icon-only]) :is(.labels, .count) {
+  display: none;
+}
+
+.icon {
+  width: 1.4em;
+  height: 1.4em;
+  flex: none;
+  overflow: visible;
+}
+
+.wave {
+  opacity: 0;
+}
+
+.shell {
+  fill: transparent;
+  transition: fill 200ms lw.v(ease-out);
+
+  :host([subscribed]) & {
+    fill: currentColor;
+  }
+}
+
+// The mute slash, drawn across while unsubscribed.
+.slash {
+  stroke-dasharray: 26;
+  stroke-dashoffset: 0;
+
+  @include lw.motion {
+    transition: stroke-dashoffset 300ms lw.v(ease-out);
+  }
+
+  :host([subscribed]) & {
+    stroke-dashoffset: 26;
+  }
+}
+
+.labels {
+  display: grid;
+}
+
+.label {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  transition:
+    opacity 200ms lw.v(ease-out),
+    filter 200ms lw.v(ease-out);
+}
+
+:host([subscribed]) .label-off,
+:host(:not([subscribed])) .label-on {
+  opacity: 0;
+  filter: blur(2px);
+}
+

@@ -1,0 +1,114 @@
+@use '../../styles' as lw;
+
+:host {
+  display: inline-block;
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+  user-select: none;
+}
+
+.picker {
+  position: relative;
+  padding-inline: 0.75rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1rem;
+  background: lw.v(color-background);
+}
+
+// The selection band, shared by every column.
+.band,
+.tick {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  pointer-events: none;
+}
+
+.band {
+  inset-inline: 0.5rem;
+  height: var(--_item);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-muted);
+}
+
+// Hairline ticks either side of the band, like a ruler's pointer.
+.tick {
+  left: 2px;
+  width: 4px;
+  height: 1px;
+  background: lw.v(color-muted-foreground);
+
+  &.end {
+    left: auto;
+    right: 2px;
+  }
+}
+
+.columns {
+  display: flex;
+  justify-content: center;
+}
+
+.column {
+  position: relative;
+  width: 4rem;
+  height: var(--_view);
+  border-radius: lw.v(radius-md);
+  outline: none;
+  cursor: grab;
+  touch-action: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px lw.v(color-ring);
+  }
+}
+
+// The fade sits on an inner layer so the focus ring stays crisp.
+.fade {
+  position: absolute;
+  inset: 0;
+  mask-image: linear-gradient(to bottom, transparent, #000 34%, #000 66%, transparent);
+}
+
+.view {
+  position: absolute;
+  inset: 0;
+  perspective: 1000px;
+  pointer-events: none;
+  color: lw.v(color-muted-foreground);
+
+  // The full-color copy, clipped to the band.
+  &.selected {
+    clip-path: inset(calc(50% - var(--_item) / 2) 0);
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+}
+
+.drum {
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  transform-style: preserve-3d;
+}
+
+.row {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--_item) / -2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--_item);
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  backface-visibility: hidden;
+
+  &[hidden] {
+    display: none;
+  }
+}

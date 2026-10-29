@@ -1,0 +1,45 @@
+@use '../../styles' as lw;
+
+:host {
+  --_size: 1rem;
+
+  outline: none;
+}
+
+.visual {
+  width: var(--_size);
+  height: var(--_size);
+  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+  border-radius: 50%;
+  background: lw.v(color-background);
+  transition: border-color 150ms ease-out;
+
+  .toggle:hover & {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 55%, transparent);
+  }
+
+  :host([checked]) & {
+    border-color: lw.v(color-primary);
+  }
+
+  // Focus sits on the radio itself, not on a native input.
+  :host(:focus-visible) & {
+    @include lw.focus-ring;
+  }
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: lw.v(color-primary);
+  scale: 0;
+
+  @include lw.motion {
+    transition: scale 200ms lw.v(ease-spring);
+  }
+
+  :host([checked]) & {
+    scale: 1;
+  }
+}

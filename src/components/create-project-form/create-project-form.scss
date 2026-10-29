@@ -1,0 +1,267 @@
+@use '../../styles' as lw;
+
+@include lw.picker;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_well: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+
+  @include lw.card-shell(36rem, 2rem);
+
+  font-size: lw.v(text-sm);
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.title {
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+}
+
+.description {
+  margin-top: 0.5rem;
+  line-height: 1.5;
+  color: var(--_muted);
+}
+
+.field {
+  margin-top: 1.75rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.625rem;
+  font-weight: 500;
+}
+
+// The name, and the address it becomes under a dashed fold.
+.name-box {
+  overflow: hidden;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-lg);
+  background: var(--_well);
+
+  &:focus-within {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 35%, transparent);
+  }
+}
+
+.name {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.875rem 1rem;
+  border: 0;
+  background: none;
+  font-size: lw.v(text-md);
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--_muted);
+  }
+}
+
+.address {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px dashed var(--_line);
+  font-family: lw.v(font-mono);
+
+  > svg {
+    flex: none;
+    color: var(--_muted);
+  }
+}
+
+.domain {
+  color: var(--_muted);
+}
+
+.slug {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  margin-left: -0.5rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &[data-empty] {
+    color: var(--_muted);
+  }
+}
+
+.availability {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: lw.v(font-sans);
+  color: var(--_muted);
+
+  &[data-state='free'] {
+    color: lw.v(color-accent);
+  }
+
+  &[data-state='taken'] {
+    color: lw.v(color-destructive);
+  }
+}
+
+.hint {
+  margin-top: 0.5rem;
+  color: var(--_muted);
+}
+
+// Templates as line drawings; the chosen one ringed and ticked.
+.templates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.5rem;
+}
+
+.template {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 0.125rem;
+  padding: 0.5rem 0.5rem 0.75rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-lg);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      border-color 150ms ease-out,
+      box-shadow 150ms ease-out;
+  }
+
+  &:hover {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+  }
+
+  &[aria-checked='true'] {
+    border-color: lw.v(color-foreground);
+    box-shadow: 0 0 0 1px lw.v(color-foreground);
+  }
+}
+
+.sketch {
+  width: 100%;
+  height: auto;
+  margin-bottom: 0.5rem;
+  border-radius: lw.v(radius-md);
+  background: var(--_well);
+  fill: none;
+  stroke: var(--_muted);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.template-name {
+  padding-inline: 0.25rem;
+  font-weight: 500;
+}
+
+.template-detail {
+  padding-inline: 0.25rem;
+  color: var(--_muted);
+}
+
+.tick {
+  position: absolute;
+  top: 0.875rem;
+  right: 0.875rem;
+  display: grid;
+  width: 1.125rem;
+  height: 1.125rem;
+  place-items: center;
+  border: 1px solid var(--_line);
+  border-radius: 50%;
+  background: lw.v(color-background);
+
+  .icon {
+    width: 0.75rem;
+    height: 0.75rem;
+    opacity: 0;
+  }
+
+  [aria-checked='true'] > & {
+    border-color: lw.v(color-foreground);
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
+
+    .icon {
+      opacity: 1;
+    }
+  }
+}
+
+// The region, as a full-width select.
+.picker,
+.picker-trigger {
+  display: flex;
+  width: 100%;
+}
+
+.picker-trigger {
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--_line);
+  background: var(--_well);
+  font-size: lw.v(text-md);
+}
+
+.visibility {
+  display: inline-flex;
+  padding: 0.25rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-lg);
+}
+
+.seg {
+  padding: 0.375rem 1rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &[aria-checked='true'] {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 9%, transparent);
+    color: lw.v(color-foreground);
+  }
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.error {
+  color: lw.v(color-destructive);
+}

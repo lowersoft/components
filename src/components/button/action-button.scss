@@ -1,0 +1,15 @@
+@use '../../styles' as lw;
+
+:host([status='error']) {
+  --_bg: #{lw.v(color-destructive)};
+  --_fg: #{lw.v(color-destructive-foreground)};
+}
+
+.button {
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-normal) lw.v(ease-out),
+      color lw.v(duration-normal) lw.v(ease-out),
+      transform lw.v(duration-fast) lw.v(ease-out);
+  }
+}

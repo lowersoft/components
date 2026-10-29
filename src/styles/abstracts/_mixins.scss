@@ -1,0 +1,778 @@
+@use 'sass:map';
+@use 'functions' as fn;
+
+/// Emit a token map as `--lw-<group>-<name>` custom properties.
+@mixin vars($tokens) {
+  @each $group, $entries in $tokens {
+    @each $name, $value in $entries {
+      --lw-#{$group}-#{$name}: #{fn.raw($value)};
+    }
+  }
+}
+
+/// Visible keyboard focus indicator.
+@mixin focus-ring {
+  outline: 2px solid fn.v(color-ring);
+  outline-offset: 2px;
+}
+
+/// Wrap motion that must be disabled for users who prefer reduced motion.
+@mixin motion {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+/// Hide visually while keeping the content available to assistive technology.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/// Color variants on the host, selected by the `variant` attribute.
+/// Sets `--_bg`, `--_fg` and `--_border` for the component to consume.
+@mixin variants {
+  :host {
+    --_bg: #{fn.v(color-primary)};
+    --_fg: #{fn.v(color-primary-foreground)};
+    --_border: transparent;
+  }
+
+  :host([variant='secondary']) {
+    --_bg: #{fn.v(color-secondary)};
+    --_fg: #{fn.v(color-secondary-foreground)};
+  }
+
+  :host([variant='outline']) {
+    --_bg: transparent;
+    --_fg: #{fn.v(color-foreground)};
+    --_border: #{fn.v(color-border)};
+  }
+
+  :host([variant='ghost']) {
+    --_bg: transparent;
+    --_fg: #{fn.v(color-foreground)};
+  }
+
+  :host([variant='destructive']) {
+    --_bg: #{fn.v(color-destructive)};
+    --_fg: #{fn.v(color-destructive-foreground)};
+  }
+}
+
+/// Turn non-solid variants (secondary, outline, ghost) solid primary while
+/// the host matches `$state`, e.g. `'[subscribed]'`.
+@mixin solid-when($state) {
+  :host(#{$state}:is([variant='secondary'], [variant='outline'], [variant='ghost'])) {
+    --_bg: #{fn.v(color-primary)};
+    --_fg: #{fn.v(color-primary-foreground)};
+    --_border: #{fn.v(color-primary)};
+  }
+}
+
+/// The box `core/highlight.js` slides between the items of a list. Its
+/// container must be positioned, and the items above it.
+@mixin sliding-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: fn.v(radius-md);
+  background: fn.v(color-muted);
+  opacity: 0;
+  pointer-events: none;
+  // Never a scroll anchor: as it slides, the browser would scroll the list
+  // to follow it, and on and on.
+  overflow-anchor: none;
+
+  @include motion {
+    transition:
+      translate 200ms fn.v(ease-out),
+      width 200ms fn.v(ease-out),
+      height 200ms fn.v(ease-out),
+      opacity 150ms fn.v(ease-out);
+  }
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+/// An initials avatar tinted by `--_hue`, from `hueOf()` in `core/people.js`.
+@mixin person-tint {
+  background: light-dark(oklch(0.94 0.025 var(--_hue)), oklch(0.32 0.03 var(--_hue)));
+  color: light-dark(oklch(0.42 0.05 var(--_hue)), oklch(0.86 0.04 var(--_hue)));
+}
+
+/// A keycap tinted from a foreground and a background. The cap stands 2px
+/// above its base; `[data-pressed]` sinks it with a translate and a shorter
+/// shadow, never a scale.
+@mixin keycap($fg, $bg) {
+  --_edge: color-mix(in oklab, #{$fg} 22%, #{$bg});
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding-inline: 0.375rem;
+  border: 1px solid var(--_edge);
+  border-radius: fn.v(radius-sm);
+  background: color-mix(in oklab, #{$fg} 8%, #{$bg});
+  box-shadow: 0 2px 0 0 var(--_edge);
+  color: inherit;
+  font: inherit;
+  font-size: 0.6875rem;
+  line-height: 1;
+
+  @include motion {
+    transition:
+      translate fn.v(duration-fast) fn.v(ease-out),
+      box-shadow fn.v(duration-fast) fn.v(ease-out);
+  }
+
+  &[data-pressed] {
+    translate: 0 2px;
+    box-shadow: none;
+    transition-duration: 75ms;
+  }
+}
+
+// The surface a card component draws itself on: bordered, rounded, padded.
+@mixin card-shell($width, $padding: 1.25rem) {
+  display: block;
+  box-sizing: border-box;
+  width: $width;
+  max-width: 100%;
+  padding: $padding;
+  border: 1px solid fn.v(color-border);
+  border-radius: 1.5rem;
+  background: fn.v(color-background);
+  font-family: fn.v(font-sans);
+  color: fn.v(color-foreground);
+}
+
+// A full-width section a background component draws behind its content.
+@mixin backdrop($min-height: 560px) {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: $min-height;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: fn.v(color-background);
+  font-family: fn.v(font-sans);
+  color: fn.v(color-foreground);
+}
+
+// The centred title and line a hero shows until its content is slotted in.
+@mixin hero-copy {
+  .copy {
+    position: relative;
+    display: flex;
+    max-width: 36rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1.5rem;
+    text-align: center;
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(2.25rem, 5vw, 3rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .description {
+    max-width: 24rem;
+    margin: 0;
+    font-size: fn.v(text-md);
+    line-height: 1.5;
+    text-wrap: pretty;
+    color: fn.v(color-muted-foreground);
+  }
+}
+
+// Fades the element in when it first renders, such as a canvas once drawn.
+@mixin fade-in($duration: 500ms) {
+  @include motion {
+    animation: lw-fade-in $duration ease-out;
+  }
+
+  @at-root {
+    @keyframes lw-fade-in {
+      from {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+// A hero's content column: a fixed width on wide screens, centred, while
+// the hero's background still runs edge to edge.
+@mixin hero-container($width: 72rem) {
+  position: relative;
+  width: 100%;
+  max-width: $width;
+  margin-inline: auto;
+}
+
+// A hero section: full-bleed, its content from the top, room for a stage
+// that runs to the bottom edge.
+@mixin hero-shell($min-height: 760px) {
+  @include backdrop($min-height);
+
+  container-type: inline-size;
+  align-items: flex-start;
+  padding: 6rem clamp(1.5rem, 5vw, 4rem) 0;
+}
+
+// The split intro: a large headline on the left, the pitch and two pill
+// actions on the right. Markup from `heroIntro()` in core/hero.js.
+@mixin hero-split {
+  .intro {
+    display: grid;
+    gap: 2rem;
+
+    @container (min-width: 56rem) {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      align-items: center;
+      column-gap: 4rem;
+    }
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(3rem, 7vw, 5.75rem);
+    font-weight: 600;
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    text-wrap: balance;
+  }
+
+  ::slotted([slot='eyebrow']) {
+    margin-bottom: 1.25rem;
+  }
+
+  .description {
+    max-width: 30rem;
+    margin: 0;
+    font-size: fn.v(text-lg);
+    line-height: 1.6;
+    text-wrap: pretty;
+    color: fn.v(color-muted-foreground);
+  }
+
+  @include hero-actions;
+}
+
+// The two pill actions a hero offers by default.
+@mixin hero-actions {
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .primary::part(button),
+  .secondary::part(button) {
+    border-radius: fn.v(radius-full);
+  }
+}
+
+// Fades a hero's stage out towards the bottom edge.
+@mixin hero-fade($solid: 45%) {
+  mask-image: linear-gradient(to bottom, #000 $solid, transparent 96%);
+}
+
+// An app window shown in a hero: a framed surface with a top bar holding a
+// logo tile and a slash-separated location.
+@mixin hero-window {
+  .window {
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid fn.v(color-border);
+    border-radius: 1rem;
+    background: color-mix(in oklab, #{fn.v(color-foreground)} 3%, #{fn.v(color-background)});
+    font-size: fn.v(text-sm);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: 3.25rem;
+    padding: 0 1rem;
+    border-bottom: 1px solid fn.v(color-border);
+  }
+
+  .logo {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.375rem;
+    background: fn.v(color-foreground);
+    font-size: fn.v(text-xs);
+    font-weight: 700;
+    color: fn.v(color-background);
+  }
+
+  .crumbs {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    white-space: nowrap;
+
+    span + span::before {
+      content: '/';
+      margin: 0 0.625rem;
+      color: color-mix(in oklab, #{fn.v(color-muted-foreground)} 60%, transparent);
+    }
+  }
+}
+
+// The pieces login cards share: the brand tile, title and lead, provider
+// buttons, the "or" divider, and portraits with a workspace mark on the
+// corner. Markup from core/login.js.
+@mixin login-base {
+  .logo {
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    border-radius: 0.625rem;
+    background: fn.v(color-foreground);
+    font-size: fn.v(text-md);
+    font-weight: 700;
+    color: fn.v(color-background);
+  }
+
+  .title {
+    margin: 0;
+    font-size: fn.v(text-lg);
+    font-weight: 600;
+  }
+
+  .lead {
+    margin: 0;
+    color: fn.v(color-muted-foreground);
+  }
+
+  .providers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+
+    lw-button::part(button) {
+      width: 100%;
+    }
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: fn.v(text-xs);
+    color: fn.v(color-muted-foreground);
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      border-top: 1px solid fn.v(color-border);
+    }
+  }
+
+  // A drawn portrait in a circle, its workspace's mark on the corner.
+  .portrait {
+    position: relative;
+    flex: none;
+    width: var(--_portrait, 2.75rem);
+    height: var(--_portrait, 2.75rem);
+
+    > svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+  }
+
+  .mark {
+    position: absolute;
+    right: -0.25rem;
+    bottom: -0.25rem;
+    display: grid;
+    width: 42%;
+    height: 42%;
+    place-items: center;
+    border-radius: 28%;
+    background: var(--_mark);
+    box-shadow: 0 0 0 2px fn.v(color-background);
+    color: #fff;
+
+    svg {
+      width: 70%;
+      height: 70%;
+    }
+  }
+}
+
+// Turns a surface to the opposite scheme, tokens and all, so components in
+// it follow. The host sets `--_ink` and `--_paper` to its own foreground and
+// background; inside, style with the tokens rather than host aliases.
+@mixin inverted {
+  --lw-color-background: var(--_ink);
+  --lw-color-foreground: var(--_paper);
+  --lw-color-muted: color-mix(in oklab, var(--_paper) 10%, var(--_ink));
+  --lw-color-muted-foreground: color-mix(in oklab, var(--_paper) 62%, var(--_ink));
+  --lw-color-border: color-mix(in oklab, var(--_paper) 16%, var(--_ink));
+  --lw-color-primary: var(--_paper);
+  --lw-color-primary-foreground: var(--_ink);
+  --lw-color-secondary: color-mix(in oklab, var(--_paper) 10%, var(--_ink));
+  --lw-color-secondary-foreground: var(--_paper);
+
+  background: var(--_ink);
+  color: var(--_paper);
+}
+
+// The pieces footer components share: the full-width band and its column,
+// the brand, and titled columns of links with badges. Markup from
+// core/footer.js.
+@mixin footer-base {
+  :host {
+    container-type: inline-size;
+    display: block;
+    border-top: 1px solid fn.v(color-border);
+    background: fn.v(color-background);
+    font-family: fn.v(font-sans);
+    font-size: fn.v(text-sm);
+    color: fn.v(color-foreground);
+  }
+
+  .container {
+    @include hero-container;
+
+    box-sizing: border-box;
+    padding: 4rem clamp(1.5rem, 5vw, 3rem) 2.5rem;
+  }
+
+  h2,
+  p,
+  ul {
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+
+    &:focus-visible {
+      @include focus-ring;
+
+      border-radius: 2px;
+    }
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: fn.v(text-lg);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .brand-tile {
+    display: grid;
+    width: 1.75rem;
+    height: 1.75rem;
+    place-items: center;
+    border-radius: 0.5rem;
+    background: fn.v(color-foreground);
+    font-size: fn.v(text-sm);
+    font-weight: 700;
+    color: fn.v(color-background);
+  }
+
+  .column-title {
+    margin-bottom: 1.25rem;
+    font-size: fn.v(text-sm);
+    font-weight: 500;
+  }
+
+  .links {
+    display: grid;
+    gap: 0.875rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: fn.v(color-muted-foreground);
+
+    @include motion {
+      transition:
+        color 150ms ease-out,
+        opacity 200ms ease-out;
+    }
+
+    &:hover {
+      color: fn.v(color-foreground);
+    }
+  }
+
+  .badge {
+    padding: 0.0625rem 0.375rem;
+    border: 1px solid fn.v(color-border);
+    border-radius: fn.v(radius-sm);
+    font-size: 0.6875rem;
+    color: fn.v(color-muted-foreground);
+  }
+}
+
+// The pieces testimonial components share: the company and its mark, a
+// person's drawn face, name and role, and marked phrases. Markup from
+// core/testimonial.js.
+@mixin testimonial-base {
+  .company {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+
+  .company-mark {
+    display: grid;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: none;
+    place-items: center;
+    border-radius: 0.3125rem;
+    background: var(--_mark);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .person {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .face {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+    overflow: hidden;
+    border-radius: 50%;
+    background: fn.v(color-muted);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .person-name {
+    display: block;
+    font-weight: 500;
+  }
+
+  .person-role {
+    display: block;
+    font-size: fn.v(text-xs);
+    color: fn.v(color-muted-foreground);
+  }
+
+  mark {
+    padding: 0 0.15em;
+    border-radius: 0.2em;
+    background: color-mix(in oklab, var(--_tint, #{fn.v(color-foreground)}) 22%, transparent);
+    color: fn.v(color-foreground);
+    box-decoration-break: clone;
+  }
+}
+
+// The strip a banner component draws: a full-width row with its close
+// button at the end. Markup from core/banner.js.
+@mixin banner-base {
+  :host {
+    container-type: inline-size;
+    display: block;
+    overflow: hidden;
+    font-family: fn.v(font-sans);
+    font-size: fn.v(text-sm);
+    color: fn.v(color-foreground);
+  }
+
+  :host([hidden]) {
+    display: none;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  a,
+  button {
+    font: inherit;
+    color: inherit;
+    outline: none;
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+
+  .close,
+  .icon-button {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: fn.v(radius-md);
+    background: none;
+    color: fn.v(color-muted-foreground);
+    cursor: pointer;
+
+    &:hover {
+      color: fn.v(color-foreground);
+    }
+  }
+}
+
+// The quiet select-like trigger from `pickerMarkup()` in core/picker.js.
+@mixin picker {
+  .picker-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.5rem;
+    border: 0;
+    border-radius: fn.v(radius-md);
+    background: none;
+    font: inherit;
+    color: fn.v(color-foreground);
+    cursor: pointer;
+    outline: none;
+
+    &:hover,
+    &[aria-expanded='true'] {
+      background: color-mix(in oklab, #{fn.v(color-foreground)} 6%, transparent);
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+
+    > svg {
+      flex: none;
+      color: fn.v(color-muted-foreground);
+    }
+  }
+
+  .picker-label {
+    color: fn.v(color-muted-foreground);
+  }
+}
+
+// The marks issue lists share: status, priority, label and assignee.
+// Markup from core/issues.js.
+@mixin issue-marks {
+  .status-icon {
+    flex: none;
+    color: fn.v(color-muted-foreground);
+
+    &[data-status='progress'] {
+      color: #f5a524;
+    }
+
+    &[data-status='review'] {
+      color: #8e4ec6;
+    }
+
+    &[data-status='done'] {
+      color: #30a46c;
+    }
+  }
+
+  .priority-icon {
+    flex: none;
+
+    rect {
+      fill: color-mix(in oklab, #{fn.v(color-foreground)} 22%, transparent);
+
+      &[data-on] {
+        fill: fn.v(color-muted-foreground);
+      }
+    }
+
+    &[data-priority='urgent'] rect {
+      fill: #e5484d;
+    }
+  }
+
+  .label-chip {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid fn.v(color-border);
+    border-radius: fn.v(radius-full);
+    font-size: fn.v(text-xs);
+    color: fn.v(color-muted-foreground);
+
+    &::before {
+      content: '';
+      width: 0.375rem;
+      height: 0.375rem;
+      border-radius: 50%;
+      background: var(--_label);
+    }
+  }
+
+  .assignee {
+    @include person-tint;
+
+    display: grid;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex: none;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 0.5625rem;
+    font-weight: 600;
+
+    &[data-none] {
+      border: 1px dashed fn.v(color-muted-foreground);
+      background: none;
+    }
+  }
+}

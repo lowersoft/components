@@ -1,0 +1,50 @@
+@use '../../styles' as lw;
+
+:host {
+  --_width: 2.25rem;
+  --_size: 1.25rem;
+  --_gap: 2px;
+}
+
+:host([size='sm']) {
+  --_width: 1.75rem;
+  --_size: 1rem;
+}
+
+// The track; the thumb slides across it.
+.visual {
+  width: var(--_width);
+  height: var(--_size);
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 18%, transparent);
+  place-items: center start;
+  transition: background-color 200ms ease-out;
+
+  :host([checked]) & {
+    background: lw.v(color-primary);
+  }
+}
+
+.thumb {
+  width: calc(var(--_size) - var(--_gap) * 2);
+  height: calc(var(--_size) - var(--_gap) * 2);
+  margin-left: var(--_gap);
+  border-radius: 50%;
+  background: lw.v(color-background);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+
+  @include lw.motion {
+    transition:
+      translate 220ms lw.v(ease-spring),
+      scale 150ms ease-out;
+  }
+
+  :host([checked]) & {
+    translate: calc(var(--_width) - var(--_size)) 0;
+  }
+
+  // Pressed, the thumb gives a little.
+  .toggle:active & {
+    scale: 0.9;
+  }
+}

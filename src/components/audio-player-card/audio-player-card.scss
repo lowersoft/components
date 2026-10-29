@@ -1,0 +1,253 @@
+@use '../../styles' as lw;
+
+:host {
+  @include lw.card-shell(24rem);
+
+  user-select: none;
+}
+
+p {
+  margin: 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cover {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: lw.v(radius-lg);
+  background: linear-gradient(135deg, #f97316, #db2777);
+  font-size: lw.v(text-sm);
+  font-weight: 600;
+  color: #fff;
+}
+
+.titles {
+  min-width: 0;
+}
+
+.heading,
+.show {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heading {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+}
+
+.show {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.wave {
+  position: relative;
+  margin-top: 1.25rem;
+  padding-top: 0.5rem;
+  border-radius: lw.v(radius-md);
+  cursor: pointer;
+  touch-action: pan-y;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: 4px;
+  }
+}
+
+// Chapters start at these ticks.
+.marks {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 0.25rem;
+
+  span {
+    position: absolute;
+    width: 2px;
+    height: 0.25rem;
+    border-radius: 1px;
+    background: lw.v(color-ring);
+    translate: -50% 0;
+  }
+}
+
+.bars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 3rem;
+
+  span {
+    flex: 1;
+    min-height: 3px;
+    border-radius: lw.v(radius-full);
+    background: lw.v(color-border);
+    transition: background-color 120ms ease-out;
+
+    &[data-played] {
+      background: lw.v(color-foreground);
+    }
+  }
+}
+
+.tip {
+  position: absolute;
+  bottom: calc(100% + 0.25rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-primary);
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: lw.v(color-primary-foreground);
+  pointer-events: none;
+  translate: -50% 0;
+
+  &[hidden] {
+    display: none;
+  }
+
+  b {
+    font-weight: 500;
+  }
+
+  span {
+    opacity: 0.7;
+  }
+}
+
+.times {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+}
+
+.chapter {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-foreground);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+button {
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.speed {
+  justify-self: start;
+  min-width: 2.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-muted);
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.back,
+.forward {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border-radius: 50%;
+  color: lw.v(color-muted-foreground);
+  transition:
+    background-color lw.v(duration-fast) ease-out,
+    color lw.v(duration-fast) ease-out;
+
+  &:hover {
+    background: lw.v(color-muted);
+    color: lw.v(color-foreground);
+  }
+
+  span {
+    position: absolute;
+    font-size: 7px;
+    font-weight: 700;
+  }
+}
+
+.play {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border-radius: 50%;
+  background: lw.v(color-primary);
+  color: lw.v(color-primary-foreground);
+  transition: scale lw.v(duration-fast) ease-out;
+
+  &:active {
+    scale: 0.94;
+  }
+
+  svg {
+    fill: currentColor;
+  }
+}
+
+// Play and pause trade places with a turn and a blur.
+.icon {
+  grid-area: 1 / 1;
+  display: grid;
+  transition:
+    opacity 180ms ease-out,
+    scale 180ms ease-out,
+    filter 180ms ease-out;
+}
+
+.play-icon {
+  translate: 1px 0;
+}
+
+.pause-icon,
+[data-playing] .play-icon {
+  opacity: 0;
+  scale: 0.6;
+  filter: blur(2px);
+}
+
+[data-playing] .pause-icon {
+  opacity: 1;
+  scale: 1;
+  filter: none;
+}

@@ -1,0 +1,244 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ink: #{lw.v(color-foreground)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_line: #{lw.v(color-border)};
+  --_surface: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+
+  @include lw.card-shell(29rem, 0.5rem);
+
+  font-size: lw.v(text-sm);
+}
+
+p {
+  margin: 0;
+}
+
+// The search, like a command palette's.
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.75rem 1rem;
+  color: var(--_muted);
+  cursor: text;
+}
+
+.query {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: lw.v(text-md) lw.v(font-sans);
+  color: var(--_ink);
+  outline: none;
+
+  &::placeholder {
+    color: var(--_muted);
+  }
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.count {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+// The results, grouped; one highlight slides to the row in focus.
+.results {
+  position: relative;
+  max-height: 30rem;
+  overflow: hidden auto;
+  padding: 0.25rem 0.375rem 0.375rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: var(--_surface);
+  overscroll-behavior: contain;
+}
+
+.highlight {
+  @include lw.sliding-highlight;
+
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, var(--_ink) 6%, transparent);
+}
+
+.group {
+  &[hidden] {
+    display: none;
+  }
+
+  & + & {
+    margin-top: 0.25rem;
+  }
+}
+
+.group-head {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0.625rem 0.5rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.row {
+  position: relative;
+  border-radius: 0.75rem;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &[data-open] {
+    background: color-mix(in oklab, var(--_ink) 6%, transparent);
+  }
+}
+
+.row-head {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.625rem;
+  border: 0;
+  background: none;
+  font: lw.v(text-md) lw.v(font-sans);
+  text-align: left;
+  color: var(--_muted);
+  cursor: pointer;
+
+  svg {
+    flex: none;
+
+    @include lw.motion {
+      transition: rotate 200ms ease-out;
+    }
+  }
+
+  [aria-selected='true'] > &,
+  [data-open] > & {
+    color: var(--_ink);
+  }
+
+  [data-open] > & svg {
+    rotate: 90deg;
+  }
+}
+
+mark {
+  border-radius: 2px;
+  background: color-mix(in oklab, #f59e0b 30%, transparent);
+  color: inherit;
+}
+
+// The line of the answer that matched, when the question did not.
+.snippet {
+  padding: 0 0.625rem 0.75rem 2.375rem;
+  overflow: hidden;
+  font-size: lw.v(text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--_muted);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// The open answer: its text, a command to copy, and how useful it was.
+.answer {
+  display: grid;
+  gap: 1rem;
+  padding: 0 0.75rem 1rem 2.375rem;
+
+  &[hidden] {
+    display: none;
+  }
+
+  @include lw.motion {
+    animation: answer-in 250ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+@keyframes answer-in {
+  from {
+    opacity: 0;
+    translate: 0 -0.25rem;
+  }
+}
+
+.answer-text {
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  color: var(--_muted);
+}
+
+.command {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  font-size: lw.v(text-xs);
+}
+
+.answer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--_muted);
+}
+
+.useful {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--_muted);
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &[aria-pressed='true'] {
+    color: var(--_ink);
+  }
+
+  &[aria-pressed='true'] svg {
+    fill: currentColor;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.useful-count {
+  font-variant-numeric: tabular-nums;
+}
+
+// No match: Enter asks the team.
+.none {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+  padding: 1rem 0.625rem;
+  color: var(--_muted);
+
+  &[hidden] {
+    display: none;
+  }
+
+  kbd {
+    padding: 0 0.3rem;
+    border: 1px solid var(--_line);
+    border-radius: lw.v(radius-sm);
+    font: 0.6875rem lw.v(font-sans);
+  }
+}

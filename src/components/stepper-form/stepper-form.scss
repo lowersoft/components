@@ -1,0 +1,348 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+
+  @include lw.card-shell(32rem, 0);
+
+  container-type: inline-size;
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+}
+
+h2,
+h3,
+p,
+ol {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+// The title, the step count, and a bar that fills step by step.
+.head {
+  padding: 1.75rem 1.75rem 1.5rem;
+  border-bottom: 1px solid var(--_line);
+}
+
+.title {
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+}
+
+.progress-text {
+  margin-top: 0.375rem;
+  font-size: lw.v(text-md);
+  color: var(--_muted);
+}
+
+.bar {
+  display: flex;
+  gap: 0.375rem;
+  margin-top: 1.25rem;
+}
+
+.segment {
+  flex: 1;
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: lw.v(color-foreground);
+  transform-origin: left;
+  scale: 0 1;
+
+  @include lw.motion {
+    transition: scale 500ms var(--_ease);
+  }
+
+  [data-current] > & {
+    scale: 0.35 1;
+  }
+
+  [data-done] > & {
+    scale: 1 1;
+  }
+}
+
+// The steps down a line; the open one unfolds.
+.steps {
+  padding: 1.5rem 1.75rem 1.75rem;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  padding-bottom: 1.25rem;
+
+  // The line joining each marker to the next.
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: 2rem;
+    bottom: 0;
+    left: 0.9375rem;
+    width: 1px;
+    background: var(--_line);
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.step-head {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--_line);
+  border-radius: 50%;
+  background: lw.v(color-background);
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+
+  .icon {
+    display: none;
+  }
+
+  [data-state='open'] & {
+    border-color: lw.v(color-foreground);
+    box-shadow: 0 0 0 4px color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+    color: lw.v(color-foreground);
+  }
+
+  [data-state='done'] & {
+    border-color: lw.v(color-foreground);
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
+
+    .number {
+      display: none;
+    }
+
+    .icon {
+      display: block;
+    }
+  }
+}
+
+.step-title {
+  font-size: lw.v(text-md);
+  font-weight: 500;
+  white-space: nowrap;
+
+  [data-state='next'] & {
+    color: var(--_muted);
+  }
+}
+
+.summary {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--_muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit {
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: lw.v(radius-sm);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition: grid-template-rows 400ms var(--_ease);
+  }
+
+  [data-state='open'] & {
+    grid-template-rows: 1fr;
+  }
+}
+
+.panel-inner {
+  min-height: 0;
+  overflow: hidden;
+  padding-left: 2.875rem;
+
+  [data-state='open'] & {
+    padding-top: 0.75rem;
+  }
+}
+
+.lead {
+  font-size: lw.v(text-md);
+  color: var(--_muted);
+}
+
+.fields {
+  display: grid;
+  gap: 1.125rem;
+  margin-top: 1.25rem;
+
+  lw-text-input,
+  lw-password-input,
+  lw-textarea {
+    width: 100%;
+  }
+}
+
+.pair {
+  display: grid;
+  gap: 1.125rem;
+
+  @container (min-width: 28rem) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.address {
+  margin-top: -0.5rem;
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: var(--_muted);
+
+  b {
+    font-weight: 400;
+    color: lw.v(color-foreground);
+  }
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.size {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  background: none;
+  cursor: pointer;
+
+  &[aria-checked='true'] {
+    border-color: lw.v(color-foreground);
+    box-shadow: inset 0 0 0 1px lw.v(color-foreground);
+  }
+}
+
+.invite-count {
+  margin-top: -0.5rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+
+  .continue {
+    margin-left: auto;
+  }
+}
+
+.enter {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+
+  kbd {
+    @include lw.keycap(lw.v(color-foreground), lw.v(color-background));
+
+    margin-right: 0.25rem;
+    font-family: lw.v(font-mono);
+  }
+
+  @container (max-width: 26rem) {
+    display: none;
+  }
+}
+
+// All done: the card ends on a check.
+.done {
+  display: grid;
+  justify-items: center;
+  gap: 0.375rem;
+  padding: 0 1.75rem 2rem;
+  text-align: center;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.done-mark {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  margin-bottom: 0.5rem;
+  border-radius: 50%;
+  background: lw.v(color-accent);
+  color: lw.v(color-background);
+}
+
+.done-title {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+}
+
+.done-text {
+  color: var(--_muted);
+}

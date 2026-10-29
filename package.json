@@ -1,0 +1,62 @@
+{
+  "name": "@lowersoft/lw",
+  "version": "0.0.0",
+  "description": "Animated UI components built with SCSS and vanilla JavaScript Web Components.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lowersoft/web.git"
+  },
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "scss",
+    "ui",
+    "animation"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./components/*": "./dist/components/*.js",
+    "./themes.css": "./dist/themes.css",
+    "./scss": "./src/styles/_index.scss",
+    "./scss/*": "./src/styles/*",
+    "./package.json": "./package.json"
+  },
+  "module": "./dist/index.js",
+  "files": [
+    "dist",
+    "src/styles"
+  ],
+  "sideEffects": [
+    "./dist/index.js",
+    "./dist/components/*.js",
+    "*.css"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "vite build",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build -o storybook-static",
+    "new": "node scripts/new-component.mjs",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "npm run build && changeset publish"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^3.0.3",
+    "@storybook/web-components-vite": "^10.6.2",
+    "lit": "^3.3.3",
+    "sass-embedded": "^1.105.2",
+    "storybook": "^10.6.2",
+    "vite": "^8.3.4"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

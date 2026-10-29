@@ -1,0 +1,297 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  @include lw.card-shell(30rem, 0);
+
+  position: relative;
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+}
+
+h2,
+p,
+ul {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--_line);
+}
+
+.title {
+  font-size: lw.v(text-lg);
+  font-weight: 500;
+}
+
+.unread {
+  color: var(--_muted);
+}
+
+.list {
+  padding: 0;
+  list-style: none;
+}
+
+// The row: what slides, and what waits under it.
+.row {
+  position: relative;
+  overflow: hidden;
+  outline: none;
+  touch-action: pan-y;
+  user-select: none;
+
+  & + & {
+    border-top: 1px solid var(--_line);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px lw.v(color-ring);
+  }
+}
+
+.under {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1.5rem;
+  font-weight: 500;
+  opacity: 0;
+
+  &.left {
+    justify-content: flex-start;
+    background: color-mix(in oklab, #3b82f6 25%, #{lw.v(color-background)});
+
+    [data-side='left'] > & {
+      opacity: 1;
+    }
+  }
+
+  &.right {
+    justify-content: flex-end;
+    background: color-mix(in oklab, #30a46c 25%, #{lw.v(color-background)});
+
+    [data-side='right'] > & {
+      opacity: 1;
+    }
+  }
+
+  // Past the point of no return the action fills in.
+  [data-ready] > &.left {
+    background: #3b82f6;
+    color: #fff;
+  }
+
+  [data-ready] > &.right {
+    background: #30a46c;
+    color: #fff;
+  }
+
+  @include lw.motion {
+    transition: background-color 150ms ease-out;
+  }
+}
+
+.face-of-row {
+  position: relative;
+  display: flex;
+  gap: 0.875rem;
+  padding: 1rem 1.25rem 1rem 1.5rem;
+  background: lw.v(color-background);
+
+  @include lw.motion {
+    transition: translate 250ms cubic-bezier(0.23, 1, 0.32, 1);
+
+    .row[data-side] > & {
+      transition: none;
+    }
+  }
+}
+
+.dot {
+  position: absolute;
+  top: 1.75rem;
+  left: 0.5rem;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: lw.v(color-foreground);
+  opacity: 0;
+
+  [data-unread] & {
+    opacity: 1;
+  }
+}
+
+.avatar {
+  @include lw.person-tint;
+
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+
+  &.tile {
+    border-radius: 0.75rem;
+    background: var(--_mark);
+    font-size: lw.v(text-md);
+    color: #fff;
+  }
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.top {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.from {
+  font-size: lw.v(text-md);
+  font-weight: 500;
+
+  .row:not([data-unread]) & {
+    font-weight: 400;
+  }
+}
+
+.count {
+  color: var(--_muted);
+}
+
+.time {
+  margin-left: auto;
+  color: var(--_muted);
+}
+
+.subject,
+.preview {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subject {
+  margin-top: 0.375rem;
+  font-size: lw.v(text-md);
+}
+
+.preview {
+  margin-top: 0.375rem;
+  color: var(--_muted);
+}
+
+.attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.625rem;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+}
+
+// The same actions, for a pointer that does not swipe.
+.actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  opacity: 0;
+
+  .row:hover &,
+  .row:focus-within & {
+    opacity: 1;
+  }
+
+  button {
+    display: grid;
+    width: 1.75rem;
+    height: 1.75rem;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: lw.v(radius-sm);
+    background: none;
+    color: var(--_muted);
+    cursor: pointer;
+
+    &:hover {
+      color: lw.v(color-foreground);
+    }
+  }
+}
+
+.toast {
+  display: flex;
+  margin: 0.75rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.625rem 0.75rem 0.625rem 1rem;
+  border-radius: lw.v(radius-lg);
+  background: lw.v(color-foreground);
+  color: lw.v(color-background);
+
+  @include lw.motion {
+    animation: toast-in 250ms ease-out;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}
+
+.toast-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.undo {
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: lw.v(radius-sm);
+  background: none;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -1,0 +1,144 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  display: block;
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+  text-align: center;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+.title {
+  max-width: 64rem;
+  margin: 0 auto;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+// A chip set into the line of text, about half its height.
+.chip {
+  display: inline-flex;
+  height: 1.1em;
+  align-items: center;
+  gap: 0.25em;
+  margin: 0 0.1em;
+  padding: 0 0.35em 0 0.12em;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 4%, #{lw.v(color-background)});
+  font-size: 0.5em;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  vertical-align: 0.3em;
+
+  // They pop in one after another once the headline is seen.
+  @include lw.motion {
+    opacity: 0;
+    scale: 0.6;
+    transition:
+      opacity 300ms ease-out calc(var(--_order) * 180ms),
+      scale 500ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--_order) * 180ms);
+
+    :host([data-shown]) & {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+
+.doc-icon {
+  display: grid;
+  width: 1.6em;
+  height: 1.6em;
+  place-items: center;
+  border-radius: 0.4em;
+  background: color-mix(in oklab, #f76b15 25%, transparent);
+  color: #f76b15;
+
+  svg {
+    width: 0.9em;
+    height: 0.9em;
+  }
+}
+
+// Overlapping faces that spread on hover.
+.team {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.avatar {
+  @include lw.person-tint;
+
+  display: grid;
+  width: 1.85em;
+  height: 1.85em;
+  place-items: center;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.1em lw.v(color-background);
+  font-size: 0.7em;
+  font-weight: 500;
+
+  @include lw.motion {
+    transition: margin 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  & + & {
+    margin-left: -0.45em;
+
+    .team:hover & {
+      margin-left: 0.1em;
+    }
+  }
+}
+
+// The status: spins while it works, then a check.
+.status {
+  padding-right: 0.6em;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.status-icon {
+  display: grid;
+  width: 1.6em;
+  height: 1.6em;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+
+  .icon {
+    width: 0.9em;
+    height: 0.9em;
+  }
+
+  [data-state='done'] & {
+    background: lw.v(color-accent);
+    color: lw.v(color-background);
+  }
+}
+
+.description {
+  max-width: 32rem;
+  margin: 2rem auto 0;
+  font-size: lw.v(text-lg);
+  line-height: 1.6;
+  color: var(--_muted);
+}

@@ -1,0 +1,153 @@
+@use '../../styles' as lw;
+
+.modal {
+  --_width: 34rem;
+
+  container-type: inline-size;
+}
+
+.progress {
+  display: flex;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+
+  span {
+    width: 1.75rem;
+    height: 0.25rem;
+    border-radius: lw.v(radius-full);
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 15%, transparent);
+
+    @include lw.motion {
+      transition: background-color 300ms ease-out;
+    }
+
+    &[data-done] {
+      background: lw.v(color-foreground);
+    }
+  }
+}
+
+.step {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  &[hidden] {
+    display: none;
+  }
+
+  @include lw.motion {
+    animation: step-in 300ms ease-out;
+  }
+
+  &[data-step='0'] {
+    @container (min-width: 28rem) {
+      grid-template-columns: 9.5rem minmax(0, 1fr);
+      align-items: start;
+      gap: 1.5rem;
+    }
+  }
+}
+
+@keyframes step-in {
+  from {
+    opacity: 0;
+    translate: 0.5rem 0;
+  }
+}
+
+// The code on white, whatever the theme, so any camera reads it.
+.qr {
+  width: 9.5rem;
+  padding: 0.625rem;
+  box-sizing: border-box;
+  border-radius: 0.875rem;
+  background: #fff;
+  color: #09090b;
+
+  img,
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    fill: currentColor;
+  }
+}
+
+.instructions {
+  font-size: lw.v(text-md);
+  line-height: 1.55;
+  color: var(--_muted);
+
+  b {
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+}
+
+.cant {
+  margin-top: 1rem;
+  color: var(--_muted);
+}
+
+.key {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.875rem;
+  border-radius: lw.v(radius-lg);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+}
+
+.secret {
+  flex: 1;
+  min-width: 0;
+  font: lw.v(text-md) lw.v(font-mono);
+  letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
+}
+
+.icon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+}
+
+.codes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px dashed var(--_line);
+  border-radius: lw.v(radius-lg);
+  font: lw.v(text-md) lw.v(font-mono);
+  list-style: none;
+}
+
+.code-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.foot {
+  .back {
+    margin-right: auto;
+  }
+
+  [hidden] {
+    display: none;
+  }
+}

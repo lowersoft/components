@@ -1,0 +1,109 @@
+// The dialog from `core/modal.js`: a card on a dimmed, blurred backdrop.
+@use 'abstracts/functions' as fn;
+@use 'abstracts/mixins' as m;
+
+:host {
+  --_line: #{fn.v(color-border)};
+  --_muted: #{fn.v(color-muted-foreground)};
+  --_raised: color-mix(in oklab, #{fn.v(color-foreground)} 4%, #{fn.v(color-background)});
+
+  display: contents;
+  font-family: fn.v(font-sans);
+}
+
+.modal {
+  box-sizing: border-box;
+  width: var(--_width, 32rem);
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--_line);
+  border-radius: 1.25rem;
+  background: fn.v(color-background);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 0.35);
+  font-size: fn.v(text-sm);
+  color: fn.v(color-foreground);
+  overscroll-behavior: contain;
+
+  &::backdrop {
+    background: rgb(0 0 0 / 0.5);
+    backdrop-filter: blur(2px);
+  }
+}
+
+h2,
+h3,
+p,
+ul,
+ol {
+  margin: 0;
+}
+
+a,
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include m.focus-ring;
+  }
+}
+
+.visually-hidden {
+  @include m.visually-hidden;
+}
+
+.close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: fn.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in oklab, #{fn.v(color-foreground)} 6%, transparent);
+    color: fn.v(color-foreground);
+  }
+}
+
+// The usual parts: a padded body, a title and lead, and actions at the foot.
+.body {
+  padding: 1.5rem;
+}
+
+.title {
+  padding-right: 2.5rem;
+  font-size: fn.v(text-lg);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.lead {
+  margin-top: 0.5rem;
+  font-size: fn.v(text-md);
+  line-height: 1.55;
+  color: var(--_muted);
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--_line);
+}

@@ -1,0 +1,263 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_lit: color-mix(in oklab, #{lw.v(color-foreground)} 4%, transparent);
+  --_accent: light-dark(#ea580c, #fb923c);
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.description {
+  margin-top: 0.5rem;
+  font-size: lw.v(text-md);
+  color: var(--_muted);
+}
+
+.only {
+  color: var(--_muted);
+}
+
+// Scrolls sideways on narrow screens, the features pinned on the left.
+.scroller {
+  overflow-x: auto;
+  border: 1px solid var(--_line);
+  overscroll-behavior-x: contain;
+}
+
+.table {
+  width: 100%;
+  min-width: 46rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  th,
+  td {
+    padding: 1.125rem 1.25rem;
+    border-bottom: 1px solid var(--_line);
+    text-align: left;
+    font-weight: 400;
+    vertical-align: middle;
+  }
+
+  [data-col] {
+    border-left: 1px solid var(--_line);
+
+    @include lw.motion {
+      transition: background-color 150ms ease-out;
+    }
+
+    &[data-lit] {
+      background: var(--_lit);
+    }
+  }
+}
+
+.corner,
+.feature {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  width: 28%;
+  background: lw.v(color-background);
+
+  // Pinned while the plans scroll, so kept narrow.
+  @container (max-width: 46rem) {
+    width: 8.5rem;
+  }
+}
+
+.feature {
+  color: var(--_muted);
+}
+
+// The plans across the top, the featured one framed at its corners.
+.table thead th {
+  position: relative;
+  vertical-align: top;
+  border-bottom-width: 2px;
+
+  &[data-featured]::before,
+  &[data-featured]::after {
+    content: '';
+    position: absolute;
+    top: 0.5rem;
+    width: 0.625rem;
+    height: 0.625rem;
+    border: 0 solid var(--_accent);
+    border-top-width: 1.5px;
+  }
+
+  &[data-featured]::before {
+    left: 0.5rem;
+    border-left-width: 1.5px;
+  }
+
+  &[data-featured]::after {
+    right: 0.5rem;
+    border-right-width: 1.5px;
+  }
+}
+
+.plan {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 0.5rem;
+}
+
+.plan-name {
+  font-size: lw.v(text-md);
+  font-weight: 500;
+}
+
+.price {
+  margin-top: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.per {
+  margin-top: 0.375rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.blurb {
+  flex: 1;
+  margin: 1rem 0 1.5rem;
+  line-height: 1.5;
+  color: var(--_muted);
+}
+
+.action {
+  width: 100%;
+
+  &::part(button) {
+    width: 100%;
+  }
+}
+
+// Section headings span the table.
+.section-row th {
+  padding-top: 2rem;
+  font-size: lw.v(text-md);
+  font-weight: 500;
+}
+
+.section[hidden],
+.row[hidden] {
+  display: none;
+}
+
+.row {
+  @include lw.motion {
+    animation: row-in 250ms ease-out;
+  }
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.yes svg {
+  display: block;
+
+  [data-featured] > & {
+    color: var(--_accent);
+  }
+}
+
+.no {
+  display: block;
+  width: 0.75rem;
+  border-top: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 25%, transparent);
+}
+
+// A term that explains itself on hover or focus.
+.term {
+  position: relative;
+  border-radius: 2px;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.3em;
+  cursor: help;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 2;
+  width: 16rem;
+  margin-top: 1.75rem;
+  margin-left: -6rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-md);
+  font-size: lw.v(text-xs);
+  line-height: 1.5;
+  color: lw.v(color-foreground);
+  opacity: 0;
+  pointer-events: none;
+  translate: 0 -0.25rem;
+
+  @include lw.motion {
+    transition:
+      opacity 150ms ease-out,
+      translate 150ms ease-out;
+  }
+
+  .term:is(:hover, :focus-visible) + & {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.shared {
+  margin-top: 1rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+
+  &:empty {
+    display: none;
+  }
+}

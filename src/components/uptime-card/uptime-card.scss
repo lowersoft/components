@@ -1,0 +1,276 @@
+@use '../../styles' as lw;
+
+:host {
+  --_up: light-dark(#10b981, #34d399);
+  --_degraded: light-dark(#fbbf24, #fcd34d);
+  --_down: light-dark(#f43f5e, #fb7185);
+
+  display: block;
+  box-sizing: border-box;
+  width: 36rem;
+  max-width: 100%;
+  padding: 1.25rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1.5rem;
+  background: lw.v(color-background);
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+  user-select: none;
+}
+
+p {
+  margin: 0;
+}
+
+.muted {
+  color: lw.v(color-muted-foreground);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.heading {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+}
+
+.overall {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: lw.v(text-sm);
+  color: light-dark(#059669, #34d399);
+
+  &[data-issues] {
+    color: light-dark(#d97706, #fbbf24);
+  }
+}
+
+.summary {
+  margin-top: 0.25rem;
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+}
+
+.bars {
+  margin-top: 1rem;
+  border-radius: lw.v(radius-md);
+  cursor: pointer;
+  touch-action: pan-y;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: 4px;
+  }
+}
+
+.service + .service {
+  margin-top: 0.75rem;
+}
+
+.service-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.375rem;
+  font-size: lw.v(text-xs);
+}
+
+.name {
+  font-weight: 500;
+}
+
+.uptime {
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+}
+
+.row {
+  display: flex;
+  gap: 2px;
+  height: 1.75rem;
+
+  span {
+    flex-basis: 0;
+    min-width: 0;
+    border-radius: 2px;
+    transition: opacity lw.v(duration-fast) ease-out;
+
+    // While a day is read, the others step back.
+    [data-reading] &:not([data-lit]) {
+      opacity: 0.6;
+    }
+  }
+}
+
+[data-status='up'] {
+  background: var(--_up);
+}
+
+[data-status='degraded'] {
+  background: var(--_degraded);
+}
+
+[data-status='down'] {
+  background: var(--_down);
+}
+
+[data-status='none'] {
+  background: lw.v(color-border);
+}
+
+.ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+// The day's incident log opens below.
+.log {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+
+  @include lw.motion {
+    transition:
+      grid-template-rows 260ms cubic-bezier(0.23, 1, 0.32, 1),
+      opacity 260ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  &[data-open] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  &:not([data-open]) {
+    visibility: hidden;
+  }
+}
+
+.log-inner {
+  overflow: hidden;
+}
+
+.day {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: lw.v(color-muted);
+}
+
+.day-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.day-name {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  padding: 0.25rem;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color lw.v(duration-fast) ease-out,
+    color lw.v(duration-fast) ease-out;
+
+  &:hover {
+    background: lw.v(color-border);
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.none {
+  margin-top: 0.25rem;
+  font-size: lw.v(text-sm);
+}
+
+.incident {
+  margin-top: 0.75rem;
+}
+
+.what {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: lw.v(text-sm);
+}
+
+.badge {
+  padding: 0.125rem 0.5rem;
+  border-radius: lw.v(radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  background: color-mix(in oklab, var(--_degraded) 20%, transparent);
+  color: light-dark(#92400e, #fde68a);
+
+  &[data-status='down'] {
+    background: color-mix(in oklab, var(--_down) 15%, transparent);
+    color: light-dark(#be123c, #fda4af);
+  }
+}
+
+.service-name {
+  font-weight: 500;
+}
+
+ol {
+  margin: 0.625rem 0 0 0.25rem;
+  padding: 0;
+  border-left: 1px solid lw.v(color-border);
+  list-style: none;
+
+  li {
+    position: relative;
+    padding: 0 0 0.625rem 1rem;
+    font-size: lw.v(text-sm);
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 7px;
+      left: -3.5px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: lw.v(color-ring);
+    }
+  }
+
+  b {
+    font-weight: 500;
+  }
+}
+
+.time {
+  font-variant-numeric: tabular-nums;
+}

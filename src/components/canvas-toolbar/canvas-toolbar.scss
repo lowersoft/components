@@ -1,0 +1,245 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  @include lw.card-shell(56rem, 0);
+
+  position: relative;
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+// Floats over the board: the title and people, and the tools.
+.bar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1rem 0 1.5rem;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+.title {
+  font-size: lw.v(text-lg);
+  font-weight: 500;
+}
+
+.count {
+  font-weight: 400;
+  color: var(--_muted);
+}
+
+.people {
+  display: flex;
+  flex: 1;
+}
+
+.person {
+  display: grid;
+  width: 1.875rem;
+  height: 1.875rem;
+  place-items: center;
+  border: 2px solid var(--_ring);
+  border-radius: 50%;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 12%, #{lw.v(color-background)});
+  font-size: 0.625rem;
+  font-weight: 600;
+
+  & + & {
+    margin-left: -0.5rem;
+  }
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.375rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, #{lw.v(color-background)});
+  box-shadow: lw.v(shadow-md);
+}
+
+.tool,
+.zoom {
+  display: grid;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  place-items: center;
+  padding: 0 0.375rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
+    color: lw.v(color-foreground);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.35;
+  }
+}
+
+.zoom {
+  min-width: 3.5rem;
+  font-size: lw.v(text-md);
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-foreground);
+}
+
+.sep {
+  width: 1px;
+  height: 1.25rem;
+  margin: 0 0.25rem;
+  background: var(--_line);
+}
+
+// The board: a dotted ground under a world that zooms.
+.board {
+  position: relative;
+  height: 32rem;
+  overflow: hidden;
+  background-image: radial-gradient(color-mix(in oklab, #{lw.v(color-foreground)} 18%, transparent) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+  touch-action: none;
+}
+
+.world {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+
+  @include lw.motion {
+    transition: scale 200ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+.section-title {
+  position: absolute;
+  top: 5rem;
+  left: 3rem;
+  padding-bottom: 0.375rem;
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  background: no-repeat 0 100% / 100% 0.375rem url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 6' preserveAspectRatio='none'%3E%3Cpath d='M1 3c8-2 12 2 20 0s12-2 20 0 12 2 20 0 12-2 20 0 12 2 18 0' fill='none' stroke='%23999' stroke-width='1.5'/%3E%3C/svg%3E");
+}
+
+.links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 70%, transparent);
+
+  .link {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+}
+
+.note {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14rem;
+  min-height: 6rem;
+  box-sizing: border-box;
+  padding: 1rem;
+  border: 1px solid color-mix(in oklab, var(--_note) 60%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, var(--_note) 30%, #{lw.v(color-background)});
+  font-size: lw.v(text-md);
+  line-height: 1.45;
+  cursor: grab;
+  user-select: none;
+  outline: none;
+
+  @include lw.motion {
+    transition:
+      translate 200ms cubic-bezier(0.23, 1, 0.32, 1),
+      box-shadow 150ms ease-out;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  &[data-dragging] {
+    z-index: 1;
+    box-shadow: lw.v(shadow-md);
+    cursor: grabbing;
+    transition: box-shadow 150ms ease-out;
+  }
+
+  &.outline {
+    display: grid;
+    width: 12rem;
+    min-height: 0;
+    place-items: center;
+    border: 2px solid color-mix(in oklab, #{lw.v(color-foreground)} 70%, transparent);
+    background: lw.v(color-background);
+    font-size: lw.v(text-lg);
+    font-weight: 600;
+  }
+}
+
+// A teammate's cursor, with their name.
+.cursor {
+  position: absolute;
+  top: 55%;
+  left: 62%;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  pointer-events: none;
+
+  svg {
+    fill: var(--_color);
+    stroke: lw.v(color-background);
+    stroke-width: 1;
+  }
+}
+
+.cursor-name {
+  margin: 1rem 0 0 -0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: lw.v(radius-md);
+  background: var(--_color);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: #fff;
+}

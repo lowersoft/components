@@ -1,0 +1,38 @@
+@use '../../styles' as lw;
+
+.button {
+  position: relative;
+}
+
+// Clips sliding labels to the button box.
+.content {
+  position: relative;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.label {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 0.5rem;
+  align-items: center;
+  white-space: nowrap;
+
+  &[hidden] {
+    display: none;
+  }
+
+  // The leaving label floats on top so the entering one sets the width.
+  &.leaving {
+    position: absolute;
+    inset: 0;
+    justify-content: center;
+  }
+}
+
+.live {
+  @include lw.visually-hidden;
+}

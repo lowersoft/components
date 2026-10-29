@@ -1,0 +1,17 @@
+// Shared base adopted by every component's shadow root.
+@use 'abstracts/functions' as fn;
+
+:host {
+  box-sizing: border-box;
+  font-family: fn.v(font-sans);
+}
+
+:host([hidden]) {
+  display: none !important;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}

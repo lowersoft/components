@@ -1,0 +1,35 @@
+// Shared icon styles, adopted by components that use `core/icons.js`.
+@use 'abstracts/functions' as fn;
+@use 'abstracts/mixins' as m;
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}
+
+// A loading indicator is essential feedback, so it spins regardless of motion preference.
+.spinner {
+  animation: spin 700ms linear infinite;
+}
+
+// The check draws itself in when it is displayed.
+.check path {
+  stroke-dasharray: 1;
+
+  @include m.motion {
+    animation: draw 300ms 80ms fn.v(ease-out) backwards;
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}

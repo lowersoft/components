@@ -1,0 +1,156 @@
+@use '../../styles' as lw;
+
+:host {
+  --_accent: var(--lw-scroll-index-accent, #3b82f6);
+
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 520px;
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1rem;
+  background: lw.v(color-background);
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+}
+
+// The page scrolls: the rail sticks in a column beside the content.
+:host([scroller='window']) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3rem;
+  gap: 1.5rem;
+  height: auto;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.box {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  :host([scroller='window']) & {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+.content {
+  padding: 2rem 4rem 2rem 2.5rem;
+
+  :host([scroller='window']) & {
+    padding: 0;
+  }
+}
+
+nav {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+  width: 3rem;
+  translate: 0 -50%;
+
+  :host([scroller='window']) & {
+    position: sticky;
+    top: calc(50vh - 140px);
+    right: auto;
+    align-self: start;
+    translate: none;
+  }
+}
+
+.rail {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+
+  &[data-dragging] {
+    cursor: grabbing;
+  }
+}
+
+.tick {
+  position: absolute;
+  right: 0;
+  width: 0.875rem;
+  height: 1rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.125rem;
+  background: none;
+  cursor: inherit;
+  translate: 0 -50%;
+  outline: none;
+
+  &[data-level='2'] {
+    width: 0.5rem;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  span {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 100%;
+    height: 1.5px;
+    border-radius: lw.v(radius-full);
+    background: lw.v(color-border);
+    transform-origin: right;
+    translate: 0 -50%;
+    scale: var(--_swell, 1) 1;
+    transition: background-color 200ms ease-out;
+  }
+
+  &[data-state='current'] span {
+    background: var(--_accent);
+  }
+
+  &[data-state='passed'] span {
+    background: lw.v(color-foreground);
+  }
+}
+
+// Where the reader is, between ticks too.
+.head {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1.5rem;
+  height: 2px;
+  margin-top: -1px;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-foreground);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.label {
+  position: absolute;
+  top: 0;
+  right: 2.25rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 150ms ease-out,
+    transform 150ms ease-out;
+}

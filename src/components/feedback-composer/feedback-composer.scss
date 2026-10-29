@@ -1,0 +1,229 @@
+@use '../../styles' as lw;
+
+@include lw.picker;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  @include lw.card-shell(34rem, 0.5rem);
+
+  border: 0;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  font-size: lw.v(text-sm);
+}
+
+p,
+h3,
+ul {
+  margin: 0;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// The roadmap, how much is open and how many have voted.
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.375rem 0.5rem 0.75rem;
+}
+
+.faces {
+  display: flex;
+}
+
+.face {
+  @include lw.person-tint;
+
+  display: grid;
+  width: 1.625rem;
+  height: 1.625rem;
+  place-items: center;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px lw.v(color-background);
+  font-size: 0.5625rem;
+  font-weight: 600;
+
+  & + & {
+    margin-left: -0.375rem;
+  }
+}
+
+.summary {
+  font-size: lw.v(text-md);
+  color: var(--_muted);
+
+  b {
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+}
+
+.votes {
+  display: inline-flex;
+  vertical-align: bottom;
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+.box {
+  border: 1px solid var(--_line);
+  border-radius: 1.25rem;
+  background: lw.v(color-background);
+
+  &:focus-within {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+  }
+}
+
+.title,
+.details {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0;
+  background: none;
+  font-size: lw.v(text-md);
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--_muted);
+  }
+}
+
+.title {
+  padding: 1.125rem 1.25rem 0.5rem;
+  font-size: lw.v(text-lg);
+}
+
+.details {
+  min-height: 3.5rem;
+  padding: 0.25rem 1.25rem;
+  resize: none;
+  field-sizing: content;
+  line-height: 1.5;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+}
+
+.post {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: lw.v(color-primary);
+  color: lw.v(color-primary-foreground);
+  cursor: pointer;
+
+  &:disabled {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+    color: var(--_muted);
+    cursor: default;
+  }
+}
+
+// Requests like the one being typed, to vote for instead.
+.similar {
+  padding: 0.875rem 0.5rem 0.25rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.similar-title {
+  padding: 0 0.5rem 0.5rem;
+  font-size: lw.v(text-xs);
+  font-weight: 400;
+  color: var(--_muted);
+}
+
+.list {
+  padding: 0;
+  list-style: none;
+}
+
+.request {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.375rem 0.5rem;
+
+  @include lw.motion {
+    animation: rise 250ms ease-out;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 0.25rem;
+  }
+}
+
+.vote {
+  display: inline-grid;
+  min-width: 2.75rem;
+  justify-items: center;
+  padding: 0.25rem 0.375rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  background: none;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+
+  &:hover {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 35%, transparent);
+  }
+
+  &[aria-pressed='true'] {
+    border-color: lw.v(color-foreground);
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
+  }
+}
+
+.request-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.request-area {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.posted {
+  padding: 0.75rem 0.75rem 0.25rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+
+  &:empty {
+    display: none;
+  }
+}

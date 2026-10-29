@@ -1,0 +1,246 @@
+@use '../../styles' as lw;
+
+:host {
+  --_go: light-dark(#10b981, #34d399);
+
+  @include lw.card-shell(24rem);
+
+  overflow: hidden;
+}
+
+p {
+  margin: 0;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.order {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.eta {
+  margin-top: 0.125rem;
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+}
+
+.carrier {
+  font: lw.v(text-xs) lw.v(font-mono);
+  text-align: right;
+  color: lw.v(color-muted-foreground);
+}
+
+// The milestone rail, filled up to the stop reached.
+.rail {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0.3125rem;
+    left: 12.5%;
+    height: 2px;
+    border-radius: 1px;
+  }
+
+  &::before {
+    right: 12.5%;
+    background: lw.v(color-border);
+  }
+
+  &::after {
+    width: calc(75% * var(--_progress, 0));
+    background: var(--_go);
+  }
+
+  li {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    font-size: 11px;
+    text-align: center;
+    color: lw.v(color-muted-foreground);
+
+    &[data-state='done'],
+    &[data-state='current'] {
+      color: lw.v(color-foreground);
+    }
+  }
+}
+
+.stop,
+.dot {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 2px solid lw.v(color-border);
+  border-radius: 50%;
+  background: lw.v(color-background);
+}
+
+.stop {
+  [data-state='done'] > & {
+    border-color: var(--_go);
+    background: var(--_go);
+  }
+
+  // Where the parcel is now, with a ring pulsing out from it.
+  [data-state='current'] > & {
+    border-color: var(--_go);
+    background: var(--_go);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border: 2px solid var(--_go);
+      border-radius: 50%;
+      opacity: 0;
+
+      @include lw.motion {
+        animation: ping 1.6s ease-out infinite;
+      }
+    }
+  }
+}
+
+@keyframes ping {
+  0% {
+    opacity: 0.6;
+    scale: 0.6;
+  }
+
+  100% {
+    opacity: 0;
+    scale: 1.4;
+  }
+}
+
+.latest {
+  margin-top: 1rem;
+  overflow: hidden;
+  font-size: lw.v(text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+
+  b {
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+}
+
+// The full scan history, newest first, on a vertical line.
+.history {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+
+  &[hidden] {
+    display: none;
+  }
+
+  li {
+    position: relative;
+    display: flex;
+    gap: 0.75rem;
+    padding-bottom: 0.875rem;
+
+    &:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      top: 0.875rem;
+      bottom: 0;
+      left: calc(0.375rem - 1px);
+      width: 2px;
+      background: lw.v(color-border);
+    }
+  }
+}
+
+.dot {
+  flex: none;
+  margin-top: 0.1875rem;
+
+  [data-milestone] > & {
+    border-color: var(--_go);
+    background: var(--_go);
+  }
+
+  [data-latest] > & {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--_go) 25%, transparent);
+  }
+}
+
+.scan-label {
+  font-size: lw.v(text-sm);
+
+  [data-milestone] & {
+    font-weight: 500;
+  }
+}
+
+.scan-meta {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.details {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border: 0;
+  border-top: 1px solid lw.v(color-muted);
+  background: none;
+  font: 500 lw.v(text-sm) lw.v(font-sans);
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  svg {
+    transition: rotate 300ms cubic-bezier(0.23, 1, 0.32, 1);
+
+    :host([data-open]) & {
+      rotate: -90deg;
+    }
+  }
+
+  :host(:not([data-open])) & svg {
+    rotate: 90deg;
+  }
+}

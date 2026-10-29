@@ -1,0 +1,122 @@
+@use '../../styles' as lw;
+
+@include lw.banner-base;
+
+// A brighter strip than the page in either scheme.
+:host {
+  --_strip: color-mix(in oklab, #{lw.v(color-foreground)} 6%, #{lw.v(color-background)});
+
+  border-bottom: 1px solid lw.v(color-border);
+  background: var(--_strip);
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  min-height: 3.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1.75rem;
+  padding: 0.5rem 3.5rem;
+  font-size: lw.v(text-md);
+
+  @container (max-width: 40rem) {
+    justify-content: flex-start;
+    padding-left: 1rem;
+  }
+}
+
+.offer {
+  color: lw.v(color-muted-foreground);
+
+  b {
+    font-weight: 600;
+    color: lw.v(color-foreground);
+  }
+}
+
+// The coupon, cut like a ticket: a dashed edge and a notch on each side.
+.coupon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 1rem;
+  border: 1px dashed color-mix(in oklab, #{lw.v(color-foreground)} 35%, transparent);
+  border-radius: lw.v(radius-md);
+  background: none;
+  font: 500 lw.v(text-sm) lw.v(font-mono);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  mask:
+    radial-gradient(circle at 0 50%, transparent 0.375rem, #000 calc(0.375rem + 0.5px)) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 50%, transparent 0.375rem, #000 calc(0.375rem + 0.5px)) right / 51% 100% no-repeat;
+
+  @include lw.motion {
+    transition: background-color 150ms ease-out;
+  }
+
+  &:hover,
+  &[data-copied] {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+  }
+
+  &[data-copied] .coupon-icon {
+    color: lw.v(color-accent);
+  }
+}
+
+.coupon-icon {
+  display: grid;
+  color: lw.v(color-muted-foreground);
+}
+
+.countdown {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: lw.v(color-muted-foreground);
+
+  @container (max-width: 40rem) {
+    display: none;
+  }
+}
+
+.time {
+  font-family: lw.v(font-mono);
+  color: lw.v(color-foreground);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 500;
+  text-decoration: none;
+
+  .action-text {
+    text-decoration: underline 1.5px;
+    text-underline-offset: 0.3em;
+  }
+
+  svg {
+    @include lw.motion {
+      transition: translate 200ms ease-out;
+    }
+  }
+
+  &:hover svg {
+    translate: 3px 0;
+  }
+}
+
+.close {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  translate: 0 -50%;
+}

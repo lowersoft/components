@@ -1,0 +1,219 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: color-mix(in oklab, #{lw.v(color-foreground)} 22%, transparent);
+  --_slide: 320ms #{lw.v(ease-out)};
+
+  display: block;
+  width: 400px;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: 2.75rem;
+  padding: 0 0.75rem;
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  transition:
+    border-color 150ms ease-out,
+    box-shadow 150ms ease-out;
+
+  &:focus-within {
+    border-color: var(--_line);
+    box-shadow: 0 0 0 3px color-mix(in oklab, #{lw.v(color-ring)} 30%, transparent);
+  }
+
+  &[data-invalid] {
+    border-color: color-mix(in oklab, #{lw.v(color-destructive)} 60%, transparent);
+  }
+
+  :host([disabled]) & {
+    opacity: 0.5;
+  }
+}
+
+// The brand mark: a reel that rolls to the brand.
+.brand {
+  flex: none;
+  width: 32px;
+  height: 22px;
+  overflow: hidden;
+  border-radius: 3px;
+  color: lw.v(color-muted-foreground);
+}
+
+.reel {
+  display: flex;
+  flex-direction: column;
+
+  @include lw.motion {
+    transition: translate 360ms lw.v(ease-spring);
+  }
+}
+
+.mark svg {
+  display: block;
+  width: 32px;
+  height: 22px;
+}
+
+input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+  outline: none;
+
+  &::placeholder {
+    color: lw.v(color-muted-foreground);
+    opacity: 0.7;
+  }
+}
+
+// While the number is typed it takes the row; once valid, it narrows to its
+// last four digits as the rest of the card slides in.
+.number-wrap {
+  position: relative;
+  flex: 1 1 0%;
+  align-self: stretch;
+  min-width: 0;
+  overflow: hidden;
+
+  @include lw.motion {
+    transition: flex var(--_slide);
+  }
+
+  [data-compact] & {
+    flex: 0 0 var(--_last4);
+  }
+}
+
+.edit {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  opacity: 0;
+  pointer-events: none;
+  cursor: text;
+  outline: none;
+
+  [data-compact] & {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &:focus-visible {
+    border-radius: 2px;
+    box-shadow: inset 0 -2px lw.v(color-ring);
+  }
+}
+
+[data-compact] .number {
+  opacity: 0;
+}
+
+// Dots stand in for the hidden digits. On the field's own background, they
+// cover the digits sliding under them.
+.mask {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  padding-right: 0.375rem;
+  translate: -0.25rem -50%;
+  background: lw.v(color-background);
+  letter-spacing: 0.1em;
+  color: lw.v(color-muted-foreground);
+  opacity: 0;
+
+  @include lw.motion {
+    transition:
+      opacity 200ms ease-out,
+      translate var(--_slide);
+  }
+
+  [data-compact] & {
+    translate: 0 -50%;
+    opacity: 1;
+  }
+}
+
+.digits {
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+
+  @include lw.motion {
+    transition: translate var(--_slide);
+  }
+
+  &.probe {
+    position: absolute;
+    visibility: hidden;
+  }
+}
+
+.rest {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.75rem;
+  max-width: 0;
+  opacity: 0;
+  translate: 1rem 0;
+
+  @include lw.motion {
+    transition:
+      max-width var(--_slide),
+      opacity 200ms ease-out,
+      translate var(--_slide);
+  }
+
+  [data-compact] & {
+    max-width: 16rem;
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .exp {
+    width: 4.5rem;
+  }
+
+  .cvc {
+    width: 3rem;
+  }
+}
+
+.message {
+  min-height: 1.25rem;
+  margin: 0.375rem 0 0;
+  font-size: lw.v(text-xs);
+  line-height: 1.25rem;
+  color: lw.v(color-destructive);
+}
+
+.brand-name {
+  @include lw.visually-hidden;
+}

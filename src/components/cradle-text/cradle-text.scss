@@ -1,0 +1,65 @@
+@use '../../styles' as lw;
+
+:host {
+  --_thread: color-mix(in oklab, #{lw.v(color-muted-foreground)} 50%, transparent);
+
+  display: inline-block;
+  line-height: 1;
+}
+
+:host([data-grabbing]) .stage {
+  cursor: grabbing;
+}
+
+.live {
+  @include lw.visually-hidden;
+}
+
+.stage {
+  position: relative;
+  display: block;
+  padding: 1.5em 0.9em 0.45em;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+// The rail the letters hang from.
+.rail {
+  position: absolute;
+  inset-inline: 0;
+  top: 0.3em;
+  height: 1px;
+  background: var(--_thread);
+  pointer-events: none;
+}
+
+.letters {
+  position: relative;
+  display: block;
+  white-space: pre;
+}
+
+.letter {
+  position: relative;
+  display: inline-block;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.thread {
+  position: absolute;
+  width: 1px;
+  background: var(--_thread);
+}
+
+.space {
+  display: inline-block;
+  width: 0.32em;
+}
+
+.probe {
+  display: inline-block;
+  width: 0;
+  height: 0;
+}

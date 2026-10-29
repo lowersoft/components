@@ -1,0 +1,154 @@
+@use '../../styles' as lw;
+
+.modal {
+  --_width: 34rem;
+}
+
+// Eleven scores in a row.
+.scale {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 0.375rem;
+  margin-top: 1.5rem;
+}
+
+.score {
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: lw.v(radius-md);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+  font-size: lw.v(text-md);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      background-color 150ms ease-out,
+      translate 150ms ease-out;
+  }
+
+  &:hover {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 12%, transparent);
+    translate: 0 -1px;
+  }
+
+  &[aria-checked='true'] {
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
+  }
+}
+
+.ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  color: var(--_muted);
+}
+
+// The follow-up, waiting in a dashed box until a score is picked.
+.follow {
+  display: grid;
+  min-height: 12rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px dashed var(--_line);
+  border-radius: 1rem;
+
+  &[data-picked] {
+    border-style: solid;
+  }
+}
+
+.waiting {
+  place-self: center;
+  font-size: lw.v(text-md);
+  color: var(--_muted);
+}
+
+.asked {
+  display: grid;
+  gap: 0.875rem;
+
+  &[hidden] {
+    display: none;
+  }
+
+  @include lw.motion {
+    animation: rise 300ms ease-out;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 0.375rem;
+  }
+}
+
+.question {
+  font-size: lw.v(text-md);
+  font-weight: 500;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.chip {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-full);
+  background: none;
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    border-color: lw.v(color-foreground);
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
+  }
+}
+
+.comment {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-lg);
+  background: none;
+  resize: none;
+  line-height: 1.5;
+
+  &::placeholder {
+    color: var(--_muted);
+  }
+}
+
+.send-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.thanks {
+  display: grid;
+  place-self: center;
+  justify-items: center;
+  gap: 0.75rem;
+  font-size: lw.v(text-md);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.thanks-mark {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: 50%;
+  background: lw.v(color-accent);
+  color: lw.v(color-background);
+}

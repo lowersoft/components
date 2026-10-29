@@ -1,0 +1,322 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ink: #{lw.v(color-foreground)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_line: #{lw.v(color-border)};
+  --_surface: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  --_bubble: color-mix(in oklab, #{lw.v(color-foreground)} 7%, #{lw.v(color-background)});
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+
+  @include lw.card-shell(26rem, 0.75rem);
+
+  font-size: lw.v(text-sm);
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+// The agent, how soon they reply, and a way to start over.
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.5rem 0.75rem;
+}
+
+.avatar {
+  @include lw.person-tint;
+
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  font-weight: 600;
+
+  &.large {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: lw.v(text-sm);
+  }
+
+  &.small {
+    width: 1.75rem;
+    height: 1.75rem;
+    align-self: flex-end;
+    font-size: 0.625rem;
+  }
+}
+
+.online {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 2px solid lw.v(color-background);
+  border-radius: 50%;
+  background: lw.v(color-accent);
+}
+
+.who {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+}
+
+.reply {
+  color: var(--_muted);
+}
+
+.reset {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      color 150ms ease-out,
+      rotate 400ms var(--_ease);
+  }
+
+  &:hover {
+    color: var(--_ink);
+  }
+
+  &:active {
+    rotate: -90deg;
+  }
+}
+
+// The thread: older messages fade out under the top edge.
+.thread {
+  display: flex;
+  height: 26rem;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden auto;
+  padding: 1.5rem 0.75rem 0.75rem;
+  border: 1px solid var(--_line);
+  border-radius: 1.125rem;
+  background: var(--_surface);
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to bottom, transparent, #000 1.5rem);
+}
+
+.log {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.group {
+  display: flex;
+  gap: 0.5rem;
+
+  &.you {
+    justify-content: flex-end;
+  }
+}
+
+.bubbles {
+  display: flex;
+  max-width: 85%;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  .you > & {
+    align-items: flex-end;
+  }
+}
+
+.bubble {
+  padding: 0.625rem 0.875rem;
+  border-radius: 1.125rem;
+  background: var(--_bubble);
+  font-size: lw.v(text-md);
+  line-height: 1.45;
+  text-wrap: pretty;
+
+  @include lw.motion {
+    animation: bubble-in 300ms var(--_ease);
+  }
+
+  .you & {
+    border-radius: 1.25rem;
+    background: lw.v(color-primary);
+    color: lw.v(color-primary-foreground);
+  }
+}
+
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+    scale: 0.96;
+  }
+}
+
+.seen {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+
+  @include lw.motion {
+    animation: bubble-in 200ms ease-out;
+  }
+}
+
+// Three dots taking turns while the agent types.
+.typing {
+  display: flex;
+  gap: 0.25rem;
+  padding-block: 0.875rem;
+}
+
+.dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--_muted);
+  opacity: 0.4;
+
+  @include lw.motion {
+    animation: dot 1s ease-in-out infinite;
+  }
+
+  &:nth-child(2) {
+    animation-delay: 150ms;
+  }
+
+  &:nth-child(3) {
+    animation-delay: 300ms;
+  }
+}
+
+@keyframes dot {
+  30% {
+    opacity: 1;
+    translate: 0 -2px;
+  }
+}
+
+// The questions still to ask, waiting on the right like quick replies.
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.chip {
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-full);
+  background: none;
+  font-size: lw.v(text-md);
+  text-align: right;
+  color: var(--_muted);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      color 150ms ease-out,
+      border-color 150ms ease-out,
+      opacity 200ms ease-out;
+    animation: bubble-in 300ms var(--_ease) backwards;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: color-mix(in oklab, var(--_ink) 30%, transparent);
+    color: var(--_ink);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.4;
+  }
+}
+
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.25rem 0.25rem 0.25rem 1rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-full);
+
+  &:focus-within {
+    border-color: color-mix(in oklab, var(--_ink) 30%, transparent);
+  }
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0;
+  border: 0;
+  background: none;
+  font: lw.v(text-md) lw.v(font-sans);
+  color: var(--_ink);
+  outline: none;
+
+  &::placeholder {
+    color: var(--_muted);
+  }
+}
+
+.send {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: lw.v(color-primary);
+  color: lw.v(color-primary-foreground);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition: opacity 150ms ease-out;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.3;
+  }
+}

@@ -1,0 +1,61 @@
+@use '../../styles' as lw;
+
+// Entrance from @starting-style: no JavaScript. Reduced motion keeps the fade
+// and drops the slide.
+:host([animate-in]) {
+  transition: opacity 200ms lw.v(ease-out);
+
+  @starting-style {
+    opacity: 0;
+  }
+
+  @include lw.motion {
+    transition:
+      opacity 200ms lw.v(ease-out),
+      translate 200ms lw.v(ease-out);
+
+    @starting-style {
+      translate: 0.5rem 0;
+    }
+  }
+}
+
+.button {
+  overflow: hidden;
+  text-decoration: none;
+}
+
+// Both labels share one grid cell, so the wider one sets the width and both
+// stay centered; the hover label waits one row below.
+.track {
+  display: grid;
+  justify-items: center;
+
+  @include lw.motion {
+    transition: translate 200ms lw.v(ease-in-out);
+  }
+}
+
+.text {
+  grid-area: 1 / 1;
+  transition: opacity 200ms lw.v(ease-in-out);
+}
+
+.hover {
+  translate: 0 100%;
+  opacity: 0;
+}
+
+.button:is(:hover, :focus-visible) {
+  .track {
+    translate: 0 -100%;
+  }
+
+  .text {
+    opacity: 0;
+  }
+
+  .hover {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,75 @@
+// Design tokens. Every entry becomes a `--lw-<group>-<name>` custom property.
+// Color schemes share the same keys so components never branch on theme.
+
+$base: (
+  font: (
+    sans: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+    mono: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+  ),
+  text: (
+    xs: 0.75rem,
+    sm: 0.875rem,
+    md: 1rem,
+    lg: 1.125rem,
+  ),
+  radius: (
+    sm: 0.375rem,
+    md: 0.5rem,
+    lg: 0.75rem,
+    full: 9999px,
+  ),
+  duration: (
+    fast: 150ms,
+    normal: 250ms,
+    slow: 400ms,
+  ),
+  ease: (
+    out: cubic-bezier(0.22, 1, 0.36, 1),
+    in-out: cubic-bezier(0.65, 0, 0.35, 1),
+    spring: cubic-bezier(0.34, 1.56, 0.64, 1),
+  ),
+);
+
+$light: (
+  color: (
+    background: #fff,
+    foreground: #09090b,
+    muted: #f4f4f5,
+    muted-foreground: #71717a,
+    border: #e4e4e7,
+    primary: #18181b,
+    primary-foreground: #fafafa,
+    secondary: #f4f4f5,
+    secondary-foreground: #18181b,
+    ring: #a1a1aa,
+    destructive: #dc2626,
+    accent: #059669,
+    destructive-foreground: #fff,
+  ),
+  shadow: (
+    sm: 0 1px 2px rgb(0 0 0 / 0.05),
+    md: 0 4px 12px rgb(0 0 0 / 0.08),
+  ),
+);
+
+$dark: (
+  color: (
+    background: #09090b,
+    foreground: #fafafa,
+    muted: #27272a,
+    muted-foreground: #a1a1aa,
+    border: #27272a,
+    primary: #fafafa,
+    primary-foreground: #18181b,
+    secondary: #27272a,
+    secondary-foreground: #fafafa,
+    ring: #52525b,
+    destructive: #ef4444,
+    accent: #34d399,
+    destructive-foreground: #fff,
+  ),
+  shadow: (
+    sm: 0 1px 2px rgb(0 0 0 / 0.4),
+    md: 0 4px 12px rgb(0 0 0 / 0.5),
+  ),
+);

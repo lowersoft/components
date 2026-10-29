@@ -1,0 +1,17 @@
+.field {
+  display: flex;
+  padding: 0;
+}
+
+.control {
+  flex: 1;
+  padding: 0.5rem var(--_padding);
+  line-height: 1.5;
+  resize: vertical;
+  scrollbar-width: thin;
+
+  :host([resize='none']) &,
+  :host([autosize]) & {
+    resize: none;
+  }
+}

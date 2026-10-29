@@ -1,0 +1,268 @@
+@use '../../styles' as lw;
+
+:host {
+  display: block;
+  width: 24rem;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+}
+
+.panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1rem;
+  background: lw.v(color-background);
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  padding-inline: 0.5rem;
+  border-bottom: 1px solid lw.v(color-muted);
+  background: lw.v(color-background);
+}
+
+.back {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  max-width: 30%;
+  padding: 0.375rem 0.5rem 0.375rem 0.25rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  font: lw.v(text-sm) lw.v(font-sans);
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color lw.v(duration-fast) ease-out,
+    color lw.v(duration-fast) ease-out;
+
+  @include lw.motion {
+    animation: fade-in 180ms ease-out;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+
+  &:hover {
+    background: lw.v(color-muted);
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.titles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.title {
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  width: fit-content;
+  max-width: 55%;
+  margin: -0.625rem auto 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform-origin: left center;
+}
+
+.body {
+  position: relative;
+}
+
+.layer {
+  inset-inline: 0;
+  top: 0;
+  background: lw.v(color-background);
+
+  &.under {
+    position: absolute;
+    pointer-events: none;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &.top {
+    position: relative;
+    touch-action: pan-y;
+
+    &.lifted {
+      box-shadow: -8px 0 24px -12px rgb(0 0 0 / 0.18);
+    }
+  }
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.5rem 0.75rem 1rem;
+}
+
+section {
+  margin: 0;
+}
+
+h3 {
+  margin: 0 0 0.375rem;
+  padding-inline: 0.75rem;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: lw.v(radius-lg);
+  background: color-mix(in oklab, #{lw.v(color-muted)} 60%, #{lw.v(color-background)});
+  list-style: none;
+}
+
+li + li {
+  border-top: 1px solid lw.v(color-muted);
+}
+
+.footer {
+  margin: 0.375rem 0 0;
+  padding-inline: 0.75rem;
+  font-size: lw.v(text-xs);
+  line-height: 1.25rem;
+  color: lw.v(color-muted-foreground);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+}
+
+button.row {
+  cursor: pointer;
+  outline: none;
+  transition: background-color lw.v(duration-fast) ease-out;
+
+  &:hover,
+  &:focus-visible,
+  &:active {
+    background: lw.v(color-muted);
+  }
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.danger {
+    color: lw.v(color-destructive);
+  }
+}
+
+.detail {
+  flex: none;
+  max-width: 45%;
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+}
+
+.check,
+.chevron {
+  display: grid;
+  flex: none;
+}
+
+.check.off {
+  visibility: hidden;
+}
+
+.chevron {
+  margin-right: -0.25rem;
+  color: lw.v(color-muted-foreground);
+}
+
+.toggle {
+  position: relative;
+  flex: none;
+  width: 2.25rem;
+  height: 22px;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-border);
+  transition: background-color 200ms ease-out;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: lw.v(color-background);
+    box-shadow: lw.v(shadow-sm);
+    transition: translate 200ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  &.on {
+    background: lw.v(color-primary);
+
+    &::after {
+      translate: 0.875rem 0;
+    }
+  }
+}

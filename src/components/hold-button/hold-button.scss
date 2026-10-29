@@ -1,0 +1,38 @@
+@use '../../styles' as lw;
+
+// Non-solid variants turn solid once the hold completes.
+@include lw.solid-when('[status="complete"]');
+
+.button {
+  min-width: 11rem;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-touch-callout: none;
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-fast) lw.v(ease-out),
+      border-color lw.v(duration-fast) lw.v(ease-out),
+      color lw.v(duration-fast) lw.v(ease-out);
+  }
+
+  // Holding is the interaction, so pressing must not shrink the button.
+  &:active {
+    transform: none;
+  }
+}
+
+// The button's ink at low strength, revealed left to right while held.
+.fill {
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0.15;
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+  transition: opacity lw.v(duration-fast) lw.v(ease-out);
+
+  :host([status='complete']) & {
+    opacity: 0;
+  }
+}

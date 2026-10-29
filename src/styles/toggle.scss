@@ -1,0 +1,68 @@
+// On/off controls from `core/toggle.js`: a drawn control over a hidden native
+// checkbox, and the label text beside it.
+@use 'abstracts/functions' as fn;
+@use 'abstracts/mixins' as m;
+
+:host {
+  display: inline-block;
+  font-family: fn.v(font-sans);
+  font-size: fn.v(text-sm);
+  color: fn.v(color-foreground);
+}
+
+.toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  cursor: pointer;
+
+  :host([data-disabled]) & {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+// The native checkbox stays for keyboard, forms and screen readers; it is
+// drawn by `.visual` instead.
+.control {
+  @include m.visually-hidden;
+}
+
+.visual {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  // Centred on the first line of the label.
+  margin-top: calc((1lh - var(--_size, 1rem)) / 2);
+}
+
+.control:focus-visible + .visual {
+  @include m.focus-ring;
+}
+
+.text {
+  display: grid;
+  gap: 0.125rem;
+  line-height: 1.4;
+}
+
+.label {
+  font-weight: 500;
+
+  // The required mark after the label.
+  :host([required]) &::after {
+    content: ' *';
+    color: fn.v(color-destructive);
+  }
+}
+
+.description {
+  font-size: fn.v(text-xs);
+  color: fn.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}

@@ -1,0 +1,125 @@
+@use '../../styles' as lw;
+
+$hover: ':host([status="connected"]) .button:is(:hover, :focus-visible)';
+
+.button {
+  gap: 0.625rem;
+}
+
+// Your mark and the provider's, joined by a link.
+.marks {
+  display: flex;
+  flex: none;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.mark,
+::slotted(:is([slot='mark'], [slot='provider'])) {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+}
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: lw.v(radius-sm);
+  background: color-mix(in oklab, var(--_fg) 14%, transparent);
+
+  .icon {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}
+
+// Two halves with a gap; a pulse travels between them while signing in, and
+// once connected they close into one line.
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 1.25rem;
+}
+
+.side {
+  width: 30%;
+  height: 2px;
+  border-radius: 1px;
+  background: color-mix(in oklab, var(--_fg) 35%, transparent);
+  transition:
+    width 300ms lw.v(ease-spring),
+    background-color 300ms lw.v(ease-out);
+
+  :host([status='connected']) & {
+    width: 50%;
+    background: var(--_fg);
+  }
+}
+
+.pulse {
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: lw.v(radius-full);
+  background: var(--_fg);
+  opacity: 0;
+  transition: width 300ms lw.v(ease-spring);
+
+  // Collapsed, so the two halves meet.
+  :host([status='connected']) & {
+    width: 0;
+  }
+
+  // Essential feedback while waiting, like a spinner, so it runs regardless of motion preference.
+  :host([status='connecting']) & {
+    animation: pulse 900ms ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    scale: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+    scale: 1.2;
+  }
+}
+
+.account:not(:empty)::before {
+  margin-inline-end: 0.5rem;
+  opacity: 0.5;
+  content: '·';
+}
+
+// Hovering a connected button offers to disconnect. The text is placed over
+// the content box rather than the label, so the label stays free to float
+// out of the flow while it leaves.
+.label[data-status='connected'] {
+  &::after {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    content: attr(data-disconnect);
+    transition: opacity lw.v(duration-fast) lw.v(ease-out);
+  }
+}
+
+#{$hover} {
+  color: lw.v(color-destructive);
+
+  .label[data-status='connected'] > * {
+    opacity: 0;
+  }
+
+  .label[data-status='connected']::after {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,347 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_raised: color-mix(in oklab, #{lw.v(color-foreground)} 4%, #{lw.v(color-background)});
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: -2px;
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  max-width: 26rem;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.description {
+  margin-top: 0.75rem;
+  font-size: lw.v(text-md);
+  color: var(--_muted);
+}
+
+.switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.note {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+// The stack on the left, the plans and what they bring on the right.
+.frame {
+  display: grid;
+  border: 1px solid var(--_line);
+
+  @container (min-width: 50rem) {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+}
+
+.stage {
+  display: flex;
+  min-height: 22rem;
+  flex-direction: column;
+  margin: 0;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--_line);
+
+  @container (min-width: 50rem) {
+    border-right: 1px solid var(--_line);
+    border-bottom: 0;
+  }
+}
+
+.stack {
+  display: block;
+  width: 100%;
+  max-width: 23rem;
+  flex: 1;
+  margin: auto;
+  overflow: visible;
+}
+
+// Paper slabs in either scheme; the chosen one's label in red.
+.layer {
+  cursor: pointer;
+
+  .lift {
+    @include lw.motion {
+      transition:
+        translate 500ms var(--_ease),
+        opacity 400ms ease-out;
+    }
+  }
+
+  &[data-above] .lift {
+    opacity: 0.12;
+    translate: 0 -2.5rem;
+  }
+
+  &[data-above]:hover .lift {
+    opacity: 0.3;
+  }
+}
+
+.top {
+  fill: light-dark(#fff, #f4f4f5);
+  stroke: light-dark(#d4d4d8, #e4e4e7);
+  stroke-width: 1;
+}
+
+.side {
+  stroke: light-dark(#d4d4d8, transparent);
+  stroke-width: 1;
+
+  &.left {
+    fill: light-dark(#e4e4e7, #d4d4d8);
+  }
+
+  &.right {
+    fill: light-dark(#d4d4d8, #a1a1aa);
+  }
+}
+
+.label {
+  font: 10px lw.v(font-sans);
+  fill: #52525b;
+
+  [data-current] & {
+    fill: #dc2626;
+  }
+}
+
+.caption {
+  display: flex;
+  justify-content: space-between;
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: var(--_muted);
+}
+
+// The plans as radio rows, top layer first.
+.plans {
+  display: grid;
+  border-bottom: 1px solid var(--_line);
+}
+
+.plan {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.125rem 1.5rem;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+
+  @include lw.motion {
+    transition: background-color 200ms ease-out;
+  }
+
+  & + & {
+    border-top: 1px solid var(--_line);
+  }
+
+  &[aria-checked='true'] {
+    background: var(--_raised);
+  }
+
+  &:hover:not([aria-checked='true']) {
+    background: color-mix(in oklab, var(--_raised) 50%, transparent);
+  }
+}
+
+.radio {
+  display: grid;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 35%, transparent);
+  border-radius: 50%;
+
+  &::after {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: lw.v(color-foreground);
+    scale: 0;
+
+    @include lw.motion {
+      transition: scale 250ms var(--_ease);
+    }
+  }
+
+  [aria-checked='true'] > &::after {
+    scale: 1;
+  }
+}
+
+.plan-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 0.25rem;
+}
+
+.plan-name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.index {
+  font: 0.625rem lw.v(font-mono);
+  font-weight: 400;
+  color: var(--_muted);
+}
+
+.blurb {
+  color: var(--_muted);
+}
+
+.plan-price {
+  color: var(--_muted);
+
+  b {
+    font-weight: 600;
+    color: lw.v(color-foreground);
+  }
+}
+
+// The chosen plan: its price, its limits, and what each layer adds.
+.summary {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.cost {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.amount {
+  font-size: clamp(2.75rem, 7vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.per,
+.billed {
+  color: var(--_muted);
+}
+
+.billed {
+  margin-top: 0.5rem;
+  font-size: lw.v(text-xs);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  // Hairlines between cells however they wrap: the gap shows the border colour.
+  gap: 1px;
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  background: var(--_line);
+}
+
+.stat {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.625rem 0.75rem;
+  background: lw.v(color-background);
+
+  dt {
+    font-size: lw.v(text-xs);
+    color: var(--_muted);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.adds {
+  display: grid;
+  padding: 0;
+  list-style: none;
+}
+
+.add {
+  display: grid;
+  grid-template-columns: 1.5rem 7rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.875rem 0;
+  border-top: 1px solid var(--_line);
+
+  @include lw.motion {
+    transition: opacity 300ms ease-out;
+  }
+
+  &[data-above] {
+    opacity: 0.35;
+  }
+
+  @container (max-width: 30rem) {
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+
+    .add-items {
+      grid-column: 2;
+    }
+  }
+}
+
+.add-title {
+  color: var(--_muted);
+}
+
+.add-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+}

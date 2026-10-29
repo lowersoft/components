@@ -1,0 +1,254 @@
+@use '../../styles' as lw;
+
+$height: 2.25rem;
+
+.shell {
+  :host([status='open']) & {
+    border-radius: lw.v(radius-lg);
+    box-shadow: lw.v(shadow-md);
+  }
+}
+
+.trigger {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  height: calc(#{$height} - 2px);
+  padding-inline: 0.375rem 0.875rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color lw.v(duration-fast) lw.v(ease-out);
+
+  &:hover {
+    background: lw.v(color-muted);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: -3px;
+  }
+}
+
+// Who has access, before opening: overlapping avatars and a count for the rest.
+.avatars {
+  display: flex;
+
+  .avatar {
+    width: 1.5rem;
+    height: 1.5rem;
+    box-shadow: 0 0 0 2px lw.v(color-background);
+    font-size: 0.625rem;
+  }
+
+  .avatar + .avatar {
+    margin-inline-start: -0.375rem;
+  }
+}
+
+// Initials on a hue taken from the email, so each person keeps a color.
+.avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  overflow: hidden;
+  border-radius: lw.v(radius-full);
+  background: oklch(0.62 0.12 var(--_hue, 260));
+  color: #fff;
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &.more {
+    background: lw.v(color-muted);
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.heading {
+  margin: 0;
+  font-weight: 600;
+}
+
+.invite {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.email {
+  flex: 1;
+  min-width: 0;
+  height: 2rem;
+  padding-inline: 0.625rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  color: lw.v(color-foreground);
+  font: inherit;
+  font-size: lw.v(text-sm);
+
+  &::placeholder {
+    color: lw.v(color-muted-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// Role and access choices open the shared menu, like the follow button's bell.
+.picker {
+  display: inline-flex;
+}
+
+.select {
+  display: inline-flex;
+  flex: 1;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: space-between;
+  height: 2rem;
+  padding-inline: 0.625rem 0.5rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  color: lw.v(color-foreground);
+  font: inherit;
+  font-size: lw.v(text-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color lw.v(duration-fast) lw.v(ease-out);
+
+  &:hover,
+  &[aria-expanded='true'] {
+    background: lw.v(color-muted);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  .chevron {
+    width: 0.875rem;
+    height: 0.875rem;
+    color: lw.v(color-muted-foreground);
+    transition: rotate lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  &[aria-expanded='true'] .chevron {
+    rotate: 180deg;
+  }
+}
+
+// Roles in the list read as text until hovered.
+.role .select {
+  border-color: transparent;
+  color: lw.v(color-muted-foreground);
+}
+
+.people {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.person {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+}
+
+.who {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.name,
+.address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+}
+
+.address,
+.owner,
+.access-label {
+  color: lw.v(color-muted-foreground);
+  font-size: lw.v(text-xs);
+}
+
+.owner {
+  padding-inline: 0.5rem;
+}
+
+.access {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid lw.v(color-border);
+}
+
+.access-label {
+  font-weight: 500;
+}
+
+.access-row {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+}
+
+.access-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-muted);
+
+  .icon {
+    display: none;
+  }
+
+  :host(:not([access='link'])) & .lock,
+  :host([access='link']) & .globe {
+    display: block;
+  }
+}
+
+.access-picker {
+  flex: 1;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,0 +1,193 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  @include lw.card-shell(26rem, 0.5rem);
+
+  border: 0;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  font-size: lw.v(text-sm);
+}
+
+h2,
+p,
+ol {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.375rem 0.5rem 0.625rem;
+}
+
+.title {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+}
+
+.live {
+  margin-left: 0.25rem;
+  font-size: lw.v(text-xs);
+  font-weight: 400;
+  color: var(--_muted);
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 0.375rem;
+    height: 0.375rem;
+    margin-right: 0.375rem;
+    border-radius: 50%;
+    background: lw.v(color-accent);
+    vertical-align: 0.05em;
+  }
+
+  &[data-paused]::before {
+    background: var(--_muted);
+  }
+}
+
+.toggle {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+}
+
+// Newest at the top.
+.feed {
+  overflow: hidden;
+  padding: 0.25rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: lw.v(color-background);
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  overflow: hidden;
+  gap: 0.75rem;
+  padding: 0.625rem;
+}
+
+.avatar {
+  position: relative;
+  flex: none;
+}
+
+.face {
+  display: block;
+  width: 2.25rem;
+  height: 2.25rem;
+  overflow: hidden;
+  border-radius: 50%;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// What happened, on the corner of the face.
+.badge {
+  position: absolute;
+  right: -0.25rem;
+  bottom: -0.25rem;
+  display: grid;
+  width: 1.125rem;
+  height: 1.125rem;
+  place-items: center;
+  border: 2px solid lw.v(color-background);
+  border-radius: 50%;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 12%, #{lw.v(color-background)});
+  color: var(--_muted);
+
+  &[data-kind='deploy'] {
+    color: #30a46c;
+  }
+
+  &[data-kind='close'] {
+    color: #e5484d;
+  }
+
+  &[data-kind='merge'] {
+    color: #8e4ec6;
+  }
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+}
+
+.line,
+.sub {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line {
+  b {
+    font-weight: 500;
+  }
+
+  code {
+    font-size: lw.v(text-xs);
+    color: var(--_muted);
+  }
+}
+
+.verb {
+  color: var(--_muted);
+}
+
+.sub {
+  margin-top: 0.25rem;
+  color: var(--_muted);
+}
+
+.project {
+  margin-right: 0.5rem;
+  padding: 0.0625rem 0.375rem;
+  border-radius: lw.v(radius-sm);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
+  font-size: lw.v(text-xs);
+}
+
+.age {
+  flex: none;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--_muted);
+
+  &[data-fresh] {
+    color: #f59e0b;
+  }
+}

@@ -1,0 +1,339 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_hatch: repeating-linear-gradient(-45deg, color-mix(in oklab, #{lw.v(color-foreground)} 22%, transparent) 0 1px, transparent 1px 7px);
+
+  @include lw.card-shell(40rem, 0);
+
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// Who the call is with, how long, where, and the time zone.
+.head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--_line);
+}
+
+.avatar {
+  @include lw.person-tint;
+
+  position: relative;
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  font-size: lw.v(text-md);
+  font-weight: 600;
+}
+
+.online {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 2px solid lw.v(color-background);
+  border-radius: 50%;
+  background: lw.v(color-accent);
+}
+
+.title-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: lw.v(text-lg);
+  font-weight: 500;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+  font-size: lw.v(text-md);
+  color: var(--_muted);
+}
+
+.zone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  background: none;
+  font-size: lw.v(text-md);
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 5%, transparent);
+  }
+}
+
+.body {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+// The day, the days that have room, and how much this one has.
+.day-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.3;
+  }
+}
+
+.day {
+  min-width: 7.5rem;
+  font-size: lw.v(text-lg);
+  font-weight: 500;
+  text-align: center;
+}
+
+.today {
+  margin-left: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-sm);
+  background: none;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-left: auto;
+}
+
+.dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+
+  @include lw.motion {
+    transition: width 250ms ease-out;
+  }
+
+  &[data-current] {
+    width: 1rem;
+    background: lw.v(color-foreground);
+  }
+
+  &[data-full] {
+    opacity: 0.35;
+  }
+}
+
+.open {
+  margin-left: 0.5rem;
+  font-size: lw.v(text-md);
+  color: var(--_muted);
+}
+
+// The day as a strip: hours on top, past and busy time hatched, the slot a handle.
+.hours {
+  position: relative;
+  height: 1.25rem;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--_muted);
+
+  span {
+    position: absolute;
+    translate: -50% 0;
+    white-space: nowrap;
+
+    &:first-child {
+      translate: 0 0;
+    }
+
+    &:last-child {
+      translate: -100% 0;
+    }
+  }
+}
+
+.track {
+  position: relative;
+  height: 4.5rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-lg);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 2%, transparent);
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
+.block {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--_hatch);
+  color: var(--_muted);
+
+  span {
+    padding: 0.125rem 0.375rem;
+    border-radius: lw.v(radius-sm);
+    background: lw.v(color-background);
+
+    &:empty {
+      display: none;
+    }
+  }
+}
+
+.now {
+  position: absolute;
+  top: -0.25rem;
+  bottom: 0;
+  width: 1px;
+  background: lw.v(color-destructive);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -3px;
+    border: 3.5px solid transparent;
+    border-top-color: lw.v(color-destructive);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.handle {
+  position: absolute;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  display: grid;
+  place-items: center;
+  border: 2px solid lw.v(color-foreground);
+  border-radius: lw.v(radius-md);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 12%, #{lw.v(color-background)});
+  cursor: grab;
+  outline: none;
+
+  @include lw.motion {
+    transition: left 200ms cubic-bezier(0.23, 1, 0.32, 1);
+
+    :host([data-dragging]) & {
+      transition: none;
+    }
+  }
+
+  // Two grip lines.
+  &::before {
+    content: '';
+    width: 4px;
+    height: 1rem;
+    border-inline: 1px solid var(--_muted);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+
+  :host([data-dragging]) & {
+    cursor: grabbing;
+  }
+}
+
+// The first time of each free stretch.
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.slot {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  background: none;
+  font-size: lw.v(text-md);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+
+  small {
+    font-size: lw.v(text-xs);
+    color: var(--_muted);
+  }
+
+  &[aria-checked='true'] {
+    border-color: lw.v(color-foreground);
+    box-shadow: 0 0 0 1px lw.v(color-foreground);
+  }
+}
+
+.confirm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--_line);
+}
+
+.picked {
+  color: var(--_muted);
+}

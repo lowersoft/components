@@ -1,0 +1,185 @@
+// Single-choice menus from `core/menu.js`: one highlight slides between the
+// items, and the checked item shows a check.
+@use 'abstracts/functions' as fn;
+@use 'abstracts/mixins' as m;
+
+.menu {
+  // A manual popover in the top layer: no ancestor can clip it. `core/menu.js`
+  // places it below the trigger, or above when there is no room.
+  position: fixed;
+  inset: auto;
+  display: grid;
+  width: max-content;
+  max-width: 18rem;
+  margin: 0;
+  padding: 0.25rem;
+  overflow: visible;
+  border: 1px solid fn.v(color-border);
+  border-radius: fn.v(radius-lg);
+  background: fn.v(color-background);
+  box-shadow: fn.v(shadow-md);
+  color: fn.v(color-foreground);
+  transform-origin: top right;
+
+  &[data-side='top'] {
+    transform-origin: bottom right;
+  }
+
+  &:not(:popover-open) {
+    display: none;
+    opacity: 0;
+    scale: 0.96;
+  }
+
+  @include m.motion {
+    transition:
+      opacity 150ms fn.v(ease-out),
+      scale 150ms fn.v(ease-out),
+      display 150ms allow-discrete,
+      overlay 150ms allow-discrete;
+
+    @starting-style {
+      opacity: 0;
+      scale: 0.96;
+    }
+  }
+}
+
+.highlight {
+  @include m.sliding-highlight;
+}
+
+.item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1rem 1fr;
+  column-gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: fn.v(radius-md);
+  cursor: pointer;
+  outline: none;
+
+  .check {
+    grid-row: span 2;
+    visibility: hidden;
+    margin-top: 0.125rem;
+  }
+
+  &[aria-checked='true'] .check {
+    visibility: visible;
+  }
+}
+
+.item-label {
+  font-size: fn.v(text-sm);
+  font-weight: 500;
+}
+
+.item-description {
+  color: fn.v(color-muted-foreground);
+  font-size: fn.v(text-xs);
+  line-height: 1.4;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.item {
+  &[hidden] {
+    display: none;
+  }
+
+  // Disabled: it can be pointed at, for its hint, but not picked.
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+
+    .item-label,
+    .item-description {
+      opacity: 0.45;
+    }
+  }
+}
+
+// A menu with a search box: the box stays at the top, the list scrolls.
+// Only while open: a closed menu must stay `display: none`, not just unseen.
+.menu[data-search] {
+  flex-direction: column;
+  width: 18rem;
+  padding: 0;
+
+  &:popover-open {
+    display: flex;
+  }
+}
+
+.menu-search {
+  flex: none;
+  padding: 0.375rem;
+  border-bottom: 1px solid fn.v(color-border);
+
+  input {
+    width: 100%;
+    height: 2rem;
+    padding: 0 0.625rem;
+    border: 0;
+    border-radius: fn.v(radius-md);
+    background: fn.v(color-muted);
+    font: inherit;
+    font-size: fn.v(text-sm);
+    color: inherit;
+    outline: none;
+
+    &::placeholder {
+      color: fn.v(color-muted-foreground);
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 2px fn.v(color-ring);
+    }
+  }
+}
+
+.menu-list {
+  position: relative;
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  padding: 0.25rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  // Filtering and the sliding highlight must not move the scroll position.
+  overflow-anchor: none;
+}
+
+.menu-empty {
+  margin: 0;
+  padding: 1rem;
+  font-size: fn.v(text-sm);
+  text-align: center;
+  color: fn.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.menu-tooltip {
+  position: absolute;
+  z-index: 1;
+  width: max-content;
+  max-width: 14rem;
+  padding: 0.375rem 0.625rem;
+  translate: -50% 0;
+  border-radius: fn.v(radius-md);
+  background: fn.v(color-foreground);
+  font-size: fn.v(text-xs);
+  line-height: 1.4;
+  text-align: center;
+  color: fn.v(color-background);
+  pointer-events: none;
+
+  &[hidden] {
+    display: none;
+  }
+}

@@ -1,0 +1,315 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ink: #{lw.v(color-foreground)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_accent: #f97316;
+  --_gutter: clamp(1.5rem, 5vw, 4rem);
+  // The container's right edge, from the host's.
+  --_edge: max(var(--_gutter), calc((100% - 72rem) / 2));
+
+  @include lw.hero-shell(780px);
+
+  // Narrow, the chart takes its own band under the copy.
+  @media (width < 896px) {
+    padding-bottom: 20rem;
+  }
+}
+
+.container {
+  @include lw.hero-container;
+
+  display: grid;
+  gap: 2.5rem;
+  pointer-events: none;
+
+  @container (min-width: 56rem) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+}
+
+// The copy lets the pointer through to the chart, except its controls.
+.copy {
+  display: flex;
+  max-width: 34rem;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.brand {
+  margin: 0;
+  font-size: lw.v(text-md);
+  font-weight: 500;
+  color: var(--_muted);
+}
+
+.title {
+  margin: 1.25rem 0 0;
+  font-size: clamp(3rem, 7vw, 5.75rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 28rem;
+  margin: 1.75rem 0 0;
+  font-size: lw.v(text-lg);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--_muted);
+}
+
+@include lw.hero-actions;
+
+::slotted([slot='eyebrow']),
+.actions,
+.side {
+  pointer-events: auto;
+}
+
+.side {
+  display: grid;
+  justify-items: end;
+  gap: 1.75rem;
+
+  @container (max-width: 56rem) {
+    justify-items: start;
+  }
+}
+
+.kpis {
+  display: flex;
+  gap: 2.5rem;
+  margin: 0;
+  text-align: right;
+
+  // Each figure above its label.
+  div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.25rem;
+  }
+
+  dd {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
+
+  dt {
+    font-size: lw.v(text-sm);
+    color: var(--_muted);
+  }
+}
+
+// The range tabs: one pill slides to the chosen range.
+.tabs {
+  position: relative;
+  display: flex;
+  padding: 0.25rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-full);
+}
+
+.highlight {
+  @include lw.sliding-highlight;
+
+  border-radius: lw.v(radius-full);
+  background: var(--_ink);
+}
+
+.tab {
+  position: relative;
+  min-width: 3rem;
+  padding: 0.5rem 0.875rem;
+  border: 0;
+  border-radius: lw.v(radius-full);
+  background: none;
+  font: 500 lw.v(text-sm) lw.v(font-sans);
+  color: var(--_muted);
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: color 200ms ease-out;
+  }
+
+  &[aria-checked='true'] {
+    color: lw.v(color-background);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// The chart runs edge to edge under the copy, fading at the bottom and on
+// the left where the copy sits.
+.chart {
+  position: absolute;
+  inset: 38% 0 0;
+  mask-image:
+    linear-gradient(to bottom, #000 55%, transparent 98%),
+    linear-gradient(to right, transparent 8%, #000 45%);
+  mask-composite: intersect;
+
+  @media (width < 896px) {
+    inset: auto 0 0;
+    height: 18rem;
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 98%);
+  }
+}
+
+.plot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.line {
+  fill: none;
+  stroke: var(--_ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.area {
+  fill: url('#area');
+}
+
+.area-top {
+  stop-color: var(--_ink);
+  stop-opacity: 0.1;
+}
+
+.area-bottom {
+  stop-color: var(--_ink);
+  stop-opacity: 0;
+}
+
+.cross,
+.cross-dot,
+.tip {
+  opacity: 0;
+
+  :host([data-scrubbing]) & {
+    opacity: 1;
+  }
+}
+
+.cross {
+  stroke: color-mix(in oklab, var(--_ink) 35%, transparent);
+  stroke-dasharray: 3 4;
+}
+
+.cross-dot {
+  fill: var(--_ink);
+  stroke: lw.v(color-background);
+  stroke-width: 2;
+}
+
+.note-dot {
+  display: none;
+  fill: var(--_accent);
+  stroke: lw.v(color-background);
+  stroke-width: 2;
+
+  &[data-shown] {
+    display: block;
+  }
+}
+
+// Gridline values, at the container's right edge.
+.ticks span {
+  position: absolute;
+  right: var(--_edge);
+  left: 0;
+  padding-bottom: 0.375rem;
+  border-bottom: 1px solid lw.v(color-border);
+  font: lw.v(text-xs) lw.v(font-mono);
+  text-align: right;
+  color: var(--_muted);
+  translate: 0 -100%;
+}
+
+// The pinned note sits to the left of its point, joined by a short rule.
+.note {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: 0.625rem;
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-md);
+  white-space: nowrap;
+  transform: translate(calc(-100% - 1.75rem), -50%);
+  pointer-events: none;
+
+  &[data-shown] {
+    display: block;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: 1.75rem;
+    border-top: 1px solid var(--_accent);
+  }
+}
+
+.note-title,
+.note-meta {
+  margin: 0;
+}
+
+.note-title {
+  font-size: lw.v(text-sm);
+  font-weight: 600;
+}
+
+.note-meta {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.375rem 0.625rem;
+  border-radius: lw.v(radius-md);
+  background: var(--_ink);
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: lw.v(color-background);
+  transform: translate(0.75rem, calc(-100% - 0.75rem));
+  pointer-events: none;
+
+  &[data-left] {
+    transform: translate(calc(-100% - 0.75rem), calc(-100% - 0.75rem));
+  }
+}
+
+// The scrub surface covers the chart.
+.scrub {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px lw.v(color-ring);
+  }
+}

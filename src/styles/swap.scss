@@ -1,0 +1,12 @@
+// Text swapped by `core/swap.js`: the leaving text floats over the entering one.
+.swap {
+  position: relative;
+  display: inline-flex;
+  // Clips the rise and fall only; a longer leaving text may overhang sideways.
+  clip-path: inset(0 -100vmax);
+
+  .leaving {
+    position: absolute;
+    left: 0;
+  }
+}

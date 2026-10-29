@@ -1,0 +1,73 @@
+@use '../../styles' as lw;
+
+// Committed: a quiet, inert confirmation.
+:host([status='done']) {
+  --_bg: #{lw.v(color-muted)};
+  --_fg: #{lw.v(color-muted-foreground)};
+  --_border: #{lw.v(color-border)};
+}
+
+:host([status='done']) .button {
+  cursor: default;
+}
+
+// The countdown ring traces the button's border box.
+.ring {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms lw.v(ease-out);
+
+  :host([status='pending']) & {
+    opacity: 1;
+    transition-duration: 150ms;
+  }
+}
+
+.ring path {
+  fill: none;
+  stroke: var(--_fg);
+  stroke-linecap: round;
+  stroke-width: 1.5;
+}
+
+.past,
+.seconds,
+kbd {
+  color: color-mix(in oklab, var(--_fg) 60%, transparent);
+}
+
+.divider {
+  width: 1px;
+  height: 1rem;
+  background: color-mix(in oklab, var(--_fg) 20%, transparent);
+}
+
+// One digit wide; the new number slides up into place.
+.seconds {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  width: 1ch;
+  height: 1.25rem;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25rem;
+
+  span {
+    position: absolute;
+  }
+}
+
+kbd {
+  padding-inline: 0.25rem;
+  border: 1px solid color-mix(in oklab, var(--_fg) 20%, transparent);
+  border-radius: 0.25rem;
+  font: inherit;
+  font-size: 0.6875rem;
+}

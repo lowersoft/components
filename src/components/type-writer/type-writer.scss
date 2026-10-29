@@ -1,0 +1,84 @@
+@use '../../styles' as lw;
+
+:host {
+  display: inline-block;
+  font-family: lw.v(font-mono);
+  line-height: 1.2;
+}
+
+// Every phrase sits invisibly in one grid cell, so the box is as wide as the
+// widest as rendered and the text grows from a fixed edge without reflowing.
+.stage {
+  display: inline-grid;
+  justify-items: start;
+  padding-inline-end: 0.25em;
+  white-space: pre;
+
+  @include lw.motion {
+    transition: opacity 500ms lw.v(ease-out);
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+}
+
+.sizer,
+.line {
+  grid-area: 1 / 1;
+}
+
+.sizer {
+  visibility: hidden;
+}
+
+.line {
+  min-height: 1.2em;
+}
+
+// Takes no room, so the text never shifts when the caret moves to the start
+// of a selection.
+.caret-box {
+  position: relative;
+  display: inline-block;
+  width: 0;
+}
+
+// Solid while keys are being hit; blinks once typing has stopped.
+.caret {
+  position: absolute;
+  bottom: -0.1em;
+  left: 0.04em;
+  width: 0.08em;
+  min-width: 2px;
+  height: 1.05em;
+  background: currentColor;
+
+  @include lw.motion {
+    &[data-idle] {
+      animation: blink 1s linear infinite;
+    }
+  }
+}
+
+@keyframes blink {
+  0%,
+  33.333% {
+    opacity: 1;
+  }
+
+  66.667%,
+  100% {
+    opacity: 0;
+  }
+}
+
+// Erasing by selection, as with Shift+Home, in the system's selection color.
+.selected {
+  border-radius: 0.08em;
+  background: color-mix(in oklab, Highlight 35%, transparent);
+}
+
+.phrases {
+  @include lw.visually-hidden;
+}

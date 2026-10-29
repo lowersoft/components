@@ -1,0 +1,164 @@
+@use '../../styles' as lw;
+
+@include lw.picker;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  @include lw.card-shell(44rem, 2rem 2.5rem);
+
+  position: relative;
+  min-height: 14rem;
+  font-size: lw.v(text-sm);
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// Floats over the selection.
+.toolbar {
+  position: absolute;
+  z-index: 2;
+  padding: 0.375rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, #{lw.v(color-background)});
+  box-shadow: lw.v(shadow-md);
+  white-space: nowrap;
+
+  @include lw.motion {
+    transition:
+      left 150ms ease-out,
+      top 150ms ease-out;
+    animation: pop 180ms ease-out;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.block .picker-trigger {
+  height: 2.25rem;
+  padding: 0 0.625rem;
+  font-size: lw.v(text-md);
+}
+
+.sep {
+  width: 1px;
+  height: 1.25rem;
+  margin: 0 0.375rem;
+  background: var(--_line);
+}
+
+.tool {
+  display: inline-flex;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  font-size: lw.v(text-md);
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &[aria-pressed='true'] {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 12%, transparent);
+    color: lw.v(color-foreground);
+  }
+}
+
+.link-form[hidden] {
+  display: none;
+}
+
+.url {
+  width: 18rem;
+  height: 2.25rem;
+  padding: 0 0.625rem;
+  border: 0;
+  background: none;
+  font-size: lw.v(text-md);
+
+  &::placeholder {
+    color: var(--_muted);
+  }
+}
+
+// The text being edited.
+.doc {
+  font-size: lw.v(text-lg);
+  line-height: 1.75;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 82%, transparent);
+  outline: none;
+
+  :is(h2, h3) {
+    margin: 0 0 0.75rem;
+    line-height: 1.25;
+    color: lw.v(color-foreground);
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  p,
+  ul,
+  blockquote {
+    margin: 0 0 1rem;
+  }
+
+  blockquote {
+    padding-left: 1rem;
+    border-left: 2px solid var(--_line);
+  }
+
+  b,
+  strong {
+    color: lw.v(color-foreground);
+  }
+
+  a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  [style*='background-color'] {
+    border-radius: 0.2em;
+    color: lw.v(color-foreground);
+  }
+}

@@ -1,0 +1,54 @@
+@use '../../styles' as lw;
+
+:host {
+  --_size: 1rem;
+}
+
+.visual {
+  width: var(--_size);
+  height: var(--_size);
+  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+  border-radius: 0.25rem;
+  background: lw.v(color-background);
+  color: lw.v(color-primary-foreground);
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out;
+
+  .toggle:hover & {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 55%, transparent);
+  }
+
+  // Checked or partly checked: filled.
+  :host(:is([checked], [indeterminate])) & {
+    border-color: lw.v(color-primary);
+    background: lw.v(color-primary);
+  }
+
+  .check,
+  .dash {
+    position: absolute;
+    display: none;
+  }
+
+  .check {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  // The tick draws itself in each time it is shown.
+  :host([checked]:not([indeterminate])) & .check {
+    display: block;
+  }
+
+  .dash {
+    width: 0.5rem;
+    height: 2px;
+    border-radius: 1px;
+    background: currentcolor;
+  }
+
+  :host([indeterminate]) & .dash {
+    display: block;
+  }
+}

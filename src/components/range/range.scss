@@ -1,0 +1,103 @@
+@use '../../styles' as lw;
+
+:host {
+  --_track: 0.375rem;
+  --_thumb: 1.125rem;
+}
+
+// No box: the track and the value sit side by side.
+.field {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: default;
+
+  &:hover,
+  &:focus-within,
+  :host([data-invalid]) &,
+  :host([data-invalid]) &:focus-within {
+    border: 0;
+    box-shadow: none;
+  }
+
+  :host([data-disabled]) & {
+    background: none;
+  }
+}
+
+.value {
+  min-width: 2.5rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+// The track fills up to the thumb.
+.control {
+  width: 100%;
+  height: var(--_thumb);
+  margin: 0;
+  background: none;
+  cursor: pointer;
+  appearance: none;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &::-webkit-slider-runnable-track {
+    height: var(--_track);
+    border-radius: lw.v(radius-full);
+    background: linear-gradient(to right, #{lw.v(color-primary)} var(--_fill), #{lw.v(color-muted)} var(--_fill));
+  }
+
+  &::-moz-range-track {
+    height: var(--_track);
+    border-radius: lw.v(radius-full);
+    background: lw.v(color-muted);
+  }
+
+  &::-moz-range-progress {
+    height: var(--_track);
+    border-radius: lw.v(radius-full);
+    background: lw.v(color-primary);
+  }
+
+  &::-webkit-slider-thumb {
+    width: var(--_thumb);
+    height: var(--_thumb);
+    margin-top: calc((var(--_track) - var(--_thumb)) / 2);
+    border: 2px solid lw.v(color-primary);
+    border-radius: 50%;
+    background: lw.v(color-background);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+    transition: scale 150ms ease-out;
+    appearance: none;
+  }
+
+  &::-moz-range-thumb {
+    width: var(--_thumb);
+    height: var(--_thumb);
+    box-sizing: border-box;
+    border: 2px solid lw.v(color-primary);
+    border-radius: 50%;
+    background: lw.v(color-background);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+  }
+
+  &:active::-webkit-slider-thumb {
+    scale: 1.12;
+  }
+
+  &:focus-visible::-webkit-slider-thumb {
+    @include lw.focus-ring;
+  }
+
+  &:focus-visible::-moz-range-thumb {
+    @include lw.focus-ring;
+  }
+}

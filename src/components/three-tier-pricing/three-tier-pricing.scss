@@ -1,0 +1,227 @@
+@use '../../styles' as lw;
+
+// The pitch on the left, billing on the right.
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+  margin-bottom: 3.5rem;
+}
+
+.title {
+  max-width: 34rem;
+  font-size: clamp(2.25rem, 6vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 26rem;
+  margin-top: 1.25rem;
+  font-size: lw.v(text-lg);
+  line-height: 1.5;
+  color: lw.v(color-muted-foreground);
+}
+
+.switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.note {
+  color: lw.v(color-muted-foreground);
+}
+
+// Three plans in one frame; the featured one stands out of it.
+.tiers {
+  display: grid;
+  gap: 1rem;
+
+  @container (min-width: 52rem) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    border: 1px solid lw.v(color-border);
+  }
+}
+
+.tier {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  border: 1px solid lw.v(color-border);
+
+  @container (min-width: 52rem) {
+    border: 0;
+
+    & + & {
+      border-left: 1px solid lw.v(color-border);
+    }
+  }
+
+  &[data-featured] {
+    @include lw.inverted;
+
+    border-color: transparent;
+    border-radius: 2px;
+    box-shadow: lw.v(shadow-md);
+
+    @container (min-width: 52rem) {
+      margin: -1.5rem 0;
+      padding-block: 3.5rem;
+    }
+
+    & + .tier {
+      border-left: 0;
+    }
+  }
+}
+
+.tier-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.name {
+  font-size: lw.v(text-lg);
+  font-weight: 500;
+}
+
+.badge {
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-destructive);
+}
+
+.blurb {
+  max-width: 18rem;
+  min-height: 3em;
+  margin-top: 0.5rem;
+  font-size: lw.v(text-md);
+  line-height: 1.5;
+  color: lw.v(color-muted-foreground);
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 2.5rem;
+}
+
+.amount {
+  font-size: clamp(3rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.per {
+  font-size: lw.v(text-md);
+  color: lw.v(color-muted-foreground);
+}
+
+.terms {
+  display: flex;
+  min-height: 2.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-top: 1rem;
+}
+
+.billed {
+  color: lw.v(color-muted-foreground);
+}
+
+// The seat stepper of a per-seat plan.
+.seats {
+  display: flex;
+  align-items: center;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md);
+}
+
+.step {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+  outline: none;
+
+  &:hover:not(:disabled) {
+    color: lw.v(color-foreground);
+  }
+
+  &:active:not(:disabled) {
+    scale: 0.92;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.35;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.seat-count {
+  min-width: 1.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.action {
+  margin-top: 1.5rem;
+
+  &::part(button) {
+    width: 100%;
+    height: 2.75rem;
+  }
+}
+
+.features {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid lw.v(color-border);
+
+  ul {
+    display: grid;
+    gap: 0.875rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: lw.v(text-md);
+
+    svg {
+      flex: none;
+      color: lw.v(color-muted-foreground);
+    }
+  }
+}
+
+.includes {
+  margin-bottom: 1rem;
+  font-size: lw.v(text-md);
+  color: lw.v(color-muted-foreground);
+}

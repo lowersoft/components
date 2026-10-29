@@ -1,0 +1,192 @@
+@use '../../styles' as lw;
+
+@include lw.banner-base;
+
+:host {
+  --_state: #{lw.v(color-destructive)};
+
+  border-bottom: 1px solid lw.v(color-border);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+}
+
+:host([severity='minor']) {
+  --_state: #f59e0b;
+}
+
+:host([data-resolved]) {
+  --_state: #{lw.v(color-accent)};
+}
+
+.bar {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.375rem 0.75rem 0.375rem 1.25rem;
+}
+
+// A square in the incident's colour, breathing while it is open.
+.state {
+  width: 0.625rem;
+  height: 0.625rem;
+  flex: none;
+  border-radius: 2px;
+  background: var(--_state);
+
+  @include lw.motion {
+    animation: breathe 2s ease-in-out infinite;
+
+    :host([data-resolved]) & {
+      animation: none;
+    }
+  }
+}
+
+@keyframes breathe {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.heading {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: lw.v(text-md);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Four steps from investigating to resolved.
+.steps {
+  display: flex;
+  gap: 0.25rem;
+
+  @container (max-width: 44rem) {
+    display: none;
+  }
+}
+
+.step {
+  width: 1.125rem;
+  height: 0.25rem;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 18%, transparent);
+
+  &[data-done] {
+    background: lw.v(color-foreground);
+  }
+}
+
+.stage {
+  font-family: lw.v(font-mono);
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+
+  @container (max-width: 36rem) {
+    display: none;
+  }
+}
+
+.clock {
+  font-variant-numeric: tabular-nums;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  font-size: lw.v(text-md);
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+  }
+
+  svg {
+    @include lw.motion {
+      transition: rotate 250ms ease-out;
+    }
+
+    :host([open]) & {
+      rotate: 180deg;
+    }
+  }
+}
+
+.count {
+  color: lw.v(color-muted-foreground);
+}
+
+// The timeline unfolds under the strip by its own height.
+.timeline {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition: grid-template-rows 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  :host([open]) & {
+    grid-template-rows: 1fr;
+  }
+}
+
+.updates {
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0 1.25rem 0 3.125rem;
+  list-style: none;
+
+  :host([open]) & {
+    padding-bottom: 1rem;
+  }
+}
+
+.update {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.75rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid lw.v(color-border);
+
+  // A dot on the line, filled for the latest.
+  &::before {
+    content: '';
+    position: absolute;
+    top: 1.05rem;
+    left: -1.25rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1px solid lw.v(color-muted-foreground);
+    border-radius: 50%;
+  }
+
+  &:first-child::before {
+    border-color: var(--_state);
+    background: var(--_state);
+  }
+}
+
+.update-stage {
+  font-weight: 500;
+}
+
+.update-at {
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+}
+
+.update-text {
+  grid-column: 1 / -1;
+  max-width: 44rem;
+  line-height: 1.5;
+  color: lw.v(color-muted-foreground);
+}

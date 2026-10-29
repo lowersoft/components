@@ -1,0 +1,101 @@
+@use '../../styles' as lw;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 28rem;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+}
+
+.bar {
+  display: flex;
+  justify-content: center;
+}
+
+.tablist {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+  padding: 0.25rem;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-muted);
+}
+
+.tab {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+button.tab {
+  border: 0;
+  background: none;
+  color: lw.v(color-muted-foreground);
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: color lw.v(duration-fast) ease-out;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// The same labels in the active colours, clipped to the indicator, so each
+// label is exactly right at every point of the slide with no colour tween.
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  padding: 0.25rem;
+  background: var(--lw-smooth-tab-active, #{lw.v(color-primary)});
+  color: var(--lw-smooth-tab-active-text, #{lw.v(color-primary-foreground)});
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+}
+
+.viewport {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1rem;
+  background: lw.v(color-background);
+  touch-action: pan-y;
+  user-select: none;
+
+  &[data-dragging] {
+    cursor: grabbing;
+  }
+}
+
+.track {
+  display: flex;
+  width: calc(var(--_count, 1) * 100%);
+  will-change: transform;
+}
+
+::slotted(*) {
+  box-sizing: border-box;
+  flex: 0 0 calc(100% / var(--_count, 1));
+  min-width: 0;
+  min-height: 220px;
+  margin: 0;
+  padding: 1.25rem;
+  outline: none;
+}
+
+::slotted(:focus-visible) {
+  box-shadow: inset 0 0 0 2px lw.v(color-ring);
+}

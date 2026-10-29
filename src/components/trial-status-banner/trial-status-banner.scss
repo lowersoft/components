@@ -1,0 +1,73 @@
+@use '../../styles' as lw;
+
+@include lw.banner-base;
+
+:host {
+  --_level: #{lw.v(color-foreground)};
+
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+}
+
+:host([data-level='urgent']) {
+  --_level: #f59e0b;
+}
+
+:host([data-level='critical']) {
+  --_level: #{lw.v(color-destructive)};
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 0.75rem 0.5rem 1.25rem;
+}
+
+// One tick a day: spent days dim and short, the rest tall in the level's colour.
+.ticks {
+  display: flex;
+  height: 1.25rem;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+
+  @container (max-width: 34rem) {
+    display: none;
+  }
+}
+
+.tick {
+  width: 2px;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--_level);
+
+  &[data-spent] {
+    height: 60%;
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 22%, transparent);
+  }
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  color: lw.v(color-muted-foreground);
+
+  b {
+    font-weight: 600;
+    color: var(--_level);
+
+    :host([data-level='calm']) & {
+      color: lw.v(color-foreground);
+    }
+  }
+}
+
+.date {
+  font: lw.v(text-xs) lw.v(font-mono);
+
+  @container (max-width: 34rem) {
+    display: none;
+  }
+}

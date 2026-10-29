@@ -1,0 +1,193 @@
+@use '../../styles' as lw;
+
+$notch: 7px;
+$confirmed: ':host(:is([status="flying"], [status="torn"]))';
+
+// Ticket notches, cut where the perforation meets the top and bottom edges.
+@function notches($x) {
+  @return radial-gradient(circle at $x 0, #0000 $notch, #000 $notch + 0.5px) top / 100% 51% no-repeat,
+    radial-gradient(circle at $x 100%, #0000 $notch, #000 $notch + 0.5px) bottom / 100% 51% no-repeat;
+}
+
+@include lw.variants;
+
+:host {
+  --_height: 4.25rem;
+  --_body: 14.75rem;
+  --_stub: 4.75rem;
+
+  position: relative;
+  display: inline-block;
+  width: calc(var(--_body) + var(--_stub));
+  height: var(--_height);
+  user-select: none;
+  vertical-align: middle;
+}
+
+// The falling stub passes over whatever follows the ticket.
+:host([status='flying']) {
+  z-index: 1;
+}
+
+.body,
+.stub {
+  position: absolute;
+  inset-block: 0;
+  border: 1px solid var(--_border);
+  background: var(--_bg);
+  color: var(--_fg);
+}
+
+.body {
+  left: 0;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  width: var(--_body);
+  padding-inline: 1rem;
+  border-right: 0;
+  border-radius: 1rem 0 0 1rem;
+  mask: notches(100%);
+}
+
+.chip {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, var(--_fg) 12%, transparent);
+  transition:
+    background-color 300ms lw.v(ease-out),
+    color 300ms lw.v(ease-out);
+
+  #{$confirmed} & {
+    background: var(--_fg);
+    color: var(--_bg);
+  }
+}
+
+.icon,
+::slotted(svg) {
+  width: 1rem;
+  height: 1rem;
+}
+
+.check,
+#{$confirmed} .chip slot {
+  display: none;
+}
+
+#{$confirmed} .check {
+  display: block;
+}
+
+// The question and the confirmation share one grid cell and crossfade.
+.lines {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.line {
+  grid-area: 1 / 1;
+  min-width: 0;
+  transition: opacity 300ms lw.v(ease-out);
+
+  @include lw.motion {
+    transition:
+      opacity 300ms lw.v(ease-out),
+      filter 300ms lw.v(ease-out),
+      translate 300ms lw.v(ease-out);
+  }
+}
+
+.done,
+#{$confirmed} .ask {
+  opacity: 0;
+  translate: 0 0.25rem;
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+#{$confirmed} .done {
+  opacity: 1;
+  translate: 0 0;
+  filter: none;
+}
+
+.title,
+.sub {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+}
+
+.sub {
+  color: color-mix(in oklab, var(--_fg) 60%, transparent);
+  font-size: lw.v(text-xs);
+}
+
+.stub {
+  left: var(--_body);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  width: var(--_stub);
+  padding: 0;
+  border-left: 0;
+  border-radius: 0 1rem 1rem 0;
+  color: color-mix(in oklab, var(--_fg) 65%, transparent);
+  font: inherit;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  cursor: grab;
+  touch-action: none;
+  transform-origin: 0 100%;
+  mask: notches(0);
+  transition:
+    opacity 300ms lw.v(ease-out),
+    translate 300ms lw.v(ease-out);
+
+  // A fresh stub slides in from the perforation.
+  @starting-style {
+    opacity: 0;
+    translate: -0.75rem 0;
+  }
+
+  // The notch mask would clip an outer ring, so the ring sits inside.
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: -5px;
+  }
+
+  :host([status='tearing']) & {
+    cursor: grabbing;
+  }
+
+  :host([status='torn']) & {
+    display: none;
+  }
+}
+
+.perforation {
+  position: absolute;
+  inset-block: 0.625rem;
+  left: 0;
+  border-left: 2px dotted color-mix(in oklab, var(--_fg) 35%, transparent);
+}
+
+.live {
+  @include lw.visually-hidden;
+}

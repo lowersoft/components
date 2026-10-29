@@ -1,0 +1,81 @@
+@use '../../styles' as lw;
+
+:host {
+  --_accent: #ff5a36;
+
+  @include lw.hero-shell(520px);
+
+  padding-block: 5rem;
+}
+
+.container {
+  @include lw.hero-container;
+}
+
+// The description tucks into the top right of the headline's space.
+.stack {
+  display: grid;
+
+  @container (min-width: 56rem) {
+    grid-template-areas: 'stack';
+
+    > * {
+      grid-area: stack;
+    }
+  }
+}
+
+.description {
+  max-width: 24rem;
+  margin: 0 0 2rem;
+  font-size: lw.v(text-lg);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+
+  @container (min-width: 56rem) {
+    justify-self: end;
+    margin: 0.5rem 0 0;
+  }
+}
+
+// The headline, sized in script to fill the width; each line clips its
+// letters so they can rise in from below.
+.title {
+  position: relative;
+  margin: 0;
+  font-size: 6rem;
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+}
+
+.line {
+  display: block;
+  overflow: hidden;
+  // Room for descenders inside the clip.
+  padding-bottom: 0.06em;
+}
+
+.set {
+  display: inline-block;
+}
+
+.letter {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.space {
+  white-space: pre;
+}
+
+// The full stop, drawn as the accent square.
+.stop {
+  width: 0.16em;
+  height: 0.16em;
+  margin-left: 0.04em;
+  background: var(--_accent);
+}

@@ -1,0 +1,238 @@
+@use '../../styles' as lw;
+
+@include lw.footer-base;
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+// The sign-up beside the latest issues; stacked on narrow screens.
+.top {
+  display: grid;
+  gap: 3.5rem;
+
+  @container (min-width: 56rem) {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+    gap: 4rem;
+  }
+}
+
+.signup {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+}
+
+.eyebrow {
+  margin-bottom: 0.75rem;
+  color: lw.v(color-muted-foreground);
+}
+
+.title {
+  max-width: 24rem;
+  font-size: clamp(1.75rem, 3.5vw, 2rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 24rem;
+  margin-top: 1rem;
+  line-height: 1.6;
+  color: lw.v(color-muted-foreground);
+}
+
+.readers {
+  display: inline-flex;
+  vertical-align: top;
+
+  // Reels as tall as the line, so the digits sit on the text's baseline.
+  .rolling {
+    line-height: 1.6em;
+  }
+
+  .digit {
+    height: 1.6em;
+  }
+}
+
+.form {
+  display: flex;
+  width: 100%;
+  max-width: 24rem;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.email {
+  flex: 1;
+  min-width: 0;
+
+  &::part(label) {
+    @include lw.visually-hidden;
+  }
+}
+
+.done {
+  display: flex;
+  max-width: 24rem;
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: 2rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-lg);
+
+  @include lw.motion {
+    animation: done-in 400ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  svg {
+    flex: none;
+    color: lw.v(color-accent);
+  }
+
+  b {
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+}
+
+@keyframes done-in {
+  from {
+    opacity: 0;
+    translate: 0 0.375rem;
+  }
+}
+
+.next {
+  margin-top: 0.75rem;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+// The latest issues, one hairline row each; the arrow lights up on hover.
+.issues-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid lw.v(color-border);
+}
+
+.issues-title {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+}
+
+.all {
+  color: lw.v(color-muted-foreground);
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+}
+
+.list {
+  padding: 0;
+  list-style: none;
+}
+
+.issue {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid lw.v(color-border);
+
+  > svg {
+    color: lw.v(color-muted-foreground);
+    opacity: 0.5;
+
+    @include lw.motion {
+      transition:
+        opacity 150ms ease-out,
+        translate 200ms ease-out;
+    }
+  }
+
+  &:hover > svg,
+  &:focus-visible > svg {
+    color: lw.v(color-foreground);
+    opacity: 1;
+    translate: 2px -2px;
+  }
+
+  @container (max-width: 34rem) {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    .number,
+    > svg {
+      display: none;
+    }
+  }
+}
+
+.number,
+.meta {
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+  white-space: nowrap;
+}
+
+.issue-title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.625rem;
+
+  > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.latest {
+  flex: none;
+  padding: 0.0625rem 0.375rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-sm);
+  font-size: 0.6875rem;
+  color: lw.v(color-muted-foreground);
+}
+
+// The site's links, and the small print.
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 5rem;
+  padding-top: 2rem;
+  border-top: 1px solid lw.v(color-border);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+
+  .link {
+    font-size: lw.v(text-md);
+  }
+}
+
+.legal,
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+  color: lw.v(color-muted-foreground);
+}

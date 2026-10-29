@@ -1,0 +1,133 @@
+@use '../../styles' as lw;
+
+@include lw.banner-base;
+
+:host {
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.25rem;
+  padding: 0.375rem 0.5rem 0.375rem 1.25rem;
+}
+
+// Story-like segments: done ones full, the running one filling.
+.segments {
+  display: flex;
+  flex: none;
+  gap: 0.25rem;
+
+  @container (max-width: 40rem) {
+    display: none;
+  }
+}
+
+.segment {
+  width: 1.5rem;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 18%, transparent);
+}
+
+.segment-fill {
+  display: block;
+  height: 100%;
+  background: lw.v(color-foreground);
+  transform-origin: left;
+  scale: 0 1;
+
+  [data-state='done'] > & {
+    scale: 1 1;
+  }
+
+  [data-state='running'] > & {
+    animation: fill var(--_interval) linear forwards;
+
+    // Held while pointed at, and for good when paused.
+    :host(:hover) &,
+    :host(:focus-within) &,
+    :host([paused]) & {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes fill {
+  to {
+    scale: 1 1;
+  }
+}
+
+.message {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: lw.v(text-md);
+}
+
+.badge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md);
+  font-size: lw.v(text-sm);
+}
+
+.dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: #3b82f6;
+}
+
+.text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.link {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5rem;
+  color: lw.v(color-muted-foreground);
+  text-decoration: none;
+
+  &[hidden] {
+    display: none;
+  }
+
+  .link-text {
+    text-decoration: underline 1px;
+    text-underline-offset: 0.25em;
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  @container (max-width: 40rem) {
+    display: none;
+  }
+}
+
+.controls {
+  display: flex;
+  flex: none;
+  align-items: center;
+}

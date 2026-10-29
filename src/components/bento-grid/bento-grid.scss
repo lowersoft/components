@@ -1,0 +1,572 @@
+@use '../../styles' as lw;
+
+:host {
+  --_accent: var(--lw-bento-grid-accent, light-dark(#2563eb, #60a5fa));
+
+  display: block;
+  width: 100%;
+  max-width: 56rem;
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+.grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: 176px;
+  gap: 12px;
+  perspective: 1400px;
+
+  :host([data-narrow]) & {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+  }
+}
+
+// While a cell is held: the slots it can land in.
+.slots {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
+  overflow: visible;
+  fill: lw.v(color-ring);
+  pointer-events: none;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.cell {
+  position: relative;
+  grid-column: span var(--_span, 2);
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition: opacity 200ms ease-out;
+
+  :host([data-narrow]) & {
+    grid-column: span var(--_span-n, 1);
+  }
+
+  &[data-dimmed] {
+    opacity: 0.45;
+  }
+
+  &[data-lifted] {
+    z-index: 20;
+  }
+}
+
+// Scaled by the springs while a resize settles.
+.surface {
+  position: absolute;
+  inset: 0;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1rem;
+  background: lw.v(color-background);
+  transform-origin: top left;
+  pointer-events: none;
+  transition: border-color 200ms ease-out;
+
+  [data-lifted] > & {
+    border-color: lw.v(color-ring);
+  }
+}
+
+// The lift shadow, faded in by the springs.
+.shadow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    0 24px 48px -16px rgb(0 0 0 / 0.22),
+    0 8px 16px -8px rgb(0 0 0 / 0.12);
+  opacity: 0;
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 1rem 1rem;
+}
+
+.head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5rem;
+  height: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.icon {
+  display: grid;
+  color: lw.v(color-muted-foreground);
+}
+
+.name {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+}
+
+button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: lw.v(color-muted-foreground);
+  outline: none;
+}
+
+.grip {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: 0 -0.5rem 0 auto;
+  border-radius: lw.v(radius-sm);
+  cursor: grab;
+  touch-action: none;
+  transition:
+    background-color lw.v(duration-fast) ease-out,
+    color lw.v(duration-fast) ease-out;
+
+  &:hover,
+  &[aria-pressed='true'] {
+    background: lw.v(color-muted);
+    color: lw.v(color-foreground);
+  }
+
+  &[aria-pressed='true'] {
+    cursor: grabbing;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--_accent);
+  }
+}
+
+.resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0.375rem;
+  border-bottom-right-radius: 1rem;
+  cursor: ew-resize;
+  touch-action: none;
+  opacity: 0;
+  transition: opacity lw.v(duration-fast) ease-out;
+
+  .cell:hover &,
+  &:focus-visible {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 0.7;
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    color: var(--_accent);
+  }
+
+  svg {
+    width: 0.625rem;
+    height: 0.625rem;
+    fill: currentColor;
+  }
+}
+
+.body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.view {
+  position: absolute;
+  inset: 0;
+  font-size: lw.v(text-xs);
+}
+
+// ---- Widget bodies ----
+
+p {
+  margin: 0;
+}
+
+.muted {
+  color: lw.v(color-muted-foreground);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+
+  &.end {
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  &.between {
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+}
+
+.inline {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.fill {
+  flex: 1;
+  min-height: 0;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
+  height: 100%;
+
+  > .stack {
+    min-width: 0;
+  }
+}
+
+.value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+
+  &.big {
+    font-size: 1.875rem;
+  }
+}
+
+.title {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+}
+
+.note {
+  margin-top: 0.25rem;
+}
+
+.up {
+  font-weight: 500;
+  color: var(--_accent);
+}
+
+.spark {
+  width: 100%;
+  height: 2.5rem;
+  overflow: visible;
+
+  polyline {
+    fill: none;
+    stroke: var(--_accent);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.375rem;
+  margin: 0;
+
+  div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 0.375rem;
+    border-bottom: 1px solid lw.v(color-muted);
+
+    &:last-child {
+      padding-bottom: 0;
+      border: 0;
+    }
+  }
+
+  dt {
+    color: lw.v(color-muted-foreground);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  height: 100%;
+  min-height: 0;
+}
+
+.columns,
+.labels {
+  display: flex;
+  gap: 0.25rem;
+
+  > * {
+    flex: 1;
+  }
+}
+
+.columns {
+  flex: 1;
+  align-items: flex-end;
+  min-height: 0;
+
+  span {
+    border-radius: 3px;
+    background: lw.v(color-border);
+
+    &.on {
+      background: var(--_accent);
+    }
+  }
+}
+
+.labels span {
+  font-size: 10px;
+  line-height: 0.75rem;
+  text-align: center;
+  color: lw.v(color-muted-foreground);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: 0.75rem;
+    padding-bottom: 0.5rem;
+    line-height: 1.25rem;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+}
+
+.rail {
+  position: relative;
+  display: flex;
+  flex: none;
+  justify-content: center;
+  width: 0.5rem;
+  padding-top: 0.375rem;
+}
+
+.dot {
+  box-sizing: border-box;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid lw.v(color-ring);
+  border-radius: 50%;
+  background: lw.v(color-background);
+
+  &.on {
+    border-color: var(--_accent);
+    background: var(--_accent);
+  }
+}
+
+.line {
+  position: absolute;
+  top: 1rem;
+  bottom: -6px;
+  width: 1px;
+  background: lw.v(color-border);
+}
+
+.event {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.meter {
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-muted);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--_accent);
+  }
+}
+
+.todo {
+  display: grid;
+  align-content: end;
+  gap: 0.5rem 1.5rem;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &.two {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .done .text {
+    color: lw.v(color-muted-foreground);
+    text-decoration: line-through;
+  }
+}
+
+.box {
+  display: grid;
+  flex: none;
+  place-items: center;
+  box-sizing: border-box;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 1px solid lw.v(color-ring);
+  border-radius: 4px;
+
+  .done & {
+    border-color: var(--_accent);
+    background: var(--_accent);
+    color: lw.v(color-background);
+  }
+
+  svg {
+    width: 0.625rem;
+    height: 0.625rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.ticks {
+  display: flex;
+  gap: 3px;
+  height: 1.75rem;
+
+  span {
+    flex: 1;
+    border-radius: 2px;
+    background: lw.v(color-border);
+
+    &.on {
+      background: var(--_accent);
+    }
+  }
+}
+
+.segments {
+  display: flex;
+  gap: 1px;
+  height: 0.375rem;
+  overflow: hidden;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-muted);
+
+  span {
+    height: 100%;
+  }
+}
+
+.accent {
+  background: var(--_accent);
+}
+
+.strong {
+  background: lw.v(color-muted-foreground);
+}
+
+.soft {
+  background: lw.v(color-border);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+}
+
+.swatch {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}

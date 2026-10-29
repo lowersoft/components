@@ -1,0 +1,243 @@
+@use '../../styles' as lw;
+
+:host {
+  @include lw.card-shell(24rem);
+}
+
+p {
+  margin: 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  @include lw.person-tint;
+
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  font-size: lw.v(text-sm);
+  font-weight: 600;
+}
+
+.who {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+}
+
+.role {
+  font-size: lw.v(text-sm);
+  color: lw.v(color-muted-foreground);
+}
+
+.now {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+
+  &::before {
+    content: '';
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: lw.v(color-ring);
+  }
+
+  &[data-working]::before {
+    background: light-dark(#10b981, #34d399);
+  }
+}
+
+.day {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: lw.v(radius-lg);
+  background: lw.v(color-muted);
+}
+
+.read {
+  overflow: hidden;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+
+  :host([data-scrubbing]) & {
+    color: lw.v(color-foreground);
+  }
+}
+
+.strip {
+  position: relative;
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  border-radius: lw.v(radius-sm);
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: 4px;
+  }
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.label {
+  flex: none;
+  width: 2.75rem;
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+}
+
+.cells {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 1px;
+  height: 1rem;
+
+  span {
+    border-radius: 2px;
+    background: lw.v(color-background);
+    transition: background-color 200ms ease-out;
+
+    &[data-on] {
+      background: lw.v(color-border);
+    }
+
+    &[data-both] {
+      background: lw.v(color-foreground);
+    }
+  }
+}
+
+// The time read on both clocks: now, or wherever the pointer is.
+.cursor {
+  position: absolute;
+  inset-block: -0.25rem;
+  left: calc(3.25rem + (100% - 3.25rem) * var(--_at, 0));
+  width: 2px;
+  border-radius: 1px;
+  background: light-dark(#f97316, #fb923c);
+  pointer-events: none;
+  translate: -50% 0;
+}
+
+.ticks {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.25rem 0 0 3.25rem;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+}
+
+.rows {
+  margin: 0.75rem -0.5rem 0;
+  padding: 0;
+  list-style: none;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.5rem;
+    border: 0;
+    border-radius: lw.v(radius-md);
+    background: none;
+    font: lw.v(text-sm) lw.v(font-sans);
+    text-align: left;
+    color: inherit;
+    cursor: copy;
+    outline: none;
+    transition: background-color lw.v(duration-fast) ease-out;
+
+    > svg {
+      flex: none;
+      color: lw.v(color-muted-foreground);
+    }
+
+    &:hover {
+      background: lw.v(color-muted);
+    }
+
+    &:focus-visible {
+      @include lw.focus-ring;
+    }
+  }
+}
+
+.value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The copy hint shows on hover and turns into a check once copied.
+.hint {
+  display: grid;
+  color: lw.v(color-muted-foreground);
+  opacity: 0;
+  transition: opacity lw.v(duration-fast) ease-out;
+
+  svg {
+    grid-area: 1 / 1;
+    transition: opacity lw.v(duration-fast) ease-out;
+  }
+
+  svg:last-child {
+    opacity: 0;
+    color: light-dark(#059669, #34d399);
+  }
+
+  button:hover &,
+  button:focus-visible &,
+  [data-copied] & {
+    opacity: 1;
+  }
+
+  [data-copied] & svg:first-child {
+    opacity: 0;
+  }
+
+  [data-copied] & svg:last-child {
+    opacity: 1;
+  }
+}
+
+.save {
+  display: flex;
+  margin-top: 0.75rem;
+}

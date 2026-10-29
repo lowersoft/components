@@ -1,0 +1,536 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --_surface: #{lw.v(color-background)};
+
+  position: relative;
+  isolation: isolate;
+  display: inline-block;
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+}
+
+:host([data-open]) {
+  z-index: 50;
+}
+
+button,
+a {
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+}
+
+svg {
+  flex: none;
+}
+
+hr {
+  height: 1px;
+  margin: 0.375rem 0.625rem;
+  border: 0;
+  background: lw.v(color-muted);
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+.grow {
+  flex: 1;
+}
+
+// ---- The card ----
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 15rem;
+  padding: 0.5rem 0.75rem 0.5rem 0.5rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1rem;
+  background: var(--_surface);
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color lw.v(duration-fast) ease-out,
+    border-color lw.v(duration-fast) ease-out;
+
+  &:hover {
+    border-color: color-mix(in oklab, #{lw.v(color-border)}, #{lw.v(color-foreground)} 12%);
+    background: color-mix(in oklab, #{lw.v(color-muted)} 50%, var(--_surface));
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  > svg {
+    color: lw.v(color-muted-foreground);
+    transition: opacity lw.v(duration-fast) ease-out;
+  }
+
+  .identity {
+    flex: 1;
+  }
+}
+
+// While the menu is open its header holds the avatar, name and email.
+:host([data-open]) .trigger {
+  .identity > *,
+  > svg {
+    visibility: hidden;
+  }
+
+  > svg {
+    opacity: 0;
+  }
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+
+  &.stacked {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-align: left;
+}
+
+.name,
+.email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  line-height: 1.25rem;
+}
+
+.email {
+  font-size: lw.v(text-xs);
+  line-height: 1rem;
+  color: lw.v(color-muted-foreground);
+}
+
+[data-piece] {
+  position: relative;
+  z-index: 2;
+  transform-origin: 0 0;
+}
+
+.avatar {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--_size);
+  height: var(--_size);
+  border-radius: 50%;
+  font-size: max(7px, calc(var(--_size) * 0.3));
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  user-select: none;
+
+  &[data-tone='0'] {
+    background: lw.v(color-primary);
+    color: lw.v(color-primary-foreground);
+  }
+
+  &[data-tone='1'] {
+    background: lw.v(color-border);
+    color: lw.v(color-foreground);
+  }
+
+  &[data-tone='2'] {
+    background: lw.v(color-muted);
+    color: lw.v(color-muted-foreground);
+    box-shadow: inset 0 0 0 1px lw.v(color-border);
+  }
+
+  .dot {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 0.625rem;
+    height: 0.625rem;
+    box-shadow: 0 0 0 2px var(--_surface);
+  }
+}
+
+.dot {
+  border-radius: 50%;
+  background: lw.v(color-border);
+  transition: background-color 200ms ease-out;
+
+  &[data-status='online'] {
+    background: #10b981;
+  }
+
+  &[data-status='away'] {
+    background: #fbbf24;
+  }
+
+  &[data-status='busy'] {
+    background: #ef4444;
+  }
+}
+
+// ---- The menu, grown out of the card ----
+
+.panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  width: 288px;
+  pointer-events: none;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.surface {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 12px 24px rgb(0 0 0 / 0.08)) drop-shadow(0 2px 4px rgb(0 0 0 / 0.04));
+
+  > * {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+// The border and fill layers and the content all clip to the growing box.
+.edge {
+  background: lw.v(color-border);
+  clip-path: inset(0 0 calc(100% - var(--_h)) calc(100% - var(--_w)) round 16px);
+}
+
+.fill,
+.content {
+  clip-path: inset(1px 1px calc(100% - var(--_h) + 1px) calc(100% - var(--_w) + 1px) round 15px);
+}
+
+.fill {
+  background: var(--_surface);
+}
+
+.content {
+  position: relative;
+
+  [data-phase='open'] & {
+    pointer-events: auto;
+  }
+}
+
+.pages {
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+  transition: transform 300ms var(--_ease);
+
+  [data-page='accounts'] & {
+    transform: translateX(-288px);
+  }
+}
+
+.page {
+  box-sizing: border-box;
+  flex: none;
+  width: 288px;
+  padding: 0.375rem;
+  transition: opacity 300ms var(--_ease);
+
+  &[inert] {
+    opacity: 0;
+  }
+}
+
+.instant-pages {
+  .pages,
+  .page {
+    transition: none;
+  }
+}
+
+// The menu body fades in behind the morph and out ahead of it.
+.body {
+  opacity: 0;
+  transition: opacity 120ms var(--_ease);
+
+  [data-phase='open'] & {
+    opacity: 1;
+    transition: opacity 200ms var(--_ease) 50ms;
+  }
+
+  .instant & {
+    transition: none;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.625rem 0.625rem 0.75rem;
+}
+
+.plan {
+  flex: none;
+  padding-top: 0.125rem;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.menu {
+  outline: none;
+}
+
+%row-focus {
+  outline: none;
+  transition:
+    background-color 100ms ease-out,
+    color 100ms ease-out;
+
+  &:focus {
+    background: lw.v(color-muted);
+    color: lw.v(color-foreground);
+  }
+}
+
+.item {
+  @extend %row-focus;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font-size: lw.v(text-sm);
+  text-align: left;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 80%, transparent);
+  cursor: default;
+
+  > svg,
+  .icon,
+  .value {
+    color: lw.v(color-muted-foreground);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.icon {
+  display: grid;
+}
+
+.value {
+  font-size: lw.v(text-xs);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 0.25rem 0.25rem 0.25rem 0.625rem;
+}
+
+.caption {
+  font-size: lw.v(text-sm);
+  color: lw.v(color-muted-foreground);
+}
+
+.radios {
+  display: flex;
+}
+
+.status {
+  @extend %row-focus;
+
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+  cursor: default;
+
+  .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  &[aria-checked='true'] {
+    color: lw.v(color-foreground);
+  }
+
+  &[aria-checked='false'] .dot {
+    background: lw.v(color-border);
+  }
+}
+
+// Theme: a segmented control with a plate sliding to the choice.
+.themes {
+  position: relative;
+  display: flex;
+  padding: 2px;
+  border-radius: 10px;
+  background: lw.v(color-muted);
+}
+
+.theme-plate {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 2.25rem;
+  height: 1.75rem;
+  border-radius: lw.v(radius-md);
+  background: var(--_surface);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  translate: calc(var(--_i, 0) * 100%) 0;
+
+  @include lw.motion {
+    transition: translate 250ms var(--_ease);
+  }
+}
+
+.theme {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: lw.v(color-muted-foreground);
+  outline: none;
+  cursor: default;
+  transition: color lw.v(duration-fast) ease-out;
+
+  &:hover,
+  &[aria-checked='true'] {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px lw.v(color-ring);
+  }
+}
+
+.stack {
+  display: flex;
+
+  .avatar {
+    box-shadow: 0 0 0 2px var(--_surface);
+  }
+
+  .avatar + .avatar {
+    margin-left: -0.375rem;
+  }
+}
+
+.back {
+  gap: 0.375rem;
+  padding-left: 0.375rem;
+  font-weight: 500;
+}
+
+.account .text {
+  flex: 1;
+
+  .name {
+    font-weight: 400;
+  }
+}
+
+.account > svg {
+  color: lw.v(color-foreground);
+}
+
+.add-mark {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  box-sizing: border-box;
+  border: 1px dashed lw.v(color-border);
+  border-radius: 50%;
+  color: lw.v(color-muted-foreground);
+}
+
+// ---- Hold to sign out ----
+
+.sign-out {
+  touch-action: none;
+  user-select: none;
+}
+
+.hint {
+  font-size: lw.v(text-xs);
+  opacity: 0.6;
+
+  &::before {
+    content: 'Hold';
+
+    [data-nudge] & {
+      content: 'Keep holding';
+    }
+  }
+}
+
+// The fill: an inverted copy of the row, revealed left to right.
+.fill-copy {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding-inline: 0.625rem;
+  border-radius: 10px;
+  background: lw.v(color-primary);
+  color: lw.v(color-primary-foreground);
+  clip-path: inset(0 100% 0 0 round 10px);
+  transition: clip-path 240ms var(--_ease);
+
+  > svg {
+    color: inherit;
+  }
+
+  :is([data-holding], [data-done]) > & {
+    clip-path: inset(0 0 0 0 round 10px);
+  }
+
+  [data-holding] > & {
+    transition: clip-path var(--_hold, 1200ms) linear;
+  }
+}

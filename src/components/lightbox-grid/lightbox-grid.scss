@@ -1,0 +1,173 @@
+@use '../../styles' as lw;
+
+:host {
+  display: block;
+  width: 36rem;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: lw.v(radius-lg);
+  background: lw.v(color-muted);
+  cursor: zoom-in;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid lw.v(color-foreground);
+    outline-offset: 2px;
+  }
+
+  // The photo is open: its slot waits empty.
+  &.away {
+    opacity: 0;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter 200ms ease-out;
+  }
+
+  &:hover img {
+    filter: brightness(0.95);
+  }
+}
+
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: #09090b;
+  opacity: 0;
+}
+
+.photo {
+  position: absolute;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  will-change: transform, clip-path;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+}
+
+.chrome {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background-color lw.v(duration-fast) ease-out;
+
+    &:hover {
+      background: rgb(255 255 255 / 0.2);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgb(255 255 255 / 0.7);
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+  }
+}
+
+.corner {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.count {
+  font-size: lw.v(text-sm);
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.6);
+}
+
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+
+  @media (width < 640px) {
+    display: none !important;
+  }
+}
+
+.prev {
+  left: 1rem;
+}
+
+.next {
+  right: 1rem;
+}
+
+.caption {
+  position: absolute;
+  inset-inline: 1rem;
+  margin: 0;
+  font-size: lw.v(text-sm);
+  text-align: center;
+  color: rgb(255 255 255 / 0.8);
+}

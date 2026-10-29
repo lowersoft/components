@@ -1,0 +1,163 @@
+@use '../../styles' as lw;
+
+@include lw.issue-marks;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  @include lw.card-shell(30rem, 0.5rem);
+
+  font-size: lw.v(text-sm);
+}
+
+h2,
+p,
+ol {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.75rem 0.75rem 1rem;
+}
+
+.title {
+  font-size: lw.v(text-lg);
+  font-weight: 500;
+}
+
+.hint {
+  color: var(--_muted);
+}
+
+.list {
+  display: grid;
+  gap: 4px;
+  padding: 0.25rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  list-style: none;
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem 0.625rem 0.25rem;
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+
+  @include lw.motion {
+    transition:
+      translate 200ms cubic-bezier(0.23, 1, 0.32, 1),
+      box-shadow 150ms ease-out,
+      scale 150ms ease-out;
+
+    // The lifted row follows the pointer exactly.
+    &[data-lifted] {
+      transition:
+        box-shadow 150ms ease-out,
+        scale 150ms ease-out;
+    }
+  }
+
+  &[data-lifted] {
+    z-index: 1;
+    background: lw.v(color-background);
+    box-shadow:
+      0 0 0 1px var(--_line),
+      lw.v(shadow-md);
+    scale: 1.02;
+  }
+}
+
+.handle {
+  display: grid;
+  width: 2rem;
+  height: 2.5rem;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  cursor: grab;
+  touch-action: none;
+
+  :host([data-dragging]) & {
+    cursor: grabbing;
+  }
+}
+
+.rank {
+  width: 1.25rem;
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--_muted);
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-title {
+  overflow: hidden;
+  font-size: lw.v(text-md);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  color: var(--_muted);
+
+  code {
+    font-size: lw.v(text-xs);
+  }
+}
+
+.owner {
+  @include lw.person-tint;
+
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+
+.estimate {
+  width: 2rem;
+  flex: none;
+  font-size: lw.v(text-md);
+  text-align: right;
+  color: var(--_muted);
+}

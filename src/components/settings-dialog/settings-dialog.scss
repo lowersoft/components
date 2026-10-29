@@ -1,0 +1,234 @@
+@use '../../styles' as lw;
+
+.modal {
+  --_width: 44rem;
+
+  container-type: inline-size;
+  overflow: hidden;
+}
+
+// Sections down the side, the panel beside them.
+.layout {
+  display: grid;
+  min-height: 26rem;
+
+  @container (min-width: 36rem) {
+    grid-template-columns: 12rem minmax(0, 1fr);
+  }
+}
+
+.nav {
+  padding: 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--_line);
+  background: var(--_raised);
+
+  @container (min-width: 36rem) {
+    border-right: 1px solid var(--_line);
+    border-bottom: 0;
+  }
+
+  .title {
+    padding: 0 0.5rem 0.875rem;
+    font-size: lw.v(text-md);
+  }
+}
+
+.sections {
+  display: flex;
+  gap: 0.125rem;
+  overflow-x: auto;
+
+  @container (min-width: 36rem) {
+    flex-direction: column;
+  }
+}
+
+.section {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  text-align: left;
+  cursor: pointer;
+
+  span:first-of-type {
+    flex: 1;
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &[aria-selected='true'] {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
+    color: lw.v(color-foreground);
+  }
+}
+
+.dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: #f59e0b;
+  opacity: 0;
+
+  [data-changed] > & {
+    opacity: 1;
+  }
+}
+
+.panels {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel {
+  flex: 1;
+  padding: 1.5rem;
+
+  &[hidden] {
+    display: none;
+  }
+
+  @include lw.motion {
+    animation: panel-in 250ms ease-out;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    translate: 0 0.25rem;
+  }
+}
+
+.panel-title {
+  margin-bottom: 1.25rem;
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+}
+
+.fields {
+  display: grid;
+  gap: 1.25rem;
+
+  lw-text-input {
+    width: 100%;
+  }
+}
+
+.row,
+.session {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+// The row already says what a switch does.
+lw-switch.setting::part(label) {
+  @include lw.visually-hidden;
+}
+
+.row-label {
+  font-weight: 500;
+}
+
+.row-hint {
+  margin-top: 0.125rem;
+  color: var(--_muted);
+}
+
+.group {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.choices {
+  display: inline-flex;
+  justify-self: start;
+  padding: 0.25rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-lg);
+}
+
+.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &[aria-checked='true'] {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 9%, transparent);
+    color: lw.v(color-foreground);
+  }
+}
+
+.sessions {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.session {
+  padding: 0.75rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-lg);
+}
+
+.sign-out {
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    border-color: lw.v(color-destructive);
+    color: lw.v(color-destructive);
+  }
+}
+
+// Shows up from below while there are changes to keep or drop.
+.savebar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem 0.75rem 1.5rem;
+  border-top: 1px solid var(--_line);
+  background: lw.v(color-background);
+  opacity: 0;
+  translate: 0 100%;
+  pointer-events: none;
+
+  @include lw.motion {
+    transition:
+      translate 250ms cubic-bezier(0.23, 1, 0.32, 1),
+      opacity 200ms ease-out;
+  }
+
+  &[data-show] {
+    opacity: 1;
+    translate: 0 0;
+    pointer-events: auto;
+  }
+}
+
+.changes {
+  flex: 1;
+  color: var(--_muted);
+}

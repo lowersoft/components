@@ -1,0 +1,192 @@
+@use '../../styles' as lw;
+
+@include lw.testimonial-base;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+p,
+blockquote {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.company-line {
+  font-size: lw.v(text-md);
+
+  .company-mark {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: lw.v(text-xs);
+  }
+}
+
+// The quote, large; its last words brought forward.
+.text {
+  max-width: 54rem;
+  margin-top: 2rem;
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 55%, transparent);
+  text-wrap: pretty;
+
+  mark {
+    padding: 0;
+    background: none;
+    color: lw.v(color-foreground);
+  }
+}
+
+// The speaker in a ring that fills while the quote is up, the others, and
+// the way through.
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem 2rem;
+  margin-top: 3rem;
+}
+
+.speaker {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.ring {
+  position: relative;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+
+  svg {
+    position: absolute;
+    inset: 0;
+    rotate: -90deg;
+    fill: none;
+    stroke-width: 1.5;
+  }
+
+  .face {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}
+
+.track {
+  stroke: var(--_line);
+}
+
+.progress {
+  stroke: lw.v(color-foreground);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+
+  @include lw.motion {
+    &.running {
+      animation: fill var(--_interval, 7s) linear forwards;
+    }
+  }
+
+  // Held while you read or look around in it.
+  :host(:hover) &,
+  :host(:focus-within) & {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes fill {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.others {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.other {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--_muted);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      color 150ms ease-out,
+      background-color 150ms ease-out;
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &[aria-selected='true'] {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
+    color: lw.v(color-foreground);
+  }
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.counter {
+  margin-right: 0.75rem;
+  font: lw.v(text-xs) lw.v(font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--_muted);
+}
+
+.step {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--_line);
+  border-radius: 50%;
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &:active {
+    scale: 0.94;
+  }
+}

@@ -1,0 +1,165 @@
+@use '../../styles' as lw;
+
+@include lw.variants;
+
+:host {
+  --_height: 2.25rem;
+  --_padding: 1rem;
+  --_text: #{lw.v(text-sm)};
+
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+:host([size='sm']) {
+  --_height: 2rem;
+  --_padding: 0.75rem;
+  --_text: #{lw.v(text-xs)};
+}
+
+:host([size='lg']) {
+  --_height: 2.75rem;
+  --_padding: 0.4rem;
+  --_text: #{lw.v(text-md)};
+}
+
+:host([icon-only]) .button {
+  width: var(--_height);
+  padding: 0;
+}
+
+:host([disabled]) {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+// Explained instead of greyed out: readable, focusable, and says why.
+:host([disabled][disabled-reason]) {
+  pointer-events: auto;
+  opacity: 1;
+
+  .button {
+    cursor: not-allowed;
+  }
+
+  .button:hover {
+    background: var(--_bg);
+  }
+
+  .button:active {
+    transform: none;
+  }
+}
+
+.reason {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 50%;
+  z-index: 20;
+  width: max-content;
+  max-width: 16rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-foreground);
+  box-shadow: lw.v(shadow-md);
+  color: lw.v(color-background);
+  font-size: lw.v(text-xs);
+  line-height: 1.4;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  translate: -50% 0.25rem;
+  visibility: hidden;
+
+  @include lw.motion {
+    transition:
+      opacity lw.v(duration-fast) lw.v(ease-out),
+      translate lw.v(duration-fast) lw.v(ease-out),
+      visibility lw.v(duration-fast);
+  }
+
+  :host([disabled][disabled-reason]) .button:is(:hover, :focus-visible) + & {
+    opacity: 1;
+    translate: -50% 0;
+    visibility: visible;
+  }
+}
+
+// Loading: the start icon becomes the spinner and clicks are held.
+.spin {
+  display: none;
+}
+
+:host([loading]) {
+  .spin {
+    display: flex;
+  }
+
+  slot[name='start'] {
+    display: none;
+  }
+
+  .button {
+    cursor: progress;
+  }
+}
+
+.button {
+  display: inline-flex;
+  flex: 1;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  height: var(--_height);
+  padding-inline: var(--_padding);
+  border: 1px solid var(--_border);
+  border-radius: lw.v(radius-md);
+  background: var(--_bg);
+  color: var(--_fg);
+  font: inherit;
+  font-size: var(--_text);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-fast) lw.v(ease-out),
+      transform lw.v(duration-fast) lw.v(ease-out);
+  }
+
+  &:hover {
+    background: color-mix(in oklab, var(--_bg) 88%, var(--_fg));
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.keys {
+  display: flex;
+  gap: 0.25rem;
+  padding-bottom: 2px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// Keycaps derive from the button colors, so they fit every variant.
+.key {
+  @include lw.keycap(var(--_fg), var(--_bg));
+
+  .button:active & {
+    translate: 0 2px;
+    box-shadow: none;
+    transition-duration: 75ms;
+  }
+}

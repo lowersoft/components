@@ -1,0 +1,106 @@
+@use '../../styles' as lw;
+
+@include lw.footer-base;
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+// The brand, and a search over every link.
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid lw.v(color-border);
+}
+
+.jump {
+  display: flex;
+  width: 18rem;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.5rem 0 0.875rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-lg);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  cursor: text;
+
+  @include lw.motion {
+    transition: border-color 150ms ease-out;
+  }
+
+  &:focus-within {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 35%, transparent);
+  }
+}
+
+.query {
+  flex: 1;
+  min-width: 0;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: lw.v(text-sm) lw.v(font-sans);
+  color: lw.v(color-foreground);
+  outline: none;
+
+  &::placeholder {
+    color: lw.v(color-muted-foreground);
+  }
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.key {
+  @include lw.keycap(lw.v(color-foreground), lw.v(color-background));
+
+  color: lw.v(color-muted-foreground);
+
+  .jump:focus-within & {
+    opacity: 0;
+  }
+}
+
+// Columns side by side, as many as fit.
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 2.5rem 2rem;
+  padding-top: 2.5rem;
+}
+
+.column-title {
+  @include lw.motion {
+    transition: opacity 200ms ease-out;
+  }
+}
+
+// While searching, what does not match steps back.
+:host([data-filtering]) {
+  .link:not([data-match]) {
+    opacity: 0.3;
+  }
+
+  .column:not([data-match]) .column-title {
+    opacity: 0.4;
+  }
+}
+
+mark {
+  border-radius: 2px;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 18%, transparent);
+  color: lw.v(color-foreground);
+}
+
+.note {
+  margin-top: 3.5rem;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}

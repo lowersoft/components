@@ -1,0 +1,52 @@
+@use '../../styles' as lw;
+
+:host {
+  --_height: 2.5rem;
+}
+
+:host([size='sm']) {
+  --_height: 2rem;
+  --_padding: 0.625rem;
+  --_text: #{lw.v(text-xs)};
+}
+
+:host([size='lg']) {
+  --_height: 2.875rem;
+  --_padding: 0.875rem;
+  --_text: #{lw.v(text-md)};
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: var(--_height);
+  padding: 0 var(--_padding);
+}
+
+.control {
+  flex: 1;
+  height: 100%;
+
+  // The browser's own clear button for `type="search"` would clash with slots.
+  &::-webkit-search-cancel-button {
+    appearance: none;
+  }
+}
+
+// Icons or text at the ends, in the muted color, only when given.
+slot {
+  display: none;
+  flex: none;
+  align-items: center;
+  color: lw.v(color-muted-foreground);
+
+  &[data-filled] {
+    display: flex;
+  }
+}
+
+::slotted(svg) {
+  width: 1rem;
+  height: 1rem;
+}

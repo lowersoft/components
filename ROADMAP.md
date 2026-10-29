@@ -1,0 +1,226 @@
+# Roadmap
+
+## Current
+- [ ] Status Island
+- [ ] Carousel Cards
+- [ ] Currency Transfer Copy Input
+- [ ] Liquid Gauge %30 Bug
+- [ ] Activity Terrain Flip Bug
+- [ ] Delete: Image Generation Card
+- [ ] Workspace Switcher
+- [ ] Delete: Continue Learning Card
+- [ ] Profile Card
+- [ ] Contact Card
+- [ ] Job Listing Card: width adjustment
+- [ ] Order Tracker: detail button
+- [ ] LOGIN
+- [ ] Upgrade Summary
+- [ ] Ticket Pricing: hover event
+- [ ] Comparison Table Pricing: tooltip
+- [ ] Single Plan Pricing: button icon anim
+- [ ] Testimonial Spotlight: avatar image rotation
+- [ ] Inline Chips Headline: Build/Deployed text owerflow
+- [ ] Filter Headline: example content
+- [ ] Cookie Consent Banner
+- [ ] Upgrade Dialog: Upgrade to Team button icon anim
+- [ ] Settings Dialog
+- [ ] Two Factor Dialog: Copy input side must be change with standart copy input style
+- [ ] New Project Dialog: hover event
+- [ ] Shortcuts Dialog: pop-up scroll bug
+- [ ] Feedback Dialog
+- [ ] Session Timeout Dialog: pop-up scroll bug
+- [ ] Editor Toolbar
+- [ ] Activity Feed
+- [ ] Swipe Actions: read swipe event
+- [ ] Kanban Board: hold wrapper bug
+
+## Phase 0: Infrastructure
+
+- [x] Build, theme system, base element, Storybook, release pipeline
+- [x] `lw-button`
+
+## Phase 1: Buttons, text and feedback
+
+- [ ] Gradient button
+- [x] Slide text button
+- [x] Hold button
+- [x] Particle button
+- [x] Command button
+- [x] Switch button
+- [x] Tear button
+- [x] Bell button
+- [x] Morph popover
+- [x] Undo button
+- [x] Pay button
+- [x] Split button
+- [x] Download button
+- [x] Copy button
+- [x] Base button: `loading`, `shortcut` and `disabled-reason` on `lw-button`
+- [x] Confirm delete button
+- [x] Share button
+- [x] Follow button
+- [x] Connect button
+- [x] Reaction button
+- [x] Theme toggle button
+- [x] Push button
+- [ ] Attract button
+- [x] Type writer
+- [ ] Shimmer text
+- [x] Dynamic text
+- [x] Glitch text
+- [x] Plucked text
+- [x] Cradle text
+- [x] Spoiler text
+- [ ] Matrix text
+- [ ] Swoosh text
+- [ ] Scroll text
+- [x] Loader
+
+## Phase 2: Interactive components
+
+- [x] Card flip (Flick Card)
+- [x] Smooth tab (Swipe Tabs)
+- [x] Toolbar (Tool Dock)
+- [x] Profile dropdown (Account Menu)
+- [x] Avatar picker
+- [x] Team selector
+- [x] Wheel picker
+- [x] Detent dial
+- [x] Liquid slider
+- [x] Signature pad
+- [x] Date range picker
+- [x] Handle input
+- [x] Card input
+- [x] Phone input
+- [x] Address input
+- [x] Password input
+- [x] Mention input
+- [x] Verification code
+- [x] Price range
+- [x] Shortcut recorder
+- [x] Natural date input
+- [x] Swatch fan
+- [x] Period picker
+- [x] Date range brush
+- [x] Upgrade dialog
+- [x] Settings dialog
+- [x] Two factor dialog
+- [x] New project dialog
+- [x] Shortcuts dialog
+- [x] Feedback dialog
+- [x] Newsletter dialog
+- [x] Session timeout dialog
+- [x] Filter toolbar
+- [x] View toggle toolbar
+- [x] Editor toolbar
+- [x] Format toolbar
+- [x] Canvas toolbar
+- [x] Activity feed
+- [x] Swipe actions list
+- [x] Sortable list
+- [x] Team member list
+- [x] Command palette
+- [x] Filter search bar
+- [x] Docs search
+- [x] Slash command menu
+- [x] Action toolbar
+- [x] Kanban board
+- [x] File tree
+- [x] Action search bar (Command Palette)
+- [x] Scroll index
+- [x] Status island
+- [x] Stack panel
+- [ ] AI input
+- [x] Text input
+- [x] Textarea
+- [x] Number input
+- [x] Checkbox
+- [x] Radio group
+- [x] Switch
+- [x] Range
+- [x] File upload
+- [ ] Smooth drawer
+- [x] Morphic navbar (Split Nav)
+
+## Phase 3: Backgrounds and showcase cards
+
+- [x] Background paths
+- [ ] Beams background
+- [x] Shape hero
+- [x] Dot field
+- [x] Flow field
+- [x] Topo background
+- [x] Globe hero
+- [x] Product stage hero
+- [x] Work flow hero
+- [x] Chart hero
+- [x] Terminal hero
+- [x] Kinetic type hero
+- [x] Magic link login
+- [x] Account chooser login
+- [x] Split signup login
+- [x] Invite signup
+- [x] Minimal FAQ
+- [x] Help center FAQ
+- [x] Tabbed FAQ
+- [x] Support thread FAQ
+- [x] Newsletter footer
+- [x] Sitemap footer
+- [x] Status footer
+- [x] Layer stack pricing
+- [x] Upgrade summary
+- [x] Three tier pricing
+- [x] Ticket pricing
+- [x] Comparison table pricing
+- [x] Credit pack pricing
+- [x] Single plan pricing
+- [x] Agency services pricing
+- [x] Testimonial grid
+- [x] Testimonial spotlight
+- [x] Annotated quote
+- [x] Stats headline
+- [x] Install headline
+- [x] Inline chips headline
+- [x] Filter headline
+- [x] Trial status banner
+- [x] Announcement banner
+- [x] Sale strip banner
+- [x] Incident banner
+- [x] Cookie consent banner
+- [x] Support composer
+- [x] Booking picker
+- [x] Create project form
+- [x] Feedback composer
+- [x] Edit profile form
+- [x] Stepper form
+- [ ] Mouse effect card
+- [ ] Liquid glass card
+- [x] Bento grid (Widget Grid)
+- [ ] Apple activity card
+- [x] Currency transfer
+- [x] Card stack (Throw Deck)
+- [x] Carousel cards (Momentum Rail)
+- [x] Notification stack
+- [x] Liquid gauge
+- [x] Activity terrain
+- [x] Receipt printer
+- [x] Metric card
+- [x] Uptime card
+- [x] Spending ring
+- [x] Lightbox grid
+- [x] Image generation card
+- [x] Audio player card
+- [x] Onboarding checklist
+- [x] Deployment card
+- [x] Order summary card
+- [x] Workspace switcher
+- [x] Continue learning card
+- [x] Poll card
+- [x] Profile card
+- [x] Contact card
+- [x] Job listing card
+- [x] Order tracker
+- [x] Clip trimmer
+- [x] Synced transcript
+- [x] Focal point picker
+- [x] Photo straighten

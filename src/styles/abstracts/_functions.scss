@@ -1,0 +1,15 @@
+@use 'sass:meta';
+@use 'sass:string';
+
+/// Reference a design token: `v(color-primary)` -> `var(--lw-color-primary)`.
+@function v($name) {
+  @return var(--lw-#{$name});
+}
+
+/// Unquote token values stored as strings (font stacks).
+@function raw($value) {
+  @if meta.type-of($value) == 'string' {
+    @return string.unquote($value);
+  }
+  @return $value;
+}

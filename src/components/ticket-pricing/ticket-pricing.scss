@@ -1,0 +1,216 @@
+@use '../../styles' as lw;
+
+:host {
+  --_notch: 0.75rem;
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+// Centred: the title, the switch, and what yearly saves.
+.head {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  margin-bottom: 3.5rem;
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.description {
+  max-width: 26rem;
+  margin-bottom: 1rem;
+  font-size: lw.v(text-lg);
+  line-height: 1.5;
+  color: lw.v(color-muted-foreground);
+}
+
+.note {
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+}
+
+// The passes, side by side when they fit.
+.passes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.25rem;
+}
+
+.pass {
+  --_face: color-mix(in oklab, #{lw.v(color-foreground)} 6%, #{lw.v(color-background)});
+
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: translate 300ms var(--_ease);
+  }
+
+  &:hover {
+    translate: 0 -3px;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  // The pass held is printed in the opposite scheme.
+  &[aria-checked='true'] {
+    @include lw.inverted;
+
+    --_face: #{lw.v(color-background)};
+
+    background: none;
+  }
+}
+
+// Two halves with a notch on either side of the tear line.
+.stub,
+.body {
+  position: relative;
+  background: var(--_face);
+}
+
+.stub {
+  display: grid;
+  justify-items: start;
+  padding: 1.75rem 1.75rem 2.25rem;
+  border-radius: 1rem 1rem 0 0;
+  mask:
+    radial-gradient(circle at 0 100%, transparent var(--_notch), #000 calc(var(--_notch) + 0.5px)) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent var(--_notch), #000 calc(var(--_notch) + 0.5px)) right / 51% 100% no-repeat;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 2rem 1.75rem 1.5rem;
+  border-radius: 0 0 1rem 1rem;
+  mask:
+    radial-gradient(circle at 0 0, transparent var(--_notch), #000 calc(var(--_notch) + 0.5px)) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 0, transparent var(--_notch), #000 calc(var(--_notch) + 0.5px)) right / 51% 100% no-repeat;
+
+  // The perforation, between the notches.
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: calc(var(--_notch) + 0.5rem);
+    left: calc(var(--_notch) + 0.5rem);
+    border-top: 1px dashed color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+  }
+}
+
+.stub-head {
+  display: flex;
+  width: 100%;
+  min-height: 2rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.code {
+  color: lw.v(color-muted-foreground);
+}
+
+// The stamp on the pass most people pick.
+.stamp {
+  padding: 0.25rem 0.5rem;
+  border: 1.5px solid lw.v(color-destructive);
+  border-radius: 3px;
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-destructive);
+  rotate: -3deg;
+}
+
+.name {
+  margin-top: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.blurb {
+  max-width: 17rem;
+  min-height: 3em;
+  margin-top: 0.5rem;
+  font-size: lw.v(text-md);
+  line-height: 1.5;
+  color: lw.v(color-muted-foreground);
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 2.5rem;
+}
+
+.amount {
+  font-size: clamp(3rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.per {
+  font-size: lw.v(text-md);
+  color: lw.v(color-muted-foreground);
+}
+
+.terms {
+  margin-top: 1.25rem;
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+}
+
+// The specs, label and value joined by a dotted leader.
+.specs {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+  font: lw.v(text-sm) lw.v(font-mono);
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.leader {
+  flex: 1;
+  min-width: 1rem;
+  border-bottom: 1px dotted color-mix(in oklab, #{lw.v(color-foreground)} 25%, transparent);
+}
+
+.value {
+  color: lw.v(color-foreground);
+}
+
+.code-strip {
+  margin-top: auto;
+  padding-top: 2rem;
+  color: lw.v(color-foreground);
+  opacity: 0.85;
+}
+
+.barcode {
+  display: block;
+  width: 85%;
+  height: 2rem;
+  margin-inline: auto;
+  fill: currentColor;
+}

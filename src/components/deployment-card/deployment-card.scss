@@ -1,0 +1,368 @@
+@use '../../styles' as lw;
+
+:host {
+  --_site: #6366f1;
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+
+  @include lw.card-shell(24rem);
+}
+
+p {
+  margin: 0;
+}
+
+// A drawn screenshot of the site, in a browser frame.
+.preview {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: 0.875rem;
+  background: lw.v(color-muted);
+}
+
+.chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid lw.v(color-border);
+  background: lw.v(color-background);
+
+  span {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: lw.v(color-border);
+  }
+
+  .address {
+    flex: 1;
+    margin-left: 0.5rem;
+    overflow: hidden;
+    font: normal 9px lw.v(font-mono);
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.site {
+  display: grid;
+  gap: 0.375rem;
+  padding: 0.75rem 1rem 1rem;
+
+  b {
+    display: block;
+    border-radius: 3px;
+    background: lw.v(color-border);
+  }
+
+  .nav {
+    width: 30%;
+    height: 0.375rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .hero {
+    width: 70%;
+    height: 0.875rem;
+    background: color-mix(in oklab, var(--_site) 70%, #{lw.v(color-foreground)});
+  }
+
+  .line {
+    width: 85%;
+    height: 0.3rem;
+  }
+
+  .short {
+    width: 55%;
+  }
+
+  .cta {
+    width: 3.5rem;
+    height: 0.875rem;
+    margin-top: 0.25rem;
+    border-radius: lw.v(radius-full);
+    background: var(--_site);
+    transition: background-color 400ms ease-out;
+  }
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.375rem;
+  margin-top: 0.375rem;
+
+  b {
+    height: 1.75rem;
+    background: color-mix(in oklab, var(--_site) 15%, #{lw.v(color-background)});
+  }
+}
+
+// A sheen sweeps over the preview while it builds.
+.shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
+  translate: -100% 0;
+  opacity: 0;
+
+  :host([data-building]) & {
+    opacity: 1;
+
+    @include lw.motion {
+      animation: sweep 1.4s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes sweep {
+  to {
+    translate: 100% 0;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.names {
+  min-width: 0;
+}
+
+.project {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+}
+
+.domain {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: lw.v(text-sm);
+  color: lw.v(color-muted-foreground);
+  text-decoration: none;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.status {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  --_tone: light-dark(#10b981, #34d399);
+
+  background: color-mix(in oklab, var(--_tone) 12%, transparent);
+  color: color-mix(in oklab, var(--_tone) 75%, #{lw.v(color-foreground)});
+
+  &::before {
+    content: '';
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: var(--_tone);
+  }
+
+  &[data-status='building'] {
+    --_tone: light-dark(#f59e0b, #fbbf24);
+
+    &::before {
+      @include lw.motion {
+        animation: pulse 1s ease-in-out infinite;
+      }
+    }
+  }
+
+  &[data-status='error'] {
+    --_tone: light-dark(#e11d48, #fb7185);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.commit {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}
+
+.message {
+  margin-top: 0.25rem;
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The build: a step rail, a ticking timer and the latest log line. It folds
+// open while a build runs and stays to show how the last one went.
+.build {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+
+  @include lw.motion {
+    transition:
+      grid-template-rows 320ms var(--_ease),
+      opacity 240ms var(--_ease);
+  }
+
+  :host([data-built]) & {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+}
+
+.build-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rail {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.375rem;
+    font-size: 10px;
+    color: lw.v(color-muted-foreground);
+
+    // The rail between steps fills as each one finishes.
+    &:not(:first-child)::before {
+      content: '';
+      position: absolute;
+      top: 0.3125rem;
+      right: 50%;
+      left: -50%;
+      height: 2px;
+      margin-inline: 0.5rem;
+      background: linear-gradient(lw.v(color-foreground) 0 0) 0 0 / var(--_fill, 0%) 100% no-repeat, lw.v(color-border);
+
+      @include lw.motion {
+        transition: background-size 400ms var(--_ease);
+      }
+    }
+
+    &:is([data-state='done'], [data-state='active'])::before {
+      --_fill: 100%;
+    }
+
+    &[data-state='active'],
+    &[data-state='done'] {
+      color: lw.v(color-foreground);
+    }
+  }
+}
+
+.node {
+  position: relative;
+  box-sizing: border-box;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 2px solid lw.v(color-border);
+  border-radius: 50%;
+  background: lw.v(color-background);
+  transition:
+    border-color 200ms ease-out,
+    background-color 200ms ease-out;
+
+  [data-state='done'] & {
+    border-color: lw.v(color-foreground);
+    background: lw.v(color-foreground);
+  }
+
+  [data-state='active'] & {
+    border-color: lw.v(color-foreground);
+
+    @include lw.motion {
+      animation: pulse 900ms ease-in-out infinite;
+    }
+  }
+
+  [data-step='ready'][data-state='active'] & {
+    border-color: light-dark(#10b981, #34d399);
+    background: light-dark(#10b981, #34d399);
+    animation: none;
+  }
+}
+
+.log {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-muted);
+  font: lw.v(text-xs) lw.v(font-mono);
+}
+
+.timer {
+  flex: none;
+  min-width: 3rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.line-box {
+  position: relative;
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  height: 1rem;
+  overflow: hidden;
+}
+
+.log-line {
+  grid-area: 1 / 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid lw.v(color-muted);
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}

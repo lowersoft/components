@@ -1,0 +1,266 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --_done: light-dark(#10b981, #34d399);
+
+  @include lw.card-shell(24rem);
+}
+
+p {
+  margin: 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.ring {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+
+  svg {
+    position: absolute;
+    inset: 0;
+    rotate: -90deg;
+  }
+
+  circle {
+    fill: none;
+    stroke-width: 4;
+  }
+}
+
+.track {
+  stroke: lw.v(color-muted);
+}
+
+.arc {
+  stroke: lw.v(color-foreground);
+  stroke-linecap: round;
+
+  @include lw.motion {
+    transition:
+      stroke-dashoffset 500ms var(--_ease),
+      stroke 300ms ease-out;
+  }
+
+  :host([data-complete]) & {
+    stroke: var(--_done);
+  }
+}
+
+.count {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 200ms ease-out;
+
+  :host([data-complete]) & {
+    opacity: 0;
+  }
+}
+
+// At the end, a tick takes the count's place.
+.tick {
+  position: absolute;
+  display: grid;
+  color: var(--_done);
+  opacity: 0;
+
+  svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  :host([data-complete]) & {
+    opacity: 1;
+
+    path {
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 400ms var(--_ease) 150ms;
+    }
+  }
+}
+
+svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.heading {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+}
+
+.left {
+  font-size: lw.v(text-sm);
+  color: lw.v(color-muted-foreground);
+}
+
+.steps {
+  margin: 1rem -0.5rem 0;
+  padding: 0;
+  list-style: none;
+
+  :host([data-complete]) & {
+    display: none;
+  }
+
+  li {
+    padding: 0.5rem;
+    border-radius: lw.v(radius-lg);
+    transition: background-color 200ms ease-out;
+
+    &[data-open] {
+      background: lw.v(color-muted);
+    }
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.check {
+  display: grid;
+  flex: none;
+  place-items: center;
+  box-sizing: border-box;
+  width: 1.375rem;
+  height: 1.375rem;
+  padding: 0;
+  border: 1.5px solid lw.v(color-ring);
+  border-radius: 50%;
+  background: lw.v(color-background);
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 200ms ease-out,
+    border-color 200ms ease-out;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  path {
+    stroke-width: 2.5;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  [data-done] & {
+    border-color: var(--_done);
+    background: var(--_done);
+
+    path {
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 300ms var(--_ease);
+    }
+  }
+}
+
+.title {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  transition: color 200ms ease-out;
+
+  [data-done] & {
+    color: lw.v(color-muted-foreground);
+    text-decoration: line-through;
+  }
+}
+
+// The open step's description and action fold down; the rest fold away.
+.fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+
+  @include lw.motion {
+    transition:
+      grid-template-rows 300ms var(--_ease),
+      opacity 250ms var(--_ease);
+  }
+
+  [data-open] > & {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+.fold-inner {
+  overflow: hidden;
+  padding-left: 2.125rem;
+
+  lw-button {
+    margin: 0.625rem 0 0.25rem;
+  }
+}
+
+.description {
+  margin-top: 0.25rem;
+  font-size: lw.v(text-sm);
+  line-height: 1.5;
+  color: lw.v(color-muted-foreground);
+}
+
+.all-set {
+  display: none;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: lw.v(radius-lg);
+  background: color-mix(in oklab, var(--_done) 10%, transparent);
+
+  :host([data-complete]) & {
+    display: block;
+
+    @include lw.motion {
+      animation: rise 400ms var(--_ease);
+    }
+  }
+
+  lw-button {
+    margin-top: 0.75rem;
+  }
+}
+
+.set-title {
+  font-size: lw.v(text-sm);
+  font-weight: 600;
+}
+
+.set-text {
+  margin-top: 0.25rem;
+  font-size: lw.v(text-sm);
+  color: lw.v(color-muted-foreground);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}

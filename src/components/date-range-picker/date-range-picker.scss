@@ -1,0 +1,392 @@
+@use '../../styles' as lw;
+
+:host {
+  --_month: 280px;
+  --_gap: 2rem;
+  --_row: 2.25rem;
+  --_hover: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+
+  display: block;
+  width: 820px;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.card {
+  container-type: inline-size;
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1rem;
+  background: lw.v(color-background);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+}
+
+// Quick ranges sit on top when narrow and in a sidebar when there is room.
+.body {
+  display: flex;
+  flex-direction: column;
+}
+
+.presets {
+  flex: none;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid lw.v(color-border);
+}
+
+.presets-title {
+  display: none;
+  margin: 0 0 0.5rem;
+  padding: 0.25rem 0.625rem 0;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+}
+
+.preset-list {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+// One hover box slides between the quick ranges.
+.highlight {
+  @include lw.sliding-highlight;
+}
+
+.preset {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 2rem;
+  padding: 0 0.625rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  text-align: left;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+  transition:
+    color 150ms ease-out,
+    background-color 150ms ease-out;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  // The range in use keeps its own box under the sliding hover box.
+  &[aria-pressed='true'] {
+    background: lw.v(color-muted);
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+}
+
+@container (width >= 48rem) {
+  .body {
+    flex-direction: row;
+  }
+
+  .presets {
+    width: 11rem;
+    padding: 0.75rem;
+    border-right: 1px solid lw.v(color-border);
+    border-bottom: 0;
+  }
+
+  .presets-title {
+    display: block;
+  }
+
+  .preset-list {
+    flex-direction: column;
+  }
+
+  .preset {
+    width: 100%;
+  }
+}
+
+.calendar {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding: 0.75rem 1rem 1rem;
+  overflow: hidden;
+}
+
+// The arrows sit level with the month titles, at the outer edges of the months.
+.navs {
+  position: absolute;
+  inset: 0.75rem 0.75rem auto;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  padding-inline: max(0px, calc(50% - var(--_month) / 2 - 0.5rem));
+  pointer-events: none;
+}
+
+.nav {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: lw.v(color-muted-foreground);
+  pointer-events: auto;
+  transition:
+    color 150ms ease-out,
+    background-color 150ms ease-out;
+
+  &:hover:not(:disabled) {
+    background: lw.v(color-muted);
+    color: lw.v(color-foreground);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+  }
+}
+
+.months {
+  display: flex;
+  justify-content: center;
+  gap: var(--_gap);
+}
+
+// One month when narrow: the later of the two.
+.month {
+  width: var(--_month);
+
+  &:first-child {
+    display: none;
+  }
+}
+
+@container (width >= 42rem) {
+  .navs {
+    padding-inline: max(0px, calc(50% - var(--_month) - var(--_gap) / 2 - 0.5rem));
+  }
+
+  .month:first-child {
+    display: block;
+  }
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--_row);
+  margin: 0;
+  font-weight: 500;
+}
+
+.weekdays,
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdays [role='columnheader'] {
+  display: grid;
+  place-items: center;
+  height: 2rem;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.week {
+  position: relative;
+  margin-top: 0.25rem;
+}
+
+// A week's part of the range: one rounded band behind its days.
+.band {
+  position: absolute;
+  top: 0;
+  height: var(--_row);
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-muted);
+  pointer-events: none;
+
+  &[data-preview] {
+    background: color-mix(in oklab, #{lw.v(color-muted)} 60%, transparent);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+[role='gridcell'] {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: var(--_row);
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-full);
+  background: none;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &:hover:not(:disabled, [data-in-range]) {
+    background: var(--_hover);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+  }
+
+  // Today: a dot under the number.
+  &[aria-current='date']::after {
+    content: '';
+    position: absolute;
+    bottom: 0.25rem;
+    left: 50%;
+    width: 3px;
+    height: 3px;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: currentcolor;
+  }
+
+  // The ends of the range are filled circles over the band.
+  &:is([data-start], [data-end]) {
+    width: var(--_row);
+    background: lw.v(color-primary);
+    font-weight: 500;
+    color: lw.v(color-primary-foreground);
+  }
+}
+
+.hint {
+  @include lw.visually-hidden;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid lw.v(color-border);
+  background: color-mix(in oklab, #{lw.v(color-muted)} 50%, transparent);
+}
+
+.range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  transition: border-color 150ms ease-out;
+
+  // The field the next pick fills.
+  &[data-active] {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 35%, transparent);
+  }
+}
+
+.field-label {
+  font-size: 0.6875rem;
+  color: lw.v(color-muted-foreground);
+}
+
+.field-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash {
+  color: lw.v(color-muted-foreground);
+}
+
+.count {
+  display: none;
+  align-items: center;
+  gap: 0.25em;
+  margin-left: 0.25rem;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+@container (width >= 36rem) {
+  .footer {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .field {
+    flex: none;
+    width: 10rem;
+  }
+
+  .count {
+    display: inline-flex;
+  }
+}
+
+.announce {
+  @include lw.visually-hidden;
+}

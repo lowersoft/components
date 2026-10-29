@@ -1,0 +1,205 @@
+@use '../../styles' as lw;
+
+:host {
+  @include lw.card-shell(22rem, 0.75rem);
+}
+
+p {
+  margin: 0;
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 1rem;
+  background: #18181b;
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.9);
+  color: #18181b;
+  translate: -50% -50%;
+  transition: opacity 200ms ease-out;
+
+  svg {
+    fill: currentColor;
+    translate: 1px 0;
+  }
+
+  [data-scrubbing] & {
+    opacity: 0;
+  }
+}
+
+// While scrubbing: the time and a playhead at the pointer.
+.at {
+  position: absolute;
+  bottom: 0.875rem;
+  left: clamp(1.5rem, calc(var(--_at) * 100%), calc(100% - 1.5rem));
+  padding: 0.125rem 0.375rem;
+  border-radius: lw.v(radius-sm);
+  background: rgb(0 0 0 / 0.7);
+  font: 500 11px lw.v(font-sans);
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  opacity: 0;
+  translate: -50% 0;
+  transition: opacity 150ms ease-out;
+
+  [data-scrubbing] & {
+    opacity: 1;
+  }
+}
+
+.playhead {
+  position: absolute;
+  inset-block: 0 0.25rem;
+  left: calc(var(--_at) * 100%);
+  width: 2px;
+  background: rgb(255 255 255 / 0.8);
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+
+  [data-scrubbing] & {
+    opacity: 1;
+  }
+}
+
+.bar {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 0.25rem;
+  background: rgb(255 255 255 / 0.25);
+
+  span {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+  }
+}
+
+.watched {
+  width: calc(var(--_watched) * 100%);
+  background: #ef4444;
+}
+
+.preview {
+  width: calc(var(--_at) * 100%);
+  background: rgb(255 255 255 / 0.45);
+  opacity: 0;
+
+  [data-scrubbing] & {
+    opacity: 1;
+  }
+}
+
+.info {
+  padding: 0.75rem 0.25rem 0;
+}
+
+.course {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.title {
+  margin-top: 0.125rem;
+  font-size: lw.v(text-md);
+  font-weight: 600;
+}
+
+.left {
+  margin-top: 0.125rem;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.up-next {
+  margin: 1rem 0.25rem 0.375rem;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.next {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.5rem 0.25rem;
+    border: 0;
+    border-radius: lw.v(radius-md);
+    background: none;
+    font: lw.v(text-sm) lw.v(font-sans);
+    text-align: left;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+    transition: background-color lw.v(duration-fast) ease-out;
+
+    &:hover {
+      background: lw.v(color-muted);
+    }
+
+    &:focus-visible {
+      @include lw.focus-ring;
+    }
+  }
+}
+
+.swatch {
+  flex: none;
+  width: 2.5rem;
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  background: linear-gradient(135deg, hsl(var(--_hue) 45% 30%), hsl(calc(var(--_hue) + 40) 50% 16%));
+}
+
+.next-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.duration {
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+}

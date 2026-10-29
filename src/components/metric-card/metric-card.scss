@@ -1,0 +1,424 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --_note: var(--lw-metric-card-note, light-dark(#f97316, #fb923c));
+  --_ink: #{lw.v(color-foreground)};
+
+  display: block;
+  box-sizing: border-box;
+  width: 28rem;
+  max-width: 100%;
+  padding: 1.25rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1.5rem;
+  background: lw.v(color-background);
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+  user-select: none;
+}
+
+p {
+  margin: 0;
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+button {
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.label {
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+}
+
+.segment {
+  color: lw.v(color-foreground);
+}
+
+// One pill slides between the periods.
+.periods {
+  position: relative;
+  display: flex;
+  flex: none;
+  padding: 2px;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-muted);
+  font-size: lw.v(text-xs);
+
+  button {
+    position: relative;
+    width: 2.5rem;
+    padding: 0.25rem 0;
+    border-radius: lw.v(radius-full);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: lw.v(color-muted-foreground);
+    transition: color 200ms ease-out;
+
+    &:hover,
+    &[aria-pressed='true'] {
+      color: lw.v(color-foreground);
+    }
+  }
+}
+
+.pill {
+  position: absolute;
+  inset-block: 2px;
+  left: 2px;
+  width: 2.5rem;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+
+  @include lw.motion {
+    transition: translate 200ms var(--_ease);
+  }
+}
+
+.value {
+  margin-top: 0.75rem;
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+
+  .reel {
+    @include lw.motion {
+      transition: translate 380ms var(--_ease);
+    }
+  }
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.25rem;
+  margin-top: 0.375rem;
+  font-size: lw.v(text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.delta {
+  flex: none;
+  font-weight: 500;
+  color: light-dark(#059669, #34d399);
+
+  &[data-down] {
+    color: light-dark(#e11d48, #fb7185);
+  }
+}
+
+.caption {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+}
+
+.note {
+  color: var(--_note);
+}
+
+.clear {
+  flex: none;
+  margin-left: auto;
+  padding: 0.125rem 0.5rem;
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+  transition:
+    background-color lw.v(duration-fast) ease-out,
+    color lw.v(duration-fast) ease-out;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &:hover {
+    background: lw.v(color-muted);
+    color: lw.v(color-foreground);
+  }
+}
+
+.chart {
+  position: relative;
+  height: 8rem;
+  margin-top: 1.25rem;
+  border-radius: lw.v(radius-md);
+  cursor: crosshair;
+  touch-action: pan-y;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: 4px;
+  }
+
+  svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+}
+
+.base {
+  stroke: lw.v(color-border);
+}
+
+.previous {
+  fill: none;
+  stroke: lw.v(color-border);
+  stroke-dasharray: 3 4;
+  stroke-width: 1.25;
+}
+
+// The area only fills the part being read.
+.area {
+  fill: color-mix(in oklab, var(--_ink) 6%, transparent);
+}
+
+.dim,
+.line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.dim {
+  stroke: color-mix(in oklab, var(--_ink) 25%, transparent);
+}
+
+.line {
+  stroke: var(--_ink);
+}
+
+.pins,
+.marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+// A pinned note: a dashed line down to a dot on the baseline.
+.pin {
+  position: absolute;
+  inset-block: 0;
+  border-left: 1px dashed color-mix(in oklab, var(--_note) 30%, transparent);
+  translate: -50% 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -3.5px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--_note);
+    box-shadow: 0 0 0 2px lw.v(color-background);
+    translate: 0 50%;
+  }
+}
+
+.edge,
+.guide {
+  position: absolute;
+  inset-block: 0;
+  width: 1px;
+  background: lw.v(color-border);
+}
+
+.edge {
+  background: lw.v(color-ring);
+}
+
+.dot,
+.twin,
+.end {
+  position: absolute;
+  border-radius: 50%;
+  translate: -50% -50%;
+}
+
+.dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  background: var(--_ink);
+  box-shadow: 0 0 0 4px lw.v(color-background);
+}
+
+.twin {
+  box-sizing: border-box;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid lw.v(color-ring);
+  background: lw.v(color-background);
+}
+
+// Today, at rest.
+.end {
+  right: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--_ink);
+  box-shadow: 0 0 0 4px lw.v(color-background);
+  pointer-events: none;
+  translate: 50% -50%;
+
+  @include lw.motion {
+    transition:
+      top 420ms cubic-bezier(0.65, 0, 0.35, 1),
+      opacity 420ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  &[data-hidden] {
+    opacity: 0;
+  }
+}
+
+.axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.dash {
+  width: 0.75rem;
+  border-top: 1px dashed lw.v(color-ring);
+}
+
+.breakdown {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid lw.v(color-muted);
+}
+
+.bar {
+  display: flex;
+  gap: 2px;
+  height: 0.375rem;
+
+  span {
+    min-width: 0;
+    border-radius: lw.v(radius-full);
+
+    @include lw.motion {
+      transition:
+        flex-grow 300ms var(--_ease),
+        opacity 300ms var(--_ease);
+    }
+
+    &[data-faded] {
+      opacity: 0.25;
+    }
+  }
+}
+
+// Swatches for the breakdown, darkest first; the charted part takes the ink.
+[data-tone='0'] {
+  background: var(--_ink);
+}
+
+[data-tone='1'] {
+  background: lw.v(color-muted-foreground);
+}
+
+[data-tone='2'] {
+  background: lw.v(color-border);
+}
+
+[data-tone='3'] {
+  background: lw.v(color-ring);
+}
+
+.parts {
+  margin: 0.625rem -0.5rem 0;
+  padding: 0;
+  list-style: none;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    border-radius: lw.v(radius-md);
+    font-size: lw.v(text-sm);
+    text-align: left;
+    transition:
+      background-color lw.v(duration-fast) ease-out,
+      opacity lw.v(duration-fast) ease-out;
+
+    &:hover,
+    &[aria-pressed='true'] {
+      background: lw.v(color-muted);
+    }
+
+    &[data-faded] {
+      opacity: 0.5;
+    }
+  }
+}
+
+.swatch {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.part-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+}
+
+.amount {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.share {
+  width: 2.5rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: lw.v(color-muted-foreground);
+}

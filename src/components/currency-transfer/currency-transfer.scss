@@ -1,0 +1,422 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+  // How long the rail takes to reach the next step; that step's spinner
+  // waits for it, so progress reads as flowing down the line.
+  --_rail: 350ms;
+
+  display: block;
+  box-sizing: border-box;
+  width: 24rem;
+  max-width: 100%;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: lw.v(color-background);
+  box-shadow:
+    0 0 0 1px lw.v(color-border),
+    0 1px 2px rgb(0 0 0 / 0.04),
+    0 8px 24px -12px rgb(0 0 0 / 0.12);
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+}
+
+p {
+  margin: 0;
+}
+
+.announce,
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.initials {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: lw.v(color-muted);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+}
+
+.names {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.25;
+
+  p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.recipient {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+}
+
+.account {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.pill {
+  display: inline-grid;
+  flex: none;
+  align-items: center;
+  height: 1.5rem;
+  padding-inline: 0.5rem;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-muted);
+  font-size: 11px;
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+  transition:
+    background-color 200ms ease-out,
+    color 200ms ease-out;
+
+  &[data-status='completed'] {
+    background: color-mix(in oklab, #10b981 12%, transparent);
+    color: light-dark(#047857, #6ee7b7);
+  }
+
+  &[data-status='failed'] {
+    background: color-mix(in oklab, #ef4444 12%, transparent);
+    color: light-dark(#b91c1c, #fca5a5);
+  }
+
+  span {
+    grid-area: 1 / 1;
+    text-align: center;
+    transition:
+      opacity 200ms ease-out,
+      filter 200ms ease-out;
+
+    &[aria-hidden='true'] {
+      opacity: 0;
+      filter: blur(2px);
+    }
+  }
+}
+
+.amount {
+  margin-top: 1.5rem;
+}
+
+.big {
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+// Two symbols in one cell, crossfading, so the amount never shifts.
+.symbol {
+  display: inline-grid;
+
+  span {
+    grid-area: 1 / 1;
+    text-align: right;
+    transition:
+      opacity 200ms var(--_ease),
+      filter 200ms var(--_ease);
+  }
+
+  &[data-to] .from,
+  &:not([data-to]) .to {
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+
+// Longer than a UI transition on purpose: it is the one moment the card
+// explains, and it happens once.
+.amount .reel {
+  @include lw.motion {
+    transition: translate 550ms var(--_ease) calc(var(--_order, 0) * 30ms);
+  }
+}
+
+.sums {
+  margin-top: 0.25rem;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+}
+
+.steps {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: 0.75rem;
+  }
+}
+
+.track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.node {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  box-sizing: border-box;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1.5px solid lw.v(color-border);
+  border-radius: 50%;
+  transition:
+    background-color 200ms ease-out,
+    border-color 200ms ease-out;
+
+  [data-state='done'] & {
+    border-color: lw.v(color-primary);
+    background: lw.v(color-primary);
+    color: lw.v(color-primary-foreground);
+  }
+
+  [data-state='failed'] & {
+    border-color: #ef4444;
+    background: #ef4444;
+    color: #fff;
+  }
+
+  > svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  // The tick draws once, as the step finishes.
+  [data-state='done'] & path {
+    stroke-dasharray: 1;
+
+    @include lw.motion {
+      animation: draw 300ms var(--_ease) both;
+    }
+  }
+}
+
+// Active: the ring with a turning arc, in once the rail has arrived.
+.spinner {
+  position: absolute;
+  inset: -1.5px;
+
+  @include lw.motion {
+    animation: blur-in 200ms ease-out calc(var(--_rail) - 100ms) both;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    color: lw.v(color-foreground);
+
+    @include lw.motion {
+      animation: spin 750ms linear infinite;
+    }
+  }
+
+  path {
+    stroke-width: 1.5;
+  }
+}
+
+.rail {
+  position: relative;
+  flex: 1;
+  width: 1.5px;
+  margin-block: 0.25rem;
+  overflow: hidden;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-border);
+
+  // When a step finishes, the rail runs down to the next one.
+  span {
+    position: absolute;
+    inset: 0;
+    background: lw.v(color-primary);
+    transform-origin: top;
+    scale: 1 0;
+
+    @include lw.motion {
+      transition: scale var(--_rail) cubic-bezier(0.77, 0, 0.175, 1);
+    }
+  }
+
+  [data-state='done'] & span {
+    scale: 1 1;
+  }
+}
+
+.step {
+  flex: 1;
+  min-width: 0;
+
+  li:not(:last-child) & {
+    padding-bottom: 1rem;
+  }
+}
+
+.title {
+  font-size: lw.v(text-sm);
+  line-height: 1.25rem;
+  transition: color 200ms ease-out;
+
+  [data-state='pending'] & {
+    color: lw.v(color-muted-foreground);
+  }
+
+  [data-state='failed'] & {
+    color: light-dark(#dc2626, #f87171);
+  }
+}
+
+.detail {
+  margin-top: 0.125rem;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+
+  [data-state='pending'] & {
+    opacity: 0.75;
+  }
+}
+
+.retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 1.75rem;
+  margin-top: 0.5rem;
+  padding-inline: 0.625rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-primary);
+  font: 500 lw.v(text-xs) lw.v(font-sans);
+  color: lw.v(color-primary-foreground);
+  cursor: pointer;
+
+  @include lw.motion {
+    animation: blur-in 200ms ease-out 150ms both;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid lw.v(color-muted);
+  font-size: lw.v(text-xs);
+}
+
+.copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin: -0.25rem -0.375rem;
+  padding: 0.25rem 0.375rem;
+  border: 0;
+  border-radius: lw.v(radius-sm);
+  background: none;
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+  transition:
+    background-color lw.v(duration-fast) ease-out,
+    color lw.v(duration-fast) ease-out;
+
+  &:hover {
+    background: lw.v(color-muted);
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.icons {
+  display: grid;
+
+  svg {
+    grid-area: 1 / 1;
+    transition:
+      opacity lw.v(duration-fast) ease-out,
+      filter lw.v(duration-fast) ease-out;
+
+    &:last-child {
+      color: light-dark(#059669, #34d399);
+      opacity: 0;
+      filter: blur(2px);
+    }
+
+    &:first-child {
+      opacity: 0.6;
+    }
+  }
+
+  [data-copied] & svg:first-child {
+    opacity: 0;
+    filter: blur(2px);
+  }
+
+  [data-copied] & svg:last-child {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+.locked {
+  color: lw.v(color-muted-foreground);
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes blur-in {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 1turn;
+  }
+}

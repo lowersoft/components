@@ -1,0 +1,148 @@
+@use '../../styles' as lw;
+
+:host {
+  --_thumb: 1.25rem;
+
+  display: block;
+  width: 360px;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+  user-select: none;
+}
+
+:host([disabled]) {
+  opacity: 0.5;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.label {
+  font-weight: 500;
+}
+
+.values {
+  display: flex;
+  gap: 0.375rem;
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+}
+
+.value {
+  font-weight: 500;
+  color: lw.v(color-foreground);
+}
+
+// The prices' spread: bars inside the range dark, the rest faint.
+.histogram {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 4rem;
+  padding: 0 calc(var(--_thumb) / 2);
+}
+
+.bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 12%, transparent);
+  transition: background-color 150ms ease-out;
+
+  &[data-in] {
+    background: lw.v(color-foreground);
+  }
+}
+
+// The track lines up with the bars: its ends sit half a thumb in.
+.track {
+  position: relative;
+  height: var(--_thumb);
+  margin: 0 calc(var(--_thumb) / 2);
+  touch-action: none;
+  cursor: pointer;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 4px;
+    translate: 0 -50%;
+    border-radius: lw.v(radius-full);
+    background: lw.v(color-muted);
+  }
+
+  :host([disabled]) & {
+    cursor: not-allowed;
+  }
+}
+
+.fill {
+  position: absolute;
+  top: 50%;
+  left: var(--_from);
+  right: calc(100% - var(--_to));
+  height: 4px;
+  translate: 0 -50%;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-foreground);
+  cursor: grab;
+
+  :host([data-drag='window']) & {
+    cursor: grabbing;
+  }
+}
+
+.thumb {
+  position: absolute;
+  top: 0;
+  left: var(--_from);
+  z-index: 1;
+  width: var(--_thumb);
+  height: var(--_thumb);
+  translate: -50% 0;
+  border: 2px solid lw.v(color-foreground);
+  border-radius: 50%;
+  background: lw.v(color-background);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+  cursor: grab;
+  outline: none;
+  transition: scale 150ms ease-out;
+
+  &[data-end='to'] {
+    left: var(--_to);
+  }
+
+  &:hover,
+  :host([data-drag='from']) &[data-end='from'],
+  :host([data-drag='to']) &[data-end='to'] {
+    scale: 1.1;
+  }
+
+  :host([data-dragging]) & {
+    cursor: grabbing;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+  margin: 0.875rem 0 0;
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+
+  .rolling {
+    font-weight: 600;
+    color: lw.v(color-foreground);
+  }
+}

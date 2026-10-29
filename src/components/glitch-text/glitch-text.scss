@@ -1,0 +1,37 @@
+@use '../../styles' as lw;
+
+:host {
+  --_accent: var(--lw-glitch-accent, oklch(0.63 0.24 25));
+  --_echo: var(--lw-glitch-echo, oklch(0.78 0.14 205));
+
+  display: inline-block;
+}
+
+.live {
+  @include lw.visually-hidden;
+}
+
+// Every layer stacks on the base text, which alone sizes the box.
+.stage {
+  display: inline-grid;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.channel,
+.band {
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+// The split channels sit behind the bands and show only at their edges.
+.accent {
+  color: var(--_accent);
+}
+
+.echo {
+  color: var(--_echo);
+}

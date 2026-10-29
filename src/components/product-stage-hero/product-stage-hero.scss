@@ -1,0 +1,515 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ink: #{lw.v(color-foreground)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_surface: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  --_line: #{lw.v(color-border)};
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+
+  @include lw.hero-shell;
+}
+
+.container {
+  @include lw.hero-container;
+}
+
+@include lw.hero-split;
+@include lw.hero-window;
+
+// The app window and the layers over it, fading into the page below. The
+// mask clips to the stage, so it reaches past the window for the menu.
+.stage {
+  position: relative;
+  height: 34rem;
+  margin: 4.5rem -2rem 0;
+  padding: 0 2rem;
+
+  @include lw.hero-fade;
+}
+
+kbd {
+  font: 0.6875rem lw.v(font-mono);
+  color: var(--_muted);
+}
+
+.product {
+  font-weight: 600;
+}
+
+.team {
+  color: var(--_muted);
+}
+
+.cycle {
+  font-weight: 500;
+}
+
+.range {
+  display: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: lw.v(radius-sm);
+  background: color-mix(in oklab, var(--_ink) 6%, transparent);
+  font-size: lw.v(text-xs);
+  white-space: nowrap;
+  color: var(--_muted);
+
+  @container (min-width: 48rem) {
+    display: inline;
+  }
+}
+
+.search {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  width: 15rem;
+  height: 2rem;
+  margin-left: auto;
+  padding: 0 0.625rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  font: inherit;
+  color: var(--_muted);
+  cursor: text;
+  outline: none;
+
+  @container (min-width: 64rem) {
+    display: flex;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  span {
+    flex: 1;
+    text-align: left;
+  }
+}
+
+.people {
+  display: none;
+  margin-left: auto;
+
+  @container (min-width: 48rem) {
+    display: flex;
+  }
+
+  .search ~ & {
+    margin-left: 0;
+  }
+
+  .avatar + .avatar {
+    margin-left: -0.375rem;
+  }
+
+  .avatar {
+    box-shadow: 0 0 0 2px var(--_surface);
+  }
+}
+
+.avatar {
+  @include lw.person-tint;
+
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  font-size: 0.5625rem;
+  font-weight: 600;
+}
+
+.app {
+  display: grid;
+  height: calc(100% - 3.25rem);
+
+  @container (min-width: 48rem) {
+    grid-template-columns: 12rem minmax(0, 1fr);
+  }
+
+  @container (min-width: 64rem) {
+    grid-template-columns: 13rem minmax(0, 1fr) 21rem;
+  }
+}
+
+.sidebar {
+  display: none;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.75rem;
+  border-right: 1px solid var(--_line);
+  color: var(--_muted);
+
+  @container (min-width: 48rem) {
+    display: flex;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.625rem;
+    border-radius: lw.v(radius-md);
+
+    &[aria-current] {
+      background: color-mix(in oklab, var(--_ink) 7%, transparent);
+      color: var(--_ink);
+    }
+  }
+
+  .count {
+    margin-left: auto;
+    font-size: lw.v(text-xs);
+  }
+}
+
+.list {
+  position: relative;
+  min-width: 0;
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px lw.v(color-ring);
+  }
+}
+
+.highlight {
+  @include lw.sliding-highlight;
+
+  border-radius: 0;
+  background: color-mix(in oklab, var(--_ink) 6%, transparent);
+}
+
+.group-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid var(--_line);
+  background: color-mix(in oklab, var(--_ink) 3%, transparent);
+  font-weight: 500;
+
+  .count {
+    font-weight: 400;
+    color: var(--_muted);
+  }
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--_line);
+  cursor: pointer;
+}
+
+.issue-id {
+  flex: none;
+  width: 4rem;
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: var(--_muted);
+}
+
+.issue-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chips {
+  display: none;
+  flex: none;
+  gap: 0.375rem;
+
+  @container (min-width: 40rem) {
+    display: flex;
+  }
+}
+
+.due {
+  display: none;
+  flex: none;
+  width: 3.25rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+
+  @container (min-width: 40rem) {
+    display: block;
+  }
+}
+
+// A label: its name after a dot in its own hue.
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-xs);
+  white-space: nowrap;
+  color: var(--_muted);
+
+  &::before {
+    content: '';
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: oklch(0.7 0.15 var(--_hue));
+  }
+}
+
+// Priority: four signal bars, as many lit as the level.
+.priority {
+  display: inline-flex;
+  flex: none;
+  align-items: flex-end;
+  gap: 2px;
+  height: 0.75rem;
+
+  i {
+    width: 3px;
+    border-radius: 1px;
+    background: color-mix(in oklab, var(--_ink) 20%, transparent);
+
+    @for $bar from 1 through 4 {
+      &:nth-child(#{$bar}) {
+        height: 25% * $bar;
+      }
+    }
+
+    &[data-on] {
+      background: var(--_muted);
+    }
+  }
+}
+
+// Status: a ring that fills as the issue moves along; dashed in the backlog.
+.status-icon {
+  --_tint: var(--_muted);
+
+  flex: none;
+  box-sizing: border-box;
+  width: 0.875rem;
+  height: 0.875rem;
+  padding: 1.5px;
+  border: 1.5px solid var(--_tint);
+  border-radius: 50%;
+  background: conic-gradient(var(--_tint) var(--_fill, 0turn), transparent 0) content-box;
+
+  &[data-status='0'] {
+    --_fill: 0.5turn;
+    --_tint: #f59e0b;
+  }
+
+  &[data-status='1'] {
+    --_fill: 0.75turn;
+    --_tint: #2dd4bf;
+  }
+
+  &[data-status='3'] {
+    border-style: dashed;
+  }
+
+  &[data-status='4'] {
+    --_fill: 1turn;
+    --_tint: #818cf8;
+  }
+}
+
+.detail {
+  display: none;
+  padding: 1.75rem 1.5rem;
+  border-left: 1px solid var(--_line);
+
+  @container (min-width: 64rem) {
+    display: block;
+  }
+}
+
+.detail-id {
+  margin: 0;
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: var(--_muted);
+}
+
+.detail-title {
+  margin: 0.75rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+// A target platform, as code.
+.fields code {
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: var(--_muted);
+}
+
+.detail-text {
+  margin: 1rem 0 0;
+  line-height: 1.6;
+  color: var(--_muted);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.75rem 1rem;
+  margin: 1.5rem 0 0;
+
+  div {
+    display: contents;
+  }
+
+  dt {
+    color: var(--_muted);
+  }
+
+  dd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+  }
+}
+
+// The command menu, layered over the window's lower left.
+.menu {
+  position: absolute;
+  top: 22rem;
+  left: 2.5rem;
+  width: min(22rem, calc(100% - 5rem));
+  border: 1px solid var(--_line);
+  border-radius: 0.75rem;
+  background: lw.v(color-background);
+  box-shadow:
+    lw.v(shadow-md),
+    0 24px 48px -24px rgb(0 0 0 / 35%);
+  font-size: lw.v(text-sm);
+
+  @container (min-width: 64rem) {
+    left: 0.5rem;
+  }
+}
+
+.menu-search {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--_line);
+}
+
+.target {
+  flex: none;
+  padding: 0.125rem 0.375rem;
+  border-radius: lw.v(radius-sm);
+  background: color-mix(in oklab, var(--_ink) 8%, transparent);
+  font: 0.6875rem lw.v(font-mono);
+  color: var(--_muted);
+}
+
+.command-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  outline: none;
+}
+
+.commands {
+  position: relative;
+  padding: 0.375rem;
+}
+
+.commands .highlight {
+  border-radius: lw.v(radius-md);
+}
+
+.command {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.625rem;
+  cursor: pointer;
+}
+
+.keys {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.empty {
+  margin: 0;
+  padding: 0.75rem;
+  color: var(--_muted);
+}
+
+// The toast, over the window's upper right.
+.toast {
+  position: absolute;
+  top: 4.25rem;
+  right: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.625rem 0.75rem 0.625rem 1rem;
+  border-radius: 0.625rem;
+  background: lw.v(color-primary);
+  box-shadow: lw.v(shadow-md);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-primary-foreground);
+  opacity: 0;
+  translate: 0 -0.5rem;
+  pointer-events: none;
+
+  @include lw.motion {
+    transition:
+      opacity 250ms var(--_ease),
+      translate 250ms var(--_ease);
+  }
+
+  &[data-shown] {
+    opacity: 1;
+    translate: 0 0;
+    pointer-events: auto;
+  }
+}
+
+.undo {
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: lw.v(radius-sm);
+  background: color-mix(in oklab, currentColor 14%, transparent);
+  font: inherit;
+  font-weight: 500;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}

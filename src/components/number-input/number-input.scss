@@ -1,0 +1,63 @@
+@use '../../styles' as lw;
+
+:host {
+  width: 200px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  height: 2.5rem;
+  padding: 0 0.25rem;
+}
+
+.control {
+  flex: 1;
+  height: 100%;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  appearance: textfield;
+
+  // The buttons replace the browser's own spinner.
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    margin: 0;
+    appearance: none;
+  }
+}
+
+.step {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-sm);
+  background: none;
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+  transition:
+    color 150ms ease-out,
+    background-color 150ms ease-out;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: lw.v(color-muted);
+    color: lw.v(color-foreground);
+  }
+
+  &:active:not(:disabled) {
+    scale: 0.92;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+  }
+}

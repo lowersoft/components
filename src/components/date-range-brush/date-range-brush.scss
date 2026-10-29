@@ -1,0 +1,230 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  @include lw.card-shell(40rem, 0.5rem);
+
+  border: 0;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  font-size: lw.v(text-sm);
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.5rem 0.75rem;
+}
+
+.title {
+  color: var(--_muted);
+
+  b {
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+}
+
+.quick {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.quick-range {
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: var(--_muted);
+  cursor: pointer;
+
+  &:hover,
+  &[aria-pressed='true'] {
+    color: lw.v(color-foreground);
+  }
+
+  &[aria-pressed='true'] {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
+  }
+}
+
+.card {
+  padding: 1.25rem;
+  border: 1px solid var(--_line);
+  border-radius: 1.25rem;
+  background: lw.v(color-background);
+}
+
+.top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.range {
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+}
+
+.total {
+  font-size: lw.v(text-md);
+  color: var(--_muted);
+
+  b {
+    display: inline-flex;
+    font-weight: 600;
+    color: lw.v(color-foreground);
+    vertical-align: bottom;
+  }
+}
+
+.rate {
+  margin-top: 0.375rem;
+  color: var(--_muted);
+}
+
+// A bar a day, and the brush over the ones picked.
+.chart {
+  position: relative;
+  height: 7rem;
+  margin-top: 1.25rem;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+
+.bars {
+  display: flex;
+  height: 100%;
+  align-items: flex-end;
+  gap: 1px;
+  border-bottom: 1px solid var(--_line);
+}
+
+.bar {
+  flex: 1;
+  min-width: 1px;
+  border-radius: 1px 1px 0 0;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 18%, transparent);
+
+  @include lw.motion {
+    transition: background-color 150ms ease-out;
+  }
+
+  &[data-in] {
+    background: lw.v(color-foreground);
+  }
+}
+
+.brush {
+  position: absolute;
+  top: -0.5rem;
+  bottom: 0;
+  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 25%, transparent);
+  border-radius: lw.v(radius-md) lw.v(radius-md) 0 0;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+  cursor: grab;
+
+  :host([data-dragging]) & {
+    cursor: grabbing;
+  }
+}
+
+// Pill handles on both edges, with a grip line.
+.edge {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  width: 0.75rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-foreground);
+  cursor: ew-resize;
+  outline: none;
+  translate: -50% -50%;
+
+  &::before {
+    content: '';
+    width: 1px;
+    height: 0.875rem;
+    background: lw.v(color-background);
+  }
+
+  &[data-edge='from'] {
+    left: 0;
+  }
+
+  &[data-edge='to'] {
+    left: 100%;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.axis {
+  position: relative;
+  height: 1.25rem;
+  margin-top: 0.375rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+
+  span {
+    position: absolute;
+    padding-left: 0.375rem;
+    border-left: 1px solid var(--_line);
+    line-height: 1;
+  }
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--_line);
+}
+
+.help {
+  color: var(--_muted);
+}
+
+.show::part(button) {
+  border-radius: lw.v(radius-full);
+}
+
+.busiest {
+  padding: 0.75rem 0.75rem 0.25rem;
+  color: var(--_muted);
+
+  b {
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+}

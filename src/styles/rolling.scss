@@ -1,0 +1,39 @@
+// Rolling digits from `core/rolling.js`: each digit is a reel of 0-9 that
+// slides to its value, so a growing number rolls up from below.
+@use 'abstracts/functions' as fn;
+@use 'abstracts/mixins' as m;
+
+.rolling {
+  display: inline-flex;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25em;
+}
+
+.digit {
+  display: inline-block;
+  height: 1.25em;
+  overflow: hidden;
+}
+
+.reel {
+  display: flex;
+  flex-direction: column;
+
+  @include m.motion {
+    transition: translate 300ms fn.v(ease-out);
+  }
+}
+
+// A count pill that sits inside a button, tinted from the button's colors.
+.count {
+  display: inline-flex;
+  padding: 0.25rem 0.625rem;
+  border-radius: fn.v(radius-full);
+  background: color-mix(in oklab, var(--_fg) 10%, transparent);
+  color: color-mix(in oklab, var(--_fg) 70%, transparent);
+  font-size: fn.v(text-xs);
+
+  &[hidden] {
+    display: none;
+  }
+}

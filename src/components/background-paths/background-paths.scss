@@ -1,0 +1,24 @@
+@use '../../styles' as lw;
+
+:host {
+  @include lw.backdrop;
+}
+
+@include lw.hero-copy;
+
+// Faded at the top and bottom, and quieter behind centred content.
+.layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mask-image:
+    linear-gradient(to bottom, transparent, #000 15%, #000 85%, transparent),
+    radial-gradient(ellipse 40% 32% at 50% 50%, rgb(0 0 0 / 30%), #000);
+  mask-composite: intersect;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

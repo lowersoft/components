@@ -1,0 +1,50 @@
+@use '../../styles' as lw;
+
+// The cap stands on a base of its own color, a shade darker in both themes;
+// the host keeps room above it so sinking does not move the layout.
+:host {
+  --_depth: 4px;
+  --_base: oklch(from var(--_bg) calc(l - 0.15) c h);
+
+  padding-top: var(--_depth);
+}
+
+:host(:is([variant='outline'], [variant='ghost'])) {
+  --_base: #{lw.v(color-border)};
+}
+
+:host([size='sm']) {
+  --_depth: 3px;
+}
+
+:host([size='lg']) {
+  --_depth: 5px;
+}
+
+.button {
+  box-shadow: 0 var(--_depth) 0 0 var(--_base);
+  font-weight: 600;
+  translate: 0 calc(var(--_depth) * -1);
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-fast) lw.v(ease-out),
+      translate 120ms lw.v(ease-spring),
+      box-shadow 120ms lw.v(ease-spring);
+  }
+
+  // Lifts a little under the pointer, as if inviting the press.
+  &:hover {
+    box-shadow: 0 calc(var(--_depth) + 1px) 0 0 var(--_base);
+    translate: 0 calc(var(--_depth) * -1 - 1px);
+  }
+
+  // Pressed: the cap sinks onto its base, never scales.
+  &:active,
+  &[data-pressed] {
+    box-shadow: 0 0 0 0 var(--_base);
+    transform: none;
+    translate: 0 0;
+    transition-duration: 60ms;
+  }
+}

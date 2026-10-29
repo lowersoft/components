@@ -1,0 +1,22 @@
+// Default theme. `:where()` keeps specificity at zero so any user
+// declaration of a `--lw-*` property wins without `!important`.
+@use 'abstracts/tokens' as t;
+@use 'abstracts/mixins' as m;
+
+:where(:root) {
+  @include m.vars(t.$base);
+  @include m.vars(t.$light);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :where(:root:not([data-theme='light'])) {
+    @include m.vars(t.$dark);
+    color-scheme: dark;
+  }
+}
+
+:where(:root[data-theme='dark']) {
+  @include m.vars(t.$dark);
+  color-scheme: dark;
+}

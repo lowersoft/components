@@ -1,0 +1,9 @@
+// The burst canvas draws outside the button box.
+.button {
+  overflow: visible;
+}
+
+.burst {
+  position: absolute;
+  pointer-events: none;
+}

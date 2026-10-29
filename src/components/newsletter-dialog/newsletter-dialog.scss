@@ -1,0 +1,126 @@
+@use '../../styles' as lw;
+
+.modal {
+  --_width: 32rem;
+}
+
+// The latest issue, as a taste of the rest.
+.latest {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+}
+
+.latest-meta,
+.latest-time {
+  color: var(--_muted);
+}
+
+.latest-title {
+  margin-top: 0.75rem;
+  font-size: lw.v(text-lg);
+  font-weight: 500;
+}
+
+.latest-excerpt {
+  display: -webkit-box;
+  margin-top: 0.375rem;
+  overflow: hidden;
+  font-size: lw.v(text-md);
+  line-height: 1.5;
+  color: var(--_muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.latest-time {
+  margin-top: 0.75rem;
+}
+
+.form {
+  margin-top: 1.5rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.label {
+  margin-bottom: 0.625rem;
+  font-size: lw.v(text-md);
+  font-weight: 500;
+}
+
+.often {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.option {
+  display: grid;
+  gap: 0.375rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--_line);
+  border-radius: 0.875rem;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+
+  &[aria-checked='true'] {
+    border-color: lw.v(color-foreground);
+    box-shadow: 0 0 0 1px lw.v(color-foreground);
+  }
+}
+
+.option-label {
+  font-size: lw.v(text-md);
+  font-weight: 500;
+}
+
+.option-detail {
+  color: var(--_muted);
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  .email {
+    flex: 1;
+    min-width: 0;
+
+    &::part(label) {
+      @include lw.visually-hidden;
+    }
+  }
+}
+
+.done {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  font-size: lw.v(text-md);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.done-mark {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: lw.v(color-accent);
+  color: lw.v(color-background);
+}

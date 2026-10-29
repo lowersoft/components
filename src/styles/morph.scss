@@ -1,0 +1,59 @@
+// Structure for surfaces driven by `core/morph.js`: a button in the page
+// flow that grows into a floating view. The closed status is `idle`.
+@use 'abstracts/functions' as fn;
+@use 'abstracts/mixins' as m;
+
+$height: 2.25rem;
+
+// The host keeps the closed button's footprint while the shell floats over the page.
+:host {
+  position: relative;
+  display: inline-block;
+  width: var(--_idle-width, auto);
+  height: $height;
+  font-size: fn.v(text-sm);
+  vertical-align: top;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.shell {
+  top: 0;
+  left: 0;
+  z-index: 20;
+  overflow: hidden;
+  border: 1px solid fn.v(color-border);
+  border-radius: fn.v(radius-md);
+  background: fn.v(color-background);
+  box-shadow: fn.v(shadow-sm);
+  color: fn.v(color-foreground);
+
+  @include m.motion {
+    transition:
+      border-radius 420ms fn.v(ease-out),
+      box-shadow 300ms fn.v(ease-out);
+  }
+
+  :host([status]:not([status='idle'])) &,
+  &.floating {
+    position: absolute;
+  }
+
+  :host([align='end']) & {
+    right: 0;
+    left: auto;
+  }
+}
+
+// While leaving, content floats over the shrinking shell and fades.
+.leaving {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.live {
+  @include m.visually-hidden;
+}

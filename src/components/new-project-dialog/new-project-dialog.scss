@@ -1,0 +1,104 @@
+@use '../../styles' as lw;
+
+.modal {
+  --_width: 38rem;
+
+  container-type: inline-size;
+}
+
+.templates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+  margin: 1.5rem 0;
+
+  @container (min-width: 32rem) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.template {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.5rem 0.5rem 0.875rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      border-color 150ms ease-out,
+      box-shadow 150ms ease-out,
+      translate 200ms ease-out;
+  }
+
+  &:hover {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+    translate: 0 -1px;
+  }
+
+  &[aria-checked='true'] {
+    border-color: lw.v(color-foreground);
+    box-shadow: 0 0 0 1px lw.v(color-foreground);
+  }
+}
+
+// The wireframe in a frame marked at its corners.
+.frame {
+  position: relative;
+  display: block;
+  margin-bottom: 0.5rem;
+  padding: 0.375rem;
+  border-radius: 0.625rem;
+  background: var(--_raised);
+  background-image:
+    linear-gradient(var(--_muted), var(--_muted)), linear-gradient(var(--_muted), var(--_muted)),
+    linear-gradient(var(--_muted), var(--_muted)), linear-gradient(var(--_muted), var(--_muted)),
+    linear-gradient(var(--_muted), var(--_muted)), linear-gradient(var(--_muted), var(--_muted)),
+    linear-gradient(var(--_muted), var(--_muted)), linear-gradient(var(--_muted), var(--_muted));
+  background-repeat: no-repeat;
+  background-position:
+    0.25rem 0.25rem, 0.25rem 0.25rem,
+    calc(100% - 0.25rem) 0.25rem, calc(100% - 0.25rem) 0.25rem,
+    0.25rem calc(100% - 0.25rem), 0.25rem calc(100% - 0.25rem),
+    calc(100% - 0.25rem) calc(100% - 0.25rem), calc(100% - 0.25rem) calc(100% - 0.25rem);
+  background-size: 0.5rem 1px, 1px 0.5rem, 0.5rem 1px, 1px 0.5rem, 0.5rem 1px, 1px 0.5rem, 0.5rem 1px, 1px 0.5rem;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    fill: color-mix(in oklab, #{lw.v(color-foreground)} 40%, transparent);
+
+    .soft {
+      fill: color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent);
+    }
+  }
+}
+
+.template-name {
+  padding-inline: 0.25rem;
+  font-size: lw.v(text-md);
+  font-weight: 500;
+}
+
+.template-detail {
+  padding-inline: 0.25rem;
+  color: var(--_muted);
+}
+
+.name {
+  width: 100%;
+}
+
+.address {
+  margin-top: 0.625rem;
+  font: lw.v(text-xs) lw.v(font-mono);
+  overflow-wrap: anywhere;
+
+  &[data-empty] {
+    color: var(--_muted);
+  }
+}

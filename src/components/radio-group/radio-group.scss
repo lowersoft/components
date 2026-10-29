@@ -1,0 +1,25 @@
+:host {
+  width: auto;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  :host([orientation='horizontal']) & {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+  }
+}
+
+// Options of a disabled group look and act disabled.
+::slotted([data-group-disabled]) {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+::slotted(lw-radio[disabled]) {
+  pointer-events: none;
+}

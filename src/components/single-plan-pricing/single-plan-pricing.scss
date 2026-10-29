@@ -1,0 +1,221 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  box-sizing: border-box;
+  width: 60rem;
+  max-width: 100%;
+  padding: 0.5rem;
+  border-radius: 1.75rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+}
+
+// The product, and the teams already on it.
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding: 0.75rem 1rem 1rem;
+}
+
+.product {
+  font-size: lw.v(text-md);
+  font-weight: 500;
+}
+
+.proof {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--_muted);
+}
+
+.faces {
+  display: flex;
+}
+
+.face {
+  @include lw.person-tint;
+
+  display: grid;
+  width: 1.625rem;
+  height: 1.625rem;
+  place-items: center;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px lw.v(color-background);
+  font-size: 0.5625rem;
+  font-weight: 600;
+
+  & + & {
+    margin-left: -0.375rem;
+  }
+}
+
+// The price on the left, everything included on the right.
+.card {
+  display: grid;
+  border: 1px solid var(--_line);
+  border-radius: 1.25rem;
+  background: lw.v(color-background);
+
+  @container (min-width: 46rem) {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+
+.buy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--_line);
+
+  @container (min-width: 46rem) {
+    border-right: 1px solid var(--_line);
+    border-bottom: 0;
+  }
+}
+
+// A quieter, pill-shaped switch than the shared one.
+.billing {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.billing-pill {
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 9%, transparent);
+  box-shadow: none;
+}
+
+.billing-option {
+  padding: 0.5rem 0.875rem;
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-md);
+  font-weight: 400;
+}
+
+.save {
+  color: var(--_muted);
+}
+
+.price {
+  margin-top: 1.75rem;
+}
+
+.amount {
+  font-size: clamp(3.5rem, 9vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.billed {
+  margin-top: 1rem;
+  color: var(--_muted);
+}
+
+.description {
+  max-width: 22rem;
+  margin: 1.25rem 0 2.5rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+}
+
+// The action: a pill with its arrow in a well.
+.action {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding: 0.375rem 0.375rem 0.375rem 1.25rem;
+  border: 0;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-primary);
+  font: 500 lw.v(text-md) lw.v(font-sans);
+  color: lw.v(color-primary-foreground);
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  &:active {
+    scale: 0.99;
+  }
+}
+
+.arrow {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in oklab, #{lw.v(color-primary-foreground)} 8%, transparent);
+
+  @include lw.motion {
+    transition: translate 200ms ease-out;
+  }
+
+  .action:hover & {
+    translate: 3px 0;
+  }
+}
+
+.guarantee {
+  align-self: center;
+  margin-top: 0.875rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.included {
+  padding: 1.5rem;
+}
+
+.included-title {
+  margin-bottom: 1.5rem;
+  font-size: lw.v(text-md);
+  font-weight: 500;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1.5rem;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: 0.75rem;
+
+    > svg {
+      flex: none;
+      margin-top: 0.125rem;
+      color: var(--_muted);
+    }
+  }
+}
+
+.feature,
+.detail {
+  display: block;
+  line-height: 1.5;
+}
+
+.feature {
+  font-size: lw.v(text-md);
+}
+
+.detail {
+  margin-top: 0.25rem;
+  color: var(--_muted);
+}

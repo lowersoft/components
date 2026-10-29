@@ -1,0 +1,189 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: color-mix(in oklab, #{lw.v(color-foreground)} 22%, transparent);
+
+  display: block;
+  width: 360px;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  height: 2.75rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  transition:
+    border-color 150ms ease-out,
+    box-shadow 150ms ease-out;
+
+  &:focus-within {
+    border-color: var(--_line);
+    box-shadow: 0 0 0 3px color-mix(in oklab, #{lw.v(color-ring)} 30%, transparent);
+  }
+
+  :host(:is([data-state='landline'], [data-state='unsupported'])) & {
+    border-color: color-mix(in oklab, #{lw.v(color-destructive)} 60%, transparent);
+  }
+
+  :host([disabled]) & {
+    opacity: 0.5;
+  }
+}
+
+.picker {
+  align-self: stretch;
+}
+
+.country {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 100%;
+  padding: 0 0.5rem 0 0.75rem;
+  border: 0;
+  border-right: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md) 0 0 lw.v(radius-md);
+  background: none;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 150ms ease-out;
+
+  &:hover:not(:disabled) {
+    background: lw.v(color-muted);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px lw.v(color-ring);
+  }
+
+  .chevron {
+    color: lw.v(color-muted-foreground);
+
+    @include lw.motion {
+      transition: rotate 200ms lw.v(ease-out);
+    }
+  }
+
+  &[aria-expanded='true'] .chevron {
+    rotate: 180deg;
+  }
+}
+
+.flag {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+// The digits still to come show faintly under the input, in the number's
+// format, so the shape of the number is clear before it is typed.
+.control {
+  position: relative;
+  flex: 1;
+  align-self: stretch;
+  min-width: 0;
+  margin-left: 0.75rem;
+}
+
+.ghost,
+input {
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.ghost {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: pre;
+  pointer-events: none;
+}
+
+.ghost-typed {
+  color: transparent;
+}
+
+.ghost-rest {
+  color: lw.v(color-muted-foreground);
+  opacity: 0.45;
+}
+
+input {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  outline: none;
+}
+
+// A tick once the number is a mobile.
+.ok {
+  display: grid;
+  flex: none;
+  place-items: center;
+  margin-right: 0.75rem;
+  color: lw.v(color-accent);
+  opacity: 0;
+  scale: 0.6;
+
+  @include lw.motion {
+    transition:
+      opacity 150ms ease-out,
+      scale 250ms lw.v(ease-spring);
+  }
+
+  :host(:is([data-state='mobile'], [data-state='sending'], [data-state='sent'])) & {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.status {
+  min-height: 1.25rem;
+  margin: 0.5rem 0 0;
+  font-size: lw.v(text-xs);
+  line-height: 1.25rem;
+  color: lw.v(color-muted-foreground);
+
+  :host(:is([data-state='mobile'], [data-state='sent'])) & {
+    color: lw.v(color-accent);
+  }
+
+  :host(:is([data-state='landline'], [data-state='unsupported'], [data-state='error'])) & {
+    color: lw.v(color-destructive);
+  }
+}
+
+.send {
+  display: flex;
+  margin-top: 0.75rem;
+
+  &::part(button) {
+    width: 100%;
+  }
+}
