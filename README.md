@@ -33,7 +33,7 @@ There are no peer dependencies and no build plugins to configure.
 ```bash
 npm install @lowersoft/lw
 ```
-Or you can choice the CND way, include like this:
+Or you can choice the CDN way, include like this:
 ```html
 <!-- Header Side -->
 <link rel="stylesheet" href="https://unpkg.com/@lowersoft/lw/dist/themes.css">
@@ -43,6 +43,14 @@ Or you can choice the CND way, include like this:
   import 'https://unpkg.com/@lowersoft/lw/dist/index.js';
 </script>
 ```
+Or, for a single component:
+```html
+<script type="module">
+  import 'https://cdn.jsdelivr.net/npm/@lowersoft/lw/dist/components/button.js';
+</script>
+```
+> [!IMPORTANT]
+> the <script> tag must use type="module". This is required for import statements to work in the browser. The CDN paths above point to the built dist/ output. If the published package layout changes, check the file paths on unpkg or jsDelivr. Loading the full bundle registers every component. Importing a single entry point registers only that component.
 
 #### 1.2 Import and render
 Import only what you need, every component is a separate entry point:
@@ -58,6 +66,48 @@ Then use it like any other HTML element:
 <lw-button variant="outline" size="lg">Get started</lw-button>
 ```
 > Components render with the default theme right after the import. There is nothing to wrap, provide or initialize.
+
+#### 1.3 Example Code With CDN
+This example uses no package manager, no bundler, and no framework. It loads one component from unpkg, applies the default theme, overrides a few design tokens, and styles a component internal with ::part().
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lw CDN Example</title>
+
+  <!-- Optional: static theme tokens before JavaScript loads -->
+  <link rel="stylesheet" href="https://unpkg.com/@lowersoft/lw/dist/themes.css">
+
+  <!-- Register only the button component -->
+  <script type="module">
+    import 'https://unpkg.com/@lowersoft/lw/dist/components/button.js';
+  </script>
+
+  <style>
+    /* Override design tokens. Defaults have zero specificity. */
+    :root {
+      --lw-color-primary: #6d28d9;
+      --lw-radius-md: 9999px;
+    }
+
+    /* Style component internals through ::part() */
+    lw-button::part(button) {
+      letter-spacing: 0.02em;
+    }
+  </style>
+</head>
+<body>
+  <h1>lw components via CDN</h1>
+
+  <!-- Use components like normal HTML elements -->
+  <lw-button variant="outline" size="lg">Get started</lw-button>
+  <lw-button>Default button</lw-button>
+</body>
+</html>
+```
+No initialization, wrapper, provider, or configuration is required. Once the module is imported, every matching custom element on the page is registered and rendered with the default theme.
 
 #### 1.3 Theming
 The default theme is installed automatically on first use. It follows `prefers-color-scheme`; force a scheme with `data-theme` on `<html>`:
