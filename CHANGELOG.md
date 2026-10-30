@@ -1,0 +1,177 @@
+# @lowersoft/lw
+
+## 0.1.0
+
+### Minor Changes
+
+- e9dc8ae: Add `<lw-account-chooser-login>`: a login for a device that has signed in before: drawn portraits with workspace marks, the session on hover, arrow keys between rows, each account opening in place into its own step (single sign-on, Google, a passkey or a password), and forgetting that can be undone.
+- e9dc8ae: Add `<lw-action-search-bar>`: a ⌘K command palette with fuzzy matching, nested pages, Recent, and a spinner then a check in the row while a command runs. Lucide icons now live in one shared `core/lucide.js`.
+- e9dc8ae: Add `<lw-action-toolbar>`: a list with a toolbar for what is selected: tick rows, Shift-click a run or tick all, and the toolbar rises with archive, read, label, delete and undo.
+- e9dc8ae: Add `<lw-activity-feed>`: the first animated list: a live feed where new events slide in at the top and the oldest fall off, each with who, what, where and how long ago, playing while in view.
+- e9dc8ae: Add `<lw-activity-terrain>`: a contribution heatmap that rises into turnable 3D terrain, drawn on a canvas.
+- e9dc8ae: Add `<lw-address-input>`: a shipping address that starts as one search box with highlighted matches and unfolds into street, apartment, city, region, postal code and country, with the cursor on the apartment line. It searches addresses worldwide with Photon (OpenStreetMap), or a provider of your own.
+- e9dc8ae: Add `<lw-agency-services-pricing>`: a studio's services side by side and an estimate built from them: the service to start from, extras with counts, and a total and delivery time that update as you go.
+- e9dc8ae: Add `<lw-annotated-quote>`: a quote whose claims carry their proof: numbered, tinted phrases beside the number behind each, before and after, lit together on hover or focus.
+- e9dc8ae: Add `<lw-announcement-banner>`: announcements that take turns in one strip, story-like segments filling while each is up, held on hover, with arrows, pause and dismiss.
+- e9dc8ae: Add `<lw-audio-player-card>`: a podcast or voice note player with a scrubbable waveform, chapter tooltips and a speed chip.
+- e9dc8ae: Add `<lw-avatar-picker>`: faces generated from the display name that morph as it is typed, a coin to spin through them and five slots to compare, with `createFace` and `avatarSeed` to draw a chosen face anywhere. Adds `springTo` and `springFeel` to the shared motion helpers.
+- e9dc8ae: Add `<lw-background-paths>`: a flowing ribbon of lines in the text colour that draws itself in and parts around the cursor.
+- e9dc8ae: `<lw-button>` gains `loading` (the start icon becomes a spinner), `shortcut` (keycaps plus a page-wide key binding) and `disabled-reason` (a focusable disabled state that explains itself in a tooltip). `<lw-command-button>` now builds on this shortcut support.
+- e9dc8ae: Add `<lw-bell-button>`: subscribe toggle whose bell and clapper swing as coupled pendulums, with a rolling count. `icon-only` is now available on every button.
+- e9dc8ae: Add `<lw-bento-grid>`: a dashboard of widgets to lift, move and resize, with neighbours springing aside in a ripple and each widget switching between small, medium and large layouts.
+- e9dc8ae: Add `<lw-booking-picker>`: pick a time for a call on a day's timeline: past and busy time hatched, a slot handle that drags along the free stretches and snaps to the quarter hour, open times as chips, the next few days, and a time zone switch.
+- e9dc8ae: Add `<lw-canvas-toolbar>`: a whiteboard's toolbar over its board: notes to drag with arrows that follow, zoom steps and Ctrl+wheel, undo and redo for every move, and a teammate's cursor.
+- e9dc8ae: Add `<lw-card-flip>`: a two-faced card that turns over like a real one, followed by the finger, spun by a flick, with a visible edge, a lift and a sweep of light.
+- e9dc8ae: Add `<lw-card-input>`: a one-line card field whose number groups itself as it is typed, whose brand mark rolls to the card's brand, and whose valid number slides down to its last four to reveal the expiry and security code.
+- e9dc8ae: Add `<lw-card-stack>`: a deck to throw, where the top card sails out and lands back under the pile, and a tap opens it into its details.
+- e9dc8ae: Add `<lw-carousel-cards>`: a card rail flicked with momentum, rubber-banded ends, and scroll-driven cover-flow depth, parallax and details.
+- e9dc8ae: Add `<lw-chart-hero>`: an analytics hero where a full-bleed chart is the hero, with a scrub crosshair, range tabs that morph the line, KPIs and a pinned annotation.
+- e9dc8ae: Add the native-input family under Inputs: `<lw-checkbox>` (with indeterminate), `<lw-radio-group>` with `<lw-radio>`, `<lw-switch>`, `<lw-number-input>` with hold-to-repeat steppers and `<lw-range>`, all taking part in forms. Checkbox and switch share a new `core/toggle.js` base.
+- e9dc8ae: Add `<lw-clip-trimmer>`: a video clip trimmer with handles that snap to whole seconds, a range you can slide, a playhead and looped playback of the kept range.
+- e9dc8ae: Add `<lw-command-button>`: button with its keyboard shortcut drawn as keycaps that sink as keys are pressed and click the button on a match.
+- e9dc8ae: Add `<lw-command-palette>`: a command palette: search everything or scope to actions, pages or people with tabs or a prefix, commands with a second step, recent runs on top, a sliding highlight and Ctrl+K from anywhere.
+- e9dc8ae: Add `<lw-comparison-table-pricing>`: every plan side by side in sections, the featured column framed, columns lit on hover, terms that explain themselves, and a switch that shows only the rows that differ.
+- e9dc8ae: Add `<lw-confirm-delete-button>`: the button grows into a card that names what goes with the deletion, with an optional type-the-name step and a hairline that folds the card back when you walk away. The morph between a button and a floating view is now shared through `core/morph.js`, and the build no longer puts every helper into the core chunk, so pages load only the helpers their components use.
+- e9dc8ae: Add `<lw-connect-button>`: your mark and the provider's joined by a link that pulses while signing in and closes once connected, with the account named and disconnect on hover.
+- e9dc8ae: Add `<lw-contact-card>`: a teammate card built around when you can reach them, with a scrubbable 24-hour strip of both working days, rows that copy and a vCard download.
+- e9dc8ae: Add `<lw-continue-learning-card>`: a continue-watching card for courses, with a thumbnail scrubbed like a storyboard, resume from any moment, and the next lessons below.
+- e9dc8ae: Add `<lw-cookie-consent-banner>`: cookie consent with the choice in plain view: categories with what they are for and how many cookies, necessary ones locked on, reject, save or accept, and an optional remembered answer.
+- e9dc8ae: Add `<lw-copy-button>`: shows a value in full and copies it with a selection sweep and a drawn check; `secret` masks the middle and decodes it on hover or focus, and ⌘C / Ctrl+C copies while focused.
+- e9dc8ae: Add `<lw-cradle-text>`: a line of letters hung from a rail like a Newton's cradle, so a knock on one letter clacks through the word.
+- e9dc8ae: Add `<lw-create-project-form>`: a new project in one card: the name becomes its address and is checked once you pause, templates as line drawings, a region by latency, and visibility.
+- e9dc8ae: Add `<lw-credit-pack-pricing>`: prepaid credits in packs: the balance on a bar that shows how far a pack takes it, each pack's rate and saving, the total and balance after, what the credits buy, and auto top-up.
+- e9dc8ae: Add `<lw-currency-transfer>`: a transfer between currencies as it happens, its steps ticking down a rail and the amount rolling into the new currency.
+- e9dc8ae: Add `<lw-date-range-brush>`: a range of days picked on a bar-a-day chart with a brush: drag its edges or move it, draw a new one, or jump to the last 7, 30 or 90 days, with the total, rate and busiest day following.
+- e9dc8ae: Add `<lw-date-range-picker>`: a two-month range calendar with quick ranges, a live preview, full keyboard support and Apply, submitting the range as an ISO interval.
+- e9dc8ae: Add `<lw-deployment-card>`: a deployment with a site preview, commit and status, where Redeploy runs a build along a step rail with a ticking timer and swapping log lines.
+- e9dc8ae: Add `<lw-detent-dial>`: a rotary knob that clicks between notches, coasts on a flick, resists past its ends and rolls its readout, with keyboard, wheel and form support.
+- e9dc8ae: Add `<lw-docs-search>`: search the documentation as you type: sections grouped by topic with the matching words underlined, best first, and a row that asks an assistant instead with Ctrl+Enter.
+- e9dc8ae: Add `<lw-dot-field>`: a halftone field of dots on a springy membrane: swipes leave a wake and clicks send a shockwave.
+- e9dc8ae: Add `<lw-download-button>`: streams a file with ink-fill progress that inverts the text at its edge, shows bytes and time left, cancels on hover and opens the file when done.
+- e9dc8ae: Add `<lw-dynamic-text>`: morphing text where letters travel, fall and land and digits roll like a counter, plus `decode` and `cycle` modes. Adds the `accent` color token and a shared `core/visibility.js`; `<lw-type-writer>` now also rests in a hidden tab.
+- e9dc8ae: Add `<lw-edit-profile-form>`: edit a profile with a live preview of how others see it: avatar styles or an upload, pronouns, a checked username, website, role, place and local time, and a bio that counts down.
+- e9dc8ae: Add `<lw-editor-toolbar>`: the bar above a shared document: outline toggle, breadcrumbs, a save status that follows your typing, who else is in it, comments and Share, with an outline that tracks the section in view.
+- e9dc8ae: Add `<lw-feedback-composer>`: a feature request box for a public roadmap that shows the most similar open requests as you type, so a duplicate becomes an upvote, with an area menu and live totals.
+- e9dc8ae: Add `<lw-feedback-dialog>`: a two-question survey: a 0 to 10 recommendation score, picked with the mouse or the number keys, then one follow-up that depends on it, with quick picks and a comment.
+- e9dc8ae: Add `<lw-file-tree>`: a project's files as a tree: folders that open and close, guide lines lighting the path to the selected file, files and folders named in place, and the full tree keyboard pattern with type-ahead.
+- e9dc8ae: Add `<lw-file-upload>` in a new Inputs category: a drop zone with an upload queue, validation, progress, retry and cancel, and form submission of the uploaded files.
+- e9dc8ae: Add `<lw-filter-headline>`: a section heading that filters what follows: filters with their counts, and a count by the title that rolls to the chosen one, with View all at the end of the row.
+- e9dc8ae: Add `<lw-filter-search-bar>`: a search box that turns what you type into filter tokens, from suggestions or typed as status:done, each with a verb to flip and a cross, Backspace taking the last one back.
+- e9dc8ae: Add `<lw-filter-toolbar>`: a toolbar that narrows a list of issues: a search opened with /, and filter chips that read like sentences, with a verb to flip, a value to pick and a count of what is left.
+- e9dc8ae: Add `<lw-flow-field>`: wind streamlines that part around the cursor, swirl in its wake and scatter on click.
+- e9dc8ae: Add `<lw-focal-point-picker>`: picks the focal point of an image, with live crop previews whose windows are drawn on the source.
+- e9dc8ae: Add `<lw-follow-button>`: follow with a rolling count, an Unfollow that only arms once the pointer leaves and returns, and a bell that slides out to choose notifications. The single-choice menu is now a shared `core/menu.js`, also used by `<lw-split-button>`.
+- e9dc8ae: Every form field now has the validation API of a native control (`form`, `validity`, `validationMessage`, `willValidate`, `checkValidity()`, `reportValidity()`) from a shared `FormControl` mixin in `core/form.js`. Callback properties such as `search` or `formatValue` now survive being set before the element upgrades.
+- e9dc8ae: Add `<lw-format-toolbar>`: a formatting toolbar that floats over selected text: block type, bold, italic, underline, strikethrough, highlight, link and list, each showing whether the selection has it.
+- e9dc8ae: Add `<lw-glitch-text>`: text that bursts into hard-cut bands with a red and cyan channel split, on an idle timer, on hover or when its text changes.
+- e9dc8ae: Add `<lw-globe-hero>`: an infrastructure hero with a dotted globe you drag to spin, routes between regions with a running pulse, and live latency labels.
+- e9dc8ae: Add `<lw-handle-input>`: a field for claiming a workspace URL that rewrites typing into a valid handle, showing each rewritten character, checks availability as you pause and suggests free alternatives when a handle is taken. Adds a shared `core/highlight.js` for sliding hover boxes, now used by menus and the date range picker.
+- e9dc8ae: Add `<lw-help-center-faq>`: the FAQ as a command palette. Typing filters and marks every match, answer matches show their line, the arrow keys move the highlight and Enter opens an answer in place with a command to copy and a useful count; with no match, Enter asks the team.
+- e9dc8ae: Add `<lw-hold-button>`: press-and-hold confirmation with a draining fill and a drawn check on completion. Add the `destructive` button variant.
+- e9dc8ae: Add `<lw-image-generation-card>`: an AI image panel where Generate resolves the image from pixel blocks to sharp with a step counter, then four variations land.
+- e9dc8ae: Add `<lw-incident-banner>`: an incident across the top of the page: its severity, what is wrong, the fix's progress as four steps and a running clock, and the timeline of updates opening in place.
+- e9dc8ae: Initial release: core runtime (`LwElement`, `define`, default theme) and `<lw-button>`.
+- e9dc8ae: Add `<lw-inline-chips-headline>`: a headline with live chips set into the sentence, a document, the people on it and a status that works and then lands, popping in one after another.
+- e9dc8ae: Add `<lw-install-headline>`: a centred headline ending in the install command, with tabs for each package manager or an agent prompt, the command swapping in place, and a copy button.
+- e9dc8ae: Add `<lw-invite-signup>`: where an invite link lands: the inviter's portrait with the workspace mark, their note above the people already there, an empty seat that draws your portrait as you type your name, an email locked to the invite, and a decline that can be undone.
+- e9dc8ae: Add `<lw-job-listing-card>`: a job post with its salary band on the market range, and Quick apply folding into a short form with a résumé drop and an Applied track with Undo.
+- e9dc8ae: Add `<lw-kanban-board>`: a sprint board: cards to drag between columns with a gap opening where they land, counts and a progress bar, and a full keyboard pick-up, move and drop.
+- e9dc8ae: Add `<lw-kinetic-type-hero>`: a hero that is all type: an edge-to-edge headline sets itself in and leans away from the cursor, with a short description in its top right.
+- e9dc8ae: Add `<lw-layer-stack-pricing>`: plans as isometric layers built on one another: choosing a plan lifts the layers above it away, and the summary shows its price, limits and what each layer adds.
+- e9dc8ae: Add `<lw-lightbox-grid>`: a photo grid whose thumbnails grow into a full view and back, swiped between and pulled away to close.
+- e9dc8ae: Add `<lw-liquid-gauge>`: a storage gauge filled with liquid that pours, sloshes, bubbles and is set by dragging; a slider that takes part in forms.
+- e9dc8ae: Add `<lw-liquid-slider>`: a vertical slider drawn as a glass of liquid that sloshes, bubbles and ripples as it is poured, with keyboard and form support.
+- e9dc8ae: Add `<lw-loader>`: four rings sweeping at their own speeds over a title and subtitle, tinted by the text color, pulsing instead with reduced motion.
+- e9dc8ae: Add `<lw-magic-link-login>`, the first login component: passwordless sign-in where the email is drawn in an inbox above the form and fills in as you type, the domain completes with Tab, and sending delivers it with an expiry bar, an open-mail button and a six-digit code. `method="password"` gives a classic form.
+- e9dc8ae: Add `<lw-mention-input>`: a comment box where "@" opens a people list at the caret, picked people become tokens, and a "Will notify" avatar stack shows who will hear about it. Initials avatars move to a shared `core/people.js`.
+- e9dc8ae: The shared menu opens as a popover in the top layer, placed by its trigger and flipped above it when there is no room, so no container clips it; only one menu is open at a time. `<lw-share-button>` now uses it for roles and general access instead of native selects.
+- e9dc8ae: Add `<lw-metric-card>`: a metric with its chart against the previous period, read by day or by range, with pinned notes, a rolling total and a breakdown that charts one part alone.
+- e9dc8ae: Add `<lw-minimal-faq>`, the first FAQ component: the heading and a way to reach the team beside hairline questions, one answer open at a time while the rest step back, a link for every answer, and `#faq-<id>` in the address to open one on load.
+- e9dc8ae: Add `<lw-morph-popover>`: a button that morphs into a small feedback form and shrinks into a confirmation once sent.
+- e9dc8ae: Add `<lw-morphic-navbar>`: a navigation bar that splits around the active link, with drag-to-scrub, flick projection and an optional `compact` fold to the active link and a chevron after the page scrolls.
+- e9dc8ae: Add `<lw-natural-date-input>`: a due date typed the way it is said, like "next fri 3pm" or "in 2 weeks", with the understood words underlined, a rolling preview and a chip on Enter.
+- e9dc8ae: Add `<lw-new-project-dialog>`: a new project from a starting point: templates drawn as wireframes in corner-marked frames, then a name whose address follows as you type.
+- e9dc8ae: Add `<lw-newsletter-dialog>`: a newsletter sign-up that shows what you would get: the latest issue, how often, then your address, confirmed in place.
+- e9dc8ae: Add `<lw-newsletter-footer>`: the first footer: a newsletter sign-up with the reader count and the next issue's date beside the latest issues, and the site's links below.
+- e9dc8ae: Add `<lw-notification-stack>`: notifications stacked like a lock screen that fan out on hover, focus or tap, and swipe away.
+- e9dc8ae: Add `<lw-onboarding-checklist>`: a get-started checklist with a progress ring, steps that fold away as they are checked, and an all-set state.
+- e9dc8ae: Add `<lw-order-summary-card>`: a calm checkout summary with drawn product tiles, quiet quantity controls, an Express switch, an inline promo code, rolling totals and Pay.
+- e9dc8ae: Add `<lw-order-tracker>`: a delivery card with a milestone rail that unfolds into the full scan history, each stop moving into its row.
+- e9dc8ae: Add `<lw-particle-button>`: async status button with spinner, drawn check, particle burst on success and shake on error.
+- e9dc8ae: Add `<lw-password-input>`: a new-password field that ripples its dots into characters while the eye is held, rates the password on four steps with a time to crack, and folds its requirements into "Strong password" once they all pass. Fields get a `customValidity()` hook for their own rules.
+- e9dc8ae: Add `<lw-pay-button>`: checkout button carrying the amount and card, with rolling digits and Processing / Paid / Card declined states. The async action flow is now a shared `LwActionButton` base, and rolling digits a shared core helper.
+- e9dc8ae: Add `<lw-period-picker>`: a reporting period from presets or a first and last day on the month, the band following the pointer, days after today locked, and a comparison with the period before.
+- e9dc8ae: Add `<lw-phone-input>`: a phone field that formats the number over a faint mask of the digits to come, switches country when an international number is typed or pasted, and only sends a code to a confirmed mobile. The caret helpers for formatted digits move to `core/text.js`.
+- e9dc8ae: Add `<lw-photo-straighten>`: straightens a crooked photo with a throwable dial ruler, a level grid and Auto correction.
+- e9dc8ae: Add `<lw-plucked-text>`: a line of text on a string you can pluck, strum and let ring, with real string physics. The grapheme splitter moves to a shared `core/text.js`.
+- e9dc8ae: Add `<lw-poll-card>`: a one-question poll where choosing is voting, with bars growing to their share, counting percentages and a five-second Undo.
+- e9dc8ae: Add `<lw-price-range>`: a two-thumb price filter over a histogram, with bars in the range darkened, a rolling result count and a window that slides when dragged between the thumbs.
+- e9dc8ae: Add `<lw-product-stage-hero>`: a large headline beside the pitch over a full-width issue tracker for a native program, fading into the page, with issues grouped by status, a detail pane and a layered command menu and toast.
+- e9dc8ae: Add `<lw-profile-card>`: a portrait profile card with stats and mutual followers, where Follow morphs into Following as the follower count rolls up.
+- e9dc8ae: Add `<lw-profile-dropdown>`: an account card that morphs into its own menu, with status, the page theme, account switching on a second page and hold-to-sign-out. `core/icons.js` gains `strokeIcon()`.
+- e9dc8ae: Add `<lw-push-button>`: a keycap button that sinks into its base when pressed, by pointer or keyboard.
+- e9dc8ae: Add `<lw-reaction-button>`: tap to like, press and hold (or rest the mouse) to slide across a tray of reactions; the most used reactions sit beside a rolling count and yours joins them.
+- e9dc8ae: Add `<lw-receipt-printer>`: a receipt that feeds out line by line, swings when pulled, and tears off to be thrown or dropped.
+- e9dc8ae: Add `<lw-sale-strip-banner>`: a sale across the top of the page in either scheme: the offer, a ticket-cut coupon that copies itself, a rolling countdown, the way to the plans, and dismiss.
+- e9dc8ae: Add `<lw-scroll-index>`: a rail of ticks beside long content, one per heading, that swell near the pointer, mark the section being read, and scrub or flick through the content.
+- e9dc8ae: Add `<lw-session-timeout-dialog>`: the warning before an idle session ends: a ring that empties with the seconds and turns urgent at the end, with stay signed in or sign out.
+- e9dc8ae: Add `<lw-settings-dialog>`: settings in one dialog: sections down the side, changes held as a draft across them with the changed sections dotted, and a bar to save or discard.
+- e9dc8ae: Add `<lw-shape-hero>`: a hero whose pill shapes drop in, pile up and can be grabbed and thrown, with a sleeping physics pile.
+- e9dc8ae: Add `<lw-share-button>`: shows who has access as an avatar stack and grows into a panel that invites by email, changes roles, switches general access and copies the link. Props of type `Object` now accept JSON in their attribute, and the clipboard helper restores focus inside shadow roots.
+- e9dc8ae: Add `<lw-shortcut-recorder>`: a settings list of keyboard shortcuts recorded by holding the keys, with live keycaps, an offer to replace a clash and a "Saved" confirmation. `core/shortcut.js` gains `shortcutFromEvent()`, and the keycap style is a shared `keycap` mixin.
+- e9dc8ae: Add `<lw-shortcuts-dialog>`: every keyboard shortcut in one dialog, grouped and searchable, with keycaps for each platform; pressing a shortcut, sequences included, finds it.
+- e9dc8ae: Add `<lw-signature-pad>`: a pad to sign on with ink that trails the pointer and thins with speed, undo and an animated clear, exporting the signature as SVG and submitting it with forms.
+- e9dc8ae: Add `<lw-single-plan-pricing>`: one product and one plan with three ways to pay, monthly, yearly with its saving, or once for life, the price rolling between them beside everything included.
+- e9dc8ae: Add `<lw-sitemap-footer>`: a footer that maps the site in columns of links with badges, and a Jump to search, opened with /, that dims every link that does not match.
+- e9dc8ae: Add `<lw-slash-command-menu>`: a channel with slash commands: / opens them above the box, narrowing as you type, Tab takes one with room for its argument, and Enter posts what it did.
+- e9dc8ae: Add `<lw-slide-text-button>`: label slides up on hover and focus to reveal a second label; renders a link when `href` is set.
+- e9dc8ae: Add `<lw-smooth-tab>`: tabs whose panels slide side by side and can be swiped, with the pill following the finger and its labels clipped exactly to it. `core/dom.js` gains `escapeHtml()`.
+- e9dc8ae: Add `<lw-sortable-list>`: a list to order by dragging its handles, the others making room and the ranks renumbering, with a full keyboard pick-up, move and drop that is read out.
+- e9dc8ae: Add `<lw-spending-ring>`: spending by category as a ring you drag or flick round, reading out the category under the marker.
+- e9dc8ae: Add `<lw-split-button>`: one action done a few ways, declared as `<option>` children; the caret opens an accessible menu, the choice can be remembered with `storage-key`.
+- e9dc8ae: Add `<lw-split-signup-login>`: sign-up beside a live preview of the account it creates; a known company domain shows that team with a choice to join it or start fresh, and other domains draft a new or personal workspace.
+- e9dc8ae: Add `<lw-spoiler-text>`: inline text hidden under drifting specks, blown away from where it is clicked or from the start on Enter or Space.
+- e9dc8ae: Add `<lw-stack-panel>`: a panel that drills into pages like phone settings, with the tapped row's label flying up to become the title, parallax pages and swipe to go back. `core/dom.js` gains `morph()` for in-place re-renders.
+- e9dc8ae: Add `<lw-stats-headline>`: the first headline component: a centred headline with a strip of figures that count up in view, the people who use it, and where the numbers come from.
+- e9dc8ae: Add `<lw-status-footer>`: a footer that reports on the service: link columns, a live status dot, and uptime as a strip of one bar a day that reads out each day's incidents.
+- e9dc8ae: Add `<lw-status-island>`: a pill that reports background tasks with progress, reshapes as they change, shows the ones behind it peeking out, and opens into the full list on hover, focus or tap.
+- e9dc8ae: Add `<lw-stepper-form>`: sign-up in three steps down one card, each checked before it moves on with Enter, finished steps folded into a summary with Edit, and a bar that fills as you go.
+- e9dc8ae: Add `<lw-support-composer>`: the first form: a support message box that suggests matching articles as the subject is typed, takes pasted or dropped screenshots, picks a topic from a menu, and sends with Ctrl+Enter.
+- e9dc8ae: Add `<lw-support-thread-faq>`: a FAQ as a support chat: common questions as quick replies, each sent, seen and answered after a moment of typing, your own question matched to the closest answer, and a reset to start over.
+- e9dc8ae: Add `<lw-swatch-fan>`: a colour picker shaped like a paint fan deck that is dragged open, with hue blades, shades and a copyable hex.
+- e9dc8ae: Add `<lw-swipe-actions-list>`: an inbox you can swipe: right to mark read or unread, left to archive, the action showing under the row and committing past a third, with undo and keyboard shortcuts.
+- e9dc8ae: Add `<lw-switch-button>`: light/dark theme toggle with a sun-to-moon morph and a circular View Transitions reveal.
+- e9dc8ae: Add `<lw-synced-transcript>`: a transcript that follows playback word by word, with a sliding highlight, lyric-style auto-scroll, Back to now and click-to-seek.
+- e9dc8ae: Add `<lw-tabbed-faq>`: a compact FAQ that reads like a settings screen. The topic tabs move one clipped highlight, and opening a question pushes its answer in from the right, with steps, related questions and previous and next; the arrow keys switch tabs or answers and Escape goes back.
+- e9dc8ae: Add `<lw-team-member-list>`: the people in a workspace with who is online, their role and when they were last seen, filtered as you type, with roles changed or members removed from a menu on each row.
+- e9dc8ae: Add `<lw-team-selector>`: a seat counter with an avatar stack, a number you can drag to scrub with a rubber band at the bounds, and an optional rolling monthly total.
+- e9dc8ae: Add `<lw-tear-button>`: confirm by tearing a ticket stub along its perforation, with stick-slip tearing, spring physics and a thrown stub. Button color variants are now a shared `lw.variants` SCSS mixin.
+- e9dc8ae: Add `<lw-terminal-hero>`: a developer hero with a big terminal that streams the build of a native program, then layers a preview of its window and the passing checks over the terminal's edge.
+- e9dc8ae: Add `<lw-testimonial-grid>`: the first testimonial component: quotes with the phrase that matters marked in the company's colour and numbers with their bars in a bento grid, a rating, and a filter whose remaining cards glide into place.
+- e9dc8ae: Add `<lw-testimonial-spotlight>`: one large quote at a time with its last words brought forward, a ring round the speaker that fills before the next one comes, held while you point at it, and the other speakers as initials.
+- e9dc8ae: Add `<lw-text-input>`: a single-line text field with a label, hint, error, start and end slots, sizes and a length counter, taking part in forms and validation like a native input.
+- e9dc8ae: Add `<lw-textarea>`: a multi-line text field with a label, hint, error, counter and optional autosize, taking part in forms like a native textarea. It shares a new `core/field.js` base with `<lw-text-input>`.
+- e9dc8ae: Add `<lw-theme-toggle-button>`: Light, System and Dark as a radio group with a sliding thumb; the System glyph shows the device's current theme. Reading and applying the page theme is now shared through `core/theme.js`.
+- e9dc8ae: Add `<lw-three-tier-pricing>`: the first pricing component: three plans with the featured one raised in the opposite scheme, prices that roll between monthly and yearly, and a seat stepper on the per-seat plan.
+- e9dc8ae: Add `<lw-ticket-pricing>`: plans as passes: a perforated stub with the price, specs with dotted leaders and a barcode; the pass picked is printed in the opposite scheme, and yearly rolls the prices and reprints the barcodes.
+- e9dc8ae: Add `<lw-toolbar>`: an editor tool dock on a canvas, with a sliding selection plate, shortcut tooltips, sub-tool flyouts and a grip that throws the dock to any edge, where it turns vertical on the sides.
+- e9dc8ae: Add `<lw-topo-background>`: a living contour map with survey-style elevation labels, a hill under the cursor and ripples on click.
+- e9dc8ae: Add `<lw-trial-status-banner>`: the first banner: a trial's days as a strip of ticks, spent ones dim, the days left and the end date, growing more insistent near the end, with upgrade and dismiss.
+- e9dc8ae: Add `<lw-two-factor-dialog>`: two-factor set-up in three steps: scan the QR code or type the key, enter the six digits checked as the last goes in, then keep the recovery codes before Done is allowed.
+- e9dc8ae: Add `<lw-type-writer>`, the first text component: types and erases phrases with a natural rhythm, optional typos and select-to-delete, a caret that blinks only when idle, and a pause while off screen.
+- e9dc8ae: Add `<lw-undo-button>`: runs an action with an undo window, counted down by a ring around the button; undo by clicking again or with ⌘Z / Ctrl+Z.
+- e9dc8ae: Add `<lw-upgrade-dialog>`: the first modal: the upgrade asked for when a limit is hit, with what ran out, plans with monthly or yearly billing, what changes row by row, and today's total and saving.
+- e9dc8ae: Add `<lw-upgrade-summary>`: the last step of an upgrade: pick the plan and billing, see this cycle's use against the current and new limits as segmented meters, and today's bill, prorated and credited, before confirming.
+- e9dc8ae: Add `<lw-uptime-card>`: status history for a few services, a bar per day that swells under the pointer, with each day's incident log a click away.
+- e9dc8ae: Add `<lw-verification-code>`: a one-time code field that fills from typing, paste or autofill, folds into a "Verified" pill when the code is right, and shakes and clears when it is wrong.
+- e9dc8ae: Add `<lw-view-toggle-toolbar>`: one set of projects seen as a board, a list or a table, with a sliding view switch, sorting by field and order, and a toggle that hides what has shipped.
+- e9dc8ae: Add `<lw-wheel-picker>`: an iOS-style 3D drum picker that turns each `<select>` inside into a wheel you drag, flick, scroll or step with the keyboard, keeping the selects as real form fields.
+- e9dc8ae: Add `<lw-work-flow-hero>`: a work flow hero with the live graph of a native build: pulses travel the edges, configure, compile, test and link steps tick their results, a trace lines them up, and any step opens in an inspector.
+- e9dc8ae: Add `<lw-workspace-switcher>`: a sidebar workspace switcher whose trigger grows into a searchable panel, with arrow keys, ⌘1–9 shortcuts and an account footer.
+
+### Patch Changes
+
+- e9dc8ae: `<lw-confirm-delete-button>`: the hairline now drains as soon as the pointer is away; the focus placed on the card when it opens no longer counts as being on it.
+- e9dc8ae: Spring and physics animations now stop when asked to from inside their own frame, instead of running one frame on and restarting.
+- e9dc8ae: `<lw-particle-button>`: the success burst now comes from the middle of the top edge on every screen, instead of drifting with the pixel density, the border and the press point.
+- e9dc8ae: Status buttons (particle, hold, undo, pay, split, connect) that start in a status other than `idle` no longer show the idle label next to it.
