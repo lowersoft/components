@@ -7,7 +7,7 @@
 
   ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/lowersoft/components/ci.yml)
   ![npm version](https://img.shields.io/npm/v/@lowersoft/lw)
-  ![GitHub License](https://img.shields.io/github/license/lowersoft/components?)
+  ![GitHub License](https://img.shields.io/github/license/lowersoft/components)
   ![GitHub Repo stars](https://img.shields.io/github/stars/lowersoft/components)
 
 </div>
@@ -29,10 +29,20 @@ lw is a set of *animated UI components* built with **SCSS** and **vanilla JavaSc
 ### Usage
 Everything below works the same in plain HTML, React, Vue, Svelte or anything else. No framework needed(btw).
 #### 1.1 Get the package
+There are no peer dependencies and no build plugins to configure.
 ```bash
 npm install @lowersoft/lw
 ```
-That is the only install step. There are no peer dependencies and no build plugins to configure.
+Or you can choice the CND way, include like this:
+```html
+<!-- Header Side -->
+<link rel="stylesheet" href="https://unpkg.com/@lowersoft/lw/dist/themes.css">
+
+<!-- Body Side -->
+<script type="module">
+  import 'https://unpkg.com/@lowersoft/lw/dist/index.js';
+</script>
+```
 
 #### 1.2 Import and render
 Import only what you need, every component is a separate entry point:
