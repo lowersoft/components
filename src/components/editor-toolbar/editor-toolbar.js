@@ -1,5 +1,5 @@
 import { escapeHtml } from '../../core/dom.js';
-import { iconStyles, strokeIcon } from '../../core/icons.js';
+import { iconStyles, SPINNER_ICON, strokeIcon } from '../../core/icons.js';
 import { check, chevronRight, messageSquareText } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
 import { initialsOf } from '../../core/people.js';
@@ -31,10 +31,11 @@ const ago = (ms) => {
 };
 
 /**
- * The bar above a shared document: the outline toggle, where the document
- * lives, whether it is saved, who else is in it, comments and Share. Typing
- * in the document shows it saving, then saved; the outline beside it
- * follows the section in view and jumps to the one picked.
+ * A full-page shared document under its bar: the outline toggle, where the
+ * document lives, whether it is saved, who else is in it, comments and
+ * Share. It fills its container. Typing in the document shows it saving,
+ * then saved; the outline beside it follows the section in view, jumps to
+ * the one picked, and counts the words.
  *
  * People are `{ name, color }`; the document is HTML with `h1`/`h2`
  * headings carrying ids.
@@ -65,9 +66,9 @@ export class LwEditorToolbar extends LwElement {
 
   render() {
     return `<header class="bar"><button class="tool toggle" type="button" aria-label="Outline" aria-controls="outline">${strokeIcon(PANEL, 18)}</button><nav class="crumbs" aria-label="Breadcrumb"></nav>
-<p class="saved" aria-live="polite"><span class="saved-icon">${strokeIcon(check, 16)}</span><span class="saved-text"></span></p><span class="people"></span><span class="divider"></span>
+<p class="saved" aria-live="polite"><span class="saved-icon" aria-hidden="true"><span class="done-icon">${strokeIcon(check, 14)}</span>${SPINNER_ICON}</span><span class="saved-text"></span></p><span class="people"></span><span class="divider"></span>
 <button class="tool comments" type="button">${strokeIcon(messageSquareText, 18)}<span class="comment-count"></span></button><lw-button class="share" size="sm">Share</lw-button><button class="tool more" type="button" aria-label="More">${strokeIcon(DOTS, 18)}</button></header>
-<div class="body"><nav class="outline" id="outline" aria-label="Outline"><p class="outline-title">Outline</p><ul class="headings"></ul></nav><div class="page"><article class="doc" contenteditable="true" spellcheck="false" aria-label="Document"></article></div></div>`;
+<div class="body"><nav class="outline" id="outline" aria-label="Outline"><p class="outline-title">On this page</p><ul class="headings"></ul><p class="stats"></p></nav><div class="page"><article class="doc" contenteditable="true" spellcheck="false" aria-label="Document"></article></div></div>`;
   }
 
   connected() {
@@ -96,7 +97,8 @@ export class LwEditorToolbar extends LwElement {
     if (changed.has('path')) {
       const path = this.path ?? [];
       this.query('.crumbs').innerHTML = path
-        .map((part, i) => `${i ? strokeIcon(chevronRight, 14) : ''}<span class="crumb"${i === path.length - 1 ? ' aria-current="page"' : ''}>${i === 0 ? `<span class="mark" aria-hidden="true">${escapeHtml(part.charAt(0))}</span>` : ''}${escapeHtml(part)}</span>`)
+        // Each crumb carries the chevron before it, so a hidden one takes its chevron along.
+        .map((part, i) => `<span class="crumb"${i === path.length - 1 ? ' aria-current="page"' : ''}>${i ? strokeIcon(chevronRight, 14) : ''}${i === 0 ? `<span class="mark" aria-hidden="true">${escapeHtml(part.charAt(0))}</span>` : ''}${escapeHtml(part)}</span>`)
         .join('');
     }
     if (changed.has('people')) {
@@ -124,6 +126,9 @@ export class LwEditorToolbar extends LwElement {
     this.query('.headings').innerHTML = [...this.query('.doc').querySelectorAll('h1[id], h2[id]')]
       .map((heading) => `<li><a class="heading" href="#${escapeHtml(heading.id)}" data-id="${escapeHtml(heading.id)}" data-level="${heading.tagName.slice(1)}">${escapeHtml(heading.textContent)}</a></li>`)
       .join('');
+    // Words and reading time, at an average of 230 words a minute.
+    const words = (this.query('.doc').textContent.match(/\S+/g) ?? []).length;
+    this.query('.stats').textContent = `${words.toLocaleString('en-US')} words · ${Math.max(1, Math.round(words / 230))} min read`;
     this.#paintCurrent();
   }
 

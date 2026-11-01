@@ -4,8 +4,9 @@ import './index.js';
 export default {
   title: 'Toolbars/Editor Toolbar',
   component: 'lw-editor-toolbar',
-  parameters: { layout: 'padded' },
-  render: (args) => `<lw-editor-toolbar ${attributes(args)}></lw-editor-toolbar>`,
+  parameters: { layout: 'fullscreen' },
+  // It fills its container: here, the whole viewport.
+  render: (args) => `<lw-editor-toolbar style="height: 100vh" ${attributes(args)}></lw-editor-toolbar>`,
   args: { outline: true, comments: 3 },
 };
 
