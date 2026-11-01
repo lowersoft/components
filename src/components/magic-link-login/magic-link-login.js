@@ -1,7 +1,5 @@
-import { escapeHtml } from '../../core/dom.js';
 import { providerButtons } from '../../core/login.js';
 import { LwElement } from '../../core/lw-element.js';
-import { reducedMotion } from '../../core/motion.js';
 import '../button/index.js';
 import '../text-input/index.js';
 import '../verification-code/index.js';
@@ -24,24 +22,16 @@ const MAIL_APPS = {
 
 const DEMO_DOMAINS = ['gmail.com', 'outlook.com', 'icloud.com', 'proton.me', 'company.com'];
 
-const DEMO_INBOX = [
-  { from: 'Jonas Weber', subject: 'Release 0.9: profiler numbers, round two', time: '9:41 AM' },
-  { from: 'LowerSoft CI', subject: 'Nightly build passed on all 6 targets', time: '8:02 AM' },
-];
-
 const clock = (seconds) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-const randomCode = () => String(Math.floor(Math.random() * 10 ** CODE_LENGTH)).padStart(CODE_LENGTH, '0');
 
 /**
- * Passwordless sign-in. The email it will send is drawn above the form, in
- * the inbox it will land in, and fills in as you type; the domain completes
- * with Tab. Sending turns the draft into the delivered message, with an
- * expiry bar, a button that opens the mail app and a six-digit code, and the
- * form asks for that code. With `method="password"` it is a classic email
- * and password form instead.
+ * Passwordless sign-in: the domain of the address completes with Tab, and
+ * sending asks for the six-digit code from the email, with a button that
+ * opens the mail app, the time left on the link and a resend countdown.
+ * With `method="password"` it is a classic email and password form instead.
  *
- * Without callbacks the card simulates the requests and accepts the code it
- * shows. Set these properties to wire it to your auth:
+ * Without callbacks the card simulates the requests and accepts any six
+ * digits. Set these properties to wire it to your auth:
  * `send` — `async (email) => void`, sends the link;
  * `verify` — `async (code) => boolean`, checks the code;
  * `signIn` — `async ({ email, password }) => boolean`, for the password form.
@@ -69,19 +59,12 @@ export class LwMagicLinkLogin extends LwElement {
 
   #stage = 'form';
   #email = '';
-  #code = '';
   #timer = 0;
   #expiresAt = 0;
   #resendAt = 0;
 
   render() {
-    return `<section class="inbox" aria-label="Inbox preview"><header class="inbox-head"><span>Inbox</span><span class="to"></span></header>
-<div class="slot"><div class="draft"><span class="dot" aria-hidden="true"></span><span class="draft-text"></span></div>
-<article class="message" aria-live="polite"><header class="message-head"><span class="sender"></span><span class="now">now</span></header><p class="message-subject"></p>
-<div class="expiry"><span class="bar" aria-hidden="true"><i></i></span><span class="expires"></span></div>
-<div class="message-actions"><a class="open-mail" target="_blank" rel="noopener"></a><span class="code-label">Code <b class="code"></b></span></div></article></div>
-<ul class="mails">${DEMO_INBOX.map((mail) => `<li><span class="from">${escapeHtml(mail.from)}</span><span class="subject">${escapeHtml(mail.subject)}</span><span class="time">${mail.time}</span></li>`).join('')}</ul></section>
-<div class="body">
+    return `<div class="body">
 <form class="form" novalidate><h2 class="title"></h2><p class="lead"></p>
 ${providerButtons()}
 <p class="divider"><span>or with email</span></p>
@@ -89,6 +72,7 @@ ${providerButtons()}
 <lw-text-input class="password" type="password" name="password" placeholder="Password" autocomplete="current-password" aria-label="Password"></lw-text-input>
 <lw-button class="submit" type="submit"></lw-button></form>
 <div class="check" hidden><h2 class="title">Check your inbox</h2><p class="lead sent-to"></p><lw-verification-code class="otp" length="${CODE_LENGTH}" label="Code from the email"></lw-verification-code>
+<div class="mail-row"><a class="open-mail" target="_blank" rel="noopener"></a><span class="expires" aria-live="off"></span></div>
 <div class="check-actions"><lw-button class="back" variant="ghost" size="sm">Use a different email</lw-button><lw-button class="resend" variant="ghost" size="sm"></lw-button></div></div>
 <div class="done" hidden><h2 class="title">You're signed in</h2><p class="lead done-text"></p></div></div>
 <footer class="foot"><span>New to <span class="brand-name"></span>? <a class="signup">Create an account</a></span><a class="terms">Terms</a></footer>`;
@@ -109,8 +93,8 @@ ${providerButtons()}
     this.query('.back').addEventListener('click', () => this.#show('form'), options);
     this.query('.resend').addEventListener('click', () => this.#send(), options);
     const otp = this.query('.otp');
-    // Checks the code: the caller's, or the one the demo showed.
-    otp.verify = async (code) => (this.verify ? this.verify(code) : code === this.#code);
+    // Checks the code: the caller's, or in the demo any six digits.
+    otp.verify = async (code) => (this.verify ? this.verify(code) : code.length === CODE_LENGTH && /^\d+$/.test(code));
     otp.addEventListener('lw-verified', () => this.#signedIn('magic'), options);
     this.signal.addEventListener('abort', () => clearInterval(this.#timer));
   }
@@ -123,7 +107,6 @@ ${providerButtons()}
     this.query('.submit').textContent = password ? 'Sign in' : 'Email me a sign-in link';
     this.query('.password').hidden = !password;
     this.query('.password').required = password;
-    this.query('.inbox').hidden = password;
     this.query('.brand-name').textContent = brand;
     this.query('.signup').href = this.signupHref ?? '#';
     this.query('.terms').href = this.termsHref ?? '#';
@@ -142,14 +125,10 @@ ${providerButtons()}
     return domain ? domain.slice(typed.length) : '';
   }
 
-  // The draft in the inbox follows the address as it is typed.
+  // The completion hint follows the address as it is typed.
   #typed() {
     if (this.#stage !== 'form') return;
-    const value = (this.query('.email').value ?? '').trim();
     const suggestion = this.#suggestion;
-    this.query('.to').textContent = value ? `${value}${suggestion}` : 'you@company.com';
-    this.query('.draft-text').textContent = value ? `Draft: sign-in link for ${value}${suggestion}` : `Your link from ${this.brand} lands here`;
-    this.query('.slot').toggleAttribute('data-typing', Boolean(value));
     const complete = this.query('.complete');
     complete.hidden = !suggestion;
     this.query('.suggest').textContent = suggestion;
@@ -193,14 +172,13 @@ ${providerButtons()}
     else password.error = 'That email and password did not match.';
   }
 
-  // Sends the link (or a new one) and turns the draft into the delivered message.
+  // Sends the link (or a new one) and asks for its code.
   async #send() {
     const submit = this.query('.submit');
     submit.loading = true;
     if (this.send) await this.send(this.#email);
     else await new Promise((resolve) => setTimeout(resolve, SEND_MS));
     submit.loading = false;
-    this.#code = randomCode();
     this.#expiresAt = Date.now() + EXPIRES_S * 1000;
     this.#resendAt = Date.now() + RESEND_S * 1000;
     const domain = this.#email.split('@')[1]?.toLowerCase() ?? '';
@@ -208,14 +186,7 @@ ${providerButtons()}
     const open = this.query('.open-mail');
     open.textContent = `Open ${app}`;
     open.href = url;
-    this.query('.to').textContent = this.#email;
-    this.query('.sender').textContent = this.brand ?? '';
-    this.query('.message-subject').textContent = `Sign in to ${this.brand}`;
-    this.query('.code').textContent = `${this.#code.slice(0, 3)} ${this.#code.slice(3)}`;
     this.query('.sent-to').textContent = `We sent a link to ${this.#email}. Open it, or enter the code from it.`;
-    const bar = this.query('.bar i');
-    bar.getAnimations().forEach((animation) => animation.cancel());
-    if (!reducedMotion.matches) bar.animate([{ scale: '1 1' }, { scale: '0 1' }], { duration: EXPIRES_S * 1000, easing: 'linear', fill: 'forwards' });
     this.query('.otp').value = '';
     this.#show('check');
     this.emit('send', { email: this.#email });
@@ -227,7 +198,7 @@ ${providerButtons()}
   // The expiry and the resend countdowns.
   #tick() {
     const left = Math.max(0, Math.round((this.#expiresAt - Date.now()) / 1000));
-    this.query('.expires').textContent = left ? `Expires in ${clock(left)}` : 'Expired';
+    this.query('.expires').textContent = left ? `Link expires in ${clock(left)}` : 'Link expired';
     const wait = Math.max(0, Math.round((this.#resendAt - Date.now()) / 1000));
     const resend = this.query('.resend');
     resend.textContent = wait ? `Resend in ${wait}s` : 'Resend link';

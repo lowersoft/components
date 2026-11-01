@@ -12,7 +12,7 @@ export default {
   args: { brand: 'LowerSoft', method: 'magic', 'last-used': 'google' },
 };
 
-// Type an address (Tab completes the domain) and send: the draft becomes the delivered link, with its code.
+// Type an address (Tab completes the domain) and send, then enter any six digits as the code.
 export const Default = {};
 
 // The classic email and password form.
