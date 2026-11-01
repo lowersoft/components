@@ -89,10 +89,18 @@ export class LwSwipeActionsList extends LwElement {
     const avatar = message.mark
       ? `<span class="avatar tile" style="--_mark: ${escapeHtml(message.mark)}">${escapeHtml(message.from.charAt(0))}</span>`
       : `<span class="avatar" style="--_hue: ${hueOf(message.from)}">${escapeHtml(initialsOf(message.from))}</span>`;
-    return `<li class="row" tabindex="0" data-id="${message.id}"${message.unread ? ' data-unread' : ''} aria-label="${escapeHtml(`${message.unread ? 'Unread, ' : ''}${message.from}: ${message.subject}`)}">
+    return `<li class="row" tabindex="0" data-id="${message.id}"${message.unread ? ' data-unread' : ''} aria-label="${escapeHtml(this.#label(message))}">
 <span class="under left" aria-hidden="true">${strokeIcon(mail, 18)}<span class="under-text"></span></span><span class="under right" aria-hidden="true"><span>Archive</span>${strokeIcon(ARCHIVE, 18)}</span>
 <div class="face-of-row"><span class="dot" aria-hidden="true"></span>${avatar}<div class="content"><p class="top"><b class="from">${escapeHtml(message.from)}</b>${message.count ? `<span class="count">${message.count}</span>` : ''}<time class="time">${escapeHtml(message.time)}</time></p><p class="subject">${escapeHtml(message.subject)}</p><p class="preview">${escapeHtml(message.preview)}</p>${message.attachment ? `<span class="attachment">${strokeIcon(paperclip, 14)}${escapeHtml(message.attachment)}</span>` : ''}</div>
-<span class="actions"><button type="button" data-action="read" aria-label="${message.unread ? 'Mark read' : 'Mark unread'}" tabindex="-1">${strokeIcon(mail, 16)}</button><button type="button" data-action="archive" aria-label="Archive" tabindex="-1">${strokeIcon(ARCHIVE, 16)}</button></span></div></li>`;
+<span class="actions"><button type="button" data-action="read" aria-label="${this.#readLabel(message)}" tabindex="-1">${strokeIcon(mail, 16)}</button><button type="button" data-action="archive" aria-label="Archive" tabindex="-1">${strokeIcon(ARCHIVE, 16)}</button></span></div></li>`;
+  }
+
+  #label(message) {
+    return `${message.unread ? 'Unread, ' : ''}${message.from}: ${message.subject}`;
+  }
+
+  #readLabel(message) {
+    return message.unread ? 'Mark read' : 'Mark unread';
   }
 
   #paintCount() {
@@ -119,6 +127,7 @@ export class LwSwipeActionsList extends LwElement {
       drag.dx = dx;
       const width = drag.row.offsetWidth;
       const unread = drag.row.hasAttribute('data-unread');
+      drag.row.toggleAttribute('data-dragging', true);
       drag.row.querySelector('.face-of-row').style.translate = `${dx}px 0`;
       drag.row.dataset.side = dx > 0 ? 'left' : 'right';
       drag.row.toggleAttribute('data-ready', Math.abs(dx) > width * COMMIT);
@@ -131,24 +140,38 @@ export class LwSwipeActionsList extends LwElement {
       const { row, dx } = drag;
       const id = Number(row.dataset.id);
       const committed = Math.abs(dx) > row.offsetWidth * COMMIT;
-      const face = row.querySelector('.face-of-row');
+      row.removeAttribute('data-dragging');
       if (committed && dx < 0) return this.#archive(id, dx);
-      face.style.translate = '';
-      delete row.dataset.side;
-      row.removeAttribute('data-ready');
+      // The row eases home over its action, which clears once it is back;
+      // a committed read flips as it goes, so the change shows on the way.
       if (committed) this.#toggleRead(id);
+      this.#settle(row);
     };
     list.addEventListener('pointerup', end, options);
     list.addEventListener('pointercancel', end, options);
   }
 
+  #settle(row) {
+    const face = row.querySelector('.face-of-row');
+    const clear = () => {
+      if (row.hasAttribute('data-dragging')) return;
+      delete row.dataset.side;
+      row.removeAttribute('data-ready');
+    };
+    face.style.translate = '';
+    if (reducedMotion.matches || !face.getAnimations().length) clear();
+    else Promise.all(face.getAnimations().map((animation) => animation.finished)).then(clear, clear);
+  }
+
+  // Flips a message in place, so the row keeps its focus and its motion.
   #toggleRead(id) {
     const message = this.#items.find((each) => each.id === id);
     if (!message) return;
     message.unread = !message.unread;
     const row = this.query(`.row[data-id="${id}"]`);
-    row.outerHTML = this.#row(message);
-    this.query(`.row[data-id="${id}"]`).focus();
+    row.toggleAttribute('data-unread', message.unread);
+    row.ariaLabel = this.#label(message);
+    row.querySelector('[data-action="read"]').ariaLabel = this.#readLabel(message);
     this.#paintCount();
     this.emit('read', { id, unread: message.unread });
   }
