@@ -79,7 +79,8 @@ button {
   height: 2.75rem;
   place-items: center;
 
-  svg {
+  // The timer ring only: the face inside it is an svg too, and stays upright.
+  > svg {
     position: absolute;
     inset: 0;
     rotate: -90deg;
