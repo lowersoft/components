@@ -2,8 +2,10 @@
 .swap {
   position: relative;
   display: inline-flex;
-  // Clips the rise and fall only; a longer leaving text may overhang sideways.
-  clip-path: inset(0 -100vmax);
+  // Clips the rise and fall only; a longer leaving text may overhang
+  // sideways. A little room above and below keeps accents and descenders
+  // whole when the line is set tight.
+  clip-path: inset(-0.2em -100vmax);
 
   .leaving {
     position: absolute;
