@@ -1,38 +1,37 @@
 # Roadmap
 
 ## Current
-- [ ] Status Island
-- [ ] Carousel Cards
-- [ ] Currency Transfer Copy Input
-- [ ] Liquid Gauge %30 Bug
-- [ ] Activity Terrain Flip Bug
-- [ ] Delete: Image Generation Card
-- [ ] Workspace Switcher
-- [ ] Delete: Continue Learning Card
-- [ ] Profile Card
-- [ ] Contact Card
-- [ ] Job Listing Card: width adjustment
-- [ ] Order Tracker: detail button
-- [ ] LOGIN
-- [ ] Upgrade Summary
-- [ ] Ticket Pricing: hover event
-- [ ] Comparison Table Pricing: tooltip
-- [ ] Single Plan Pricing: button icon anim
-- [ ] Testimonial Spotlight: avatar image rotation
-- [ ] Inline Chips Headline: Build/Deployed text owerflow
-- [ ] Filter Headline: example content
-- [ ] Cookie Consent Banner
-- [ ] Upgrade Dialog: Upgrade to Team button icon anim
-- [ ] Settings Dialog
-- [ ] Two Factor Dialog: Copy input side must be change with standart copy input style
-- [ ] New Project Dialog: hover event
-- [ ] Shortcuts Dialog: pop-up scroll bug
-- [ ] Feedback Dialog
-- [ ] Session Timeout Dialog: pop-up scroll bug
-- [ ] Editor Toolbar
-- [ ] Activity Feed
-- [ ] Swipe Actions: read swipe event
-- [ ] Kanban Board: hold wrapper bug
+- [x] Status Island
+- [x] Carousel Cards    
+- [x] Liquid Gauge %30 Bug
+- [x] Activity Terrain Flip Bug
+- [x] Delete: Image Generation Card
+- [x] Workspace Switcher
+- [x] Delete: Continue Learning Card
+- [x] Profile Card
+- [x] Contact Card
+- [x] Job Listing Card: width adjustment
+- [x] Order Tracker: detail button
+- [x] LOGIN
+- [x] Upgrade Summary
+- [x] Ticket Pricing: hover event
+- [x] Comparison Table Pricing: tooltip
+- [x] Single Plan Pricing: button icon anim
+- [x] Testimonial Spotlight: avatar image rotation
+- [x] Inline Chips Headline: Build/Deployed text overflow
+- [x] Filter Headline: example content
+- [x] Cookie Consent Banner
+- [x] Upgrade Dialog: Upgrade to Team button icon anim
+- [x] Settings Dialog
+- [x] Two Factor Dialog: Copy input side must use the standard copy input style
+- [x] New Project Dialog: hover event
+- [x] Shortcuts Dialog: pop-up scroll bug
+- [x] Feedback Dialog
+- [x] Session Timeout Dialog: pop-up scroll bug
+- [x] Editor Toolbar
+- [x] Activity Feed
+- [x] Swipe Actions: read swipe event
+- [x] Kanban Board: hold wrapper bug
 
 ## Phase 0: Infrastructure
 
@@ -208,13 +207,11 @@
 - [x] Uptime card
 - [x] Spending ring
 - [x] Lightbox grid
-- [x] Image generation card
 - [x] Audio player card
 - [x] Onboarding checklist
 - [x] Deployment card
 - [x] Order summary card
 - [x] Workspace switcher
-- [x] Continue learning card
 - [x] Poll card
 - [x] Profile card
 - [x] Contact card
