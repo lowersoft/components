@@ -2,7 +2,6 @@
 
 :host {
   --_notch: 0.75rem;
-  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 // Centred: the title, the switch, and what yearly saves.
@@ -50,12 +49,12 @@
   cursor: pointer;
   outline: none;
 
-  @include lw.motion {
-    transition: translate 300ms var(--_ease);
-  }
-
-  &:hover {
-    translate: 0 -3px;
+  // A pass under the pointer darkens a shade in place, so it reads as one
+  // you can pick. Touch screens skip it: a tap would leave it stuck.
+  @media (hover: hover) {
+    &:hover:not([aria-checked='true']) {
+      --_face: color-mix(in oklab, #{lw.v(color-foreground)} 10%, #{lw.v(color-background)});
+    }
   }
 
   &:focus-visible {
@@ -77,6 +76,10 @@
 .body {
   position: relative;
   background: var(--_face);
+
+  @include lw.motion {
+    transition: background-color 200ms ease-out;
+  }
 }
 
 .stub {
