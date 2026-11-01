@@ -3,167 +3,304 @@
 :host {
   --_line: #{lw.v(color-border)};
   --_muted: #{lw.v(color-muted-foreground)};
-  --_raised: color-mix(in oklab, #{lw.v(color-foreground)} 4%, #{lw.v(color-background)});
   --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+  // The room a new plan adds, on the meters and their legend.
+  --_added: color-mix(in oklab, #{lw.v(color-accent)} 22%, transparent);
 
-  box-sizing: border-box;
+  @include lw.card-shell(32rem, 0);
+
   overflow: hidden;
-  width: 34rem;
-  max-width: 100%;
-  border: 1px solid var(--_line);
-  border-radius: 1rem;
-  background: lw.v(color-background);
 }
 
-button {
-  font: inherit;
-  color: inherit;
-  outline: none;
-
-  &:focus-visible {
-    @include lw.focus-ring;
-
-    outline-offset: -2px;
-  }
-}
-
-section,
-.head {
+// Sections stacked on the card, a hairline between each.
+.head,
+.section,
+.foot {
   padding: 1.5rem;
+}
 
-  & + & {
-    border-top: 1px solid var(--_line);
-  }
+.section,
+.foot {
+  border-top: 1px solid var(--_line);
 }
 
 .route {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: lw.v(text-lg);
-  font-weight: 500;
-
-  svg,
-  .from {
-    color: var(--_muted);
-  }
-}
-
-.lead {
-  margin-top: 0.375rem;
   color: var(--_muted);
 }
 
-// The plans to move to, a bar over the chosen one, and the billing.
-.choose {
-  display: grid;
-  justify-items: start;
-  gap: 1rem;
+.chip {
+  display: inline-flex;
+  padding: 0.125rem 0.625rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  line-height: 1.5;
+
+  &.to {
+    border-color: lw.v(color-foreground);
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
+  }
 }
 
-.targets {
+.title {
+  margin-top: 1rem;
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.lead {
+  max-width: 26rem;
+  margin-top: 0.375rem;
+  line-height: 1.55;
+  color: var(--_muted);
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: lw.v(text-sm);
+  font-weight: 600;
+
+  .bill > & {
+    margin-bottom: 1rem;
+  }
+}
+
+.save {
+  margin-left: 0.25rem;
+  color: lw.v(color-accent);
+}
+
+// The plans to move to, side by side; a ring slides to the one chosen.
+.plans {
   position: relative;
   display: grid;
-  width: 100%;
-  grid-auto-columns: minmax(0, 1fr);
-  grid-auto-flow: column;
-  border: 1px solid var(--_line);
-  border-radius: lw.v(radius-lg);
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
 }
 
-.target-bar {
-  @include lw.sliding-highlight;
-
+.plan-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  border: 1.5px solid lw.v(color-foreground);
   border-radius: lw.v(radius-lg);
-  background: var(--_raised);
-  box-shadow: inset 0 2px 0 lw.v(color-foreground);
+  opacity: 0;
+  pointer-events: none;
+
+  @include lw.motion {
+    transition:
+      translate 300ms var(--_ease),
+      width 300ms var(--_ease),
+      height 300ms var(--_ease),
+      opacity 150ms ease-out;
+  }
+
+  &.visible {
+    opacity: 1;
+  }
 }
 
-.target {
+.plan {
   position: relative;
   display: grid;
   gap: 0.25rem;
   padding: 0.875rem 1rem;
-  border: 0;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-lg);
   background: none;
+  font: inherit;
+  color: inherit;
   text-align: left;
   cursor: pointer;
+  outline: none;
 
-  & + & {
-    border-left: 1px solid var(--_line);
+  @include lw.motion {
+    transition: background-color 150ms ease-out;
+  }
+
+  @media (hover: hover) {
+    &:hover:not([aria-checked='true'], [aria-disabled='true']) {
+      background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, transparent);
+    }
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  &[aria-disabled='true'] {
+    opacity: 0.45;
+    cursor: default;
   }
 }
 
-.target-name {
-  font-size: lw.v(text-md);
-  font-weight: 500;
+.plan-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.target-price {
-  color: var(--_muted);
+.plan-name {
+  font-weight: 600;
 }
 
-// Use against the current limit and the new one.
-.section-title {
-  margin-bottom: 1rem;
-  color: var(--_muted);
-}
+// A radio mark that fills when its plan is chosen.
+.dot {
+  width: 1rem;
+  height: 1rem;
+  border: 1.5px solid var(--_line);
+  border-radius: 50%;
 
-.meter {
-  padding: 0.875rem 0;
-
-  & + & {
-    border-top: 1px solid var(--_line);
+  @include lw.motion {
+    transition:
+      border-width 200ms var(--_ease),
+      border-color 200ms ease-out;
   }
+
+  [aria-checked='true'] & {
+    border: 5px solid lw.v(color-foreground);
+  }
+}
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.price {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.per,
+.gain {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+// The legend to the meters' three shades.
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem 0.875rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+
+  &::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 2px;
+  }
+}
+
+.used-key::before {
+  background: lw.v(color-foreground);
+}
+
+.now-key::before {
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 16%, transparent);
+}
+
+.added-key::before {
+  background: var(--_added);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, #{lw.v(color-accent)} 45%, transparent);
+}
+
+.meters {
+  display: grid;
+  gap: 1.125rem;
 }
 
 .meter-head {
   display: flex;
-  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.25rem 1rem;
-  margin-bottom: 0.625rem;
-  font-size: lw.v(text-md);
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
-.meter-value {
+.meter-label {
+  font-weight: 500;
+}
+
+.figures {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
+  font-size: lw.v(text-xs);
   font-variant-numeric: tabular-nums;
-
-  svg {
-    color: var(--_muted);
-  }
-}
-
-.used {
+  white-space: nowrap;
   color: var(--_muted);
 
-  [data-near] & {
+  svg {
+    flex: none;
+  }
+
+  b {
+    font-weight: 600;
+    color: lw.v(color-foreground);
+  }
+
+  [data-near] & .used {
     color: lw.v(color-destructive);
   }
 }
 
-.track {
+// On the new plan's scale: the room it adds as the track, the current limit
+// over it, and what is used over that.
+.bar {
   position: relative;
-  display: grid;
-  grid-auto-columns: minmax(0, 1fr);
-  grid-auto-flow: column;
-  gap: 2px;
-}
-
-.segment {
   height: 0.5rem;
-  border-radius: 1px;
-  background: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+  overflow: hidden;
+  border-radius: lw.v(radius-full);
+  background: var(--_added);
 
-  @include lw.motion {
-    transition: background-color 300ms ease-out;
+  .room,
+  .fill {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    border-radius: inherit;
+
+    @include lw.motion {
+      transition: width 500ms var(--_ease);
+    }
   }
 
-  &[data-state='used'] {
+  .room {
+    width: var(--_now);
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 16%, #{lw.v(color-background)});
+  }
+
+  .fill {
+    width: var(--_used);
+    min-width: 0.5rem;
     background: lw.v(color-foreground);
 
     [data-near] & {
@@ -171,30 +308,22 @@ section,
     }
   }
 
-  &[data-state='now'] {
-    background: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+  // A tick at the end of the current limit.
+  .limit {
+    position: absolute;
+    inset-block: 0;
+    left: var(--_now);
+    width: 2px;
+    background: lw.v(color-background);
+    translate: -100% 0;
+
+    @include lw.motion {
+      transition: left 500ms var(--_ease);
+    }
   }
 }
 
-// Where the current limit ends.
-.mark {
-  position: absolute;
-  top: -0.25rem;
-  bottom: -0.25rem;
-  width: 1px;
-  background: lw.v(color-foreground);
-  translate: -1px 0;
-
-  @include lw.motion {
-    transition: left 400ms var(--_ease);
-  }
-}
-
-// The bill for today, and the step that confirms it.
-.bill {
-  background: var(--_raised);
-}
-
+// The bill: a line per charge, then the total.
 .lines {
   display: grid;
   gap: 0.75rem;
@@ -206,12 +335,6 @@ section,
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  color: var(--_muted);
-
-  &:first-child {
-    font-size: lw.v(text-md);
-    color: lw.v(color-foreground);
-  }
 
   dt {
     display: grid;
@@ -220,37 +343,75 @@ section,
 
   dd {
     margin: 0;
-  }
-
-  &.total {
-    margin-top: 0.25rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--_line);
-    font-size: lw.v(text-lg);
-    font-weight: 600;
-    color: lw.v(color-foreground);
+    font-variant-numeric: tabular-nums;
   }
 }
 
 .line-detail {
   font-size: lw.v(text-xs);
   color: var(--_muted);
+}
 
-  &:empty {
+.total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--_line);
+  font-weight: 600;
+}
+
+.total-amount {
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+// The pay button, what follows, and once paid, the new plan confirmed.
+.foot {
+  display: grid;
+  gap: 0.75rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+}
+
+.go {
+  display: flex;
+
+  &::part(button) {
+    width: 100%;
+    height: 2.75rem;
+  }
+
+  &[hidden] {
     display: none;
   }
 }
 
-.confirm {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
 .then {
   font-size: lw.v(text-xs);
+  text-align: center;
   color: var(--_muted);
+}
+
+.done {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  font-weight: 500;
+
+  &[hidden] {
+    display: none;
+  }
+
+  .icon {
+    padding: 0.1875rem;
+    border-radius: 50%;
+    background: lw.v(color-accent);
+    color: lw.v(color-background);
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 }
