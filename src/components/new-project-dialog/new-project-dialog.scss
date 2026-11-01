@@ -24,19 +24,35 @@
   border: 1px solid var(--_line);
   border-radius: 1rem;
   background: none;
+  font: inherit;
+  color: inherit;
   text-align: left;
   cursor: pointer;
+  outline: none;
 
   @include lw.motion {
     transition:
       border-color 150ms ease-out,
-      box-shadow 150ms ease-out,
-      translate 200ms ease-out;
+      background-color 150ms ease-out,
+      box-shadow 150ms ease-out;
   }
 
-  &:hover {
-    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
-    translate: 0 -1px;
+  // Under the pointer a card takes a tint and inks its wireframe in, in
+  // place, so it reads as one you can pick. Touch screens skip it, so a tap
+  // does not leave it stuck.
+  @media (hover: hover) {
+    &:hover .frame svg {
+      fill: color-mix(in oklab, #{lw.v(color-foreground)} 60%, transparent);
+    }
+
+    &:hover:not([aria-checked='true']) {
+      border-color: color-mix(in oklab, #{lw.v(color-foreground)} 35%, transparent);
+      background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, transparent);
+    }
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
   }
 
   &[aria-checked='true'] {
@@ -71,6 +87,10 @@
     width: 100%;
     height: auto;
     fill: color-mix(in oklab, #{lw.v(color-foreground)} 40%, transparent);
+
+    @include lw.motion {
+      transition: fill 200ms ease-out;
+    }
 
     .soft {
       fill: color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent);
