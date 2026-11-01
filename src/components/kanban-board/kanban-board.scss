@@ -87,6 +87,7 @@ ol {
 
 // Columns side by side where they fit.
 .board {
+  position: relative;
   display: grid;
   gap: 1rem;
   align-items: start;
@@ -160,7 +161,9 @@ ol {
 
   // Lifted while it travels with the pointer.
   &[data-lifted] {
+    position: absolute;
     z-index: 3;
+    box-sizing: border-box;
     box-shadow: lw.v(shadow-md);
     rotate: 1.5deg;
     cursor: grabbing;

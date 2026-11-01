@@ -137,10 +137,20 @@ export class LwKanbanBoard extends LwElement {
     if (!this.#drag) {
       if (Math.hypot(event.clientX - press.x, event.clientY - press.y) < DRAG_START) return;
       press.card.setPointerCapture(press.id);
-      press.card.toggleAttribute('data-lifted', true);
+      // The lifted card leaves the flow, pinned over the board where it was,
+      // so its column closes up and only the gap holds a place.
+      const board = this.query('.board');
+      const from = press.card.getBoundingClientRect();
+      const frame = board.getBoundingClientRect();
       const gap = Object.assign(document.createElement('li'), { className: 'gap' });
       gap.style.height = `${press.card.offsetHeight}px`;
       press.card.after(gap);
+      Object.assign(press.card.style, {
+        left: `${from.left - frame.left - board.clientLeft + board.scrollLeft}px`,
+        top: `${from.top - frame.top - board.clientTop + board.scrollTop}px`,
+        width: `${from.width}px`,
+      });
+      press.card.toggleAttribute('data-lifted', true);
       this.#drag = { ...press, gap };
       this.toggleAttribute('data-dragging', true);
     }
