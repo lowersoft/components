@@ -1,6 +1,6 @@
 import { escapeHtml } from '../../core/dom.js';
 import { strokeIcon } from '../../core/icons.js';
-import { chevronRight } from '../../core/lucide.js';
+import { chevronDown } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
 import { reducedMotion } from '../../core/motion.js';
 import styles from './order-tracker.scss?inline';
@@ -49,8 +49,8 @@ export class LwOrderTracker extends LwElement {
     return `<div class="head"><div><p class="order"></p><p class="eta"></p></div><span class="carrier"></span></div>
 <ol class="rail">${MILESTONES.map((label, i) => `<li data-index="${i}"><span class="stop"></span><span class="stop-label">${label}</span></li>`).join('')}</ol>
 <p class="latest"></p>
-<ol class="history" hidden></ol>
-<button class="details" type="button" aria-expanded="false"><span class="details-label">Details</span>${strokeIcon(chevronRight, 16)}</button>`;
+<ol class="history" id="history" hidden></ol>
+<div class="foot"><button class="details" type="button" aria-expanded="false" aria-controls="history"><span class="details-label">Details</span>${strokeIcon(chevronDown, 16)}</button></div>`;
   }
 
   connected() {

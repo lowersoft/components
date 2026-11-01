@@ -208,24 +208,41 @@ p {
   color: lw.v(color-muted-foreground);
 }
 
+.foot {
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid lw.v(color-muted);
+}
+
+// A quiet disclosure: the chevron turns over as the history opens.
 .details {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
   width: 100%;
-  margin-top: 1rem;
   padding: 0.5rem;
   border: 0;
-  border-top: 1px solid lw.v(color-muted);
+  border-radius: lw.v(radius-md);
   background: none;
   font: 500 lw.v(text-sm) lw.v(font-sans);
   color: lw.v(color-muted-foreground);
   cursor: pointer;
   outline: none;
 
-  &:hover {
+  @include lw.motion {
+    transition:
+      background-color 150ms ease-out,
+      color 150ms ease-out;
+  }
+
+  &:hover,
+  &[aria-expanded='true'] {
     color: lw.v(color-foreground);
+  }
+
+  &:hover {
+    background: lw.v(color-muted);
   }
 
   &:focus-visible {
@@ -233,14 +250,12 @@ p {
   }
 
   svg {
-    transition: rotate 300ms cubic-bezier(0.23, 1, 0.32, 1);
+    @include lw.motion {
+      transition: rotate 300ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
 
     :host([data-open]) & {
-      rotate: -90deg;
+      rotate: 180deg;
     }
-  }
-
-  :host(:not([data-open])) & svg {
-    rotate: 90deg;
   }
 }
