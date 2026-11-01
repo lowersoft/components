@@ -12,8 +12,9 @@ const compact = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFra
 const full = new Intl.NumberFormat('en-US');
 
 /**
- * A portrait profile card with stats and mutual followers. Follow morphs
- * into Following while the follower count rolls up by one.
+ * A profile card: who they are beside their portrait, then their bio,
+ * stats and mutual followers. Follow morphs into Following while the
+ * follower count rolls up by one.
  *
  * Without `image`, the portrait is drawn from the name.
  *
@@ -48,11 +49,11 @@ export class LwProfileCard extends LwElement {
   };
 
   render() {
-    return `<div class="portrait" aria-hidden="true"><img alt="" hidden><span class="initials"></span></div>
-<div class="body"><p class="name"></p><p class="handle"></p><p class="role"></p><p class="bio"></p>
+    return `<header class="top"><div class="identity"><p class="name"></p><p class="handle"></p><p class="role"></p></div><div class="portrait" aria-hidden="true"><img alt="" hidden><span class="initials"></span></div></header>
+<p class="bio"></p>
 <dl class="stats"><div><dt>Followers</dt><dd class="followers rolling"></dd></div><div><dt>Following</dt><dd class="following-count"></dd></div><div><dt>Posts</dt><dd class="posts"></dd></div></dl>
 <div class="mutuals"><span class="faces" aria-hidden="true"></span><span class="mutual-text"></span></div>
-<div class="actions"><lw-follow-button class="follow"></lw-follow-button><lw-button class="message" variant="secondary">Message</lw-button></div></div>`;
+<div class="actions"><lw-follow-button class="follow"></lw-follow-button><lw-button class="message" variant="secondary">Message</lw-button></div>`;
   }
 
   connected() {

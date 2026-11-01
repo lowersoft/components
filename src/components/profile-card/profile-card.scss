@@ -1,21 +1,41 @@
 @use '../../styles' as lw;
 
 :host {
-  @include lw.card-shell(20rem, 0.5rem);
+  @include lw.card-shell(20rem);
 }
 
 p {
   margin: 0;
 }
 
-// A portrait: the photo, or a soft gradient with the initials.
+// Name, handle and role, the portrait beside them.
+.top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.identity {
+  flex: 1;
+  min-width: 0;
+
+  p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// A portrait at a fixed size: the photo, or a soft gradient with the initials.
 .portrait {
   position: relative;
   display: grid;
-  aspect-ratio: 4 / 4.2;
+  flex: none;
+  width: 4.5rem;
+  height: 4.5rem;
   place-items: center;
   overflow: hidden;
-  border-radius: 1.125rem;
+  border-radius: 1rem;
   background:
     radial-gradient(circle at 30% 25%, oklch(0.85 0.08 var(--_hue)), transparent 60%),
     linear-gradient(160deg, oklch(0.7 0.12 var(--_hue)), oklch(0.42 0.1 calc(var(--_hue) + 40)));
@@ -34,14 +54,10 @@ p {
 }
 
 .initials {
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: rgb(255 255 255 / 0.9);
-}
-
-.body {
-  padding: 1rem 0.75rem 0.75rem;
 }
 
 .name {
@@ -56,7 +72,7 @@ p {
 }
 
 .bio {
-  margin-top: 0.75rem;
+  margin-top: 1rem;
   font-size: lw.v(text-sm);
   line-height: 1.5;
 }
@@ -68,9 +84,13 @@ p {
   padding-block: 0.75rem;
   border-block: 1px solid lw.v(color-muted);
 
+  // Each label and its count centred in its column.
+  div {
+    text-align: center;
+  }
+
   div + div {
     border-left: 1px solid lw.v(color-muted);
-    padding-left: 0.75rem;
   }
 
   dt {
