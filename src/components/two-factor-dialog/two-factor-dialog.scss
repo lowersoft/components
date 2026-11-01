@@ -90,39 +90,13 @@
   color: var(--_muted);
 }
 
+// The key, in the library's copy field.
 .key {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
   margin-top: 0.5rem;
-  padding: 0.5rem 0.5rem 0.5rem 0.875rem;
-  border-radius: lw.v(radius-lg);
-  background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
-}
 
-.secret {
-  flex: 1;
-  min-width: 0;
-  font: lw.v(text-md) lw.v(font-mono);
-  letter-spacing: 0.04em;
-  overflow-wrap: anywhere;
-}
-
-.icon {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  flex: none;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  border-radius: lw.v(radius-md);
-  background: none;
-  color: var(--_muted);
-  cursor: pointer;
-
-  &:hover {
-    color: lw.v(color-foreground);
+  &::part(button) {
+    width: 100%;
   }
 }
 

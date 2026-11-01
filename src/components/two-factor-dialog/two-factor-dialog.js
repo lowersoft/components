@@ -1,16 +1,16 @@
 import { writeClipboard } from '../../core/clipboard.js';
 import { escapeHtml } from '../../core/dom.js';
-import { iconStyles, strokeIcon } from '../../core/icons.js';
-import { check, copy, download } from '../../core/lucide.js';
+import { strokeIcon } from '../../core/icons.js';
+import { copy, download } from '../../core/lucide.js';
 import { LwModal, modalStyles } from '../../core/modal.js';
 import '../button/index.js';
 import '../checkbox/index.js';
+import '../copy-button/index.js';
 import '../verification-code/index.js';
 import styles from './two-factor-dialog.scss?inline';
 
 const STEPS = ['Scan with your authenticator', 'Enter the code it shows', 'Save your recovery codes'];
 const QR_CELLS = 25;
-const COPIED_MS = 1600;
 
 // A stand-in for the QR code until `qr-src` gives the real one: the three
 // finder squares and a pattern seeded by the key, drawn as SVG.
@@ -46,7 +46,7 @@ const DEMO_CODES = ['4F7K-2M9Q', 'X8D3-HB6T', 'P2RW-7NCL', 'J5VZ-Q4EM', 'T9AG-3K
  * @fires lw-enabled - Two-factor is on
  */
 export class LwTwoFactorDialog extends LwModal {
-  static styles = [modalStyles, iconStyles, styles];
+  static styles = [modalStyles, styles];
   static props = {
     ...LwModal.props,
     email: { default: 'mara@northwind.dev' },
@@ -56,11 +56,9 @@ export class LwTwoFactorDialog extends LwModal {
     step: { type: Number, default: 0, reflect: true },
   };
 
-  #timers = new Set();
-
   renderBody() {
     return `<div class="body"><div class="progress" aria-hidden="true">${STEPS.map(() => '<span></span>').join('')}</div><h2 class="title" id="modal-title"></h2><p class="lead step-of"></p>
-<section class="step" data-step="0"><div class="qr"></div><div class="scan-text"><p class="instructions">Open 1Password, Authy or Google Authenticator and scan the code. It adds <b class="email"></b>.</p><p class="cant">Can't scan? Enter this key</p><div class="key"><code class="secret"></code><button class="icon copy-key" type="button" aria-label="Copy the key">${strokeIcon(copy, 16)}</button></div></div></section>
+<section class="step" data-step="0"><div class="qr"></div><div class="scan-text"><p class="instructions">Open 1Password, Authy or Google Authenticator and scan the code. It adds <b class="email"></b>.</p><p class="cant">Can't scan? Enter this key</p><lw-copy-button class="key" variant="secondary" label="Copy the key"></lw-copy-button></div></section>
 <section class="step" data-step="1"><p class="instructions">Type the six digits your authenticator shows for LowerSoft. They change every 30 seconds.</p><lw-verification-code class="otp" length="6" label="Six-digit code"></lw-verification-code></section>
 <section class="step" data-step="2"><p class="instructions">Each code signs you in once if you lose your phone. Keep them somewhere other than this computer.</p><ol class="codes"></ol><div class="code-actions"><lw-button class="copy-codes" variant="outline" size="sm"><span slot="start">${strokeIcon(copy, 15)}</span>Copy</lw-button><lw-button class="download" variant="outline" size="sm"><span slot="start">${strokeIcon(download, 15)}</span>Download</lw-button></div><lw-checkbox class="saved">I've saved my recovery codes</lw-checkbox></section>
 <p class="live visually-hidden" aria-live="polite"></p></div>
@@ -70,8 +68,7 @@ export class LwTwoFactorDialog extends LwModal {
   connected() {
     super.connected();
     const options = { signal: this.signal };
-    this.query('.copy-key').addEventListener('click', () => this.#copy(this.secret, this.query('.copy-key')), options);
-    this.query('.copy-codes').addEventListener('click', () => this.#copy(this.codes.join('\n'), null), options);
+    this.query('.copy-codes').addEventListener('click', () => this.#copyCodes(), options);
     this.query('.download').addEventListener('click', () => {
       const url = URL.createObjectURL(new Blob([`LowerSoft recovery codes for ${this.email}\n\n${this.codes.join('\n')}\n`], { type: 'text/plain' }));
       Object.assign(document.createElement('a'), { href: url, download: 'lowersoft-recovery-codes.txt' }).click();
@@ -83,13 +80,13 @@ export class LwTwoFactorDialog extends LwModal {
     this.query('.saved').addEventListener('change', () => this.#paint(), options);
     this.query('.back').addEventListener('click', () => (this.step = Math.max(0, this.step - 1)), options);
     this.query('.next').addEventListener('click', () => this.#next(), options);
-    this.signal.addEventListener('abort', () => this.#timers.forEach(clearTimeout));
   }
 
   updated(changed) {
     super.updated(changed);
     this.query('.email').textContent = this.email ?? '';
-    this.query('.secret').textContent = (this.secret ?? '').match(/.{1,4}/g)?.join(' ') ?? '';
+    // In groups of four, easier to read and type; authenticators ignore the spaces.
+    this.query('.key').value = (this.secret ?? '').match(/.{1,4}/g)?.join(' ') ?? '';
     if (changed.has('qrSrc') || changed.has('secret')) {
       this.query('.qr').innerHTML = this.qrSrc ? `<img src="${escapeHtml(this.qrSrc)}" alt="QR code for your authenticator">` : placeholderQr(this.secret ?? '');
     }
@@ -120,19 +117,12 @@ export class LwTwoFactorDialog extends LwModal {
     this.hide('enabled');
   }
 
-  async #copy(text, button) {
+  async #copyCodes() {
     try {
-      await writeClipboard(text);
+      await writeClipboard(this.codes.join('\n'));
     } catch {
       return;
     }
-    this.query('.live').textContent = 'Copied';
-    if (!button) return;
-    button.innerHTML = strokeIcon(check, 16);
-    const timer = setTimeout(() => {
-      button.innerHTML = strokeIcon(copy, 16);
-      this.#timers.delete(timer);
-    }, COPIED_MS);
-    this.#timers.add(timer);
+    this.query('.live').textContent = 'Recovery codes copied';
   }
 }
