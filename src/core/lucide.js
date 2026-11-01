@@ -21,6 +21,7 @@ export const chevronsUpDown = '<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/>
 export const circle = '<circle cx="12" cy="12" r="10"/>';
 export const circleCheck = '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>';
 export const clock = '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>';
+export const cookie = '<path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/>';
 export const copy = '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>';
 export const creditCard = '<rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/>';
 export const database = '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>';
