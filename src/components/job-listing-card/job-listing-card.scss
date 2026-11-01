@@ -146,6 +146,11 @@ p {
 .apply {
   display: grid;
   gap: 0.75rem;
+
+  // Fields span the card, like the drop zone below them.
+  lw-text-input {
+    width: 100%;
+  }
 }
 
 .drop {
