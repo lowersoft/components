@@ -2,99 +2,141 @@
 
 .modal {
   --_width: 34rem;
+
+  container-type: inline-size;
 }
 
-// Eleven scores in a row.
+.form-view[hidden],
+.thanks[hidden],
+.follow[hidden] {
+  display: none;
+}
+
+// The heading, with a mark beside it.
+.head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1.5rem 1.5rem 0;
+
+  .title {
+    padding-right: 2.5rem;
+  }
+
+  .lead {
+    margin-top: 0.25rem;
+    font-size: lw.v(text-sm);
+  }
+}
+
+.mark {
+  display: grid;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: lw.v(radius-lg);
+  background: var(--_raised);
+  box-shadow: inset 0 0 0 1px var(--_line);
+}
+
+.body {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.question {
+  margin-bottom: 0.75rem;
+  padding: 0;
+  font-weight: 500;
+}
+
+// The scale: eleven scores on one strip; the one picked fills.
 .scale {
   display: grid;
   grid-template-columns: repeat(11, minmax(0, 1fr));
-  gap: 0.375rem;
-  margin-top: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-lg);
 }
 
 .score {
-  height: 2.75rem;
+  position: relative;
+  height: 2.5rem;
   padding: 0;
-  border: 1px solid transparent;
-  border-radius: lw.v(radius-md);
-  background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
-  font-size: lw.v(text-md);
+  border: 0;
+  background: none;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
+  color: var(--_muted);
   cursor: pointer;
 
   @include lw.motion {
     transition:
       background-color 150ms ease-out,
-      translate 150ms ease-out;
+      color 150ms ease-out;
+  }
+
+  & + & {
+    border-left: 1px solid var(--_line);
   }
 
   &:hover {
-    background: color-mix(in oklab, #{lw.v(color-foreground)} 12%, transparent);
-    translate: 0 -1px;
+    background: var(--_raised);
+    color: lw.v(color-foreground);
   }
 
   &[aria-checked='true'] {
     background: lw.v(color-foreground);
     color: lw.v(color-background);
   }
+
+  &:focus-visible {
+    z-index: 1;
+    outline-offset: -2px;
+  }
+
+  @include lw.motion {
+    &[aria-checked='true'] {
+      animation: pick 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+  }
+}
+
+@keyframes pick {
+  from {
+    scale: 0.85;
+  }
 }
 
 .ends {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: lw.v(text-xs);
   color: var(--_muted);
 }
 
-// The follow-up, waiting in a dashed box until a score is picked.
+// The follow-up, opened by the score.
 .follow {
   display: grid;
-  min-height: 12rem;
-  margin-top: 1.5rem;
-  padding: 1.25rem;
-  border: 1px dashed var(--_line);
-  border-radius: 1rem;
-
-  &[data-picked] {
-    border-style: solid;
-  }
-}
-
-.waiting {
-  place-self: center;
-  font-size: lw.v(text-md);
-  color: var(--_muted);
-}
-
-.asked {
-  display: grid;
-  gap: 0.875rem;
-
-  &[hidden] {
-    display: none;
-  }
-
-  @include lw.motion {
-    animation: rise 300ms ease-out;
-  }
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    translate: 0 0.375rem;
-  }
-}
-
-.question {
-  font-size: lw.v(text-md);
-  font-weight: 500;
+  gap: 1.25rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--_line);
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.375rem;
+  gap: 0.5rem;
 }
 
 .chip {
@@ -102,53 +144,89 @@
   border: 1px solid var(--_line);
   border-radius: lw.v(radius-full);
   background: none;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: var(--_muted);
   cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      background-color 150ms ease-out,
+      border-color 150ms ease-out,
+      color 150ms ease-out;
+  }
+
+  &:hover {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+    color: lw.v(color-foreground);
+  }
 
   &[aria-pressed='true'] {
     border-color: lw.v(color-foreground);
-    background: lw.v(color-foreground);
-    color: lw.v(color-background);
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+    color: lw.v(color-foreground);
   }
 }
 
 .comment {
-  box-sizing: border-box;
+  display: block;
   width: 100%;
-  padding: 0.625rem 0.75rem;
-  border: 1px solid var(--_line);
-  border-radius: lw.v(radius-lg);
-  background: none;
-  resize: none;
-  line-height: 1.5;
+}
 
-  &::placeholder {
-    color: var(--_muted);
+// The actions, with the keyboard hint on the start.
+.foot {
+  background: var(--_raised);
+}
+
+.hint {
+  margin-right: auto;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+
+  kbd {
+    padding: 0 0.3125rem;
+    border: 1px solid var(--_line);
+    border-radius: lw.v(radius-sm);
+    background: lw.v(color-background);
+    font: 0.6875rem lw.v(font-sans);
+  }
+
+  @container (max-width: 26rem) {
+    display: none;
   }
 }
 
-.send-row {
-  display: flex;
-  justify-content: flex-end;
-}
-
+// Sent: a check, the thanks, and a way out.
 .thanks {
   display: grid;
-  place-self: center;
   justify-items: center;
-  gap: 0.75rem;
-  font-size: lw.v(text-md);
+  gap: 0.5rem;
+  padding: 2.5rem 1.5rem 2rem;
+  text-align: center;
 
-  &[hidden] {
-    display: none;
+  .title {
+    margin-top: 0.5rem;
+    padding: 0;
+  }
+
+  .lead {
+    max-width: 22rem;
+    margin: 0 0 1rem;
+    font-size: lw.v(text-sm);
   }
 }
 
 .thanks-mark {
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3rem;
+  height: 3rem;
   place-items: center;
   border-radius: 50%;
-  background: lw.v(color-accent);
-  color: lw.v(color-background);
+  background: color-mix(in oklab, #{lw.v(color-accent)} 14%, transparent);
+  color: lw.v(color-accent);
+
+  .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
 }
