@@ -76,6 +76,9 @@ export class LwLiquidGauge extends FormControl(LwElement) {
   #onScreen = true;
   #initial = null;
   #shown = null;
+  // Where the readout started from, so it counts towards the value without
+  // following the level's overshoot past it.
+  #from = null;
   #loop = fixedStepLoop(STEP, {
     step: () => this.#step(),
     render: () => this.#frame(),
@@ -84,7 +87,8 @@ export class LwLiquidGauge extends FormControl(LwElement) {
   render() {
     const ticks = TICKS.map((tick) => `<span class="${tick === 50 ? 'half' : ''}" style="top: ${100 - tick}%"></span>`).join('');
     const bubbles = '<span class="bubble"></span>'.repeat(BUBBLES);
-    return `<div class="dry">${text}<div class="ticks">${ticks}</div></div><div class="rim" aria-hidden="true"></div><div class="liquid" aria-hidden="true">${text}<div class="ticks">${ticks}</div>${bubbles}</div>`;
+    // The meniscus sits under the dry text, so the text stays whole above it.
+    return `<div class="rim" aria-hidden="true"></div><div class="dry">${text}<div class="ticks">${ticks}</div></div><div class="liquid" aria-hidden="true">${text}<div class="ticks">${ticks}</div>${bubbles}</div>`;
   }
 
   connected() {
@@ -123,15 +127,14 @@ export class LwLiquidGauge extends FormControl(LwElement) {
     this.tabIndex = this.readonly ? -1 : 0;
     this[INTERNALS].ariaReadOnly = this.readonly ? 'true' : null;
     this[INTERNALS].ariaLabel = this.label ?? null;
-    this.toggleAttribute('data-warn', value >= this.warnAt);
     const used = this.#used(Math.round(value));
     this[INTERNALS].ariaValueNow = String(Math.round(value));
     this[INTERNALS].ariaValueText = `${Math.round(value)}%, ${used} of ${this.total} ${this.unit} used`;
     this[INTERNALS].setFormValue(this.name ? String(Math.round(value)) : null);
     for (const el of this.shadowRoot.querySelectorAll('.label')) el.textContent = this.label ?? '';
     for (const el of this.shadowRoot.querySelectorAll('.of')) el.textContent = ` of ${this.total} ${this.unit} used`;
-    for (const el of this.shadowRoot.querySelectorAll('.status')) el.textContent = value >= this.warnAt ? 'Almost full' : `${100 - Math.round(value)}% free`;
-    if (changed.has('value') || changed.has('total')) this.#shown = null;
+    if (changed.has('value')) this.#from = this.#shown ?? value;
+    if (['value', 'total', 'warnAt'].some((name) => changed.has(name))) this.#shown = null;
     this.#measure();
     this.#wake();
   }
@@ -236,6 +239,7 @@ export class LwLiquidGauge extends FormControl(LwElement) {
     if (!width || !height) {
       liquid.style.clipPath = flatPolygon(this.#target);
       rim.style.clipPath = flatPolygon(this.#target, RIM);
+      this.#readout();
       return;
     }
     const levelY = height * (1 - this.#level / 100);
@@ -248,12 +252,23 @@ export class LwLiquidGauge extends FormControl(LwElement) {
       const sway = Math.sin(this.#time * 7 + bubble.phase) * 2.5;
       node.style.transform = `translate3d(${(bubble.x + sway - bubble.r).toFixed(1)}px,${(bubble.y - bubble.r).toFixed(1)}px,0) scale(${(bubble.r / 4).toFixed(3)})`;
     });
-    // The readout counts with the level as it pours.
-    const shown = Math.round(clamp(this.#level, 0, 100));
+    this.#readout();
+  }
+
+  // The readout counts with the level as it pours, but stops at the value
+  // while the level overshoots it, so it never reads past what was set. The
+  // status and the warning colour follow the same reading.
+  #readout() {
+    const target = this.#target;
+    const from = this.#from ?? target;
+    const shown = Math.round(clamp(this.#level, Math.min(from, target), Math.max(from, target)));
     if (shown === this.#shown) return;
     this.#shown = shown;
+    const warn = shown >= this.warnAt;
+    this.toggleAttribute('data-warn', warn);
     for (const el of this.shadowRoot.querySelectorAll('.number')) el.textContent = String(shown);
     for (const el of this.shadowRoot.querySelectorAll('.amount')) el.textContent = this.#used(shown);
+    for (const el of this.shadowRoot.querySelectorAll('.status')) el.textContent = warn ? 'Almost full' : `${100 - shown}% free`;
   }
 
   // Pushes the columns around x by `amount`, fading out over a few columns.
