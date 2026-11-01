@@ -5,8 +5,8 @@ export default {
   title: 'Login/Split Signup Login',
   component: 'lw-split-signup-login',
   render: (args) => `<lw-split-signup-login ${attributes(args)}></lw-split-signup-login>`,
-  args: { brand: 'LowerSoft', 'app-domain': 'lowersoft.dev' },
+  args: { brand: 'LowerSoft' },
 };
 
-// Type a name and a work email: try sam@northwind.dev for a known team, a gmail address, or any other domain.
+// Fill in a name, an email and a password, then create the account.
 export const Default = {};
