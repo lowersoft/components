@@ -102,12 +102,19 @@ p {
   min-width: 0;
 }
 
+// On a narrow row the name gives way, so the badge after it stays clear of
+// the method chip.
 .name {
+  min-width: 0;
+  overflow: hidden;
   font-weight: 500;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+// Gives way before the name does.
 .workspace {
+  flex-shrink: 100;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

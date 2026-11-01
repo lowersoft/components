@@ -90,7 +90,13 @@ export class LwAccountChooserLogin extends LwElement {
     list.addEventListener('keydown', (event) => this.#key(event), options);
     this.query('.another').addEventListener('click', () => this.emit('use-another'), options);
     this.query('.undo').addEventListener('click', () => this.#undo(), options);
-    this.signal.addEventListener('abort', () => clearTimeout(this.#undoTimer));
+    // The highlight is sized to its row: when the list resizes, it follows.
+    const resize = new ResizeObserver(() => this.#paintActive());
+    resize.observe(list);
+    this.signal.addEventListener('abort', () => {
+      clearTimeout(this.#undoTimer);
+      resize.disconnect();
+    });
   }
 
   updated(changed) {
