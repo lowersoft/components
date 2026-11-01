@@ -2,6 +2,7 @@ import { escapeHtml } from '../../core/dom.js';
 import { strokeIcon } from '../../core/icons.js';
 import { check } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
+import { reducedMotion } from '../../core/motion.js';
 import '../button/index.js';
 import '../switch/index.js';
 import styles from './comparison-table-pricing.scss?inline';
@@ -33,6 +34,10 @@ const DEMO_SECTIONS = [
     { label: 'Audit log', values: [false, false, true, true] },
   ] },
 ];
+
+// Gap between a term and its tooltip, and the least room kept to the screen edge.
+const TIP_GAP = 8;
+const TIP_MARGIN = 8;
 
 // A row is a difference unless every plan has the same value.
 const differs = (row) => row.values.some((value) => value !== row.values[0]);
@@ -84,6 +89,23 @@ export class LwComparisonTablePricing extends LwElement {
     // The column under the pointer lights from top to bottom.
     table.addEventListener('pointerover', (event) => this.#light(event.target.closest('[data-col]')?.dataset.col), options);
     table.addEventListener('pointerleave', () => this.#light(), options);
+    // Hints open in the top layer, so the pinned feature column and the
+    // sideways scroller never cover or clip them.
+    table.addEventListener('pointerover', (event) => {
+      const term = event.target.closest('.term');
+      if (term) this.#showHint(term);
+    }, options);
+    table.addEventListener('pointerout', (event) => {
+      const term = event.target.closest('.term');
+      if (term && !term.contains(event.relatedTarget) && !term.matches(':focus-visible')) this.#hideHint();
+    }, options);
+    table.addEventListener('focusin', (event) => event.target.matches('.term:focus-visible') && this.#showHint(event.target), options);
+    table.addEventListener('focusout', (event) => event.target.matches('.term') && this.#hideHint(), options);
+    // Escape dismisses it where it is; scrolling or resizing would leave it behind.
+    document.addEventListener('keydown', (event) => event.key === 'Escape' && this.#hideHint(), options);
+    addEventListener('scroll', () => this.#hideHint(), { ...options, capture: true, passive: true });
+    addEventListener('resize', () => this.#hideHint(), options);
+    this.signal.addEventListener('abort', () => this.#hideHint());
   }
 
   updated(changed) {
@@ -110,7 +132,7 @@ export class LwComparisonTablePricing extends LwElement {
       .map((section) => `<tbody class="section"><tr class="section-row"><th colspan="${plans.length + 1}" scope="colgroup">${escapeHtml(section.title)}</th></tr>${section.rows
         .map((row) => {
           const label = row.hint
-            ? `<span class="term" tabindex="0" aria-describedby="hint-${hint}">${escapeHtml(row.label)}</span><span class="tooltip" role="tooltip" id="hint-${hint++}">${escapeHtml(row.hint)}</span>`
+            ? `<span class="term" tabindex="0" aria-describedby="hint-${hint}">${escapeHtml(row.label)}</span><span class="tooltip" role="tooltip" id="hint-${hint++}" popover="manual">${escapeHtml(row.hint)}</span>`
             : escapeHtml(row.label);
           return `<tr class="row"${differs(row) ? '' : ' data-same'}><th scope="row" class="feature">${label}</th>${row.values.map(value).join('')}</tr>`;
         })
@@ -120,6 +142,30 @@ export class LwComparisonTablePricing extends LwElement {
     table.querySelectorAll('tbody').forEach((body) => body.remove());
     table.querySelector('thead').innerHTML = `<tr><td class="corner"></td>${head}</tr>`;
     table.insertAdjacentHTML('beforeend', bodies);
+  }
+
+  #hint = null;
+
+  // Opens a term's hint below it, or above when there is no room below,
+  // kept inside the screen.
+  #showHint(term) {
+    const tip = term.nextElementSibling;
+    if (tip === this.#hint) return;
+    this.#hideHint();
+    this.#hint = tip;
+    tip.showPopover();
+    const anchor = term.getBoundingClientRect();
+    const { offsetWidth: width, offsetHeight: height } = tip;
+    const below = anchor.bottom + TIP_GAP + height <= innerHeight - TIP_MARGIN;
+    tip.style.left = `${Math.min(Math.max(anchor.left, TIP_MARGIN), innerWidth - width - TIP_MARGIN)}px`;
+    tip.style.top = `${below ? anchor.bottom + TIP_GAP : anchor.top - TIP_GAP - height}px`;
+    tip.dataset.side = below ? 'bottom' : 'top';
+    if (!reducedMotion.matches) tip.animate({ opacity: [0, 1], translate: [below ? '0 -0.25rem' : '0 0.25rem', '0 0'] }, { duration: 150, easing: 'ease-out' });
+  }
+
+  #hideHint() {
+    if (this.#hint?.isConnected && this.#hint.matches(':popover-open')) this.#hint.hidePopover();
+    this.#hint = null;
   }
 
   // Hides the rows every plan shares, and any section left empty.
