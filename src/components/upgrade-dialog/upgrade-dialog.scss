@@ -270,26 +270,23 @@
   border: 0;
   border-radius: lw.v(radius-full);
   background: lw.v(color-primary);
+  font: inherit;
   font-weight: 500;
   color: lw.v(color-primary-foreground);
   cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  &:active {
+    scale: 0.98;
+  }
 }
 
 .go-arrow {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  border-radius: 50%;
-  background: color-mix(in oklab, #{lw.v(color-primary-foreground)} 10%, transparent);
-
-  @include lw.motion {
-    transition: translate 200ms ease-out;
-  }
-
-  .go:hover & {
-    translate: 3px 0;
-  }
+  @include lw.arrow-well('.go', 2rem);
 }
 
 .billed-today {

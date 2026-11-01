@@ -153,20 +153,7 @@
 }
 
 .arrow {
-  display: grid;
-  width: 2.25rem;
-  height: 2.25rem;
-  place-items: center;
-  border-radius: 50%;
-  background: color-mix(in oklab, #{lw.v(color-primary-foreground)} 8%, transparent);
-
-  @include lw.motion {
-    transition: translate 200ms ease-out;
-  }
-
-  .action:hover & {
-    translate: 3px 0;
-  }
+  @include lw.arrow-well('.action');
 }
 
 .guarantee {
