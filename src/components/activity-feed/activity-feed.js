@@ -24,12 +24,14 @@ const DEMO_EVENTS = [
   { who: 'Ana Ruiz', kind: 'close', ref: '#418', what: 'ARM build drops debug info', project: 'toolchain', detail: 'Fixed by #421' },
   { who: 'Jonas Weber', kind: 'reply', ref: '#412', what: 'Flame graph depth limit', project: 'profiler', detail: '“Raise it to 2048, then measure.”' },
   { who: 'Maya Lin', kind: 'deploy', ref: 'v0.9.2', what: 'to the nightly channel', project: 'runtime', detail: 'Built in 41 s · 1.4 MB' },
-  { who: 'Priya Nair', kind: 'invite', ref: '', what: 'lena@northwind.dev', project: 'workspace', detail: 'As an editor on profiler' },
+  { who: 'Priya Nair', kind: 'invite', ref: '', what: 'lena@lowersoft.com', project: 'workspace', detail: 'As an editor on profiler' },
   { who: 'Leo Martins', kind: 'merge', ref: '#423', what: 'SIMD path for the JSON scanner', project: 'runtime', detail: '+188 −12 in 3 files' },
   { who: 'Sam Okafor', kind: 'close', ref: '#425', what: 'Cold start regressed on Linux', project: 'runtime', detail: 'Back to 9 ms' },
 ];
 
 const SHOWN = 5;
+const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
+const MOVE_MS = 520;
 
 const age = (ms) => {
   const seconds = Math.floor(ms / 1000);
@@ -39,10 +41,11 @@ const age = (ms) => {
 };
 
 /**
- * A live activity feed: new events slide in at the top as they happen and
- * the oldest fall off the bottom, each with who, what, where and how long
- * ago. It plays while in view; pause holds it, and reduced motion starts
- * it paused.
+ * A live activity feed: as an event happens the rows glide down to make
+ * room, the new one settles in at the top with a brief highlight and the
+ * oldest fades out at the bottom, so the feed keeps its height. Each row
+ * says who, what, where and how long ago. It plays while in view; pause
+ * holds it, and reduced motion starts it paused.
  *
  * Events are `{ who, kind, ref, what, project, detail }`, `kind` one of
  * invite, deploy, reply, close or merge. Call `add(event)` to push one.
@@ -123,17 +126,34 @@ export class LwActivityFeed extends LwElement {
 <div class="text"><p class="line"><b>${escapeHtml(event.who)}</b> <span class="verb">${kind.verb}</span> ${event.ref ? `<code>${escapeHtml(event.ref)}</code> ` : ''}<span class="what">${escapeHtml(event.what)}</span></p><p class="sub"><span class="project">${escapeHtml(event.project)}</span><span class="detail">${escapeHtml(event.detail)}</span></p></div><time class="age"></time>`;
     drawFace(item.querySelector('.face'), event.who);
     const feed = this.query('.feed');
+    const rows = [...feed.querySelectorAll('.item:not([data-leaving])')];
+    // Where each row was, to glide it from there (FLIP).
+    const before = new Map(rows.map((row) => [row, row.getBoundingClientRect().top]));
     feed.prepend(item);
     this.#paintAges();
-    if (animate) {
-      const height = item.offsetHeight;
-      item.animate({ height: ['0px', `${height}px`], opacity: [0, 1], translate: ['0 -0.5rem', '0 0'] }, { duration: 400, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' });
+    // The oldest leave the bottom: lifted out of the flow where they stood,
+    // so the feed keeps its height while they fade.
+    const leaving = rows.slice(SHOWN - 1);
+    for (const row of leaving) {
+      if (!animate) {
+        row.remove();
+        continue;
+      }
+      const frame = feed.getBoundingClientRect();
+      const top = before.get(row) - frame.top - feed.clientTop + feed.scrollTop;
+      row.dataset.leaving = '';
+      Object.assign(row.style, { top: `${top}px`, width: `${row.offsetWidth}px` });
+      row.animate({ opacity: [1, 0], translate: ['0 0', '0 0.5rem'], filter: ['blur(0)', 'blur(2px)'] }, { duration: MOVE_MS * 0.6, easing: 'ease-out', fill: 'forwards' }).finished.then(() => row.remove(), () => row.remove());
     }
-    // The oldest fall off the bottom.
-    while (feed.children.length > SHOWN) {
-      const last = feed.lastElementChild;
-      last.remove();
+    if (!animate) return;
+    for (const row of rows) {
+      if (leaving.includes(row)) continue;
+      const delta = before.get(row) - row.getBoundingClientRect().top;
+      if (delta) row.animate({ translate: [`0 ${delta}px`, '0 0'] }, { duration: MOVE_MS, easing: EASE_OUT });
     }
+    item.animate({ opacity: [0, 1], translate: ['0 -0.5rem', '0 0'], scale: [0.98, 1], filter: ['blur(4px)', 'blur(0)'] }, { duration: MOVE_MS, delay: 80, easing: EASE_OUT, fill: 'backwards' });
+    item.toggleAttribute('data-new', true);
+    item.addEventListener('animationend', (end) => end.animationName === 'arrive' && item.removeAttribute('data-new'));
   }
 
   #paintAges() {

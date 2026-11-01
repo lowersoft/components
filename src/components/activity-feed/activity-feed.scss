@@ -80,6 +80,7 @@ button {
 
 // Newest at the top.
 .feed {
+  position: relative;
   overflow: hidden;
   padding: 0.25rem;
   border: 1px solid var(--_line);
@@ -93,6 +94,32 @@ button {
   overflow: hidden;
   gap: 0.75rem;
   padding: 0.625rem;
+  border-radius: 0.75rem;
+
+  // Fading out at the bottom, out of the flow.
+  &[data-leaving] {
+    position: absolute;
+    left: 0.25rem;
+    pointer-events: none;
+  }
+
+  // A just-arrived row glows for a moment, then settles.
+  @include lw.motion {
+    &[data-new] {
+      animation: arrive 1.6s ease-out;
+    }
+  }
+}
+
+@keyframes arrive {
+  0%,
+  30% {
+    background: color-mix(in oklab, #{lw.v(color-accent)} 9%, transparent);
+  }
+
+  100% {
+    background: transparent;
+  }
 }
 
 .avatar {
