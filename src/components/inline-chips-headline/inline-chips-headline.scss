@@ -25,21 +25,28 @@ p {
   text-wrap: balance;
 }
 
-// A chip set into the line of text, about half its height.
+.keep {
+  white-space: nowrap;
+}
+
+// A chip set into the line of text, its text about half the line's size.
+// Tall enough to hold its icon, so nothing spills over the pill.
 .chip {
   display: inline-flex;
-  height: 1.1em;
+  box-sizing: border-box;
+  height: 1.8em;
   align-items: center;
-  gap: 0.25em;
+  gap: 0.3em;
   margin: 0 0.1em;
-  padding: 0 0.35em 0 0.12em;
+  padding: 0 0.6em 0 0.15em;
   border: 1px solid var(--_line);
   border-radius: lw.v(radius-full);
   background: color-mix(in oklab, #{lw.v(color-foreground)} 4%, #{lw.v(color-background)});
   font-size: 0.5em;
-  line-height: 1;
+  line-height: 1.2;
   letter-spacing: -0.01em;
-  vertical-align: 0.3em;
+  white-space: nowrap;
+  vertical-align: 0.2em;
 
   // They pop in one after another once the headline is seen.
   @include lw.motion {
@@ -58,8 +65,9 @@ p {
 
 .doc-icon {
   display: grid;
-  width: 1.6em;
-  height: 1.6em;
+  flex: none;
+  width: 1.4em;
+  height: 1.4em;
   place-items: center;
   border-radius: 0.4em;
   background: color-mix(in oklab, #f76b15 25%, transparent);
@@ -82,8 +90,8 @@ p {
   @include lw.person-tint;
 
   display: grid;
-  width: 1.85em;
-  height: 1.85em;
+  width: 1.8em;
+  height: 1.8em;
   place-items: center;
   border-radius: 50%;
   box-shadow: 0 0 0 0.1em lw.v(color-background);
@@ -105,7 +113,6 @@ p {
 
 // The status: spins while it works, then a check.
 .status {
-  padding-right: 0.6em;
   font-family: inherit;
   color: inherit;
   cursor: pointer;
@@ -118,8 +125,9 @@ p {
 
 .status-icon {
   display: grid;
-  width: 1.6em;
-  height: 1.6em;
+  flex: none;
+  width: 1.4em;
+  height: 1.4em;
   place-items: center;
   border-radius: 50%;
   background: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);

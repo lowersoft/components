@@ -57,8 +57,9 @@ export class LwInlineChipsHeadline extends LwElement {
       team: `<span class="chip team" role="img" aria-label="${escapeHtml((this.team ?? []).join(', '))}">${(this.team ?? []).map((name) => `<span class="avatar" style="--_hue: ${hueOf(name)}">${escapeHtml(initialsOf(name))}</span>`).join('')}</span>`,
       status: '<button class="chip status" type="button" aria-label="Run again"><span class="status-icon"></span><span class="swap status-text" aria-live="polite"></span></button>',
     };
-    const parts = escapeHtml(this.heading ?? '').split(/(\{doc\}|\{team\}|\{status\})/);
-    this.query('.title').innerHTML = parts.map((part) => chips[part.slice(1, -1)] ?? part).join('');
+    // Punctuation right after a chip stays on its line, never wrapping alone.
+    const html = escapeHtml(this.heading ?? '').replace(/\{(doc|team|status)\}([,.;:!?)]*)/g, (_, chip, punctuation) => (punctuation ? `<span class="keep">${chips[chip]}${punctuation}</span>` : chips[chip]));
+    this.query('.title').innerHTML = html;
     this.query('.description').textContent = this.description ?? '';
     this.shadowRoot.querySelectorAll('.chip').forEach((chip, i) => chip.style.setProperty('--_order', i));
     this.toggleAttribute('data-shown', this.#shown || reducedMotion.matches);
