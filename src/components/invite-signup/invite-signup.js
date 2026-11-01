@@ -15,17 +15,17 @@ const UNDO_MS = 5000;
 const SHOWN = 4;
 
 const DEMO_INVITE = {
-  workspace: 'Northwind',
+  workspace: 'LowerSoft',
   inviter: 'Maya Chen',
-  inviterRole: 'Admin',
-  email: 'sam@northwind.dev',
+  inviterRole: 'Design lead',
+  email: 'sam@lowersoft.com',
   role: 'Editor',
-  address: 'northwind.lowersoft.dev',
+  address: 'app.lowersoft.com',
   members: ['Maya Chen', 'Theo Okafor', 'Ines Alves', 'Leo Park'],
   total: 14,
-  note: "The 0.9 release lives in here: the build farm, the profiler runs and the crash reports. Grab a seat and say hi in #core.",
+  note: 'The lw component library lives here: the design tokens, Storybook and the release notes. Grab a seat and say hi in #components.',
   sent: '2d ago',
-  mark: { glyph: 'triangle', color: '#2f6b55' },
+  mark: { glyph: 'lines', color: '#18181b' },
 };
 
 /**
