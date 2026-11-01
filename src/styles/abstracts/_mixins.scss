@@ -24,10 +24,13 @@
 }
 
 /// Hide visually while keeping the content available to assistive technology.
+/// The negative margin keeps the 1px box from reaching past its container's
+/// edge, where it would make a scroll container (a dialog) scroll.
 @mixin visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
+  margin: -1px;
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
