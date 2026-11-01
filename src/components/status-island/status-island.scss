@@ -23,16 +23,16 @@
   }
 }
 
-// The island is dark in both themes, like the one it is named after.
+// The island follows the theme: a raised surface with a hairline edge.
 .island {
   position: relative;
   overflow: hidden;
   border-radius: 20px;
-  background: #09090b;
+  background: lw.v(color-background);
   box-shadow:
-    0 0 0 1px rgb(255 255 255 / 0.06),
-    0 10px 15px -3px rgb(0 0 0 / 0.2);
-  color: #fff;
+    0 0 0 1px lw.v(color-border),
+    0 10px 15px -3px rgb(0 0 0 / 0.12);
+  color: lw.v(color-foreground);
 }
 
 .peek {
@@ -40,8 +40,8 @@
   inset: 0;
   z-index: -1;
   border-radius: 20px;
-  background: #27272a;
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.05);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 10%, #{lw.v(color-background)});
+  box-shadow: 0 0 0 1px lw.v(color-border);
   opacity: 0;
   transition:
     opacity 450ms var(--_spring),
@@ -123,7 +123,7 @@
   height: 1rem;
 
   &.done {
-    color: #34d399;
+    color: lw.v(color-accent);
 
     path {
       stroke-dasharray: 1;
@@ -138,7 +138,7 @@
   }
 
   &.error {
-    color: #f87171;
+    color: lw.v(color-destructive);
   }
 
   &.ring {
@@ -183,7 +183,7 @@
 }
 
 .detail {
-  color: rgb(255 255 255 / 0.5);
+  color: lw.v(color-muted-foreground);
 }
 
 .percent {
@@ -192,7 +192,7 @@
   align-items: center;
   padding-left: 0.75rem;
   font-size: lw.v(text-xs);
-  color: rgb(255 255 255 / 0.55);
+  color: lw.v(color-muted-foreground);
 }
 
 .action {
@@ -202,9 +202,9 @@
   padding: 0.25rem 0.625rem;
   border: 0;
   border-radius: lw.v(radius-full);
-  background: rgb(255 255 255 / 0.12);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
   font: 500 lw.v(text-xs) lw.v(font-sans);
-  color: #fff;
+  color: inherit;
 }
 
 button.action {
@@ -212,10 +212,10 @@ button.action {
   transition: background-color lw.v(duration-fast) ease-out;
 
   &:hover {
-    background: rgb(255 255 255 / 0.2);
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent);
   }
 
   &:focus-visible {
-    outline: 2px solid rgb(255 255 255 / 0.6);
+    @include lw.focus-ring;
   }
 }

@@ -138,7 +138,7 @@ export class LwStatusIsland extends LwElement {
     const list = this.query('.list');
     const items = new Map([...list.children].map((li) => [li.dataset.id, li]));
     const fresh = !list.children.length;
-    for (const task of tasks) {
+    tasks.forEach((task, index) => {
       let li = items.get(task.id);
       items.delete(task.id);
       if (!li) {
@@ -146,9 +146,11 @@ export class LwStatusIsland extends LwElement {
         li.dataset.id = task.id;
         li.innerHTML = '<div class="row"></div>';
       }
-      list.append(li);
+      // Moved only when out of place: moving a row restarts its icon's
+      // animation, so a finished check would draw itself again on every tick.
+      if (list.children[index] !== li) list.insertBefore(li, list.children[index] ?? null);
       this.#paintRow(li.firstElementChild, task, true);
-    }
+    });
     for (const li of items.values()) li.remove();
     if (fresh && !reducedMotion.matches) list.animate([{ opacity: 0, filter: 'blur(4px)' }, { opacity: 1, filter: 'blur(0px)' }], { duration: 220, delay: 50, easing: EASE_OUT, fill: 'backwards' });
   }
