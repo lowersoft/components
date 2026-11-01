@@ -183,10 +183,6 @@ input {
   }
 }
 
-.commands {
-  position: relative;
-}
-
 .highlight {
   @include lw.sliding-highlight;
 }

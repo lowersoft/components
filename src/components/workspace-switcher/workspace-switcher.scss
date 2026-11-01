@@ -143,10 +143,6 @@ button {
   @include lw.sliding-highlight;
 }
 
-.list {
-  position: relative;
-}
-
 .row {
   position: relative;
   display: flex;

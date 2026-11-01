@@ -143,10 +143,6 @@ button {
   }
 }
 
-.options {
-  position: relative;
-}
-
 .highlight {
   @include lw.sliding-highlight;
 }
