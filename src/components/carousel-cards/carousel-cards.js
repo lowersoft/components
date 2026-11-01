@@ -35,9 +35,10 @@ const releaseVelocity = (samples, now) => {
 /**
  * A rail of cards you can flick with the mouse: the release velocity
  * projects an end point, a spring lands on the nearest card and the ends
- * rubber-band. Scrolling drives a cover-flow depth, parallax in each card's
- * picture, and the details of the card in the middle. Touch and wheel scroll
- * natively, the arrow keys step a card, and each card's heart saves it.
+ * rubber-band. Cards line up from the start edge, under the heading, and
+ * the last one comes to rest against the end; scrolling drives a parallax in
+ * each card's picture. Touch and wheel scroll natively, the arrow keys step
+ * a card, and each card's heart saves it.
  *
  * Items are `{ id, title, location, image?, imageAlt?, scene?, badge?,
  * dates?, price, currency?, priceLabel?, rating?, reviewCount?, href? }`;
@@ -160,12 +161,27 @@ export class LwCarouselCards extends LwElement {
     return this.#scroller.scrollWidth - this.#scroller.clientWidth;
   }
 
-  get #snapPoints() {
-    const scroller = this.#scroller;
+  // Where the rail rests: each card at the start edge, by the gutter, until
+  // the last ones run out of room. They share the end, which counts as the
+  // last card.
+  get #stops() {
     const track = this.query('.track');
-    return [...track.children].map((card) => clamp(track.offsetLeft + card.offsetLeft + card.offsetWidth / 2 - scroller.clientWidth / 2, 0, this.#maxScroll));
+    const gutter = parseFloat(getComputedStyle(track).paddingLeft) || 0;
+    const max = this.#maxScroll;
+    const stops = [];
+    [...track.children].forEach((card, index) => {
+      const pos = clamp(track.offsetLeft + card.offsetLeft - gutter, 0, max);
+      if (stops.length && pos - stops.at(-1).pos < 1) stops.at(-1).index = index;
+      else stops.push({ pos, index });
+    });
+    return stops;
   }
 
+  get #snapPoints() {
+    return this.#stops.map(({ pos }) => pos);
+  }
+
+  // The stop the rail is at, or heading for.
   get #currentIndex() {
     return nearestIndex(this.#snapPoints, this.#mode === 'spring' ? this.#target : this.#scroller.scrollLeft);
   }
@@ -224,7 +240,8 @@ export class LwCarouselCards extends LwElement {
     cancelAnimationFrame(this.#scrollFrame);
     this.#scrollFrame = requestAnimationFrame(() => {
       this.#scrollFrame = 0;
-      const index = nearestIndex(this.#snapPoints, this.#scroller.scrollLeft);
+      const stops = this.#stops;
+      const index = stops[nearestIndex(stops.map(({ pos }) => pos), this.#scroller.scrollLeft)]?.index ?? 0;
       if (index === this.#active) return;
       this.#active = index;
       this.#paintCount();
@@ -297,7 +314,7 @@ export class LwCarouselCards extends LwElement {
   #key(event) {
     if (event.target !== this.#scroller) return;
     const index = this.#currentIndex;
-    const next = { ArrowLeft: index - 1, ArrowRight: index + 1, Home: 0, End: this.items.length - 1 }[event.key];
+    const next = { ArrowLeft: index - 1, ArrowRight: index + 1, Home: 0, End: this.#stops.length - 1 }[event.key];
     if (next === undefined) return;
     event.preventDefault();
     this.#goTo(next);

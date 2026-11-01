@@ -115,6 +115,7 @@ h2 {
   overflow-x: auto;
   overscroll-behavior-x: contain;
   padding-block: 1.5rem;
+  scroll-padding-inline: 1rem;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   outline: none;
@@ -147,14 +148,15 @@ h2 {
   gap: 1rem;
   width: max-content;
   margin: 0;
-  padding: 0 calc(50cqw - var(--_card) / 2);
+  // The same gutter as the heading, at both ends.
+  padding: 0 1rem;
   list-style: none;
 }
 
 .card {
   flex: none;
   width: var(--_card);
-  scroll-snap-align: center;
+  scroll-snap-align: start;
 }
 
 .tilt {
@@ -381,24 +383,9 @@ h3 {
   }
 }
 
-// Depth runs off the main thread: each card is a view timeline on the
-// inline axis (0% entering on the right, 50% centred, 100% leaving on the
-// left). Browsers without scroll-driven animations get flat cards with every
-// detail shown; reduced motion keeps only the details fade.
-@keyframes tilt {
-  0% {
-    transform: perspective(900px) translateZ(-180px) rotateY(-14deg);
-  }
-
-  50% {
-    transform: perspective(900px) translateZ(0) rotateY(0deg);
-  }
-
-  100% {
-    transform: perspective(900px) translateZ(-180px) rotateY(14deg);
-  }
-}
-
+// The pictures drift as the rail moves, off the main thread: each card is a
+// view timeline on the inline axis. Browsers without scroll-driven
+// animations, and reduced motion, keep them still.
 @keyframes parallax {
   from {
     transform: translate3d(calc(var(--_depth) * -1), 0, 0);
@@ -409,42 +396,12 @@ h3 {
   }
 }
 
-@keyframes details {
-  0%,
-  32% {
-    opacity: 0;
-    transform: translate3d(0, 6px, 0);
-  }
-
-  45%,
-  55% {
-    opacity: 1;
-    transform: none;
-  }
-
-  68%,
-  100% {
-    opacity: 0;
-    transform: translate3d(0, 6px, 0);
-  }
-}
-
 @supports (animation-timeline: view()) {
   .card {
     view-timeline: --rail inline;
   }
 
-  .details {
-    animation: details linear both;
-    animation-timeline: --rail;
-  }
-
   @include lw.motion {
-    .tilt {
-      animation: tilt linear both;
-      animation-timeline: --rail;
-    }
-
     .layer {
       animation: parallax linear both;
       animation-timeline: --rail;
