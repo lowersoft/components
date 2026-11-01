@@ -1,54 +1,45 @@
+import { moveHighlight } from '../../core/highlight.js';
 import { LwElement } from '../../core/lw-element.js';
 import { fixedStepLoop, reducedMotion } from '../../core/motion.js';
 import { watchTheme } from '../../core/theme.js';
+import { watchVisibility } from '../../core/visibility.js';
 import styles from './activity-terrain.scss?inline';
 
 const DAYS = 7;
-const GAP = 0.18;
-// Tallest column, in cells.
-const MAX_HEIGHT = 4.2;
+const DAY_MS = 86_400_000;
+// The gap between cells, as a share of a cell.
+const GAP = 0.2;
+// The busiest day's column, in cells; a quiet day keeps a thin plate.
+const MAX_HEIGHT = 2.6;
+const MIN_HEIGHT = 0.12;
+const PLATE = 0.04;
 const DEG = Math.PI / 180;
-// Tilt of the terrain view; flat is looking straight down.
-const PITCH_TERRAIN = 56 * DEG;
-const YAW_TERRAIN = 18 * DEG;
-// How far it turns before the edges start pulling back.
-const YAW_LIMIT = 38 * DEG;
-const PITCH_LIMIT = 66 * DEG;
-// Drag, in radians per px.
-const DRAG_YAW = 0.32 * DEG;
-const DRAG_PITCH = 0.36 * DEG;
-// Spin keeps going after a flick and slows on this half-life, in seconds.
-const SPIN_HALF_LIFE = 0.16;
-// The speed that coasts from straight on to the terrain's resting turn.
-const SPIN_IN = (YAW_TERRAIN * Math.LN2) / SPIN_HALF_LIFE;
-const PITCH_STIFFNESS = 140;
-const PITCH_DAMPING = 2 * Math.sqrt(PITCH_STIFFNESS);
-const EDGE_STIFFNESS = 180;
-const BUMP_STIFFNESS = 400;
-const BUMP_DAMPING = 2 * Math.sqrt(BUMP_STIFFNESS) * 0.7;
-const BUMP = 0.45;
-// Columns rise in a wave from where you grabbed; the far end lags by this
-// share of the whole rise.
-const WAVE = 0.7;
-const PADDING = 28;
-const REST_EPSILON = 0.0005;
+// The terrain's tilt, its resting turn and how far it turns either way.
+const PITCH = 52 * DEG;
+const YAW = 24 * DEG;
+const YAW_LIMIT = 40 * DEG;
+// Radians per pixel dragged, and how quickly a flick's spin dies away.
+const DRAG = 0.35 * DEG;
+const FRICTION = 0.004;
+// The view change: a critically damped spring, so it never overshoots.
+const VIEW_STIFFNESS = 90;
+const VIEW_DAMPING = 2 * Math.sqrt(VIEW_STIFFNESS);
+// Columns rise in a wave from the oldest week; the newest lags this much.
+const WAVE = 0.35;
+// The column being read lifts by this much, easing at this rate.
+const BUMP = 0.35;
+const BUMP_RATE = 18;
 const STEP = 1 / 120;
-const LABELS = ['Mon', '', 'Wed', '', 'Fri', '', ''];
+const REST = 0.0005;
+// Room around the board, and for the day and month labels of the flat view.
+const PAD = 20;
+const LABEL_LEFT = 30;
+const LABEL_TOP = 18;
+const DAY_LABELS = ['Mon', '', 'Wed', '', 'Fri', '', ''];
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-
-// A gentle overshoot, so each column pops as it lands.
-const easeOutBack = (t) => {
-  const u = t - 1;
-  return 1 + 2.4 * u * u * u + 1.4 * u * u;
-};
-
-// Resistance past an edge: the further out, the less it moves.
-const rubber = (value, min, max) => {
-  if (value < min) return min - 0.18 * (1 - Math.exp((value - min) / 0.18));
-  if (value > max) return max + 0.18 * (1 - Math.exp((max - value) / 0.18));
-  return value;
-};
+const lerp = (a, b, t) => a + (b - a) * t;
+const easeOut = (t) => 1 - (1 - t) ** 3;
 
 // Deterministic demo data: busy weekdays, quiet weekends, a few streaks.
 const demoData = (weeks) => {
@@ -66,55 +57,62 @@ const demoData = (weeks) => {
   });
 };
 
+// A YYYY-MM-DD day at UTC midnight, or today when it does not parse.
 const parseDay = (value) => {
-  const [y, m, d] = value.split('-').map(Number);
-  return new Date(Date.UTC(y, m - 1, d));
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? '');
+  const date = match ? new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]))) : null;
+  if (date && !Number.isNaN(date.getTime())) return date;
+  const now = new Date();
+  return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
 };
 
-const buildCells = (data, endDate) => {
-  const end = parseDay(endDate);
-  const start = new Date(end.getTime() - (data.length - 1) * 86_400_000);
-  // Rows run Monday to Sunday.
-  const offset = (start.getUTCDay() + 6) % 7;
-  const max = Math.max(1, ...data);
-  return data.map((count, index) => {
+const formatDay = (date) => date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+const formatMonth = (date) => date.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+const plural = (count, word) => `${count.toLocaleString('en-US')} ${word}${count === 1 ? '' : 's'}`;
+
+// One cell per day, in weeks of Monday to Sunday.
+const buildCells = (data, end) => {
+  const counts = (Array.isArray(data) ? data : []).map((value) => (Number.isFinite(Number(value)) ? Math.max(0, Math.round(Number(value))) : 0));
+  const start = new Date(end.getTime() - (counts.length - 1) * DAY_MS);
+  const offset = (start.getUTCDay() + 6) % DAYS;
+  const max = Math.max(1, ...counts);
+  return counts.map((count, index) => {
     const slot = index + offset;
     const norm = count / max;
-    return { index, col: Math.floor(slot / DAYS), row: slot % DAYS, count, level: count === 0 ? 0 : Math.ceil(norm * 4), height: 0.06 + norm ** 0.85 * MAX_HEIGHT, date: new Date(start.getTime() + index * 86_400_000) };
+    return {
+      index,
+      col: Math.floor(slot / DAYS),
+      row: slot % DAYS,
+      count,
+      level: count === 0 ? 0 : Math.max(1, Math.ceil(norm * 4)),
+      height: count === 0 ? PLATE : MIN_HEIGHT + norm * (MAX_HEIGHT - MIN_HEIGHT),
+      date: new Date(start.getTime() + index * DAY_MS),
+    };
   });
 };
 
-const parseRgb = (value) => (value.match(/[\d.]+/g) ?? ['136', '136', '136']).slice(0, 3).map(Number);
-const shade = ([r, g, b], amount) => `rgb(${Math.round(r * (1 - amount))},${Math.round(g * (1 - amount))},${Math.round(b * (1 - amount))})`;
-
-const project = (pose, x, y, z) => {
-  const cos = Math.cos(pose.yaw);
-  const sin = Math.sin(pose.yaw);
-  const xr = x * cos - z * sin;
-  const zr = x * sin + z * cos;
-  return [pose.cx + xr * pose.scale, pose.cy + (zr * Math.cos(pose.pitch) - y * Math.sin(pose.pitch)) * pose.scale];
-};
-
-// The faces of one column that face the camera, the top last.
-const visibleFaces = (pose, x0, z0, h) => {
-  const x1 = x0 + 1 - GAP;
-  const z1 = z0 + 1 - GAP;
-  const p = (x, y, z) => project(pose, x, y, z);
-  const faces = [];
-  const sin = Math.sin(pose.yaw);
-  if (h > 0.02 && pose.pitch > 0.01) {
-    // Of the four walls, the ones whose outward side points at the camera.
-    const z = Math.cos(pose.yaw) > 0 ? z1 : z0;
-    faces.push({ points: [p(x0, 0, z), p(x1, 0, z), p(x1, h, z), p(x0, h, z)], tone: 0.22 });
-    if (Math.abs(sin) > 0.001) {
-      const x = sin > 0 ? x1 : x0;
-      faces.push({ points: [p(x, 0, z0), p(x, 0, z1), p(x, h, z1), p(x, h, z0)], tone: 0.38 });
+// Month labels over the first week that holds a month's first Monday-row
+// day, never crowding the label before.
+const buildMonths = (cells) => {
+  const months = [];
+  for (const cell of cells) {
+    if (cell.row !== 0 && cell.index !== 0) continue;
+    const month = cell.date.getUTCMonth();
+    if (months.length && months.at(-1).month === month) continue;
+    if (months.length && cell.col - months.at(-1).col < 3) {
+      // Too close to the first label, which then gives way.
+      if (months.length === 1) months[0] = { col: cell.col, month, date: cell.date };
+      continue;
     }
+    months.push({ col: cell.col, month, date: cell.date });
   }
-  faces.push({ points: [p(x0, h, z0), p(x1, h, z0), p(x1, h, z1), p(x0, h, z1)], tone: 0 });
-  return faces;
+  return months;
 };
 
+const parseRgb = (value) => (value.match(/[\d.]+/g) ?? ['136', '136', '136']).slice(0, 3).map(Number);
+const shade = ([r, g, b], amount) => `rgb(${Math.round(r * (1 - amount))} ${Math.round(g * (1 - amount))} ${Math.round(b * (1 - amount))})`;
+
+// Point in polygon, by ray casting.
 const inside = (points, x, y) => {
   let hit = false;
   for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
@@ -125,21 +123,19 @@ const inside = (points, x, y) => {
   return hit;
 };
 
-const formatDay = (date) => date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
-const formatMonth = (date) => date.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
-
 /**
- * A contribution heatmap that rises into terrain: each day is a column as
- * tall as its count. Drag to turn and tilt it (a flick spins on), switch
- * between the flat heatmap and the terrain, and hover or use the arrow keys
- * to read each day; the hovered column bumps up.
+ * A contribution heatmap that rises into terrain: each day a column as tall
+ * as its count. Switch between the flat heatmap and the terrain; in the
+ * terrain, drag sideways to turn it, and a flick spins on until it settles.
+ * Hover, tap or use the arrow keys to read a day; its column lifts and turns
+ * the accent colour.
  *
  * @attr {Array<number>} data - Count per day, oldest first (JSON)
- * @attr {string} end-date - The day of the last count, as YYYY-MM-DD
+ * @attr {string} end-date - The day of the last count, as YYYY-MM-DD; today if it does not parse
  * @attr {string} heading
  * @attr {boolean} flat - Shows the flat heatmap
- * @fires lw-change - The view changed; `detail: { flat }`
- * @cssprop --lw-activity-terrain-accent - Colour of the hovered day
+ * @fires lw-change - The view was switched; `detail: { flat }`
+ * @cssprop --lw-activity-terrain-accent - Colour of the day being read
  */
 export class LwActivityTerrain extends LwElement {
   static styles = styles;
@@ -151,38 +147,38 @@ export class LwActivityTerrain extends LwElement {
   };
 
   #cells = [];
+  #months = [];
   #weeks = 1;
-  #yaw = 0;
+  #total = 0;
+  // The view: 0 is the flat heatmap, 1 the terrain, and its target.
+  #t = 0;
+  #tSpeed = 0;
+  #target = 0;
+  #yaw = YAW;
   #yawSpeed = 0;
-  // The intro tilts it up from flat once it is on screen.
-  #pitch = 0;
-  #pitchSpeed = 0;
-  #pitchTarget = PITCH_TERRAIN;
-  #bumps = new Float64Array(0);
-  #bumpSpeeds = new Float64Array(0);
-  #hovered = -1;
-  #origin = { col: 0, row: 3 };
-  #size = { width: 0, height: 0, dpr: 1 };
+  #bumps = new Float32Array(0);
+  #active = -1;
   #drag = null;
-  #onScreen = false;
-  #started = false;
+  #size = { width: 0, height: 0, dpr: 1 };
   #palette = null;
-  #energy = 0;
+  #faces = [];
+  #reach = 2;
+  #visible = false;
+  #introduced = false;
   #loop = fixedStepLoop(STEP, {
     step: () => this.#step(),
     render: () => {
       this.#draw();
-      const busy = Boolean(this.#drag) || this.#energy > REST_EPSILON;
-      this.#energy = 0;
-      return busy;
+      return this.#busy;
     },
   });
 
   render() {
-    const levels = [0, 1, 2, 3, 4].map((level) => `<span class="swatch level-${level}"></span>`).join('');
-    return `<div class="top"><div class="titles"><p class="heading"></p><p class="readout" aria-live="polite"></p></div><div class="views"><button type="button" data-flat="true">Flat</button><button type="button" data-flat="false">Terrain</button></div></div>
+    const swatches = [0, 1, 2, 3, 4].map((level) => `<span class="swatch level-${level}"></span>`).join('');
+    return `<header class="top"><div class="titles"><h2 class="heading"></h2><p class="readout" aria-live="polite"></p></div>
+<div class="views" role="radiogroup" aria-label="View"><span class="pill" aria-hidden="true"></span><button type="button" role="radio" data-flat="true">Flat</button><button type="button" role="radio" data-flat="false">Terrain</button></div></header>
 <canvas role="img" tabindex="0"></canvas>
-<div class="legend"><span>Less</span>${levels}<span>More</span><span class="accent" hidden></span><span class="ground" hidden></span></div>`;
+<footer class="legend" aria-hidden="true"><span class="hint"></span><span class="scale"><span>Less</span>${swatches}<span>More</span></span><span class="accent"></span></footer>`;
   }
 
   connected() {
@@ -190,305 +186,354 @@ export class LwActivityTerrain extends LwElement {
     const canvas = this.query('canvas');
     canvas.addEventListener('pointerdown', (event) => this.#down(event), options);
     canvas.addEventListener('pointermove', (event) => this.#move(event), options);
-    for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) canvas.addEventListener(type, (event) => this.#up(event), options);
-    canvas.addEventListener('pointerleave', (event) => !this.#drag && event.pointerType === 'mouse' && this.#hover(null), options);
+    for (const type of ['pointerup', 'pointercancel']) canvas.addEventListener(type, (event) => this.#up(event), options);
+    canvas.addEventListener('pointerleave', (event) => !this.#drag && event.pointerType === 'mouse' && this.#setActive(-1), options);
     canvas.addEventListener('keydown', (event) => this.#key(event), options);
-    this.query('.views').addEventListener('click', (event) => this.#viewClick(event), options);
+    canvas.addEventListener('blur', () => !this.#drag && this.#setActive(-1), options);
+    const views = this.query('.views');
+    views.addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      if (button) this.#choose(button.dataset.flat === 'true');
+    }, options);
+    views.addEventListener('keydown', (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+      event.preventDefault();
+      this.#choose(!this.flat);
+      views.querySelector('[aria-checked="true"]')?.focus();
+    }, options);
     const resize = new ResizeObserver(() => this.#measure());
     resize.observe(canvas);
-    const visible = new IntersectionObserver(([entry]) => {
-      this.#onScreen = entry.isIntersecting;
-      this.#visibility();
-    });
-    visible.observe(canvas);
-    document.addEventListener('visibilitychange', () => this.#visibility(), options);
-    // The canvas reads its colours, so it repaints when the theme flips.
+    resize.observe(views);
+    watchVisibility(canvas, (visible) => {
+      this.#visible = visible;
+      if (visible) this.#introduce();
+      this.#wake();
+    }, this.signal);
+    // The canvas reads its colours from CSS, so it repaints when the theme changes.
     watchTheme(() => {
       this.#palette = null;
       this.#draw();
     }, this.signal);
     this.signal.addEventListener('abort', () => {
       resize.disconnect();
-      visible.disconnect();
       this.#loop.stop();
+      this.#drag = null;
     });
   }
 
   updated(changed) {
     if (changed.has('data') || changed.has('endDate')) {
-      this.#cells = buildCells(this.data, this.endDate);
+      this.#cells = buildCells(this.data, parseDay(this.endDate));
+      this.#months = buildMonths(this.#cells);
       this.#weeks = (this.#cells.at(-1)?.col ?? 0) + 1;
-      this.#bumps = new Float64Array(this.#cells.length);
-      this.#bumpSpeeds = new Float64Array(this.#cells.length);
-      this.#hovered = -1;
+      this.#total = this.#cells.reduce((sum, cell) => sum + cell.count, 0);
+      this.#bumps = new Float32Array(this.#cells.length);
+      this.#active = -1;
     }
-    if (changed.has('flat')) this.#pitchTarget = this.flat ? 0 : PITCH_TERRAIN;
-    for (const button of this.shadowRoot.querySelectorAll('.views button')) button.ariaPressed = String((button.dataset.flat === 'true') === Boolean(this.flat));
+    // Until it has been on screen, the terrain waits flat for its intro.
+    if (changed.has('flat') && (this.#introduced || this.flat)) this.#aim(this.flat ? 0 : 1);
+    for (const button of this.shadowRoot.querySelectorAll('.views button')) {
+      const checked = (button.dataset.flat === 'true') === Boolean(this.flat);
+      button.ariaChecked = String(checked);
+      button.tabIndex = checked ? 0 : -1;
+    }
     this.query('.heading').textContent = this.heading ?? '';
-    this.query('canvas').ariaLabel = `${this.heading}: ${this.#total} contributions over ${this.#weeks} weeks. Use the arrow keys to read each day.`;
+    this.query('.hint').textContent = this.flat ? '' : 'Drag to turn';
+    this.query('canvas').ariaLabel = `${this.heading ?? ''}: ${plural(this.#total, 'contribution')} over ${plural(this.#weeks, 'week')}. Use the arrow keys to read each day.`;
+    this.#paintPill();
     this.#readout();
     this.#measure();
     this.#wake();
   }
 
-  get #total() {
-    return this.data.reduce((sum, n) => sum + n, 0);
-  }
+  // ---- View ----
 
-  #readout() {
-    const cell = this.#cells[this.#hovered];
-    this.query('.readout').textContent = cell ? `${cell.count} ${cell.count === 1 ? 'contribution' : 'contributions'} on ${formatDay(cell.date)}` : `${this.#total.toLocaleString('en-US')} contributions in the last ${this.#weeks} weeks`;
-  }
-
-  #measure() {
-    const canvas = this.query('canvas');
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    this.#size = { width: canvas.clientWidth, height: canvas.clientHeight, dpr };
-    canvas.width = Math.round(this.#size.width * dpr);
-    canvas.height = Math.round(this.#size.height * dpr);
-    this.#draw();
-  }
-
-  #visibility() {
-    if (this.#onScreen && !document.hidden) {
-      if (!this.#started) {
-        this.#started = true;
-        if (this.#pitchTarget > 0) this.#turnIn();
-      }
-      this.#wake();
-    } else {
-      this.#loop.stop();
-    }
-  }
-
-  #wake() {
+  // Heads for the flat heatmap (0) or the terrain (1); reduced motion lands at once.
+  #aim(target) {
+    this.#target = target;
     if (reducedMotion.matches) {
-      // No travel: everything lands where it is going.
-      this.#pitch = this.#pitchTarget;
-      if (this.#pitchTarget === 0) this.#yaw = 0;
-      this.#yaw = clamp(this.#yaw, -YAW_LIMIT, YAW_LIMIT);
-      this.#pitchSpeed = this.#yawSpeed = 0;
-      this.#bumps.fill(0);
-      this.#draw();
-      return;
+      this.#t = target;
+      this.#tSpeed = 0;
     }
-    if (this.#onScreen && !document.hidden) this.#loop.wake();
   }
 
-  // Swings round from straight on as it tilts up, coasting to a stop at the
-  // resting turn.
-  #turnIn() {
-    if (Math.abs(this.#yaw) > 2 * DEG) return;
-    if (reducedMotion.matches) this.#yaw = YAW_TERRAIN;
-    else this.#yawSpeed = SPIN_IN;
+  // The terrain rises the first time it comes into view.
+  #introduce() {
+    if (this.#introduced) return;
+    this.#introduced = true;
+    this.#aim(this.flat ? 0 : 1);
+  }
+
+  #choose(flat) {
+    if (flat === Boolean(this.flat)) return;
+    this.flat = flat;
+    this.emit('change', { flat });
+  }
+
+  #paintPill() {
+    const checked = this.query('.views [aria-checked="true"]');
+    if (checked?.offsetWidth) moveHighlight(this.query('.pill'), checked);
   }
 
   // ---- Simulation ----
 
+  get #busy() {
+    if (this.#drag?.moved) return true;
+    if (Math.abs(this.#target - this.#t) > REST || Math.abs(this.#tSpeed) > REST) return true;
+    if (this.#yawSpeed) return true;
+    for (let i = 0; i < this.#bumps.length; i++) if (this.#bumps[i] !== (i === this.#active ? BUMP : 0)) return true;
+    return false;
+  }
+
+  #wake() {
+    if (this.#visible && !document.hidden && this.#busy) this.#loop.wake();
+    else this.#draw();
+  }
+
   #step() {
-    let energy = 0;
-    if (!this.#drag) {
-      // Spin coasts, then the edge pulls it back in range.
-      this.#yawSpeed *= 0.5 ** (STEP / SPIN_HALF_LIFE);
-      // Flat is always square on.
-      const target = this.#pitchTarget === 0 ? 0 : clamp(this.#yaw, -YAW_LIMIT, YAW_LIMIT);
-      if (target !== this.#yaw) this.#yawSpeed += ((target - this.#yaw) * EDGE_STIFFNESS - this.#yawSpeed * 2 * Math.sqrt(EDGE_STIFFNESS)) * STEP;
-      this.#yaw += this.#yawSpeed * STEP;
-      this.#pitchSpeed += ((this.#pitchTarget - this.#pitch) * PITCH_STIFFNESS - this.#pitchSpeed * PITCH_DAMPING) * STEP;
-      this.#pitch += this.#pitchSpeed * STEP;
-      energy = Math.max(Math.abs(this.#yawSpeed), Math.abs(target - this.#yaw), Math.abs(this.#pitchSpeed), Math.abs(this.#pitchTarget - this.#pitch));
+    // The view springs to its target without overshooting.
+    this.#tSpeed += ((this.#target - this.#t) * VIEW_STIFFNESS - this.#tSpeed * VIEW_DAMPING) * STEP;
+    this.#t = clamp(this.#t + this.#tSpeed * STEP, 0, 1);
+    if (Math.abs(this.#target - this.#t) <= REST && Math.abs(this.#tSpeed) <= REST * 10) {
+      this.#t = this.#target;
+      this.#tSpeed = 0;
     }
+    // A flick spins on and dies away; the limits stop it dead.
+    if (!this.#drag && this.#yawSpeed) {
+      this.#yawSpeed *= FRICTION ** STEP;
+      const yaw = this.#yaw + this.#yawSpeed * STEP;
+      this.#yaw = clamp(yaw, -YAW_LIMIT, YAW_LIMIT);
+      if (yaw !== this.#yaw || Math.abs(this.#yawSpeed) < REST * 10) this.#yawSpeed = 0;
+    }
+    const rate = 1 - Math.exp(-BUMP_RATE * STEP);
     for (let i = 0; i < this.#bumps.length; i++) {
-      const target = i === this.#hovered && this.#pitch > 0.1 ? BUMP : 0;
-      this.#bumpSpeeds[i] += ((target - this.#bumps[i]) * BUMP_STIFFNESS - this.#bumpSpeeds[i] * BUMP_DAMPING) * STEP;
-      this.#bumps[i] += this.#bumpSpeeds[i] * STEP;
-      energy = Math.max(energy, Math.abs(this.#bumpSpeeds[i]) * 0.1, Math.abs(target - this.#bumps[i]));
+      const target = i === this.#active ? BUMP : 0;
+      if (this.#bumps[i] === target) continue;
+      this.#bumps[i] += (target - this.#bumps[i]) * rate;
+      if (Math.abs(target - this.#bumps[i]) <= REST) this.#bumps[i] = target;
     }
-    this.#energy = Math.max(this.#energy, energy);
   }
 
-  // How tall a column stands now: the rise travels as a wave out from the
-  // origin, and each column overshoots a touch as it lands.
-  #columnHeight(cell, lift) {
-    const span = Math.hypot(this.#weeks, DAYS) || 1;
-    const d = Math.hypot(cell.col - this.#origin.col, cell.row - this.#origin.row) / span;
-    return cell.height * easeOutBack(clamp(lift * (1 + WAVE) - d * WAVE, 0, 1)) + this.#bumps[cell.index];
+  // ---- Drawing ----
+
+  #measure() {
+    const canvas = this.query('canvas');
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    this.#size = { width, height, dpr };
+    if (canvas.width !== Math.round(width * dpr)) canvas.width = Math.round(width * dpr);
+    if (canvas.height !== Math.round(height * dpr)) canvas.height = Math.round(height * dpr);
+    this.#paintPill();
+    this.#draw();
   }
 
-  // Fits the whole board, at its current turn and tilt, into the canvas.
-  #pose() {
-    const lift = clamp(this.#pitch / PITCH_TERRAIN, 0, 1.2);
-    const w = this.#weeks;
-    const probe = { yaw: this.#yaw, pitch: this.#pitch, scale: 1, cx: 0, cy: 0 };
-    let [minX, maxX, minY, maxY] = [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY];
-    for (const [x, z] of [
-      [0, 0],
-      [w, 0],
-      [0, DAYS],
-      [w, DAYS],
-    ]) {
-      for (const y of [0, MAX_HEIGHT * Math.min(lift, 1)]) {
-        const [px, py] = project(probe, x - w / 2, y, z - DAYS / 2);
-        [minX, maxX, minY, maxY] = [Math.min(minX, px), Math.max(maxX, px), Math.min(minY, py), Math.max(maxY, py)];
-      }
-    }
-    const { width, height } = this.#size;
-    const scale = Math.min((width - PADDING * 2) / (maxX - minX), (height - PADDING * 2) / (maxY - minY));
-    return { yaw: this.#yaw, pitch: this.#pitch, scale, cx: width / 2 - ((minX + maxX) / 2) * scale, cy: height / 2 - ((minY + maxY) / 2) * scale + 6, lift };
-  }
-
-  // Back to front: the further a column's base, the earlier it is drawn.
-  #ordered(pose) {
-    const sin = Math.sin(pose.yaw);
-    const cos = Math.cos(pose.yaw);
-    const depth = (c) => (c.col + 0.5 - this.#weeks / 2) * sin + (c.row + 0.5 - DAYS / 2) * cos;
-    return [...this.#cells].sort((a, b) => depth(a) - depth(b));
-  }
-
-  // Colours come from CSS, read once per theme rather than every frame.
+  // Colours come from CSS through the legend, read once per theme.
   get #colors() {
     if (this.#palette) return this.#palette;
     const read = (selector) => getComputedStyle(this.query(selector)).backgroundColor;
     this.#palette = {
       levels: [0, 1, 2, 3, 4].map((level) => parseRgb(read(`.level-${level}`))),
       accent: parseRgb(read('.accent')),
-      text: read('.ground'),
+      text: getComputedStyle(this.query('.legend')).color,
       font: getComputedStyle(this).fontFamily,
     };
     return this.#palette;
   }
 
+  // The scale that fits the board flat, and the one that fits the terrain at
+  // any turn, so turning it never zooms.
+  #scales() {
+    const { width, height } = this.#size;
+    const weeks = this.#weeks;
+    const flat = Math.min((width - PAD * 2 - LABEL_LEFT) / weeks, (height - PAD * 2 - LABEL_TOP) / DAYS);
+    let terrain = Number.POSITIVE_INFINITY;
+    for (const yaw of [0, YAW_LIMIT]) {
+      const cos = Math.cos(yaw);
+      const sin = Math.sin(yaw);
+      const spanX = weeks * cos + DAYS * sin;
+      const spanY = (weeks * sin + DAYS * cos) * Math.cos(PITCH) + MAX_HEIGHT * Math.sin(PITCH);
+      terrain = Math.min(terrain, (width - PAD * 2) / spanX, (height - PAD * 2) / spanY);
+    }
+    return { flat: Math.max(flat, 1), terrain: Math.max(terrain, 1) };
+  }
+
+  // The camera at the current view: turned and tilted with the terrain,
+  // square and flat with the heatmap, centred either way.
+  #pose() {
+    const t = this.#t;
+    const { flat, terrain } = this.#scales();
+    const pitch = PITCH * t;
+    const scale = lerp(flat, terrain, t);
+    const { width, height } = this.#size;
+    return {
+      t,
+      cos: Math.cos(this.#yaw * t),
+      sin: Math.sin(this.#yaw * t),
+      cosP: Math.cos(pitch),
+      sinP: Math.sin(pitch),
+      scale,
+      // Flat, the labels take room on the left and top; raised, the columns
+      // take room above, so the board drops by half their height.
+      cx: width / 2 + (LABEL_LEFT / 2) * (1 - t),
+      cy: height / 2 + (LABEL_TOP / 2) * (1 - t) + (MAX_HEIGHT * Math.sin(pitch) * scale) / 2,
+    };
+  }
+
+  // A point on the board: x across the weeks, z down the days, y up.
+  #project(pose, x, y, z) {
+    const wx = x - this.#weeks / 2;
+    const wz = z - DAYS / 2;
+    const xr = wx * pose.cos - wz * pose.sin;
+    const zr = wx * pose.sin + wz * pose.cos;
+    return [pose.cx + xr * pose.scale, pose.cy + (zr * pose.cosP - y * pose.sinP) * pose.scale];
+  }
+
+  // How tall a column stands: risen in a wave across the weeks, lifted when read.
+  #heightOf(cell, t) {
+    const lag = this.#weeks > 1 ? (cell.col / (this.#weeks - 1)) * WAVE : 0;
+    const rise = easeOut(clamp((t - lag) / (1 - WAVE), 0, 1));
+    return cell.height * rise + this.#bumps[cell.index] * t;
+  }
+
+  // The faces of one column that face the camera, the top last.
+  #facesOf(pose, cell) {
+    const x0 = cell.col + GAP / 2;
+    const x1 = cell.col + 1 - GAP / 2;
+    const z0 = cell.row + GAP / 2;
+    const z1 = cell.row + 1 - GAP / 2;
+    const h = this.#heightOf(cell, pose.t);
+    const p = (x, y, z) => this.#project(pose, x, y, z);
+    const faces = [];
+    if (pose.sinP > 0.001 && h > 0.001) {
+      // The near wall always shows; of the side walls, the one whose outward
+      // side turns towards us: the +x wall when the yaw is positive.
+      faces.push({ points: [p(x0, 0, z1), p(x1, 0, z1), p(x1, h, z1), p(x0, h, z1)], tone: 0.16 });
+      if (Math.abs(pose.sin) > 0.001) {
+        const x = pose.sin > 0 ? x1 : x0;
+        faces.push({ points: [p(x, 0, z0), p(x, 0, z1), p(x, h, z1), p(x, h, z0)], tone: 0.3 });
+      }
+    }
+    faces.push({ points: [p(x0, h, z0), p(x1, h, z0), p(x1, h, z1), p(x0, h, z1)], tone: 0 });
+    return faces;
+  }
+
   #draw() {
     const { width, height, dpr } = this.#size;
     const ctx = this.query('canvas').getContext('2d');
-    if (!ctx || !width) return;
+    if (!ctx || !width || !height) return;
     const palette = this.#colors;
     const pose = this.#pose();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
     this.#drawLabels(ctx, pose, palette);
+    // Back to front: the nearer a column's centre, the later it is drawn.
+    const depth = (cell) => (cell.col + 0.5 - this.#weeks / 2) * pose.sin + (cell.row + 0.5 - DAYS / 2) * pose.cos;
+    const ordered = pose.t > 0 ? [...this.#cells].sort((a, b) => depth(a) - depth(b)) : this.#cells;
+    this.#faces = [];
+    // The gap between cells, on screen: a point in it reads the cell beside it.
+    this.#reach = Math.max(2, GAP * pose.scale * 0.6);
     ctx.lineJoin = 'round';
-    for (const cell of this.#ordered(pose)) {
-      const color = cell.index === this.#hovered ? palette.accent : palette.levels[cell.level];
-      for (const face of visibleFaces(pose, cell.col - this.#weeks / 2, cell.row - DAYS / 2, this.#columnHeight(cell, pose.lift))) {
+    ctx.lineWidth = 0.75;
+    for (const cell of ordered) {
+      const color = cell.index === this.#active ? palette.accent : palette.levels[cell.level];
+      for (const face of this.#facesOf(pose, cell)) {
+        const fill = shade(color, face.tone);
         ctx.beginPath();
         face.points.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
         ctx.closePath();
-        const fill = shade(color, face.tone);
         ctx.fillStyle = fill;
         ctx.fill();
         // A hairline in the same colour closes the seams between faces.
         ctx.strokeStyle = fill;
-        ctx.lineWidth = 0.6;
         ctx.stroke();
+        this.#faces.push({ points: face.points, index: cell.index });
       }
     }
   }
 
-  // Labels lie on the ground, so they would hide behind the columns: they
-  // fade out as the terrain rises, and the readout names each day.
+  // The day and month labels lie beside the flat heatmap and fade as it rises.
   #drawLabels(ctx, pose, palette) {
-    const alpha = clamp(1 - pose.lift * 1.6, 0, 1);
+    const alpha = clamp(1 - pose.t * 2.5, 0, 1);
     if (!alpha) return;
-    const weeks = this.#weeks;
     ctx.globalAlpha = alpha;
     ctx.fillStyle = palette.text;
     ctx.font = `11px ${palette.font}`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
-    let month = -1;
-    for (const cell of this.#cells) {
-      if (cell.row !== 0 && cell.index !== 0) continue;
-      const m = cell.date.getUTCMonth();
-      if (m === month || cell.col >= weeks - 1) continue;
-      month = m;
-      const [x, y] = project(pose, cell.col - weeks / 2, 0, -0.75 - DAYS / 2);
-      ctx.fillText(formatMonth(cell.date), x, y);
+    for (const month of this.#months) {
+      const [x, y] = this.#project(pose, month.col + GAP / 2, 0, -0.6);
+      ctx.fillText(formatMonth(month.date), x, y);
     }
     ctx.textAlign = 'right';
-    LABELS.forEach((label, row) => {
+    DAY_LABELS.forEach((label, row) => {
       if (!label) return;
-      const [x, y] = project(pose, -0.35 - weeks / 2, 0, row + 0.4 - DAYS / 2);
+      const [x, y] = this.#project(pose, -0.3, 0, row + 0.5);
       ctx.fillText(label, x, y);
     });
     ctx.globalAlpha = 1;
   }
 
+  // The day under a point: the frontmost face drawn there. A point in the
+  // gap between cells reads the nearest one, so moving across the board
+  // never flickers back to the summary.
   #hitTest(x, y) {
-    const pose = this.#pose();
-    const list = this.#ordered(pose);
-    for (let i = list.length - 1; i >= 0; i--) {
-      const cell = list[i];
-      for (const face of visibleFaces(pose, cell.col - this.#weeks / 2, cell.row - DAYS / 2, this.#columnHeight(cell, pose.lift))) if (inside(face.points, x, y)) return cell;
+    const r = this.#reach;
+    for (const [dx, dy] of [[0, 0], [r, 0], [-r, 0], [0, r], [0, -r]]) {
+      for (let i = this.#faces.length - 1; i >= 0; i--) {
+        if (inside(this.#faces[i].points, x + dx, y + dy)) return this.#faces[i].index;
+      }
     }
-    return null;
+    return -1;
   }
 
-  // ---- Views and input ----
+  // ---- Reading a day ----
 
-  #setView(flat, origin) {
-    this.#origin = origin ?? { col: flat ? this.#weeks : 0, row: 3 };
-    this.#yawSpeed = 0;
-    if (flat !== Boolean(this.flat)) {
-      this.flat = flat;
-      this.emit('change', { flat });
-    }
-    this.#pitchTarget = flat ? 0 : PITCH_TERRAIN;
-    if (!flat) this.#turnIn();
+  #setActive(index) {
+    if (index === this.#active) return;
+    this.#active = index;
+    this.#readout();
     this.#wake();
   }
 
-  #viewClick(event) {
-    const button = event.target.closest('button');
-    if (button) this.#setView(button.dataset.flat === 'true');
-  }
-
-  #hover(cell) {
-    const index = cell ? cell.index : -1;
-    if (index === this.#hovered) return;
-    this.#hovered = index;
-    this.#readout();
-    if (reducedMotion.matches) this.#draw();
-    else this.#wake();
+  #readout() {
+    const cell = this.#cells[this.#active];
+    let text = 'No activity yet';
+    if (cell) text = `${plural(cell.count, 'contribution')} on ${formatDay(cell.date)}`;
+    else if (this.#cells.length) text = `${plural(this.#total, 'contribution')} in the last ${plural(this.#weeks, 'week')}`;
+    this.query('.readout').textContent = text;
   }
 
   #local(event) {
     const rect = this.query('canvas').getBoundingClientRect();
-    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    return [event.clientX - rect.left, event.clientY - rect.top];
   }
 
   #down(event) {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
-    const { x, y } = this.#local(event);
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-    const cell = this.#hitTest(x, y);
-    if (cell) this.#origin = { col: cell.col, row: cell.row };
-    this.#drag = { id: event.pointerId, x: event.clientX, y: event.clientY, yaw: this.#yaw, pitch: this.#pitch, moved: false, samples: [{ t: event.timeStamp, x: event.clientX, y: event.clientY }] };
-    this.#yawSpeed = this.#pitchSpeed = 0;
-    this.query('canvas').toggleAttribute('data-dragging', true);
-    this.#hover(cell);
-    this.#wake();
+    this.#yawSpeed = 0;
+    this.#drag = { id: event.pointerId, x: event.clientX, yaw: this.#yaw, moved: false, last: event.clientX, at: event.timeStamp, speed: 0 };
+    if (this.#target === 1) event.currentTarget.setPointerCapture?.(event.pointerId);
   }
 
   #move(event) {
     const drag = this.#drag;
     if (drag?.id !== event.pointerId) {
-      if (event.pointerType === 'mouse') {
-        const { x, y } = this.#local(event);
-        this.#hover(this.#hitTest(x, y));
-      }
+      if (event.pointerType !== 'touch') this.#setActive(this.#hitTest(...this.#local(event)));
       return;
     }
     const dx = event.clientX - drag.x;
-    const dy = event.clientY - drag.y;
-    drag.moved ||= Math.hypot(dx, dy) > 4;
-    if (!drag.moved) return;
-    this.#yaw = rubber(drag.yaw + dx * DRAG_YAW, -YAW_LIMIT, YAW_LIMIT);
-    this.#pitch = rubber(drag.pitch + dy * DRAG_PITCH, 0, PITCH_LIMIT);
-    drag.samples.push({ t: event.timeStamp, x: event.clientX, y: event.clientY });
-    if (drag.samples.length > 5) drag.samples.shift();
-    if (reducedMotion.matches) this.#draw();
-    else this.#wake();
+    drag.moved ||= Math.abs(dx) > 4;
+    // Only the terrain turns; the flat heatmap stays square.
+    if (!drag.moved || this.#target !== 1) return;
+    this.query('canvas').toggleAttribute('data-dragging', true);
+    this.#yaw = clamp(drag.yaw + dx * DRAG, -YAW_LIMIT, YAW_LIMIT);
+    // The spin a release hands on, from the latest movement.
+    const dt = Math.max((event.timeStamp - drag.at) / 1000, 0.001);
+    drag.speed = lerp(drag.speed, ((event.clientX - drag.last) * DRAG) / dt, 0.5);
+    drag.last = event.clientX;
+    drag.at = event.timeStamp;
+    this.#wake();
   }
 
   #up(event) {
@@ -496,33 +541,28 @@ export class LwActivityTerrain extends LwElement {
     if (drag?.id !== event.pointerId) return;
     this.#drag = null;
     this.query('canvas').removeAttribute('data-dragging');
-    if (!drag.moved) {
-      this.#wake();
+    if (!drag.moved || this.#target !== 1) {
+      // A tap reads the day under it.
+      if (event.type === 'pointerup') this.#setActive(this.#hitTest(...this.#local(event)));
       return;
     }
-    // Velocity from the last few samples, in px per second.
-    const first = drag.samples[0];
-    const last = drag.samples.at(-1);
-    const dt = Math.max((last.t - first.t) / 1000, 0.016);
-    const recent = event.timeStamp - last.t < 80;
-    this.#yawSpeed = recent ? ((last.x - first.x) / dt) * DRAG_YAW : 0;
-    this.#pitchSpeed = recent ? ((last.y - first.y) / dt) * DRAG_PITCH : 0;
-    // Land on whichever view the throw is heading for.
-    const flat = this.#pitch + this.#pitchSpeed * 0.15 < PITCH_TERRAIN / 2;
-    if (flat !== Boolean(this.flat)) {
-      this.flat = flat;
-      this.emit('change', { flat });
-    }
-    this.#pitchTarget = flat ? 0 : PITCH_TERRAIN;
+    const recent = event.timeStamp - drag.at < 80;
+    this.#yawSpeed = recent && !reducedMotion.matches ? drag.speed : 0;
     this.#wake();
   }
 
+  // The arrow keys step through the days: up and down a week, across the weeks.
   #key(event) {
     const move = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[event.key];
-    if (!move) return;
+    if (!move && !['Home', 'End', 'Escape'].includes(event.key)) return;
+    if (!this.#cells.length) return;
     event.preventDefault();
-    const current = this.#cells[this.#hovered] ?? this.#cells.at(-1);
-    if (!current) return;
-    this.#hover(this.#cells.find((c) => c.col === current.col + move[0] && c.row === current.row + move[1]) ?? current);
+    if (event.key === 'Escape') return this.#setActive(-1);
+    if (event.key === 'Home') return this.#setActive(0);
+    if (event.key === 'End') return this.#setActive(this.#cells.length - 1);
+    const current = this.#cells[this.#active];
+    if (!current) return this.#setActive(this.#cells.length - 1);
+    const next = this.#cells.find((cell) => cell.col === current.col + move[0] && cell.row === current.row + move[1]);
+    if (next) this.#setActive(next.index);
   }
 }

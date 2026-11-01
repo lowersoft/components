@@ -1,27 +1,31 @@
 @use '../../styles' as lw;
 
 :host {
-  // The heat levels, empty to busiest, and the hovered day. The canvas reads
-  // them through the legend, so they follow the theme.
-  --_level-0: light-dark(#f4f4f5, #27272a);
+  // The heat levels, empty to busiest, and the day being read. The canvas
+  // reads them through the legend, so they follow the theme.
+  --_level-0: light-dark(#f1f1f3, #232327);
   --_level-1: light-dark(#d4d4d8, #3f3f46);
   --_level-2: light-dark(#a1a1aa, #71717a);
   --_level-3: light-dark(#52525b, #a1a1aa);
   --_level-4: light-dark(#18181b, #f4f4f5);
-  --_accent: var(--lw-activity-terrain-accent, light-dark(#10b981, #34d399));
-  --_ground: light-dark(#a1a1aa, #71717a);
+  --_accent: var(--lw-activity-terrain-accent, #{lw.v(color-accent)});
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
 
   display: block;
   width: 100%;
-  max-width: 42rem;
-  border: 1px solid lw.v(color-border);
-  border-radius: 1.5rem;
+  max-width: 44rem;
+  overflow: hidden;
+  border: 1px solid var(--_line);
+  border-radius: 1.25rem;
   background: lw.v(color-background);
   font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
   color: lw.v(color-foreground);
   user-select: none;
 }
 
+h2,
 p {
   margin: 0;
 }
@@ -39,47 +43,46 @@ p {
 }
 
 .heading {
-  font-size: lw.v(text-sm);
-  font-weight: 500;
+  font-size: lw.v(text-md);
+  font-weight: 600;
 }
 
 .readout {
   margin-top: 0.125rem;
   overflow: hidden;
-  font-size: lw.v(text-sm);
   font-variant-numeric: tabular-nums;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: lw.v(color-muted-foreground);
+  color: var(--_muted);
 }
 
+// Flat or terrain, a pill sliding to the view shown.
 .views {
+  position: relative;
   display: flex;
   flex: none;
-  padding: 2px;
+  padding: 0.1875rem;
+  border: 1px solid var(--_line);
   border-radius: lw.v(radius-full);
-  background: lw.v(color-muted);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
 
   button {
+    position: relative;
     padding: 0.25rem 0.75rem;
     border: 0;
     border-radius: lw.v(radius-full);
     background: none;
     font: 500 lw.v(text-xs) lw.v(font-sans);
-    color: lw.v(color-muted-foreground);
+    color: var(--_muted);
     cursor: pointer;
     outline: none;
-    transition:
-      background-color 200ms ease-out,
-      color 200ms ease-out;
 
-    &:hover {
-      color: lw.v(color-foreground);
+    @include lw.motion {
+      transition: color 150ms ease-out;
     }
 
-    &[aria-pressed='true'] {
-      background: lw.v(color-background);
-      box-shadow: lw.v(shadow-sm);
+    &:hover,
+    &[aria-checked='true'] {
       color: lw.v(color-foreground);
     }
 
@@ -89,14 +92,28 @@ p {
   }
 }
 
+.pill {
+  @include lw.sliding-highlight;
+
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-background);
+  box-shadow:
+    0 0 0 1px var(--_line),
+    lw.v(shadow-sm);
+}
+
 canvas {
   display: block;
   width: 100%;
-  height: 18rem;
-  border-radius: 0 0 1.5rem 1.5rem;
-  cursor: grab;
+  height: 20rem;
+  cursor: default;
+  // Vertical swipes still scroll the page; sideways ones turn the terrain.
   touch-action: pan-y;
   outline: none;
+
+  :host(:not([flat])) & {
+    cursor: grab;
+  }
 
   &[data-dragging] {
     cursor: grabbing;
@@ -107,20 +124,29 @@ canvas {
   }
 }
 
+// The scale of levels, and a hint on the start; it also lends the canvas
+// its colours.
 .legend {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 0.25rem;
+  justify-content: space-between;
+  gap: 1rem;
   padding: 0 1.25rem 1rem;
   font-size: lw.v(text-xs);
-  color: lw.v(color-muted-foreground);
+  color: var(--_muted);
+}
+
+.scale {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
 
   > span:first-child {
     margin-right: 0.25rem;
   }
 
-  > span:nth-child(7) {
+  > span:last-child {
     margin-left: 0.25rem;
   }
 }
@@ -137,10 +163,8 @@ canvas {
   }
 }
 
+// Not shown: it carries the accent for the canvas to read.
 .accent {
+  display: none;
   background: var(--_accent);
-}
-
-.ground {
-  background: var(--_ground);
 }
