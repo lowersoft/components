@@ -2,7 +2,7 @@
 <div align="center">
   <img alt="lw_compo" height="75" src="https://github.com/user-attachments/assets/87c164be-3839-4317-8b89-00f484aa57d5" />
 </div>
-</br>
+<br>
 <div align="center">
 
   ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/lowersoft/components/ci.yml)
@@ -18,7 +18,7 @@ lw is a set of *animated UI components* built with **SCSS** and **vanilla JavaSc
 <hr>
 <div align="center">
   <a href="#usage">Usage</a> · 
-  <a href="#how-it-works-explained-for-just-project-infrastructure">How it Works</a> · 
+  <a href="#how-it-works">How it Works</a> · 
   <a href="#contact">Contact</a> ·
   <a href="#credits">Credits</a> ·
   <a href="#contribute">Contribute</a> ·
@@ -27,18 +27,18 @@ lw is a set of *animated UI components* built with **SCSS** and **vanilla JavaSc
 <hr>
 
 ### Usage
-Everything below works the same in plain HTML, React, Vue, Svelte or anything else. No framework needed(btw).
+Everything below works the same in plain HTML, React, Vue, Svelte or anything else. No framework needed.
 #### 1.1 Get the package
 There are no peer dependencies and no build plugins to configure.
 ```bash
 npm install @lowersoft/lw
 ```
-Or you can choice the CDN way, include like this:
+Or load it from a CDN:
 ```html
-<!-- Header Side -->
+<!-- In <head> -->
 <link rel="stylesheet" href="https://unpkg.com/@lowersoft/lw/dist/themes.css">
 
-<!-- Body Side -->
+<!-- In <body> -->
 <script type="module">
   import 'https://unpkg.com/@lowersoft/lw/dist/index.js';
 </script>
@@ -50,7 +50,7 @@ Or, for a single component:
 </script>
 ```
 > [!IMPORTANT]
-> the <script> tag must use type="module". This is required for import statements to work in the browser. The CDN paths above point to the built dist/ output. If the published package layout changes, check the file paths on unpkg or jsDelivr. Loading the full bundle registers every component. Importing a single entry point registers only that component.
+> The `<script>` tag must use `type="module"`; import statements only work in module scripts. The CDN paths above point to the built dist/ output. If the published package layout changes, check the file paths on unpkg or jsDelivr. Loading the full bundle registers every component. Importing a single entry point registers only that component.
 
 #### 1.2 Import and render
 Import only what you need, every component is a separate entry point:
@@ -67,7 +67,7 @@ Then use it like any other HTML element:
 ```
 > Components render with the default theme right after the import. There is nothing to wrap, provide or initialize.
 
-#### 1.3 Example Code With CDN
+#### 1.3 A complete page from a CDN
 This example uses no package manager, no bundler, and no framework. It loads one component from unpkg, applies the default theme, overrides a few design tokens, and styles a component internal with ::part().
 ```html
 <!DOCTYPE html>
@@ -109,7 +109,7 @@ This example uses no package manager, no bundler, and no framework. It loads one
 ```
 No initialization, wrapper, provider, or configuration is required. Once the module is imported, every matching custom element on the page is registered and rendered with the default theme.
 
-#### 1.3 Theming
+#### 1.4 Theming
 The default theme is installed automatically on first use. It follows `prefers-color-scheme`; force a scheme with `data-theme` on `<html>`:
 ```html
 <html data-theme="dark">
@@ -132,7 +132,7 @@ Need the tokens in your own CSS before JavaScript loads? Link the static theme:
 import '@lowersoft/lw/themes.css';
 ```
 
-#### 1.4 SCSS
+#### 1.5 SCSS
 SCSS users can reuse the token functions and mixins:
 ```scss
 @use '@lowersoft/lw/scss' as lw;
@@ -142,17 +142,17 @@ SCSS users can reuse the token functions and mixins:
 }
 ```
 
-#### 1.5 Handy commands
+#### 1.6 Handy commands
 | Command | What it does |
 |---|---|
 | `npm install` | Install the development dependencies |
-| `npm run storybook` | Component docs and playground |
+| `npm run storybook` | Component docs and playground; each story's **Usage** tab has its markup and API |
 | `npm run build` | Library build into `dist/` |
 | `npm run new <name> [Category]` | Scaffold a new component |
 
-Something broke? Delete `node_modules/` and `dist/`, run `npm install` again and retry. Still stuck? [Open an issue](https://github.com/lowersoft/web/issues).
+Something broke? Delete `node_modules/` and `dist/`, run `npm install` again and retry. Still stuck? [Open an issue](https://github.com/lowersoft/components/issues).
 
-### How it Works (explained for just project infrastructure)
+### How it works
 The idea is simple: **use the platform and put a thin, boring layer on top of it.** Components are plain custom elements, styling is plain CSS custom properties, and the small shared runtime only handles what you would otherwise repeat in every component (theme installation, registration, animation helpers).
 
 #### 2.1 The big picture
@@ -167,19 +167,18 @@ Your code only ever talks to the HTML element and its attributes. Nothing else l
 
 #### 2.2 Repo layout
 ```
-web/
+components/
 ├── src/
 │   ├── components/   One folder per component, each its own entry point
-│   ├── runtime/      The shared runtime
-│   ├── scss/         Token functions and mixins
-│   └── themes/       Default theme and static themes.css
+│   ├── core/         The shared runtime: base class, registration, helpers
+│   ├── styles/       Tokens, functions, mixins and the default theme
+│   └── index.js      The full bundle
 ├── scripts/          Component scaffolding (npm run new)
-├── .storybook/       Component docs and playground
-├── dist/             Library build output
+├── .storybook/       Component docs and playground, with the Usage tab
+├── .changeset/       Pending release notes
 ├── CONTRIBUTING.md
 └── ROADMAP.md
 ```
-> The tree above is a simplified overview, folder names may differ slightly in the repo.
 
 #### 2.3 Dependencies: none
 lw has **zero runtime dependencies**. Nothing is bundled from third parties, nothing is patched, and every component is a separate entry point, so you only pay for what you import. The shared runtime is about 2 kB (gzip).
@@ -233,7 +232,7 @@ Not sure where to start? Pick the row that matches your situation, so your messa
 
 #### A few details
 - **Licensing & copyright** (`info@`): using lw in your own project, redistribution, attribution or anything legal-sounding. If in doubt, ask before you ship.
-- **Unanswered issues** (`support@`): please open a [GitHub issue](https://github.com/lowersoft/web/issues) first. It keeps the answer public and useful for everyone. If it has been quiet for a while, send us a short mail with the issue link and we'll pick it up.
+- **Unanswered issues** (`support@`): please open a [GitHub issue](https://github.com/lowersoft/components/issues) first. It keeps the answer public and useful for everyone. If it has been quiet for a while, send us a short mail with the issue link and we'll pick it up.
 - **Product tickets**: if a LowerSoft product you bought has a UI problem (layout, theme, crashes in the interface), a ticket is the fastest route because it is tied to your account and product version. Include a screenshot and your browser.
 - **Live chat**: it connects you straight to our customer relations team, no account required.
 
@@ -246,8 +245,8 @@ Built and maintained by LowerSoft. Every part of this project is shaped by our o
 
 Everyone who has helped along the way shows up here automatically:
 
-<a href="https://github.com/lowersoft/web/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=lowersoft/web" alt="Contributors" />
+<a href="https://github.com/lowersoft/components/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=lowersoft/components" alt="Contributors" />
 </a>
 
 Want to see your face here? Head over to [Contribute](#contribute).
@@ -257,8 +256,8 @@ Our goal is to make building animated, accessible web UI easier, tidier and more
 
 | I want to... | Do this |
 |---|---|
-| Report a bug | Open an [issue](https://github.com/lowersoft/web/issues) with the steps to reproduce, the expected result and the actual result |
-| Suggest an idea | Open an [issue](https://github.com/lowersoft/web/issues); rough ideas are fine |
+| Report a bug | Open an [issue](https://github.com/lowersoft/components/issues) with the steps to reproduce, the expected result and the actual result |
+| Suggest an idea | Open an [issue](https://github.com/lowersoft/components/issues); rough ideas are fine |
 | Fix or add something | Fork the repo and send a pull request |
 | Improve the documentation | Send a pull request; wording, missing steps and typos are all welcome |
 | Test on my browser | Run Storybook and report the result, especially on less common browsers |

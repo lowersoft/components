@@ -21,6 +21,14 @@ src/
       index.js          Registration and public exports
 ```
 
+## Storybook
+
+Every story has a **Usage** tab next to Controls: the story's markup with
+the current controls, the script tags or imports that load it, and the
+component's attributes, events, slots and parts read from its JSDoc. Its
+code lives in `.storybook/usage/`. Keep the class's JSDoc accurate and the
+tab stays accurate with it.
+
 ## Adding a component
 
 ```bash
@@ -81,6 +89,6 @@ export class LwExample extends LwElement {
 - [ ] Respects `prefers-reduced-motion`
 - [ ] Looks right in light and dark themes
 - [ ] Stories cover the main props
-- [ ] Documented with JSDoc `@attr`, `@slot`, `@csspart`, `@fires`
+- [ ] Documented with JSDoc `@attr`, `@slot`, `@csspart`, `@fires` (Storybook's Usage tab is built from it)
 - [ ] `npm run build` passes
 - [ ] Changeset added (`npm run changeset`)
