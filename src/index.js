@@ -174,3 +174,4 @@ export * from './components/cursor-trail/index.js';
 export * from './components/liquid-metal-button/index.js';
 export * from './components/orbital-image-carousel/index.js';
 export * from './components/refraction-glass-container/index.js';
+export * from './components/svg-fire/index.js';
