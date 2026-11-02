@@ -1,0 +1,396 @@
+@use '../../styles' as lw;
+
+:host {
+  // The pill and panel take the theme's foreground and the icons its
+  // background, so the toolbar always stands out from the page.
+  --_fill: var(--lw-gooey-toolbar-fill, #{lw.v(color-foreground)});
+  --_ink: var(--lw-gooey-toolbar-ink, #{lw.v(color-background)});
+  --_soft: color-mix(in oklab, var(--_ink) 62%, var(--_fill));
+  --_wash: color-mix(in oklab, var(--_ink) 8%, var(--_fill));
+  --_wash-strong: color-mix(in oklab, var(--_ink) 14%, var(--_fill));
+  --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+
+  position: relative;
+  display: inline-block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: var(--_ink);
+  vertical-align: bottom;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--_ink) 55%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+// The liquid: the pill, the panel and the neck between them, drawn under
+// everything else and run together by the goo filter.
+.goo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.shapes {
+  fill: var(--_fill);
+
+  &[data-plain] {
+    filter: drop-shadow(0 10px 12px rgb(0 0 0 / 0.18));
+  }
+}
+
+.toolbar {
+  position: relative;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+}
+
+.tool {
+  position: relative;
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--_soft);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      background-color 200ms ease-out,
+      color 200ms ease-out,
+      scale 150ms ease-out;
+  }
+
+  &:hover {
+    color: var(--_ink);
+  }
+
+  &:active {
+    scale: 0.92;
+  }
+
+  &[data-chosen] {
+    background: var(--_wash-strong);
+    color: var(--_ink);
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+// The unread dot, ringed in the pill's color so it reads on the icon.
+.badge {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.375rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: lw.v(color-destructive);
+  box-shadow: 0 0 0 2px var(--_fill);
+}
+
+// Panels sit centered over the pill. Only the chosen one shows; the rest
+// stay laid out, unseen, so their size is known before they pour.
+.panels {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  left: 0;
+}
+
+.panel {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  translate: -50% 0;
+  opacity: 0;
+  pointer-events: none;
+
+  &[data-active] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+::slotted(*) {
+  color: var(--_ink);
+}
+
+// The demo panels.
+.demo {
+  display: grid;
+  gap: 0.625rem;
+  padding: 0.75rem;
+}
+
+.demo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0 0.25rem;
+  font-size: lw.v(text-xs);
+  color: var(--_soft);
+}
+
+.demo-key,
+.demo-pill {
+  padding: 0.0625rem 0.375rem;
+  border-radius: lw.v(radius-sm);
+  background: var(--_wash-strong);
+  font: 500 0.6875rem / 1.5 lw.v(font-sans);
+  color: var(--_ink);
+}
+
+.demo-aside {
+  font-size: lw.v(text-xs);
+  color: var(--_soft);
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.375rem;
+}
+
+.demo-tile {
+  display: grid;
+  justify-items: center;
+  gap: 0.375rem;
+  padding: 0.875rem 0.25rem 0.75rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: var(--_wash);
+  font-size: lw.v(text-xs);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition: background-color 150ms ease-out;
+  }
+
+  &:hover {
+    background: var(--_wash-strong);
+  }
+}
+
+.demo-swatches {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.375rem;
+}
+
+.demo-swatch {
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--_swatch);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--_ink) 12%, transparent);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition: scale 150ms ease-out;
+  }
+
+  &:hover {
+    scale: 1.08;
+  }
+
+  &[aria-pressed='true'] {
+    box-shadow:
+      0 0 0 2px var(--_fill),
+      0 0 0 4px var(--_swatch);
+  }
+}
+
+.demo-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+  border-radius: 0.625rem;
+  background: var(--_wash);
+  color: var(--_soft);
+
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--_ink);
+
+    &::placeholder {
+      color: var(--_soft);
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &:focus-within {
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--_ink) 30%, transparent);
+  }
+}
+
+.demo-list {
+  display: grid;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demo-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border: 0;
+  border-radius: 0.625rem;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+
+  @include lw.motion {
+    transition: background-color 150ms ease-out;
+  }
+
+  > span:first-of-type {
+    flex: 1;
+  }
+
+  svg {
+    flex: none;
+    color: var(--_soft);
+  }
+
+  &:hover,
+  &[data-current] {
+    background: var(--_wash);
+  }
+}
+
+.demo-comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.5rem 0.25rem;
+}
+
+.demo-avatar {
+  display: grid;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: 50%;
+  background: oklch(0.72 0.12 var(--_hue));
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.demo-comment-text {
+  display: grid;
+  flex: 1;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.demo-comment-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+
+  b {
+    font-weight: 500;
+  }
+}
+
+.demo-quote {
+  overflow: hidden;
+  font-size: lw.v(text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--_soft);
+}
+
+.demo-unread {
+  flex: none;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  margin-top: 0.375rem;
+  border-radius: 50%;
+  background: lw.v(color-destructive);
+}
+
+.demo-invite {
+  display: flex;
+  gap: 0.375rem;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 2.25rem;
+    padding: 0 0.75rem;
+    border: 0;
+    border-radius: 0.625rem;
+    background: var(--_wash);
+
+    &::placeholder {
+      color: var(--_soft);
+    }
+  }
+}
+
+.demo-primary {
+  padding: 0 0.875rem;
+  border: 0;
+  border-radius: 0.625rem;
+  background: var(--_ink);
+  font-weight: 500;
+  color: var(--_fill);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition: opacity 150ms ease-out;
+  }
+
+  &:hover {
+    opacity: 0.88;
+  }
+}
+
+.demo-link {
+  border-top: 1px solid var(--_wash-strong);
+  border-radius: 0 0 0.625rem 0.625rem;
+  padding-top: 0.75rem;
+}

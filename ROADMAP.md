@@ -114,6 +114,7 @@
 - [x] Editor toolbar
 - [x] Format toolbar
 - [x] Canvas toolbar
+- [x] Gooey toolbar
 - [x] Activity feed
 - [x] Swipe actions list
 - [x] Sortable list
