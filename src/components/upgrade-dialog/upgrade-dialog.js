@@ -40,7 +40,7 @@ export class LwUpgradeDialog extends LwModal {
   static styles = [modalStyles, iconStyles, rollingStyles, pricingStyles, styles];
   static props = {
     ...LwModal.props,
-    workspace: { default: 'Northwind' },
+    workspace: { default: 'LowerSoft' },
     used: { type: Number, default: 3 },
     limit: { type: Number, default: 3 },
     noun: { default: 'projects' },

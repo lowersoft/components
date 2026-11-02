@@ -8,7 +8,7 @@ import { companyMarkup, drawFace, quoteMarkup } from '../../core/testimonial.js'
 import styles from './testimonial-spotlight.scss?inline';
 
 const DEMO_ITEMS = [
-  { company: { name: 'Northwind', color: '#3b6ef5' }, quote: 'We replaced three internal libraries with one runtime. Code review stopped being about allocations and ==started being about the product.==', person: { name: 'Maya Okafor', role: 'Staff Engineer, Northwind' } },
+  { company: { name: 'LowerSoft', color: '#3b6ef5' }, quote: 'We replaced three internal libraries with one runtime. Code review stopped being about allocations and ==started being about the product.==', person: { name: 'Maya Okafor', role: 'Staff Engineer, LowerSoft' } },
   { company: { name: 'Halcyon', color: '#12a594' }, quote: 'Cold starts went from seconds to milliseconds, and ==nobody on the team had to become a compiler expert.==', person: { name: 'Daniel Reyes', role: 'CTO, Halcyon' } },
   { company: { name: 'Parcel', color: '#f76b15' }, quote: 'We ship one 1.4 MB binary to every edge node now. ==The deploy is a file copy.==', person: { name: 'Priya Nair', role: 'Platform Lead, Parcel' } },
   { company: { name: 'Mosaic', color: '#d6409f' }, quote: 'Every hot path has a benchmark next to it, so ==regressions show up in review, not in production.==', person: { name: 'Tomás Alvarez', role: 'Performance Engineer, Mosaic' } },

@@ -40,7 +40,7 @@ export class LwNewProjectDialog extends LwModal {
   static props = {
     ...LwModal.props,
     template: { default: 'cli', reflect: true },
-    workspace: { default: 'northwind' },
+    workspace: { default: 'lowersoft' },
     domain: { default: 'lowersoft.dev' },
     templates: { type: Object, default: DEMO_TEMPLATES },
   };

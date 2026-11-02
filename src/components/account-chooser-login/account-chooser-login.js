@@ -12,13 +12,13 @@ const UNDO_MS = 5000;
 const STEP_MS = 1100;
 
 const DEMO_ACCOUNTS = [
-  { name: 'Maya Chen', workspace: 'Northwind', email: 'maya@northwind.dev', badge: 3, mark: { glyph: 'triangle', color: '#2f6b55' }, device: 'MacBook Pro', seen: 'Active now' },
+  { name: 'Maya Chen', workspace: 'LowerSoft', email: 'maya@lowersoft.dev', badge: 3, mark: { glyph: 'triangle', color: '#2f6b55' }, device: 'MacBook Pro', seen: 'Active now' },
   { name: 'Maya Chen', workspace: 'Personal', email: 'maya.chen@gmail.com', method: 'google', mark: { glyph: 'leaf', color: '#8a7350' }, device: 'MacBook Pro', seen: '2 days ago' },
   { name: 'Theo Okafor', workspace: 'Fieldnotes', email: 'theo@fieldnotes.co', method: 'passkey', badge: 12, mark: { glyph: 'lines', color: '#6b6b70' }, device: 'iPhone', seen: 'Yesterday' },
   { name: 'Ines Alves', workspace: 'Harbor Studio', email: 'ines@harbor.studio', method: 'password', mark: { glyph: 'arch', color: '#6d6a8f' }, device: 'MacBook Pro', seen: 'Last week', signedOut: true },
 ];
 
-const DEMO_SSO = { 'northwind.dev': 'Okta' };
+const DEMO_SSO = { 'lowersoft.dev': 'Okta' };
 
 // How each method reads on its chip, and its step's call to action.
 const METHODS = {

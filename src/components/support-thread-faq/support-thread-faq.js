@@ -48,7 +48,7 @@ export class LwSupportThreadFaq extends LwElement {
   static styles = styles;
   static props = {
     agent: { default: 'Mia Kowalski' },
-    company: { default: 'Northwind' },
+    company: { default: 'LowerSoft' },
     reply: { default: 'Typically replies in 2 min' },
     greeting: {},
     fallback: { default: "Good question, and not one I can answer from here. I'll write back by email within the hour." },

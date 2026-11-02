@@ -25,7 +25,7 @@ const STEPS = [
     id: 'workspace',
     title: 'Workspace',
     lead: 'Where your projects, builds and crash reports live.',
-    fields: `<lw-text-input data-key="workspace" label="Workspace name" placeholder="Northwind" required></lw-text-input><p class="address"></p>
+    fields: `<lw-text-input data-key="workspace" label="Workspace name" placeholder="LowerSoft" required></lw-text-input><p class="address"></p>
 <div class="sizes-field"><span class="label" id="size-label">Team size</span><div class="sizes" role="radiogroup" aria-labelledby="size-label">${SIZES.map((size) => `<button class="size" type="button" role="radio" data-size="${size}">${size}</button>`).join('')}</div></div>`,
   },
   {

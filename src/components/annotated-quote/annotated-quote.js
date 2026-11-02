@@ -7,7 +7,7 @@ import { watchVisibility } from '../../core/visibility.js';
 import styles from './annotated-quote.scss?inline';
 
 const DEMO_STORY = {
-  company: { name: 'Northwind', color: '#3b6ef5' },
+  company: { name: 'LowerSoft', color: '#3b6ef5' },
   chips: ['Developer tools', '42 engineers', 'Switched in March 2026'],
   quote: 'We moved the whole product onto one runtime in a quarter. ==1:Builds got faster==, ==2:on-call stopped being about memory==, and for the first time ==3:every service passed our sanitizer run== before launch, not after.',
   notes: [
@@ -15,8 +15,8 @@ const DEMO_STORY = {
     { color: '#d6409f', figure: '−60%', label: 'memory pages per on-call week', before: { value: 85, text: '85' }, after: { value: 34, text: '34' } },
     { color: '#12a594', figure: '2', label: 'sanitizer findings at launch', before: { value: 40, text: '40' }, after: { value: 2, text: '2' } },
   ],
-  person: { name: 'Maya Okafor', role: 'Staff Engineer, Northwind' },
-  link: { label: 'Read the Northwind case study', href: '#' },
+  person: { name: 'Maya Okafor', role: 'Staff Engineer, LowerSoft' },
+  link: { label: 'Read the LowerSoft case study', href: '#' },
 };
 
 /**

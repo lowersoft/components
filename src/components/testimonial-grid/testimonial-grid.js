@@ -8,7 +8,7 @@ import styles from './testimonial-grid.scss?inline';
 const MOVE = { duration: 450, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' };
 
 const DEMO_ITEMS = [
-  { tag: 'Engineering', wide: true, company: { name: 'Northwind', color: '#3b6ef5' }, source: 'G2 · Sep 2026', quote: 'We deleted four thousand lines of homegrown glue in a week. What replaced it is ==code our team actually reads, profiles and owns==.', person: { name: 'Maya Okafor', role: 'Staff Engineer, Northwind' } },
+  { tag: 'Engineering', wide: true, company: { name: 'LowerSoft', color: '#3b6ef5' }, source: 'G2 · Sep 2026', quote: 'We deleted four thousand lines of homegrown glue in a week. What replaced it is ==code our team actually reads, profiles and owns==.', person: { name: 'Maya Okafor', role: 'Staff Engineer, LowerSoft' } },
   { tag: 'Founders', company: { name: 'Lumen', color: '#e5484d' }, stat: '4 days', label: 'from first commit to running in production', bars: [9, 9, 8, 7, 5, 3, 2], highlight: 2, from: 'First build', to: 'Latest', person: { name: 'Theo Laurent', role: 'Founder, Lumen' } },
   { tag: 'Engineering', company: { name: 'Halcyon', color: '#12a594' }, source: 'Product Hunt · Oct 2026', quote: 'Startup time, memory and tail latency finally match the budget, so ==review is about the product again== instead of the allocator.', person: { name: 'Iris Novak', role: 'Engineering Lead, Halcyon' } },
   { tag: 'Engineering', company: { name: 'Parcel', color: '#f76b15' }, source: 'G2 · Aug 2026', quote: 'Our sanitizer run came back with ==two findings==. The year before it was forty.', person: { name: 'Sam Whitfield', role: 'Systems Engineer, Parcel' } },

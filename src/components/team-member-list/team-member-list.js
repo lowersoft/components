@@ -17,11 +17,11 @@ const ROLES = [
 ];
 
 const DEMO_MEMBERS = [
-  { name: 'Maya Lin', email: 'maya@northwind.dev', role: 'Owner', seen: 'Active now', online: true, you: true },
-  { name: 'Theo Park', email: 'theo@northwind.dev', role: 'Admin', seen: 'Active now', online: true },
-  { name: 'Ana Ruiz', email: 'ana@northwind.dev', role: 'Member', seen: '2h ago' },
-  { name: 'Sam Okafor', email: 'sam@northwind.dev', role: 'Member', seen: 'Yesterday' },
-  { name: 'Ines Alves', email: 'ines@northwind.dev', role: 'Viewer', seen: 'Last week' },
+  { name: 'Maya Lin', email: 'maya@lowersoft.dev', role: 'Owner', seen: 'Active now', online: true, you: true },
+  { name: 'Theo Park', email: 'theo@lowersoft.dev', role: 'Admin', seen: 'Active now', online: true },
+  { name: 'Ana Ruiz', email: 'ana@lowersoft.dev', role: 'Member', seen: '2h ago' },
+  { name: 'Sam Okafor', email: 'sam@lowersoft.dev', role: 'Member', seen: 'Yesterday' },
+  { name: 'Ines Alves', email: 'ines@lowersoft.dev', role: 'Viewer', seen: 'Last week' },
 ];
 
 const FACES = 4;
