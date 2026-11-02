@@ -14,6 +14,8 @@ export const closeButton = (label = 'Dismiss') => `<button class="close" type="b
 export const dismissBanner = async (host) => {
   if (!reducedMotion.matches) {
     const height = host.offsetHeight;
+    // A banner that lets its shadow show still folds inside its own box.
+    host.style.overflow = 'hidden';
     await host.animate({ height: [`${height}px`, '0px'], opacity: [1, 0] }, { duration: 250, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }).finished.catch(() => {});
   }
   host.hidden = true;

@@ -5,6 +5,9 @@
 :host {
   width: 30rem;
   max-width: 100%;
+  // The card floats: its shadow shows past the host's square box. Folding
+  // away clips it again.
+  overflow: visible;
 }
 
 h2 {
