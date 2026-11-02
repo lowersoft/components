@@ -1,3 +1,5 @@
+import { usageDecorator } from './usage/decorator.js';
+
 /** @type {import('@storybook/web-components-vite').Preview} */
 export default {
   parameters: {
@@ -24,5 +26,6 @@ export default {
       document.documentElement.dataset.theme = globals.theme;
       return story();
     },
+    usageDecorator,
   ],
 };
