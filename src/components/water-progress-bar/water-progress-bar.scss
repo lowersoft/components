@@ -1,0 +1,114 @@
+@use '../../styles' as lw;
+
+:host {
+  --_water: var(--lw-water-progress-bar-color, #2f7bff);
+
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.625rem;
+}
+
+.caption {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+}
+
+.percent {
+  flex: none;
+  margin-left: auto;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.water {
+  display: block;
+  overflow: visible;
+}
+
+// The empty channel: a faint fill, a groove shadow at the top and a hairline rim.
+.channel {
+  fill: currentColor;
+  fill-opacity: 0.07;
+}
+
+.rim {
+  fill: none;
+  stroke: currentColor;
+  stroke-opacity: 0.08;
+}
+
+// The water: a lighter swell running just ahead of the body, the body, and
+// inside it depth shading, a glint along the top, bubbles and a bright rim
+// on the leading edge.
+.swell {
+  fill: var(--_water);
+  fill-opacity: 0.7;
+}
+
+.swell-sheen {
+  fill: #fff;
+  fill-opacity: 0.28;
+}
+
+.body {
+  fill: var(--_water);
+}
+
+.glint {
+  fill: #fff;
+  fill-opacity: 0.3;
+}
+
+.bubble {
+  fill: #fff;
+  fill-opacity: 0.2;
+  stroke: #fff;
+  stroke-opacity: 0.6;
+  stroke-width: 0.6;
+}
+
+.edge {
+  fill: none;
+  stroke: #fff;
+  stroke-opacity: 0.7;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+// Ticks take the water's color once it has passed them.
+.tick {
+  fill: currentColor;
+  opacity: 0.25;
+
+  @include lw.motion {
+    transition:
+      fill 300ms ease-out,
+      opacity 300ms ease-out;
+  }
+
+  &[data-wet] {
+    fill: var(--_water);
+    opacity: 0.9;
+  }
+}

@@ -74,6 +74,7 @@
 - [ ] Swoosh text
 - [ ] Scroll text
 - [x] Loader
+- [x] Water progress bar
 
 ## Phase 2: Interactive components
 
