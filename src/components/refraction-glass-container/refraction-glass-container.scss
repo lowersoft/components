@@ -1,0 +1,170 @@
+@use '../../styles' as lw;
+
+:host {
+  --_width: 380px;
+  --_min-height: 220px;
+  --_padding: 24px;
+  --_blur: 14px;
+  --_background: #0b0b0d;
+
+  display: block;
+  box-sizing: border-box;
+  width: var(--_width);
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  color: #fff;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+// The box the blobs move in. The glass sits inside it with a margin.
+.frame {
+  position: relative;
+  display: flex;
+  min-height: var(--_min-height);
+  padding: 1.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 1.5rem;
+  background: var(--_background);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.12),
+    0 24px 48px -24px rgb(0 0 0 / 0.5);
+
+  // Without blobs the frame steps aside: the glass is all there is.
+  :host([no-blobs]) & {
+    padding: 0;
+    overflow: visible;
+    background: none;
+    box-shadow: none;
+  }
+}
+
+.blobs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+
+  :host([no-blobs]) & {
+    display: none;
+  }
+}
+
+.back {
+  z-index: -1;
+}
+
+// Each blob drifts and swells on its own loop, in both layers alike.
+.blob {
+  transform-box: view-box;
+  transform-origin: center;
+
+  @include lw.motion {
+    animation: lw-refraction-a 16s ease-in-out infinite alternate;
+  }
+}
+
+.blob-1 {
+  @include lw.motion {
+    animation-name: lw-refraction-b;
+    animation-duration: 19s;
+  }
+}
+
+.blob-2 {
+  @include lw.motion {
+    animation-name: lw-refraction-c;
+    animation-duration: 22s;
+  }
+}
+
+@keyframes lw-refraction-a {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(14%, -10%) scale(1.15);
+  }
+
+  100% {
+    transform: translate(28%, 6%) scale(0.9);
+  }
+}
+
+@keyframes lw-refraction-b {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-16%, 22%) scale(0.85);
+  }
+
+  100% {
+    transform: translate(-30%, 34%) scale(1.1);
+  }
+}
+
+@keyframes lw-refraction-c {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-22%, -14%) scale(1.2);
+  }
+
+  100% {
+    transform: translate(-8%, -30%) scale(0.95);
+  }
+}
+
+// The glass: the blobs seen through it are bent; a faint tint, a bright
+// hairline edge and a sheen across the top make it read as a pane.
+.glass {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 0.06);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    0 10px 30px -12px rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(var(--_blur)) saturate(1.3);
+
+  :host([no-blobs]) & {
+    min-height: var(--_min-height);
+    background: color-mix(in oklab, #{lw.v(color-background)} 18%, transparent);
+    color: lw.v(color-foreground);
+  }
+}
+
+.through {
+  z-index: 0;
+}
+
+.sheen {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.16), transparent 38%, transparent 70%, rgb(255 255 255 / 0.05));
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  padding: var(--_padding);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+
+  :host([no-blobs]) & {
+    text-shadow: none;
+  }
+}
