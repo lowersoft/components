@@ -151,6 +151,7 @@
 - [x] Dot field
 - [x] Flow field
 - [x] Topo background
+- [x] Cursor trail
 - [x] Globe hero
 - [x] Product stage hero
 - [x] Work flow hero
