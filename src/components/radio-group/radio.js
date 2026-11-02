@@ -11,6 +11,7 @@ import styles from './radio.scss?inline';
  * @attr {boolean} disabled
  * @attr {string} description - A line under the label
  * @slot - The label
+ * @csspart base - The row holding the circle and its text
  * @csspart control - The drawn circle
  * @csspart label
  * @csspart description

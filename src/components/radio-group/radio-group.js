@@ -27,6 +27,7 @@ import { FormControl, INTERNALS } from '../../core/form.js';
  * @attr {'vertical'|'horizontal'} orientation
  * @slot - The `<lw-radio>` options
  * @fires change - When the user picks an option
+ * @csspart label
  * @csspart options
  */
 export class LwRadioGroup extends FormControl(LwElement) {

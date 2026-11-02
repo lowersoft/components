@@ -70,6 +70,7 @@ const avatar = (person) => {
  * @attr {number} width - Panel width in px
  * @attr {'start'|'end'} align - Edge the panel grows from
  * @attr {'idle'|'open'} status - Settable to open or close
+ * @csspart shell - Wraps the button and its panel
  * @fires lw-invite - `detail.email`, `detail.role`. Cancelable.
  * @fires lw-role-change - `detail.email`, `detail.role`. Cancelable.
  * @fires lw-remove - `detail.email`. Cancelable.

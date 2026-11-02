@@ -35,6 +35,7 @@ const writeStorage = (key, value) => {
  * @attr {string} storage-key - Remembers the choice in localStorage under this key
  * @attr {string} menu-label - Accessible name of the caret
  * @slot start - Icon before the label
+ * @csspart caret - The button that opens the menu
  * @fires lw-change - When another option is picked. `detail.value` is the new value.
  * @see LwActionButton for the action flow and events; read `event.target.value` in `lw-action`
  */

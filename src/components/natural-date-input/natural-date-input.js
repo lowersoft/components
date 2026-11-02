@@ -27,6 +27,7 @@ const DAY_MS = 86_400_000;
  * @attr {boolean} required
  * @attr {boolean} disabled
  * @fires lw-change - A date was set or cleared; `detail: { value, date, phrase }`
+ * @csspart label
  * @csspart field
  * @csspart chip
  */

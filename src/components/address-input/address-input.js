@@ -53,6 +53,7 @@ const PIN_ICON =
  * @attr {boolean} required - Street, city, postal code and country must be filled
  * @attr {boolean} disabled
  * @fires lw-change - An address was picked or a line edited; `detail: { address }`
+ * @csspart label
  * @csspart field - The search box
  * @csspart listbox - The suggestions
  */

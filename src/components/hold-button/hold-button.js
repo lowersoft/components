@@ -20,6 +20,7 @@ const LABEL_DELAY = 150; // ms before the holding label shows, so a quick tap do
  * @attr {string} complete-label - Label once the hold completes
  * @attr {number} reset-after - Milliseconds the complete state shows; 0 keeps it
  * @attr {'idle'|'holding'|'complete'} status - Current status (read only)
+ * @csspart fill - The bar filling while held
  * @fires lw-complete - When the button has been held for the full duration
  */
 export class LwHoldButton extends LwStatusButton {
