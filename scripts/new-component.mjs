@@ -30,6 +30,7 @@ import styles from './${name}.scss?inline';
  * ${title}.
  *
  * @slot - Content
+ * @csspart base
  */
 export class ${className} extends LwElement {
   static styles = styles;
