@@ -225,3 +225,4 @@
 - [x] Photo straighten
 - [x] Stack reveal
 - [x] Before after card
+- [x] Perspective marquee

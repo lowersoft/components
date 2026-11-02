@@ -1,0 +1,148 @@
+@use '../../styles' as lw;
+
+:host {
+  --_gap: 24px;
+  --_w: 280px;
+  --_h: 158px;
+  --_perspective: 1000px;
+  --_rx: 18deg;
+  --_rz: -22deg;
+  --_rail: color-mix(in oklab, #{lw.v(color-foreground)} 15%, transparent);
+
+  display: block;
+  height: 32.5rem;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+// The frame: whatever the tilted wall does not cover is cut off here.
+// A flex row, not a grid: the plane's percentage width must resolve
+// against the frame, not against its own long rows.
+.stage {
+  position: relative;
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  perspective: var(--_perspective);
+
+  :host([fade-edges]) & {
+    mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+    mask-composite: intersect;
+  }
+}
+
+// Wider than the frame, so the turned wall still reaches every corner.
+.plane {
+  display: flex;
+  flex: none;
+  width: 160%;
+  flex-direction: column;
+  gap: var(--_gap);
+  transform: rotateX(var(--_rx)) rotateZ(var(--_rz)) scale(1.15);
+  transform-style: preserve-3d;
+}
+
+.row {
+  display: flex;
+}
+
+.track {
+  display: flex;
+  flex: none;
+  will-change: transform;
+
+  @include lw.motion {
+    animation: lw-perspective-marquee-slide var(--_duration) linear infinite;
+
+    &[data-reverse] {
+      animation-direction: reverse;
+    }
+  }
+
+  :host([pause-on-hover]:hover) &,
+  :host([data-away]) & {
+    animation-play-state: paused;
+  }
+}
+
+.set {
+  display: flex;
+  flex: none;
+}
+
+// Each cell carries its own trailing gap, so two sets are exactly twice one.
+@keyframes lw-perspective-marquee-slide {
+  from {
+    translate: 0 0;
+  }
+
+  to {
+    translate: -50% 0;
+  }
+}
+
+.cell {
+  position: relative;
+  flex: none;
+  width: var(--_w);
+  height: var(--_h);
+  margin-right: var(--_gap);
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
+  border-radius: 1rem;
+  box-sizing: border-box;
+  background: lw.v(color-muted);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.1),
+    0 18px 36px -20px rgb(0 0 0 / 0.45);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+}
+
+// Dashed rails down the middle of the gutters: one above each card, one
+// on its leading side, fading out at their ends.
+.rail-x,
+.rail-y {
+  position: absolute;
+  pointer-events: none;
+
+  :host([no-lines]) & {
+    display: none;
+  }
+}
+
+.rail-x {
+  top: calc(var(--_gap) / -2);
+  left: calc(var(--_gap) / -2);
+  width: calc(100% + var(--_gap));
+  height: 1px;
+  background: repeating-linear-gradient(to right, var(--_rail) 0 5px, transparent 5px 10px);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+.rail-y {
+  top: 10%;
+  bottom: 10%;
+  left: calc(var(--_gap) / -2);
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, var(--_rail) 0 4px, transparent 4px 8px);
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
