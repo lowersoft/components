@@ -1,0 +1,226 @@
+@use '../../styles' as lw;
+
+:host {
+  --_frame: var(--lw-stack-reveal-frame, #fff);
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_scale: 1;
+  --_room: 0px;
+  --_shift: 0px;
+
+  // Sized by its container, not its content, so the layout can follow it.
+  container-type: inline-size;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 68rem;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// The words on the start, the pile on the end; stacked when narrow.
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: 3rem;
+}
+
+@container (max-width: 44rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+}
+
+.title {
+  font-size: clamp(2rem, 5cqi, 3rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 28rem;
+  margin-top: 1.25rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  color: var(--_muted);
+  text-wrap: pretty;
+}
+
+// Previous and next, where the pile is up to, and the top print's label.
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.nav,
+.toggle {
+  display: grid;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--_line);
+  border-radius: 50%;
+  background: lw.v(color-background);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      background-color 150ms ease-out,
+      border-color 150ms ease-out,
+      scale 150ms ease-out;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 25%, transparent);
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 5%, #{lw.v(color-background)});
+  }
+
+  &:active:not(:disabled) {
+    scale: 0.94;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.4;
+  }
+}
+
+.nav {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.toggle {
+  width: 2rem;
+  height: 2rem;
+  margin-left: auto;
+  border-color: transparent;
+  background: none;
+  color: var(--_muted);
+
+  &:hover:not(:disabled) {
+    color: lw.v(color-foreground);
+  }
+}
+
+.counter {
+  margin-left: 0.75rem;
+  font-size: lw.v(text-md);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+
+  .of,
+  .total {
+    font-weight: 400;
+    color: var(--_muted);
+  }
+}
+
+.caption {
+  min-width: 0;
+  margin-left: 0.75rem;
+  overflow: hidden;
+  font-size: lw.v(text-md);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The pile, scaled to fit, with room above for the prints that peek out.
+// A print on its way to the back drops past the bottom edge.
+.stage {
+  position: relative;
+  height: calc(var(--_room) + var(--_height) * var(--_scale));
+  border-radius: 1rem;
+  outline: none;
+  touch-action: manipulation;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: 0.75rem;
+  }
+}
+
+.pile {
+  position: absolute;
+  top: var(--_room);
+  left: calc(50% + var(--_shift));
+  width: var(--_width);
+  height: var(--_height);
+  transform: translateX(-50%) scale(var(--_scale));
+  transform-origin: top center;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.375rem;
+  border-radius: 0.875rem;
+  background: var(--_frame);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.06),
+    0 1px 2px rgb(0 0 0 / 0.08),
+    0 20px 44px -18px rgb(0 0 0 / 0.4);
+  cursor: pointer;
+  user-select: none;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+
+  @include lw.motion {
+    transition: opacity 300ms ease-out;
+  }
+
+  // Past the fourth, prints wait unseen in the back slot.
+  &.deep {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+  background: lw.v(color-muted);
+  object-fit: cover;
+  -webkit-user-drag: none;
+}

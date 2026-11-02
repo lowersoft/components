@@ -165,3 +165,4 @@ export * from './components/create-project-form/index.js';
 export * from './components/feedback-composer/index.js';
 export * from './components/edit-profile-form/index.js';
 export * from './components/stepper-form/index.js';
+export * from './components/stack-reveal/index.js';

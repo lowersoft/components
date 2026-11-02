@@ -221,3 +221,4 @@
 - [x] Synced transcript
 - [x] Focal point picker
 - [x] Photo straighten
+- [x] Stack reveal
