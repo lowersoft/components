@@ -22,15 +22,18 @@ const DEMO_UNITS = [
 ];
 
 const whole = new Intl.NumberFormat('en-US');
+const compact = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
 const rate = (pack) => pack.price / pack.credits;
 const perCredit = (pack) => `$${rate(pack).toFixed(4)}`;
 
 /**
- * Prepaid credits in packs. The balance sits on a bar that shows how far the
- * chosen pack takes it, and says so when it runs low. Each pack shows its
- * rate per credit and what it saves on the smallest; the summary gives the
- * total, the balance after, and what the credits buy. Auto top-up refills
- * the chosen pack when the balance drops below the low mark.
+ * Prepaid credits in packs. The head shows the balance and whether it is
+ * running low; a meter beneath shows what is left, what the chosen pack
+ * adds, and where the low mark sits. Each pack gives its price, its rate
+ * per credit and what it saves on the smallest, and the best rate is
+ * marked. The order beside what the credits buy gives the total, the
+ * saving, the balance after and auto top-up, which refills the chosen pack
+ * when the balance drops below the low mark.
  *
  * Packs are `{ credits, price }`, smallest first; units are
  * `{ label, credits }`, what one of a thing costs.
@@ -60,11 +63,13 @@ export class LwCreditPackPricing extends LwElement {
   };
 
   render() {
-    return `<header class="head"><h2 class="title"></h2><p class="description"></p></header>
-<div class="balance"><p class="balance-line"><span>Balance <b>${priceMarkup('now')}</b> credits</span><span class="low-note"></span></p><div class="meter" aria-hidden="true"><span class="after-fill"></span><span class="now-fill"></span></div></div>
-<div class="packs" role="radiogroup" aria-label="Credit pack"><span class="pack-bar"></span></div>
-<section class="summary" aria-label="Summary"><dl class="figures"><div class="figure total"><dt>Total</dt><dd>${priceMarkup()}</dd></div><div class="figure"><dt>Per credit</dt><dd class="per-credit"></dd></div><div class="figure"><dt>Balance after</dt><dd>${priceMarkup('after')} credits</dd></div></dl>
-<p class="buys"></p><div class="actions"><lw-switch class="auto" size="sm"></lw-switch><lw-button class="buy"></lw-button></div></section>`;
+    return `<header class="head"><div class="intro"><h2 class="title"></h2><p class="description"></p></div>
+<div class="balance"><p class="balance-label">Balance <span class="status"></span></p><p class="balance-value">${priceMarkup('now')}<span class="unit">credits</span></p></div></header>
+<div class="meter-block"><div class="meter" aria-hidden="true"><span class="added"></span><span class="left"></span><span class="low-mark"><span class="low-label"></span></span></div><p class="scale"><span>0</span><span class="scale-after"></span></p></div>
+<div class="packs" role="radiogroup" aria-label="Credit pack"><span class="pack-ring" aria-hidden="true"></span></div>
+<section class="order" aria-label="Order summary"><div class="covers"><h3 class="section-title">What it covers</h3><ul class="units"></ul></div>
+<div class="checkout"><dl class="lines"><div class="line"><dt>Pack</dt><dd class="pack-line"></dd></div><div class="line"><dt>Per credit</dt><dd class="per-credit"></dd></div><div class="line saving"><dt>You save</dt><dd class="saved"></dd></div><div class="line total"><dt>Total</dt><dd>${priceMarkup()}</dd></div><div class="line after-line"><dt>Balance after</dt><dd>${priceMarkup('after')} credits</dd></div></dl>
+<div class="auto-row"><lw-switch class="auto" size="sm"></lw-switch></div><lw-button class="buy" size="lg"></lw-button><p class="fine">One payment, no subscription.</p></div></section>`;
   }
 
   connected() {
@@ -88,6 +93,7 @@ export class LwCreditPackPricing extends LwElement {
       this.auto = auto.checked;
     }, options);
     this.query('.buy').addEventListener('click', () => this.emit('buy', { credits: this.#pack.credits, price: this.#pack.price, auto: this.auto }), options);
+    // The ring follows its pack when the grid reflows.
     const observer = new ResizeObserver(() => this.#paintPacks());
     observer.observe(packs);
     this.signal.addEventListener('abort', () => observer.disconnect());
@@ -96,6 +102,7 @@ export class LwCreditPackPricing extends LwElement {
   updated(changed) {
     this.query('.title').textContent = this.heading ?? '';
     this.query('.description').textContent = this.description ?? '';
+    this.query('.description').hidden = !this.description;
     if (changed.has('packs')) this.#build();
     this.#paint();
   }
@@ -104,15 +111,24 @@ export class LwCreditPackPricing extends LwElement {
     return this.packs.find((pack) => pack.credits === this.value) ?? this.packs[0];
   }
 
+  // Share saved on the smallest pack's rate.
+  #saves(pack) {
+    return Math.max(0, Math.round((1 - rate(pack) / rate(this.packs[0])) * 100));
+  }
+
   #build() {
-    const base = rate(this.packs[0]);
+    const best = this.packs.reduce((top, pack) => (rate(pack) < rate(top) ? pack : top), this.packs[0]);
     this.query('.packs').querySelectorAll('.pack').forEach((each) => each.remove());
-    this.query('.packs').insertAdjacentHTML('beforeend', this.packs
-      .map((pack) => {
-        const saves = Math.round((1 - rate(pack) / base) * 100);
-        return `<button class="pack" type="button" role="radio" data-credits="${pack.credits}"><span class="pack-head"><span class="credits">${whole.format(pack.credits)}</span><span class="radio" aria-hidden="true"></span></span><span class="price">${formatMoney(pack.price)}</span><span class="rate">${perCredit(pack)} / credit</span><span class="saves">${saves > 0 ? `save ${saves}%` : 'base rate'}</span></button>`;
-      })
-      .join(''));
+    this.query('.packs').insertAdjacentHTML(
+      'beforeend',
+      this.packs
+        .map((pack) => {
+          const saves = this.#saves(pack);
+          const flag = pack === best && this.packs.length > 1 ? '<span class="flag">Best rate</span>' : '';
+          return `<button class="pack" type="button" role="radio" data-credits="${pack.credits}" aria-label="${whole.format(pack.credits)} credits, ${formatMoney(pack.price)}${saves ? `, save ${saves}%` : ''}">${flag}<span class="pack-top"><span class="credits">${compact.format(pack.credits)}</span><span class="radio" aria-hidden="true"></span></span><span class="credits-label">credits</span><span class="price">${formatMoney(pack.price)}</span><span class="rate">${perCredit(pack)} each</span><span class="saves"${saves ? '' : ' data-base'}>${saves ? `Save ${saves}%` : 'Base rate'}</span></button>`;
+        })
+        .join(''),
+    );
   }
 
   #paintPacks() {
@@ -123,7 +139,7 @@ export class LwCreditPackPricing extends LwElement {
       element.tabIndex = checked ? 0 : -1;
       if (checked) chosen = element;
     }
-    if (chosen?.offsetWidth) moveHighlight(this.query('.pack-bar'), chosen);
+    if (chosen?.offsetWidth) moveHighlight(this.query('.pack-ring'), chosen);
   }
 
   #paint() {
@@ -132,19 +148,39 @@ export class LwCreditPackPricing extends LwElement {
     const low = this.balance < this.low;
     this.#paintPacks();
     this.toggleAttribute('data-low', low);
+
     paintPrice(this.query('.now'), whole.format(this.balance));
-    this.query('.low-note').textContent = low ? 'Running low' : '';
-    // The bar runs to the balance after buying: what is there, and what the pack adds.
-    this.query('.now-fill').style.width = `${(this.balance / after) * 100}%`;
-    this.query('.after-fill').style.width = '100%';
-    paintPrice(this.query('.amount'), pack.price, true);
+    this.query('.status').textContent = low ? 'Running low' : 'Healthy';
+
+    // The meter runs to the balance after buying: what is left, what the
+    // pack adds on top, and the low mark.
+    this.query('.left').style.width = `${(this.balance / after) * 100}%`;
+    this.query('.added').style.width = '100%';
+    const mark = this.query('.low-mark');
+    mark.hidden = this.low <= 0 || this.low >= after;
+    const at = (this.low / after) * 100;
+    mark.style.left = `${at}%`;
+    // Near an end, the label leans inwards instead of hanging off the card.
+    mark.dataset.side = at < 12 ? 'start' : at > 88 ? 'end' : '';
+    this.query('.low-label').textContent = `Low · ${whole.format(this.low)}`;
+    this.query('.scale-after').textContent = `${whole.format(after)} after this pack`;
+
+    this.query('.units').innerHTML = (this.units ?? [])
+      .map((unit) => `<li class="unit-row"><span class="unit-count">${whole.format(Math.floor(pack.credits / unit.credits))}</span><span class="unit-label">${escapeHtml(unit.label)}</span><span class="unit-cost">${unit.credits === 1 ? '1 credit' : `${whole.format(unit.credits)} credits`} each</span></li>`)
+      .join('');
+
+    const saved = rate(this.packs[0]) * pack.credits - pack.price;
+    this.query('.pack-line').textContent = `${whole.format(pack.credits)} credits`;
     this.query('.per-credit').textContent = perCredit(pack);
+    this.query('.saving').hidden = saved < 0.005;
+    this.query('.saved').textContent = `${formatMoney(saved, true)} (${this.#saves(pack)}%)`;
+    paintPrice(this.query('.amount'), pack.price, true);
     paintPrice(this.query('.after'), whole.format(after));
-    this.query('.buys').innerHTML = `≈ ${(this.units ?? []).map((unit) => `<b>${whole.format(Math.floor(pack.credits / unit.credits))}</b> ${escapeHtml(unit.label)}`).join('<span class="dot" aria-hidden="true">·</span>')}`;
+
     const auto = this.query('.auto');
     auto.checked = this.auto;
-    auto.textContent = `Top up ${whole.format(pack.credits)} when below ${whole.format(this.low)}`;
-    this.query('.buy').textContent = `Buy ${whole.format(pack.credits)} credits`;
+    auto.textContent = `Auto top-up ${whole.format(pack.credits)} below ${whole.format(this.low)}`;
+    this.query('.buy').textContent = `Buy ${whole.format(pack.credits)} credits · ${formatMoney(pack.price, true)}`;
   }
 
   #select(credits) {

@@ -4,6 +4,7 @@ import './index.js';
 export default {
   title: 'Pricings/Credit Pack Pricing',
   component: 'lw-credit-pack-pricing',
+  parameters: { layout: 'padded' },
   render: (args) => `<lw-credit-pack-pricing ${attributes(args)}></lw-credit-pack-pricing>`,
   args: { balance: 120, low: 200, value: 2000 },
 };

@@ -3,16 +3,28 @@
 :host {
   --_line: #{lw.v(color-border)};
   --_muted: #{lw.v(color-muted-foreground)};
-  --_raised: color-mix(in oklab, #{lw.v(color-foreground)} 5%, #{lw.v(color-background)});
+  --_raised: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
   --_ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --_state: #{lw.v(color-accent)};
 
   box-sizing: border-box;
-  width: 46rem;
+  width: 52rem;
   max-width: 100%;
-  padding: 2rem;
+  overflow: hidden;
   border: 1px solid var(--_line);
-  border-radius: 1rem;
+  border-radius: 1.25rem;
   background: lw.v(color-background);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.04),
+    0 12px 32px -16px rgb(0 0 0 / 0.12);
+}
+
+:host([data-low]) {
+  --_state: #{lw.v(color-destructive)};
+}
+
+[hidden] {
+  display: none !important;
 }
 
 button {
@@ -22,141 +34,290 @@ button {
 
   &:focus-visible {
     @include lw.focus-ring;
-
-    outline-offset: -2px;
   }
 }
 
+dl,
+dd {
+  margin: 0;
+}
+
+// The title on the start, the balance on the end.
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem 2rem;
+  padding: 1.75rem 1.75rem 0;
+}
+
+.intro {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
 .title {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 .description {
-  margin-top: 0.5rem;
+  max-width: 26rem;
+  margin-top: 0.375rem;
   font-size: lw.v(text-md);
+  line-height: 1.5;
   color: var(--_muted);
+  text-wrap: pretty;
 }
 
-// The balance, on a bar that runs to the balance after buying.
 .balance {
-  margin-top: 2rem;
+  text-align: right;
 }
 
-.balance-line {
+.balance-label {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
-  font-size: lw.v(text-md);
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
   color: var(--_muted);
+}
 
-  b {
-    font-weight: 600;
-    color: lw.v(color-foreground);
+// A dot and a word, in the state's color: green when healthy, red when low.
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem 0.125rem 0.4375rem;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, var(--_state) 12%, transparent);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: var(--_state);
+
+  &::before {
+    content: '';
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: currentColor;
   }
 }
 
-.now,
-.after {
-  display: inline-flex;
-  vertical-align: bottom;
+.balance-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.375rem;
+  margin-top: 0.375rem;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
-.low-note {
+.now,
+.amount,
+.after {
+  display: inline-flex;
+}
+
+.unit {
   font-size: lw.v(text-sm);
-  color: lw.v(color-destructive);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--_muted);
+}
+
+// What is left, what the pack adds, and the low mark, on one track.
+.meter-block {
+  padding: 2.25rem 1.75rem 0;
 }
 
 .meter {
   position: relative;
-  height: 0.375rem;
-  overflow: hidden;
-  border-radius: 1px;
-  background: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+  height: 0.625rem;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 7%, transparent);
 }
 
-.now-fill,
-.after-fill {
+.left,
+.added {
   position: absolute;
   inset: 0 auto 0 0;
+  border-radius: inherit;
 
   @include lw.motion {
     transition: width 500ms var(--_ease);
   }
 }
 
-.after-fill {
-  background: color-mix(in oklab, #{lw.v(color-foreground)} 18%, transparent);
+// The pack's share, hatched so it reads as not yet there.
+.added {
+  background: repeating-linear-gradient(
+    -45deg,
+    color-mix(in oklab, #{lw.v(color-foreground)} 22%, transparent) 0 3px,
+    color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent) 3px 6px
+  );
 }
 
-.now-fill {
-  background: lw.v(color-foreground);
+.left {
+  min-width: 0.625rem;
+  background: var(--_state);
+}
 
-  :host([data-low]) & {
-    background: lw.v(color-destructive);
+.low-mark {
+  position: absolute;
+  top: -0.25rem;
+  bottom: -0.25rem;
+  width: 2px;
+  border-radius: 1px;
+  background: lw.v(color-foreground);
+  translate: -50% 0;
+
+  @include lw.motion {
+    transition: left 500ms var(--_ease);
   }
 }
 
-// The packs; a bar on top marks the chosen one.
+.low-label {
+  position: absolute;
+  bottom: calc(100% + 0.25rem);
+  left: 50%;
+  translate: -50% 0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--_muted);
+}
+
+[data-side='start'] .low-label {
+  left: 0;
+  translate: -0.25rem 0;
+}
+
+[data-side='end'] .low-label {
+  left: auto;
+  right: 0;
+  translate: 0.25rem 0;
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--_muted);
+}
+
+// The packs; a ring slides to the chosen one.
 .packs {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-  margin-top: 2.5rem;
-  border: 1px solid var(--_line);
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+  padding: 1.75rem;
 }
 
-.pack-bar {
+.pack-ring {
   @include lw.sliding-highlight;
 
-  border-radius: 0;
-  background: var(--_raised);
-  box-shadow: inset 0 2px 0 lw.v(color-foreground);
+  z-index: 1;
+  border-radius: 1rem;
+  background: none;
+  box-shadow: inset 0 0 0 2px lw.v(color-foreground);
 }
 
 .pack {
   position: relative;
   display: grid;
   justify-items: start;
-  gap: 0.25rem;
-  padding: 1.25rem;
-  border: 0;
-  box-shadow: -1px 0 0 var(--_line);
-  background: none;
+  padding: 1.125rem 1.125rem 1rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: lw.v(color-background);
   text-align: left;
   cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      background-color 200ms ease-out,
+      border-color 200ms ease-out;
+  }
+
+  &:hover {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 22%, transparent);
+  }
+
+  &[aria-checked='true'] {
+    border-color: transparent;
+    background: var(--_raised);
+  }
+
+  &:focus-visible {
+    outline-offset: 3px;
+  }
 }
 
-.pack-head {
+// Above the sliding ring, so the ring passes under it.
+.flag {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 1rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-foreground);
+  // A gap in the card's color parts the border around it.
+  box-shadow: 0 0 0 3px lw.v(color-background);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: lw.v(color-background);
+  translate: 0 -50%;
+}
+
+.pack-top {
   display: flex;
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
 }
 
 .credits {
-  font-size: 1.375rem;
+  font-size: 1.625rem;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.credits-label {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
 }
 
 .radio {
   display: grid;
-  width: 1rem;
-  height: 1rem;
+  width: 1.125rem;
+  height: 1.125rem;
   place-items: center;
-  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 35%, transparent);
+  border: 1.5px solid color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
   border-radius: 50%;
+
+  @include lw.motion {
+    transition:
+      border-color 200ms ease-out,
+      background-color 200ms ease-out;
+  }
 
   &::after {
     content: '';
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.375rem;
+    height: 0.375rem;
     border-radius: 50%;
-    background: lw.v(color-foreground);
+    background: lw.v(color-background);
     scale: 0;
 
     @include lw.motion {
@@ -166,6 +327,7 @@ button {
 
   [aria-checked='true'] & {
     border-color: lw.v(color-foreground);
+    background: lw.v(color-foreground);
 
     &::after {
       scale: 1;
@@ -174,81 +336,178 @@ button {
 }
 
 .price {
-  font-size: lw.v(text-md);
+  margin-top: 1.25rem;
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
-.rate,
-.saves {
+.rate {
+  margin-top: 0.125rem;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
   color: var(--_muted);
 }
 
 .saves {
-  margin-top: 0.75rem;
+  margin-top: 0.875rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-accent)} 12%, transparent);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: lw.v(color-accent);
+
+  &[data-base] {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+    color: var(--_muted);
+  }
 }
 
-// The total, the rate and the balance after, and what the credits buy.
-.summary {
-  padding: 1.5rem;
-  border: 1px solid var(--_line);
-  border-top: 0;
+// What the credits buy beside the order itself.
+.order {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  border-top: 1px solid var(--_line);
   background: var(--_raised);
 }
 
-.figures {
-  display: grid;
-  gap: 1rem;
-  margin: 0;
+.covers {
+  padding: 1.5rem 1.75rem;
 }
 
-.figure {
+.section-title {
+  margin: 0 0 0.75rem;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--_muted);
+}
+
+.units {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unit-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.5rem;
+  align-items: baseline;
+}
+
+.unit-count {
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.unit-label {
+  font-size: lw.v(text-sm);
+}
+
+.unit-cost {
+  grid-column: 1 / -1;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.checkout {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+  border-left: 1px solid var(--_line);
+}
+
+.lines {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.line {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  font-size: lw.v(text-md);
 
   dt {
     color: var(--_muted);
   }
 
   dd {
-    margin: 0;
     font-variant-numeric: tabular-nums;
   }
 
-  &.total dd {
-    font-size: 2rem;
-    font-weight: 600;
-    letter-spacing: -0.03em;
-  }
-}
-
-.buys {
-  margin-top: 1.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--_line);
-  line-height: 1.6;
-  color: var(--_muted);
-
-  b {
+  &.saving dd {
     font-weight: 500;
-    color: lw.v(color-foreground);
+    color: lw.v(color-accent);
   }
 
-  .dot {
-    margin: 0 0.5rem;
-  }
-}
+  &.total {
+    margin-top: 0.5rem;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--_line);
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1.5rem;
+    dt {
+      font-weight: 500;
+      color: lw.v(color-foreground);
+    }
+
+    dd {
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+  }
+
+  &.after-line dd {
+    display: inline-flex;
+    gap: 0.25rem;
+  }
 }
 
 .auto {
   color: var(--_muted);
+}
+
+.buy,
+.buy::part(button) {
+  width: 100%;
+}
+
+.fine {
+  margin-top: -0.25rem;
+  font-size: lw.v(text-xs);
+  text-align: center;
+  color: var(--_muted);
+}
+
+// Narrow: the balance under the title, two packs a row, the order stacked.
+@container (max-width: 36rem) {
+  .balance {
+    text-align: left;
+  }
+
+  .balance-label,
+  .balance-value {
+    justify-content: flex-start;
+  }
+
+  .packs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .order {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .checkout {
+    border-top: 1px solid var(--_line);
+    border-left: 0;
+  }
 }
