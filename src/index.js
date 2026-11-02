@@ -168,3 +168,4 @@ export * from './components/stepper-form/index.js';
 export * from './components/stack-reveal/index.js';
 export * from './components/gooey-toolbar/index.js';
 export * from './components/water-progress-bar/index.js';
+export * from './components/before-after-card/index.js';

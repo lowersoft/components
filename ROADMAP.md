@@ -224,3 +224,4 @@
 - [x] Focal point picker
 - [x] Photo straighten
 - [x] Stack reveal
+- [x] Before after card
