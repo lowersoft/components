@@ -1,5 +1,13 @@
 @use '../../styles' as lw;
 
+// The variant defaults to outline: the value reads as a field, not a solid
+// button. Defaults are not reflected, so the attribute is absent here.
+:host(:not([variant])) {
+  --_bg: transparent;
+  --_fg: #{lw.v(color-foreground)};
+  --_border: #{lw.v(color-border)};
+}
+
 .button {
   gap: 0.75rem;
   justify-content: space-between;

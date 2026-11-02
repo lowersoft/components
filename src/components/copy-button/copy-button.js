@@ -28,6 +28,7 @@ const randomGlyph = () => GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
  * masked and decodes into view on hover or focus. ⌘C / Ctrl+C copies while
  * the button is focused.
  *
+ * @attr {'primary'|'secondary'|'outline'|'ghost'|'destructive'} variant - Defaults to `outline`, so the value reads as a field
  * @attr {string} value - Text to show and copy
  * @attr {boolean} secret - Masks the middle of the value until hovered or focused; screen readers never read it
  * @attr {string} label - Accessible action, e.g. "Copy API key"
@@ -41,6 +42,7 @@ export class LwCopyButton extends LwButton {
   static styles = [buttonStyles, iconStyles, styles];
   static props = {
     ...LwButton.props,
+    variant: { ...LwButton.props.variant, default: 'outline' },
     value: { default: '' },
     secret: { type: Boolean },
     label: { default: 'Copy' },
