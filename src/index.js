@@ -172,3 +172,4 @@ export * from './components/before-after-card/index.js';
 export * from './components/perspective-marquee/index.js';
 export * from './components/cursor-trail/index.js';
 export * from './components/liquid-metal-button/index.js';
+export * from './components/orbital-image-carousel/index.js';

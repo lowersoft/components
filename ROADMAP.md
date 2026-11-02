@@ -228,3 +228,4 @@
 - [x] Stack reveal
 - [x] Before after card
 - [x] Perspective marquee
+- [x] Orbital image carousel
