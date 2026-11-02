@@ -126,8 +126,9 @@ export class LwSortableList extends LwElement {
     const drag = this.#drag;
     if (!drag) return;
     this.#drag = null;
-    this.removeAttribute('data-dragging');
+    // Where the rows show now, offsets included, before they drop back.
     const before = this.#positions();
+    this.removeAttribute('data-dragging');
     for (const row of this.#rows) row.style.translate = '';
     drag.row.removeAttribute('data-lifted');
     this.#place(drag.row, drag.index, before);

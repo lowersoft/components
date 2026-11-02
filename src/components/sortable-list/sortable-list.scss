@@ -68,13 +68,16 @@ button {
 
   @include lw.motion {
     transition:
-      translate 200ms cubic-bezier(0.23, 1, 0.32, 1),
       box-shadow 150ms ease-out,
       scale 150ms ease-out;
 
-    // The lifted row follows the pointer exactly.
-    &[data-lifted] {
+    // Rows step aside smoothly while a row is dragged; the lifted row follows
+    // the pointer exactly. Only during the drag: the drop settles every row
+    // with its own animation, which a transition back from the drag offset
+    // would fight.
+    :host([data-dragging]) &:not([data-lifted]) {
       transition:
+        translate 200ms cubic-bezier(0.23, 1, 0.32, 1),
         box-shadow 150ms ease-out,
         scale 150ms ease-out;
     }
