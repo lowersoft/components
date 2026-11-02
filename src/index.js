@@ -171,3 +171,4 @@ export * from './components/water-progress-bar/index.js';
 export * from './components/before-after-card/index.js';
 export * from './components/perspective-marquee/index.js';
 export * from './components/cursor-trail/index.js';
+export * from './components/liquid-metal-button/index.js';

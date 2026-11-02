@@ -54,6 +54,7 @@
 - [x] Split button
 - [x] Download button
 - [x] Copy button
+- [x] Liquid metal button
 - [x] Base button: `loading`, `shortcut` and `disabled-reason` on `lw-button`
 - [x] Confirm delete button
 - [x] Share button

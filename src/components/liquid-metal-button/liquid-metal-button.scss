@@ -1,0 +1,151 @@
+@use '../../styles' as lw;
+
+// Sizes and the face, on top of the base button: the metal replaces the
+// variant colors, so `variant` does nothing here.
+:host {
+  --_height: 2.75rem;
+  --_padding: 1.5rem;
+  --_text: 0.875rem;
+  --_rim: 2px;
+  --_face: linear-gradient(180deg, #fff 0%, #f3f3f5 55%, #e2e2e7 100%);
+  --_face-edge: inset 0 -1px 0 rgb(20 20 30 / 0.05);
+  --_label: #27272a;
+  --_label-shadow: 0 1px 0 rgb(255 255 255 / 0.8);
+  --_lift:
+    0 1px 3px rgb(18 18 26 / 0.12),
+    0 10px 18px -8px rgb(18 18 26 / 0.2),
+    0 26px 44px -20px rgb(18 18 26 / 0.22);
+  --_lift-hover:
+    0 1px 3px rgb(18 18 26 / 0.12),
+    0 12px 22px -8px rgb(18 18 26 / 0.24),
+    0 32px 52px -20px rgb(18 18 26 / 0.26);
+  --_fg: var(--_label);
+  --_bg: transparent;
+}
+
+:host([data-dark]) {
+  --_face: linear-gradient(180deg, #26262a 0%, #111113 48%, #030303 100%);
+  --_face-edge: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  --_label: #e4e4e7;
+  --_label-shadow: 0 1px 1px rgb(0 0 0 / 0.6);
+  --_lift:
+    0 1px 2px rgb(0 0 0 / 0.55),
+    0 12px 28px -12px rgb(0 0 0 / 0.9);
+  --_lift-hover:
+    0 1px 2px rgb(0 0 0 / 0.55),
+    0 16px 36px -12px rgb(0 0 0 / 0.95);
+}
+
+:host([size='sm']) {
+  --_height: 2.25rem;
+  --_padding: 1.125rem;
+  --_text: 0.8125rem;
+}
+
+:host([size='lg']) {
+  --_height: 3.375rem;
+  --_padding: 1.75rem;
+  --_text: 0.9375rem;
+}
+
+.button {
+  position: relative;
+  isolation: isolate;
+  gap: 0.625rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: lw.v(radius-full);
+  background: transparent;
+  box-shadow: var(--_lift);
+
+  @include lw.motion {
+    transition:
+      box-shadow 200ms ease-out,
+      transform 200ms ease-out;
+  }
+
+  &:hover {
+    background: transparent;
+    box-shadow: var(--_lift-hover);
+  }
+
+  &:focus-visible {
+    outline-offset: 3px;
+  }
+
+  :host([shape='circle']) & {
+    width: var(--_height);
+    padding: 0;
+  }
+}
+
+// The metal fills the button; the face covers all but a rim of it.
+.metal,
+.face {
+  position: absolute;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.metal {
+  z-index: -2;
+  inset: 0;
+  overflow: hidden;
+}
+
+.shader {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  :host([data-fallback]) & {
+    display: none;
+  }
+}
+
+// Without WebGL: a chrome conic gradient, turning, wider than the button so
+// its corners never show.
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: none;
+  width: max(300%, 12rem);
+  aspect-ratio: 1;
+  background: conic-gradient(from 200deg, #fbfbfc, #8d8e94 9%, #2a2a2e 17%, #c9cace 27%, #f6f6f7 36%, #63646a 47%, #e6e6e9 58%, #3a3a3f 69%, #b4b5ba 80%, #fbfbfc);
+  translate: -50% -50%;
+
+  :host([data-fallback]) & {
+    display: block;
+  }
+
+  :host([data-fallback][tint]) & {
+    background-blend-mode: multiply;
+    background-color: var(--_tint);
+  }
+
+  @include lw.motion {
+    animation: lw-liquid-metal-turn 6s linear infinite;
+  }
+}
+
+@keyframes lw-liquid-metal-turn {
+  to {
+    rotate: 1turn;
+  }
+}
+
+.face {
+  z-index: -1;
+  inset: var(--_rim);
+  background: var(--_face);
+  box-shadow: var(--_face-edge);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: inherit;
+  color: var(--_label);
+  text-shadow: var(--_label-shadow);
+}
