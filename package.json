@@ -1,6 +1,6 @@
 {
   "name": "@lowersoft/lw",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Animated UI components built with SCSS and vanilla JavaScript Web Components.",
   "license": "MIT",
   "type": "module",
