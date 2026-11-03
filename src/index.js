@@ -176,3 +176,4 @@ export * from './components/orbital-image-carousel/index.js';
 export * from './components/refraction-glass-container/index.js';
 export * from './components/svg-fire/index.js';
 export * from './components/follow-cursor-label/index.js';
+export * from './components/gooey-navigation-menu/index.js';

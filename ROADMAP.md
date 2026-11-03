@@ -133,6 +133,7 @@
 - [x] Scroll index
 - [x] Status island
 - [x] Stack panel
+- [x] Gooey navigation menu
 - [ ] AI input
 - [x] Text input
 - [x] Textarea
