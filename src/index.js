@@ -186,3 +186,4 @@ export * from './components/ai-typing-indicator/index.js';
 export * from './components/gooey-search/index.js';
 export * from './components/gooey-dropdown/index.js';
 export * from './components/text-morphing/index.js';
+export * from './components/gooey-dock/index.js';

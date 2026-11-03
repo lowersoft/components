@@ -139,6 +139,7 @@
 - [x] Stack panel
 - [x] Gooey navigation menu
 - [x] Gooey dropdown
+- [x] Gooey dock
 - [ ] AI input
 - [x] Text input
 - [x] Textarea
