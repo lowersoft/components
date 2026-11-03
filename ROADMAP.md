@@ -158,6 +158,7 @@
 - [x] Cursor trail
 - [x] SVG fire
 - [x] Fluted glass
+- [x] Gradient blind backdrop
 - [x] Globe hero
 - [x] Product stage hero
 - [x] Work flow hero
