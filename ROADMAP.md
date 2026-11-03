@@ -73,6 +73,7 @@
 - [x] Spoiler text
 - [x] Follow cursor label
 - [x] Text path
+- [x] Text morphing
 - [ ] Matrix text
 - [ ] Swoosh text
 - [ ] Scroll text

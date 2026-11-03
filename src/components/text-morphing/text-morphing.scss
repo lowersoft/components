@@ -1,0 +1,45 @@
+@use '../../styles' as lw;
+
+:host {
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: lw.v(color-foreground);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.sr {
+  @include lw.visually-hidden;
+}
+
+// One line tall; both phrases sit on top of each other inside it.
+.stage {
+  position: relative;
+  display: block;
+  height: 1.2em;
+}
+
+.text {
+  position: absolute;
+  inset: 0;
+  display: block;
+  white-space: nowrap;
+  user-select: none;
+}
+
+:host([data-morphing]:not([data-still])) .stage {
+  filter: var(--_melt);
+}
+
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
