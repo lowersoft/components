@@ -156,6 +156,7 @@
 - [x] Topo background
 - [x] Cursor trail
 - [x] SVG fire
+- [x] Fluted glass
 - [x] Globe hero
 - [x] Product stage hero
 - [x] Work flow hero
