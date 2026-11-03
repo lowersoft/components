@@ -229,6 +229,7 @@
 - [x] Order tracker
 - [x] Refraction glass container
 - [x] Dimensional book cover
+- [x] Glowing border
 - [x] Clip trimmer
 - [x] Synced transcript
 - [x] Focal point picker

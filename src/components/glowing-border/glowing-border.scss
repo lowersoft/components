@@ -1,0 +1,184 @@
+@use '../../styles' as lw;
+
+:host {
+  --_c1: #ff1100;
+  --_c2: #f97316;
+  --_c3: #fbbf24;
+  --_hue: var(--_c2);
+  --_w: 1.5px;
+  --_r: 16px;
+  --_pad: 0px;
+  --_d: 4s;
+  --_glow: 0;
+  --_gs: 10px;
+  --_ig: 0;
+  --_spot: 340px;
+  --_angle: var(--lw-glowing-border-angle, 0deg);
+  --_x: var(--lw-glowing-border-x, 0px);
+  --_y: var(--lw-glowing-border-y, 0px);
+  --_i: var(--lw-glowing-border-i, 0);
+
+  position: relative;
+  display: grid;
+  isolation: isolate;
+  border-radius: var(--_r);
+  color: lw.v(color-foreground);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  padding: var(--_pad);
+  border-radius: inherit;
+}
+
+// The border: a box whose middle is cut away by a mask, leaving a ring.
+.base,
+.ring {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  padding: var(--_w);
+  border-radius: inherit;
+  pointer-events: none;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+.base {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+// The paint, by variant. The glow reuses it, blurred.
+.ring,
+.glow {
+  background: var(--_paint);
+}
+
+:host([variant='cursor']) {
+  // A hot core, the hue, and a long falloff along the edge.
+  --_paint: radial-gradient(circle calc(var(--_spot) / 2) at var(--_x) var(--_y), color-mix(in oklch, var(--_hue), #fff 45%), var(--_hue) 16%, color-mix(in oklch, var(--_hue) 70%, transparent) 38%, color-mix(in oklch, var(--_hue) 25%, transparent) 58%, transparent 74%);
+
+  .ring,
+  .glow {
+    opacity: var(--_i);
+  }
+
+  .glow {
+    opacity: calc(var(--_i) * var(--_glow));
+  }
+
+  @include lw.motion {
+    transition:
+      --lw-glowing-border-x 160ms ease-out,
+      --lw-glowing-border-y 160ms ease-out,
+      --lw-glowing-border-i 260ms ease-out;
+  }
+}
+
+// A comet that laps the edge.
+:host([variant='beam']) {
+  --_paint: conic-gradient(from var(--_angle), transparent 0 58%, color-mix(in oklch, var(--_c1) 40%, transparent) 72%, var(--_c1) 84%, var(--_c2) 93%, var(--_c3) 99%, transparent 100%);
+}
+
+// The whole gradient turning.
+:host([variant='spin']) {
+  --_paint: conic-gradient(from var(--_angle), var(--_c1), var(--_c2), var(--_c3), var(--_c2), var(--_c1));
+}
+
+:host(:is([variant='beam'], [variant='spin'])) {
+  @include lw.motion {
+    animation: lw-glowing-border-turn var(--_d) linear infinite;
+  }
+}
+
+@keyframes lw-glowing-border-turn {
+  to {
+    --lw-glowing-border-angle: 360deg;
+  }
+}
+
+// A still gradient that breathes.
+:host([variant='pulse']) {
+  --_paint: linear-gradient(135deg, var(--_c1), var(--_c2), var(--_c3));
+
+  .ring {
+    @include lw.motion {
+      animation: lw-glowing-border-breathe var(--_d) ease-in-out infinite;
+    }
+  }
+
+  .glow {
+    @include lw.motion {
+      animation: lw-glowing-border-glow var(--_d) ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes lw-glowing-border-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes lw-glowing-border-glow {
+  0%,
+  100% {
+    opacity: calc(var(--_glow) * 0.25);
+  }
+
+  50% {
+    opacity: calc(var(--_glow) * 0.9);
+  }
+}
+
+// Outer glow: the paint blurred, with the shape cut out so it only shows
+// outside the border.
+.glow {
+  position: absolute;
+  z-index: 0;
+  inset: calc(var(--_gs) * -2);
+  padding: calc(var(--_gs) * 2);
+  border-radius: calc(var(--_r) + var(--_gs) * 2);
+  background-clip: content-box;
+  filter: blur(var(--_gs));
+  opacity: calc(var(--_glow) * 0.8);
+  pointer-events: none;
+  mask-image: var(--_hole), linear-gradient(#000 0 0);
+  mask-size:
+    calc(100% - var(--_gs) * 4) calc(100% - var(--_gs) * 4),
+    100% 100%;
+  mask-position: center, center;
+  mask-repeat: no-repeat;
+  mask-composite: exclude;
+}
+
+// Inner glow: light falling inward from the lit edge, under the content.
+.inner {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle calc(var(--_spot) / 2.4) at var(--_x) var(--_y), color-mix(in oklch, var(--_hue) 55%, transparent), color-mix(in oklch, var(--_hue) 18%, transparent) 40%, transparent 72%);
+  opacity: calc(var(--_i) * var(--_ig));
+  pointer-events: none;
+
+  :host(:not([variant='cursor'])) & {
+    display: none;
+  }
+}
+
+:host([data-still]) {
+  transition: none;
+}
