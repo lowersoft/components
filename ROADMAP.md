@@ -128,6 +128,7 @@
 - [x] Filter search bar
 - [x] Docs search
 - [x] Slash command menu
+- [x] Gooey search
 - [x] Action toolbar
 - [x] Kanban board
 - [x] File tree
