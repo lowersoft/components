@@ -21,6 +21,10 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
           registry-url: https://registry.npmjs.org
+      # Publishing goes through npm trusted publishing (OIDC, granted by
+      # id-token: write above), which needs npm 11.5.1 or later. No publish
+      # token is stored, and provenance is attached automatically.
+      - run: npm install --global npm@11
       - run: npm ci
       - uses: changesets/action@v1
         with:
@@ -28,5 +32,3 @@ jobs:
           publish: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
