@@ -1,0 +1,38 @@
+@use '../../styles' as lw;
+
+:host {
+  --_color: var(--lw-follow-cursor-label-color, #{lw.v(color-foreground)});
+  --_ink: var(--lw-follow-cursor-label-ink, #{lw.v(color-background)});
+
+  display: contents;
+}
+
+// A speech bubble whose square corner points at the pointer. It lives in
+// the top layer, so popover defaults are undone here.
+.chip {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 2147483000;
+  margin: 0;
+  padding: 0.3125rem 0.625rem;
+  overflow: visible;
+  border: 0;
+  border-radius: 1.5rem 1.5rem 1.5rem 0.125rem;
+  background: var(--_chip, var(--_color));
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.18),
+    0 8px 20px -8px rgb(0 0 0 / 0.35);
+  font: 500 1rem / 1.25 lw.v(font-sans);
+  white-space: nowrap;
+  color: var(--_chip-ink, var(--_ink));
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: 0 100%;
+  will-change: transform;
+  user-select: none;
+}
+
+// Shown without the top layer, where popovers are not supported.
+.chip[data-open] {
+  display: block;
+}
