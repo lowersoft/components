@@ -72,6 +72,7 @@
 - [x] Cradle text
 - [x] Spoiler text
 - [x] Follow cursor label
+- [x] Text path
 - [ ] Matrix text
 - [ ] Swoosh text
 - [ ] Scroll text

@@ -1,0 +1,40 @@
+@use '../../styles' as lw;
+
+:host {
+  display: block;
+  color: lw.v(color-foreground);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.curve {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+// A ring stays a sensible size instead of filling a wide page.
+:host([data-shape='circle']) .curve {
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+.track[data-shown] {
+  stroke: color-mix(in oklab, currentColor 30%, transparent);
+}
+
+.words,
+.measure {
+  font-family: inherit;
+  white-space: pre;
+  fill: currentColor;
+  dominant-baseline: central;
+}
+
+// Measured, never seen.
+.measure {
+  visibility: hidden;
+}
