@@ -226,6 +226,7 @@
 - [x] Job listing card
 - [x] Order tracker
 - [x] Refraction glass container
+- [x] Dimensional book cover
 - [x] Clip trimmer
 - [x] Synced transcript
 - [x] Focal point picker
