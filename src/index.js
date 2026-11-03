@@ -184,3 +184,4 @@ export * from './components/gradient-blind-backdrop/index.js';
 export * from './components/glowing-border/index.js';
 export * from './components/ai-typing-indicator/index.js';
 export * from './components/gooey-search/index.js';
+export * from './components/gooey-dropdown/index.js';

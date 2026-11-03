@@ -137,6 +137,7 @@
 - [x] Status island
 - [x] Stack panel
 - [x] Gooey navigation menu
+- [x] Gooey dropdown
 - [ ] AI input
 - [x] Text input
 - [x] Textarea
