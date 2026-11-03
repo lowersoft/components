@@ -2,15 +2,15 @@ import { LwElement } from '../../core/lw-element.js';
 import { reducedMotion } from '../../core/motion.js';
 import styles from './svg-fire.scss?inline';
 
-// The demo mark: a bold L beside a block, with plenty of upward edges.
-const DEMO_MARK = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><path d="M8 8h26v78h44v26H8z"/><path d="M58 40h54v40H86v-14H58z"/></svg>';
+// The demo mark: a plain L, whose top edges both catch.
+const DEMO_MARK = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120"><path d="M14 6h26v84h46v26H14z"/></svg>';
 
 const DEFAULT_COLORS = ['#d8340f', '#ff7a1c', '#ffe7a8'];
 // The simulation grid's width in cells; its height follows the frame.
-const GRID = 220;
+const GRID = 320;
 const STEP = 1 / 60;
 // Steps run before showing anything, so the fire is already burning.
-const WARM_UP = 90;
+const WARM_UP = 150;
 
 const VERTEX = `attribute vec2 a_pos;
 varying vec2 v_uv;
@@ -30,11 +30,23 @@ float noise(vec2 p) {
   vec2 f = fract(p);
   f = f * f * (3.0 - 2.0 * f);
   return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+float fbm(vec2 p) {
+  float v = 0.0;
+  float a = 0.5;
+  for (int i = 0; i < 4; i++) {
+    v += a * noise(p);
+    p = p * 2.03 + vec2(17.1, 9.2);
+    a *= 0.5;
+  }
+  return v;
 }`;
 
-// One step of the fire: heat is carried up and swirled by curl noise,
-// spreads a little, cools unevenly so it breaks into tongues, and is fed
-// again wherever the mark has an upward edge.
+// One step of the fire. Heat rises, faster where it is hotter, and is
+// swirled by curl noise of several scales. It cools through a noise field
+// that climbs with the flames, so cold pockets travel up through them and
+// pinch them into tongues that break off. Each upward edge of the mark
+// feeds it, flickering along its length.
 const SIMULATE = `precision highp float;
 uniform sampler2D u_heat;
 uniform sampler2D u_fuel;
@@ -46,32 +58,37 @@ uniform float u_aspect;
 varying vec2 v_uv;
 ${NOISE}
 vec2 curl(vec2 p) {
-  float e = 0.15;
-  float a = noise(p + vec2(0.0, e));
-  float b = noise(p - vec2(0.0, e));
-  float c = noise(p + vec2(e, 0.0));
-  float d = noise(p - vec2(e, 0.0));
+  float e = 0.08;
+  float a = fbm(p + vec2(0.0, e));
+  float b = fbm(p - vec2(0.0, e));
+  float c = fbm(p + vec2(e, 0.0));
+  float d = fbm(p - vec2(e, 0.0));
   return vec2(a - b, -(c - d)) / (2.0 * e);
 }
 void main() {
   vec2 p = vec2(v_uv.x * u_aspect, v_uv.y);
-  vec2 swirl = curl(p * 5.0 + vec2(0.0, -u_time * 1.6));
-  vec2 velocity = vec2(swirl.x * 0.0022, 0.0035 + 0.011 * u_rise + swirl.y * 0.0012);
+  float t = u_time;
+  float here = texture2D(u_heat, v_uv).r;
+  vec2 swirl = curl(p * 3.2 + vec2(0.0, -t * 1.3));
+  float lift = 0.0026 + (0.0062 + 0.0075 * here) * u_rise;
+  vec2 velocity = vec2(swirl.x * 0.0024, lift + swirl.y * 0.0008);
   vec2 from = v_uv - velocity;
-  float h = texture2D(u_heat, from).r * 0.6;
-  h += 0.1 * (texture2D(u_heat, from + vec2(u_texel.x, 0.0)).r + texture2D(u_heat, from - vec2(u_texel.x, 0.0)).r);
-  h += 0.1 * (texture2D(u_heat, from + vec2(0.0, u_texel.y)).r + texture2D(u_heat, from - vec2(0.0, u_texel.y)).r);
-  float cooling = 0.004 + 0.022 * noise(p * 9.0 + vec2(u_time * 0.7, -u_time * 2.4));
-  h -= cooling;
+  float h = texture2D(u_heat, from).r * 0.56;
+  h += 0.11 * (texture2D(u_heat, from + vec2(u_texel.x, 0.0)).r + texture2D(u_heat, from - vec2(u_texel.x, 0.0)).r);
+  h += 0.11 * (texture2D(u_heat, from + vec2(0.0, u_texel.y)).r + texture2D(u_heat, from - vec2(0.0, u_texel.y)).r);
+  float climb = t * (0.42 + 0.5 * u_rise);
+  float cold = fbm(vec2(p.x * 6.5, (p.y - climb) * 4.2));
+  h -= 0.003 + 0.026 * cold * cold;
   float fuel = texture2D(u_fuel, v_uv).r;
-  float flicker = 0.55 + 0.55 * noise(p * 16.0 + vec2(u_time * 3.0, -u_time * 5.0));
-  h = max(h, fuel * u_intensity * flicker);
+  float along = 0.62 * noise(vec2(p.x * 9.0, t * 1.6)) + 0.38 * noise(vec2(p.x * 26.0, t * 3.4));
+  h = max(h, fuel * u_intensity * (0.5 + 0.62 * along));
   gl_FragColor = vec4(clamp(h, 0.0, 1.0), 0.0, 0.0, 1.0);
 }`;
 
-// The picture: heat colored on a blackbody ramp, a soft glow around it,
-// the mark on top with its burning edges lit, and heat shimmer bending
-// the mark where the fire runs.
+// The picture. Temperature is colored on a blackbody ramp built from the
+// three flame colors: smoky red at the fading tips, through the body, to
+// a white-hot core. Bloom gathers around the flames, the mark's burning
+// edges glow and char, and the air over the fire shimmers.
 const RENDER = `precision highp float;
 uniform sampler2D u_heat;
 uniform sampler2D u_mark;
@@ -86,32 +103,54 @@ uniform float u_dark;
 varying vec2 v_uv;
 ${NOISE}
 vec3 ramp(float h) {
-  vec3 c = mix(u_tip, u_body, smoothstep(0.12, 0.5, h));
-  return mix(c, u_core, smoothstep(0.5, 0.95, h));
+  vec3 ember = u_tip * 0.42;
+  vec3 c = mix(ember, u_tip, smoothstep(0.04, 0.24, h));
+  c = mix(c, u_body, smoothstep(0.22, 0.5, h));
+  c = mix(c, u_core, smoothstep(0.48, 0.78, h));
+  return mix(c, vec3(1.0, 0.98, 0.93), smoothstep(0.8, 1.0, h));
+}
+float bloom(vec2 uv, float radius) {
+  float sum = 0.0;
+  for (int i = 0; i < 8; i++) {
+    float a = float(i) * 0.785 + 0.39;
+    sum += texture2D(u_heat, uv + vec2(cos(a), sin(a)) * u_texel * radius).r;
+  }
+  return sum / 8.0;
 }
 void main() {
-  float h = texture2D(u_heat, v_uv).r;
-  float glow = 0.0;
-  for (int i = 0; i < 4; i++) {
-    float a = float(i) * 1.5708 + 0.785;
-    glow += texture2D(u_heat, v_uv + vec2(cos(a), sin(a)) * u_texel * 5.0).r;
-  }
-  glow *= 0.25;
-  float shimmer = smoothstep(0.04, 0.4, max(h, glow)) * u_distortion;
-  vec2 bend = (vec2(noise(v_uv * 34.0 + vec2(0.0, -u_time * 3.0)), noise(v_uv * 34.0 + vec2(5.2, -u_time * 3.0))) - 0.5) * 0.012 * shimmer;
-  vec4 mark = texture2D(u_mark, v_uv + bend);
-  float flame = smoothstep(0.07, 0.42, h);
+  float near = bloom(v_uv, 3.0);
+  float far = bloom(v_uv, 9.0);
+  float shimmer = smoothstep(0.03, 0.35, max(near, far)) * u_distortion;
+  vec2 wave = vec2(noise(v_uv * 30.0 + vec2(0.0, -u_time * 3.2)), noise(v_uv * 30.0 + vec2(5.2, -u_time * 3.2))) - 0.5;
+  vec2 bend = wave * 0.01 * shimmer;
+  float h = texture2D(u_heat, v_uv + bend * 0.4).r;
+  vec4 mark = texture2D(u_mark, v_uv + bend * 0.6);
+
+  // Flames: opaque where hot, thinning out at the tips.
+  float flame = smoothstep(0.03, 0.3, h);
   vec3 fire = ramp(h);
-  // The mark's edges glow where they burn.
-  vec3 lit = mix(mark.rgb, ramp(h * 1.1 + 0.15), clamp(h * 1.2, 0.0, 0.7) * u_intensity);
-  // Glow spills past the flames on a dark page; on a light one it would muddy.
-  float halo = smoothstep(0.05, 0.6, glow) * 0.35 * u_dark;
+  float halo = (smoothstep(0.02, 0.5, near) * 0.45 + smoothstep(0.02, 0.6, far) * 0.3) * mix(0.18, 1.0, u_dark);
+  vec3 glowColor = ramp(max(near, far) * 0.85);
+
+  // The mark: lit hot along its burning edges, charred a little below,
+  // with sparks of heat crawling over the glowing part.
+  // Embers, not white heat: white over a dark mark would read as grey.
+  float burn = smoothstep(0.1, 0.9, h) * u_intensity;
+  float crawl = noise(v_uv * vec2(160.0, 60.0) + vec2(0.0, u_time * 1.5));
+  vec3 hot = ramp(0.3 + 0.32 * h + crawl * 0.1);
+  vec3 char = mix(mark.rgb, mark.rgb * vec3(0.55, 0.45, 0.4), u_dark);
+  vec3 lit = mix(mark.rgb, char, smoothstep(0.02, 0.25, near) * 0.35 * u_intensity);
+  lit = mix(lit, hot, burn * 0.85);
+
   // Built premultiplied, then handed over straight: the canvas is not
   // premultiplied, and multiplying twice turns thin flame into grey smoke.
-  vec3 light = fire * flame + ramp(glow * 0.8) * halo * (1.0 - flame);
+  // The mark goes over the flames the same way, so its soft edge does not
+  // mix with the empty black of the canvas.
+  vec3 light = fire * flame + glowColor * halo * (1.0 - flame);
   float alpha = flame + halo * (1.0 - flame);
-  vec4 color = vec4(alpha > 0.001 ? light / alpha : vec3(0.0), alpha);
-  gl_FragColor = mix(color, vec4(lit, 1.0), mark.a);
+  light = light * (1.0 - mark.a) + lit * mark.a;
+  alpha = alpha * (1.0 - mark.a) + mark.a;
+  gl_FragColor = vec4(alpha > 0.001 ? light / alpha : vec3(0.0), clamp(alpha, 0.0, 1.0));
 }`;
 
 const parseColor = (hex, fallback) => {
@@ -165,6 +204,7 @@ export class LwSvgFire extends LwElement {
   };
 
   #gl = null;
+  #heatType = 0;
   #programs = null;
   #heat = [];
   #fuel = null;
@@ -305,6 +345,12 @@ export class LwSvgFire extends LwElement {
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     this.#programs = { simulate, draw };
     this.#gl = gl;
+    // Heat in half floats where the GPU can render to them: in 8 bits the
+    // faint end of the cooling rounds away and leaves a haze that never fades.
+    const half = gl.getExtension('OES_texture_half_float');
+    const linear = gl.getExtension('OES_texture_half_float_linear');
+    const target = gl.getExtension('EXT_color_buffer_half_float') ?? gl.getExtension('WEBGL_color_buffer_float');
+    this.#heatType = half && linear && target ? half.HALF_FLOAT_OES : gl.UNSIGNED_BYTE;
     canvas.addEventListener('webglcontextlost', (event) => {
       event.preventDefault();
       this.#gl = null;
@@ -312,7 +358,7 @@ export class LwSvgFire extends LwElement {
     }, { signal: this.signal });
   }
 
-  #texture(width, height, data = null, format) {
+  #texture(width, height, data = null, format, type) {
     const gl = this.#gl;
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -325,7 +371,7 @@ export class LwSvgFire extends LwElement {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, data);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     } else {
-      gl.texImage2D(gl.TEXTURE_2D, 0, format ?? gl.RGBA, width, height, 0, format ?? gl.RGBA, gl.UNSIGNED_BYTE, data);
+      gl.texImage2D(gl.TEXTURE_2D, 0, format ?? gl.RGBA, width, height, 0, format ?? gl.RGBA, type ?? gl.UNSIGNED_BYTE, data);
     }
     return texture;
   }
@@ -408,11 +454,23 @@ export class LwSvgFire extends LwElement {
     }
     for (const texture of [...this.#heat.map((h) => h.texture), this.#fuel, this.#markTexture]) if (texture) gl.deleteTexture(texture);
     for (const { buffer } of this.#heat) gl.deleteFramebuffer(buffer);
-    this.#heat = [0, 1].map(() => {
-      const texture = this.#texture(gridW, gridH);
+    const heatBuffer = (type) => {
+      const texture = this.#texture(gridW, gridH, null, gl.RGBA, type);
       const buffer = gl.createFramebuffer();
       gl.bindFramebuffer(gl.FRAMEBUFFER, buffer);
       gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+      return { texture, buffer };
+    };
+    // Some GPUs list half floats yet cannot draw into them: test once.
+    if (this.#heatType !== gl.UNSIGNED_BYTE) {
+      const probe = heatBuffer(this.#heatType);
+      const ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+      gl.deleteTexture(probe.texture);
+      gl.deleteFramebuffer(probe.buffer);
+      if (!ok) this.#heatType = gl.UNSIGNED_BYTE;
+    }
+    this.#heat = [0, 1].map(() => {
+      const { texture, buffer } = heatBuffer(this.#heatType);
       gl.clearColor(0, 0, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
       return { texture, buffer };
@@ -509,16 +567,31 @@ export class LwSvgFire extends LwElement {
     this.#drawEmbers();
   }
 
-  // Embers leave the burning edges, drift up and fade.
+  // Sparks leave the burning edges hot, ride the updraft, slow, wander on
+  // gusts and cool from white through orange to red before going out.
   #stepEmbers(dt) {
     const intensity = Math.min(1, Math.max(0, this.intensity ?? 0.92));
-    if (this.#fuelPoints.length && Math.random() < 0.55 * intensity && this.#embers.length < 70) {
+    const rise = Math.min(1, Math.max(0, this.rise ?? 0.5));
+    if (this.#fuelPoints.length && Math.random() < 0.7 * intensity && this.#embers.length < 90) {
       const [x, y] = this.#fuelPoints[Math.floor(Math.random() * this.#fuelPoints.length)];
-      this.#embers.push({ x, y, vx: (Math.random() - 0.5) * 0.04, vy: -(0.06 + Math.random() * 0.12), life: 0, span: 1.2 + Math.random() * 1.8, size: 0.6 + Math.random() * 1.4, wobble: Math.random() * 6.28 });
+      this.#embers.push({
+        x: x + (Math.random() - 0.5) * 0.01,
+        y: y - Math.random() * 0.06,
+        vx: (Math.random() - 0.5) * 0.06,
+        vy: -(0.12 + Math.random() * 0.22) * (0.6 + rise),
+        life: 0,
+        span: 0.9 + Math.random() * 1.6,
+        size: 0.5 + Math.random() ** 2 * 1.6,
+        seed: Math.random() * 100,
+      });
     }
+    const drag = Math.exp(-1.1 * dt);
     this.#embers = this.#embers.filter((ember) => {
       ember.life += dt;
-      ember.x += (ember.vx + Math.sin(this.#time * 2 + ember.wobble) * 0.012) * dt;
+      const gust = Math.sin(this.#time * 1.3 + ember.seed) * 0.05 + Math.sin(this.#time * 3.7 + ember.seed * 2) * 0.025;
+      ember.vx = (ember.vx + gust * dt) * drag;
+      ember.vy = (ember.vy - 0.02 * dt) * drag;
+      ember.x += ember.vx * dt;
       ember.y += ember.vy * dt;
       return ember.life < ember.span && ember.y > -0.05;
     });
@@ -531,14 +604,38 @@ export class LwSvgFire extends LwElement {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const colors = Array.isArray(this.colors) && this.colors.length === 3 ? this.colors : DEFAULT_COLORS;
     const ratio = canvas.width / Math.max(1, this.#size[0]);
+    // On a dark page the sparks add light; on a light one they would wash out.
+    ctx.globalCompositeOperation = this.#dark ? 'lighter' : 'source-over';
     for (const ember of this.#embers) {
       const t = ember.life / ember.span;
-      ctx.globalAlpha = Math.max(0, (1 - t) * Math.min(1, ember.life * 4));
-      ctx.fillStyle = t < 0.35 ? colors[2] : t < 0.7 ? colors[1] : colors[0];
+      const flicker = 0.75 + 0.25 * Math.sin(ember.life * 30 + ember.seed);
+      const alpha = Math.max(0, (1 - t) ** 1.4 * Math.min(1, ember.life * 6) * flicker);
+      const color = t < 0.25 ? colors[2] : t < 0.6 ? colors[1] : colors[0];
+      const x = ember.x * canvas.width;
+      const y = ember.y * canvas.height;
+      const r = ember.size * ratio * (1 - t * 0.45);
+      // A short streak along the way it moves, then a soft halo and a hot dot.
+      ctx.globalAlpha = alpha * 0.55;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = r * 1.1;
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.arc(ember.x * canvas.width, ember.y * canvas.height, ember.size * ratio * (1 - t * 0.5), 0, Math.PI * 2);
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - ember.vx * canvas.width * 0.05, y - ember.vy * canvas.height * 0.05);
+      ctx.stroke();
+      const halo = ctx.createRadialGradient(x, y, 0, x, y, r * 4);
+      halo.addColorStop(0, color);
+      halo.addColorStop(1, 'transparent');
+      ctx.globalAlpha = alpha * 0.35;
+      ctx.fillStyle = halo;
+      ctx.fillRect(x - r * 4, y - r * 4, r * 8, r * 8);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = t < 0.4 ? '#fff6dc' : color;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
   }
 }
