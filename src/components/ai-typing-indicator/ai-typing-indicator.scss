@@ -1,0 +1,345 @@
+@use '../../styles' as lw;
+
+:host {
+  // Solid rather than see-through, so small text keeps clean edges.
+  --_dim: color-mix(in oklab, #{lw.v(color-foreground)} 36%, #{lw.v(color-background)});
+  --_bright: #{lw.v(color-foreground)};
+  --_ease: cubic-bezier(0.45, 0, 0.55, 1);
+
+  display: inline-flex;
+  align-items: center;
+  font-family: lw.v(font-sans);
+  font-size: 1rem;
+  line-height: 1.4;
+  color: lw.v(color-muted-foreground);
+  vertical-align: middle;
+}
+
+:host([size='sm']) {
+  font-size: 0.875rem;
+}
+
+:host([size='lg']) {
+  font-size: 1.125rem;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+// Heard by assistive technology, never seen.
+.status {
+  @include lw.visually-hidden;
+}
+
+.visual {
+  display: inline-flex;
+  align-items: center;
+}
+
+.line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+}
+
+// Phrases share one cell, so the next can blur in over the last.
+.slot {
+  display: inline-grid;
+}
+
+.phrase {
+  display: inline-flex;
+  grid-area: 1 / 1;
+  align-items: center;
+  gap: 0.5em;
+  white-space: nowrap;
+}
+
+.elapsed {
+  font-variant-numeric: tabular-nums;
+  color: var(--_dim);
+}
+
+// Shimmer: a band of light runs across the words.
+.shimmer {
+  background-image: linear-gradient(90deg, var(--_dim) 0%, var(--_dim) 38%, var(--_bright) 50%, var(--_dim) 62%, var(--_dim) 100%);
+  background-size: 260% 100%;
+  background-position: 50% 0;
+  background-clip: text;
+  color: transparent;
+
+  @include lw.motion {
+    animation: lw-ai-shimmer 1.8s linear infinite;
+  }
+}
+
+@keyframes lw-ai-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: 0% 0;
+  }
+}
+
+// Wave: the letters lift and brighten one after another.
+.wave {
+  color: var(--_dim);
+}
+
+.letter {
+  display: inline-block;
+
+  @include lw.motion {
+    animation: lw-ai-letter 1.6s var(--_ease) infinite;
+    animation-delay: calc(var(--_i) * 55ms);
+  }
+}
+
+@keyframes lw-ai-letter {
+  0%,
+  48%,
+  100% {
+    color: var(--_dim);
+    transform: none;
+  }
+
+  22% {
+    color: var(--_bright);
+    transform: translateY(-0.14em);
+  }
+}
+
+// Dots in a reply bubble.
+.bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.85em 1em;
+  border-radius: 1.3em 1.3em 1.3em 0.4em;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 7%, #{lw.v(color-background)});
+
+  :host([no-bubble]) & {
+    padding: 0;
+    background: none;
+  }
+}
+
+.dot {
+  width: 0.42em;
+  height: 0.42em;
+  border-radius: 50%;
+  background: var(--_bright);
+  opacity: 0.4;
+
+  @include lw.motion {
+    animation: lw-ai-dot 1.32s var(--_ease) infinite;
+  }
+
+  &:nth-child(2) {
+    animation-delay: 0.16s;
+  }
+
+  &:nth-child(3) {
+    animation-delay: 0.32s;
+  }
+}
+
+@keyframes lw-ai-dot {
+  0%,
+  56%,
+  100% {
+    opacity: 0.32;
+    transform: none;
+  }
+
+  28% {
+    opacity: 1;
+    transform: translateY(-0.28em);
+  }
+}
+
+// Matrix: rings of points swell outward from the center.
+.matrix {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 0.4em);
+  gap: 0.22em;
+}
+
+.cell {
+  width: 0.4em;
+  height: 0.4em;
+  border-radius: 50%;
+  background: var(--_bright);
+  opacity: 0.7;
+
+  @include lw.motion {
+    animation: lw-ai-cell 1.5s var(--_ease) infinite;
+    animation-delay: calc(var(--_ring) * 0.16s);
+  }
+}
+
+@keyframes lw-ai-cell {
+  0%,
+  64%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.6);
+  }
+
+  28% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// The glyphs.
+.icon {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+  overflow: visible;
+  color: var(--_bright);
+  opacity: 0.85;
+
+  * {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+}
+
+@include lw.motion {
+  .orbit {
+    transform-box: view-box;
+    transform-origin: 12px 12px;
+    animation: lw-ai-turn 4.8s linear infinite;
+  }
+
+  .star {
+    animation: lw-ai-twinkle 1.35s ease-in-out infinite;
+  }
+
+  .s2 {
+    animation-delay: 0.45s;
+  }
+
+  .s3 {
+    animation-delay: 0.9s;
+  }
+
+  .lens {
+    transform-box: view-box;
+    animation: lw-ai-look 2s var(--_ease) infinite;
+  }
+
+  .spark {
+    animation: lw-ai-twinkle 1.2s ease-in-out infinite;
+  }
+
+  .scan {
+    transform-box: view-box;
+    animation: lw-ai-scan 1.8s var(--_ease) infinite;
+  }
+
+  .stroke {
+    stroke-dasharray: 1;
+    animation: lw-ai-draw 1.8s var(--_ease) infinite;
+  }
+
+  .pen {
+    transform-box: view-box;
+    animation: lw-ai-pen 1.8s var(--_ease) infinite;
+  }
+
+  .caret {
+    animation: lw-ai-blink 1s steps(1) infinite;
+  }
+}
+
+@keyframes lw-ai-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lw-ai-twinkle {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.62);
+  }
+
+  45% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lw-ai-look {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  25% {
+    transform: translate(2.75px, -2px);
+  }
+
+  50% {
+    transform: translate(3.5px, 1.25px);
+  }
+
+  75% {
+    transform: translate(0.75px, 2.5px);
+  }
+}
+
+@keyframes lw-ai-scan {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  50% {
+    transform: translateY(7px);
+  }
+}
+
+@keyframes lw-ai-draw {
+  0% {
+    stroke-dashoffset: 1;
+  }
+
+  70%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes lw-ai-pen {
+  0%,
+  100% {
+    transform: translate(-3px, 1px);
+  }
+
+  70% {
+    transform: translate(2px, 0);
+  }
+}
+
+@keyframes lw-ai-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}

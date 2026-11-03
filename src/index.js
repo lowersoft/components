@@ -182,3 +182,4 @@ export * from './components/dimensional-book-cover/index.js';
 export * from './components/text-path/index.js';
 export * from './components/gradient-blind-backdrop/index.js';
 export * from './components/glowing-border/index.js';
+export * from './components/ai-typing-indicator/index.js';

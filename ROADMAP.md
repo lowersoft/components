@@ -78,6 +78,7 @@
 - [ ] Scroll text
 - [x] Loader
 - [x] Water progress bar
+- [x] AI typing indicator
 
 ## Phase 2: Interactive components
 
