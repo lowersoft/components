@@ -1,0 +1,295 @@
+@use '../../styles' as lw;
+
+:host {
+  --_tone: var(--lw-flat-rate-pricing-tone, light-dark(#4a5a2e, #3d4b25));
+  --_lime: var(--lw-flat-rate-pricing-action, #d6f26a);
+  --_cream: #f4f2e3;
+}
+
+.wrap {
+  @include lw.hero-container(58rem);
+}
+
+// Capitals, a few short words, sized with the room.
+.title {
+  font-size: clamp(1.75rem, 6.2cqi, 3.25rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-align: center;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+// The moss card: two soft glows and a fine grain, as if printed.
+.card {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: 2rem;
+  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+  padding: clamp(1.75rem, 5vw, 3rem);
+  overflow: hidden;
+  border-radius: 1.75rem;
+  background:
+    radial-gradient(70% 90% at 100% 0%, color-mix(in oklab, var(--_lime) 30%, transparent), transparent 60%),
+    radial-gradient(60% 80% at 0% 100%, color-mix(in oklab, black 35%, transparent), transparent 70%),
+    var(--_tone);
+  color: var(--_cream);
+  box-shadow: 0 24px 60px -24px color-mix(in oklab, var(--_tone) 70%, transparent);
+
+  @container (min-width: 44rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+    gap: 3rem;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+}
+
+.price-side {
+  display: grid;
+  justify-items: start;
+}
+
+.label {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgb(244 242 227 / 0.25);
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.amount {
+  font-size: clamp(3.25rem, 10cqi, 5rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.period {
+  font-size: lw.v(text-lg);
+  opacity: 0.75;
+}
+
+.note {
+  margin-top: 0.875rem;
+  font-size: lw.v(text-xs);
+  opacity: 0.7;
+}
+
+.body {
+  max-width: 26rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  opacity: 0.9;
+}
+
+// The lime action, its arrow in a darker tile that slides on hover.
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  padding: 0.375rem 0.375rem 0.375rem 1.25rem;
+  border: 0;
+  border-radius: 0.875rem;
+  background: var(--_lime);
+  font: 600 lw.v(text-md) lw.v(font-sans);
+  color: #1f2a0e;
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: background-color 200ms ease-out;
+  }
+
+  &:hover {
+    background: color-mix(in oklab, var(--_lime) 88%, white);
+  }
+
+  &:active {
+    scale: 0.98;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--_lime);
+    outline-offset: 3px;
+  }
+}
+
+.tile {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: 0.625rem;
+  background: #1f2a0e;
+  color: var(--_lime);
+
+  svg {
+    @include lw.motion {
+      transition: translate 250ms lw.v(ease-out);
+    }
+  }
+
+  .action:hover & svg {
+    translate: 3px 0;
+  }
+}
+
+// The promise: hold the plan any month.
+.promise {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-top: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid color-mix(in oklab, var(--_tone) 22%, #{lw.v(color-border)});
+  border-radius: 1.25rem;
+  background: color-mix(in oklab, var(--_tone) 7%, #{lw.v(color-background)});
+
+  @container (min-width: 36rem) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.promise-icon {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--_tone);
+  color: var(--_cream);
+}
+
+.promise-title {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+}
+
+.promise-body {
+  margin-top: 0.25rem;
+  line-height: 1.5;
+  color: lw.v(color-muted-foreground);
+}
+
+.pill {
+  grid-column: 2;
+  justify-self: start;
+  padding: 0.25rem 0.75rem;
+  border-radius: lw.v(radius-full);
+  background: var(--_lime);
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+  color: #1f2a0e;
+
+  @container (min-width: 36rem) {
+    grid-column: auto;
+  }
+}
+
+// Your offer against the alternatives.
+.scroller {
+  margin-top: clamp(2.5rem, 6vw, 3.5rem);
+}
+
+.table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.9375rem 1rem;
+    border-bottom: 1px solid lw.v(color-border);
+    text-align: center;
+  }
+
+  thead th {
+    padding-block: 0 0.875rem;
+    font-weight: 600;
+    color: lw.v(color-muted-foreground);
+  }
+
+  tbody th {
+    font-weight: 500;
+    text-align: left;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  .text {
+    font-size: lw.v(text-xs);
+    font-variant-numeric: tabular-nums;
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.corner {
+  width: 40%;
+}
+
+// Your column, tinted and checked in the card's colour.
+.ours {
+  background: light-dark(color-mix(in oklab, var(--_tone) 8%, transparent), color-mix(in oklab, var(--_tone) 32%, transparent));
+
+  thead & {
+    border-radius: 0.75rem 0.75rem 0 0;
+    padding-top: 0.875rem;
+    color: lw.v(color-foreground);
+  }
+
+  tbody tr:last-child & {
+    border-radius: 0 0 0.75rem 0.75rem;
+  }
+
+  .yes {
+    display: inline-grid;
+    width: 1.5rem;
+    height: 1.5rem;
+    place-items: center;
+    border-radius: 50%;
+    background: light-dark(var(--_tone), color-mix(in oklab, var(--_tone), white 22%));
+    color: var(--_cream);
+
+    svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+
+  .text {
+    font-weight: 600;
+    color: lw.v(color-foreground);
+  }
+}
