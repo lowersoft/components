@@ -1,0 +1,37 @@
+@use '../../styles' as lw;
+
+:host {
+  --_base: var(--lw-text-ripple-base, #{lw.v(color-muted-foreground)});
+  --_crest: var(--lw-text-ripple-color, #{lw.v(color-foreground)});
+
+  display: inline-block;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  font-weight: 700;
+  color: var(--_base);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.sr {
+  @include lw.visually-hidden;
+}
+
+.stage {
+  display: inline-block;
+  perspective: 600px;
+  transform-style: preserve-3d;
+}
+
+.char {
+  display: inline-block;
+  white-space: pre;
+  transform-origin: 50% 70%;
+  will-change: transform;
+}
+
+:host([data-still]) .char {
+  will-change: auto;
+}

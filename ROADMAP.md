@@ -74,6 +74,7 @@
 - [x] Follow cursor label
 - [x] Text path
 - [x] Text morphing
+- [x] Text ripple
 - [ ] Matrix text
 - [ ] Swoosh text
 - [ ] Scroll text
