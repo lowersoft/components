@@ -153,6 +153,7 @@ export * from './components/soft-gradient-pricing/index.js';
 export * from './components/credit-plan-pricing/index.js';
 export * from './components/flat-rate-pricing/index.js';
 export * from './components/plan-table-pricing/index.js';
+export * from './components/nested-feature-pricing/index.js';
 export * from './components/testimonial-grid/index.js';
 export * from './components/testimonial-spotlight/index.js';
 export * from './components/annotated-quote/index.js';

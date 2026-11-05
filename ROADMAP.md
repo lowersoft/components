@@ -207,6 +207,7 @@
 - [x] Credit plan pricing
 - [x] Flat rate pricing
 - [x] Plan table pricing
+- [x] Nested feature pricing
 - [x] Features matrix
 - [x] Pricing matrix
 - [x] Leader graph
