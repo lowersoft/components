@@ -201,6 +201,7 @@
 - [x] Credit pack pricing
 - [x] Single plan pricing
 - [x] Agency services pricing
+- [x] Cloud pricing
 - [x] Features matrix
 - [x] Pricing matrix
 - [x] Leader graph
