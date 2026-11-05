@@ -174,6 +174,7 @@
 - [x] SVG fire
 - [x] Fluted glass
 - [x] Gradient blind backdrop
+- [x] Edge glow
 - [x] Globe hero
 - [x] Product stage hero
 - [x] Work flow hero

@@ -1,0 +1,165 @@
+@use '../../styles' as lw;
+
+:host {
+  --_colors: var(--lw-edge-glow-colors, #ff6778, #ffba71, #8d99ff, #bc82f3, #f5b9ea, #c686ff, #ff6778);
+  --_reach: 52px;
+  --_duration: 10s;
+  --_radius: 1.75rem;
+
+  display: block;
+  height: 360px;
+  font-family: lw.v(font-sans);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.stage {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  height: 100%;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: var(--_radius);
+  background: lw.v(color-background);
+}
+
+// Every layer is the same orbiting ribbon of color, cut to a ring of a
+// different width and softened by a different blur.
+.glow {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 1;
+  pointer-events: none;
+
+  @include lw.motion {
+    animation: lw-edge-glow-orbit var(--_duration) linear infinite;
+    transition:
+      opacity 700ms ease-out,
+      scale 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  :host([off]) & {
+    opacity: 0;
+    scale: 1.04;
+  }
+
+  :host([off]) &,
+  :host([data-resting]) & {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes lw-edge-glow-orbit {
+  to {
+    --lw-edge-glow-angle: 360deg;
+  }
+}
+
+.layer,
+.soft {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.layer {
+  background: conic-gradient(from var(--lw-edge-glow-angle, 0deg), var(--_colors));
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+// The bright line along the rim.
+.rim {
+  padding: 2px;
+}
+
+// The soft layers blur a ring cut inside them; a blur on the ring itself
+// would be cut back to hard edges by its own mask.
+.bloom {
+  filter: blur(calc(var(--_reach) * 0.2));
+  opacity: 0.9;
+
+  .layer {
+    padding: calc(var(--_reach) * 0.16);
+  }
+}
+
+// The mist that reaches in and fades toward the middle.
+.mist {
+  filter: blur(calc(var(--_reach) * 0.5));
+  opacity: 0.8;
+
+  .layer {
+    padding: calc(var(--_reach) * 0.55);
+  }
+}
+
+// Light adds up on a dark page.
+@media (prefers-color-scheme: dark) {
+  :host-context(:root:not([data-theme='light'])) :is(.rim, .soft) {
+    mix-blend-mode: plus-lighter;
+  }
+}
+
+:host-context(:root[data-theme='dark']) :is(.rim, .soft) {
+  mix-blend-mode: plus-lighter;
+}
+
+// Turning on flares the bloom for a moment.
+:host([data-flare]) .bloom {
+  @include lw.motion {
+    animation: lw-edge-glow-flare 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@keyframes lw-edge-glow-flare {
+  0% {
+    opacity: 0;
+  }
+
+  35% {
+    opacity: 1;
+    scale: 1.01;
+  }
+
+  100% {
+    opacity: 0.9;
+  }
+}
+
+.content {
+  display: grid;
+  justify-items: center;
+  gap: 0.875rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.caption {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: lw.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.toggle::part(button) {
+  border-radius: lw.v(radius-full);
+  box-shadow: 0 6px 20px -8px rgb(0 0 0 / 0.25);
+}
+
+:host([hide-toggle]) .toggle {
+  display: none;
+}
