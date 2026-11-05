@@ -79,6 +79,7 @@
 - [x] Text cycle
 - [x] Text chroma reveal
 - [x] Canvas text
+- [x] Underline animation
 - [ ] Matrix text
 - [ ] Swoosh text
 - [ ] Scroll text

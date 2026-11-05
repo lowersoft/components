@@ -1,0 +1,145 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: var(--lw-underline-color, currentColor);
+  --_from: #f43f5e;
+  --_to: #8b5cf6;
+  --_thick: 2px;
+  --_offset: 2px;
+  --_duration: 420ms;
+  --_ease: cubic-bezier(0.65, 0, 0.35, 1);
+  // The drawn line, and a faint one under it while idle with `rest`.
+  --_ink: linear-gradient(var(--_line), var(--_line));
+  --_faint: linear-gradient(transparent, transparent);
+
+  display: inline;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([rest]) {
+  --_faint: linear-gradient(color-mix(in oklab, var(--_line) 28%, transparent), color-mix(in oklab, var(--_line) 28%, transparent));
+}
+
+:host([variant='gradient']) {
+  --_ink: linear-gradient(90deg, var(--_from), var(--_to));
+}
+
+:host([variant='fill']) {
+  --_ink: linear-gradient(color-mix(in oklab, var(--_line) 20%, transparent), color-mix(in oklab, var(--_line) 20%, transparent));
+}
+
+.link {
+  position: relative;
+  // Bottom padding on an inline box leaves the line height alone and gives
+  // the background room under the text.
+  padding: 0 0 calc(var(--_offset) + var(--_thick));
+  border: 0;
+  // The line is the background, so it follows the text across line breaks.
+  background-color: transparent;
+  background-image: var(--_ink), var(--_faint);
+  background-repeat: no-repeat;
+  background-position:
+    100% 100%,
+    0 100%;
+  background-size:
+    0% var(--_thick),
+    100% var(--_thick);
+  box-decoration-break: clone;
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: background-size var(--_duration) var(--_ease);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    border-radius: 2px;
+  }
+}
+
+span.link {
+  cursor: inherit;
+}
+
+// Drawn while hovered, focused from the keyboard, or the current page.
+:host(:hover) .link,
+.link:focus-visible,
+:host([active]) .link {
+  background-position:
+    0 100%,
+    0 100%;
+  background-size:
+    100% var(--_thick),
+    100% var(--_thick);
+}
+
+// Center: out from the middle and back into it.
+:host([variant='center']) .link {
+  background-position:
+    50% 100%,
+    0 100%;
+}
+
+// Fill: a line that sweeps out and rises into a band behind the text.
+:host([variant='fill']) .link {
+  background-position:
+    0 100%,
+    0 100%;
+}
+
+:host([variant='fill']:hover) .link,
+:host([variant='fill']) .link:focus-visible,
+:host([variant='fill'][active]) .link {
+  background-size:
+    100% 100%,
+    100% var(--_thick);
+}
+
+// Wavy: a wave drawn in from the left under a single line.
+:host([variant='wavy']) .link {
+  display: inline-block;
+  background-image: none;
+}
+
+.wave {
+  display: none;
+}
+
+:host([variant='wavy']) .wave {
+  position: absolute;
+  right: 0;
+  bottom: calc(var(--_thick) * -1);
+  left: 0;
+  display: block;
+  height: calc(var(--_thick) * 3);
+  background: var(--_line);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='6' viewBox='0 0 12 6'%3E%3Cpath d='M0 3 Q3 0 6 3 T12 3' fill='none' stroke='%23000' stroke-width='1.6'/%3E%3C/svg%3E") repeat-x 0 50% / calc(var(--_thick) * 6) 100%;
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+
+  @include lw.motion {
+    transition:
+      clip-path var(--_duration) var(--_ease),
+      opacity var(--_duration) var(--_ease);
+  }
+}
+
+:host([variant='wavy'][rest]) .wave {
+  clip-path: inset(0);
+  opacity: 0.3;
+}
+
+:host([variant='wavy']:hover) .wave,
+:host([variant='wavy']) .link:focus-visible .wave,
+:host([variant='wavy'][active]) .wave {
+  clip-path: inset(0);
+  opacity: 1;
+}
