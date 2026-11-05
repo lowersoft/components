@@ -1,0 +1,332 @@
+@use '../../styles' as lw;
+
+:host {
+  --_accent: var(--lw-lifetime-pricing-accent, light-dark(#4f46e5, #818cf8));
+}
+
+.head {
+  max-width: 40rem;
+  margin: 0 auto clamp(2.5rem, 6vw, 3.5rem);
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 32rem;
+  margin: 1rem auto 0;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+}
+
+// Four across only when each card has the room; two on tablets.
+.plans {
+  display: grid;
+  gap: 1rem;
+
+  @container (min-width: 36rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @container (min-width: 72rem) {
+    grid-template-columns: repeat(min(var(--_count), 4), minmax(0, 1fr));
+  }
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.plan {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.75rem 1.5rem 1.5rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1.25rem;
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+
+  // The opposite scheme: dark on a light page, light on a dark one.
+  &[data-inverted] {
+    @include lw.inverted;
+
+    border-color: transparent;
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--_ink) 80%, transparent),
+      0 24px 48px -20px rgb(0 0 0 / 0.35);
+  }
+}
+
+.plan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 1.625rem;
+}
+
+.name {
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+}
+
+.badge {
+  padding: 0.25rem 0.625rem;
+  border-radius: lw.v(radius-full);
+  background: var(--_accent);
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+  color: #fff;
+}
+
+.subtitle {
+  margin-top: 0.25rem;
+  color: lw.v(color-muted-foreground);
+}
+
+// A small currency beside figures that line up from card to card.
+.price {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.125rem;
+  margin-top: 1.5rem;
+}
+
+.currency {
+  margin-top: 0.375rem;
+  font-size: lw.v(text-lg);
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+}
+
+.amount {
+  font-size: 3rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+// Solid, with a sheen across the top and an arrow that nudges ahead.
+.action {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  margin-top: 1.5rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: lw.v(radius-lg);
+  background:
+    linear-gradient(to bottom, rgb(255 255 255 / 0.16), transparent 55%),
+    lw.v(color-primary);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    0 1px 2px rgb(0 0 0 / 0.2);
+  font: 500 lw.v(text-sm) lw.v(font-sans);
+  color: lw.v(color-primary-foreground);
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: filter 200ms ease-out;
+  }
+
+  &:hover {
+    filter: brightness(1.12);
+  }
+
+  &:active {
+    scale: 0.99;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  svg {
+    @include lw.motion {
+      transition: translate 200ms lw.v(ease-out);
+    }
+  }
+
+  &:hover svg {
+    translate: 3px 0;
+  }
+}
+
+.features,
+.extras {
+  display: grid;
+  gap: 0.625rem;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+}
+
+.features {
+  margin-top: 1.5rem;
+}
+
+// Grey circle checks; the accent ones belong to the add-ons.
+.tick {
+  display: grid;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: lw.v(color-muted);
+  color: lw.v(color-muted-foreground);
+
+  &.accent {
+    background: color-mix(in oklab, var(--_accent) 16%, transparent);
+    color: var(--_accent);
+  }
+}
+
+// Everything under the plus stacks on top of the plan.
+.plus-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 1.5rem 0 1rem;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-top: 1px dashed lw.v(color-border);
+  }
+
+  span {
+    display: grid;
+    width: 1.5rem;
+    height: 1.5rem;
+    place-items: center;
+    border: 1px solid lw.v(color-border);
+    border-radius: 50%;
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.extras li {
+  display: block;
+
+  &.included {
+    display: flex;
+  }
+}
+
+// An add-on with a price: press to add it.
+.extra {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md);
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition:
+      border-color 150ms ease-out,
+      background-color 150ms ease-out;
+  }
+
+  &:hover {
+    border-color: color-mix(in oklab, var(--_accent) 45%, #{lw.v(color-border)});
+  }
+
+  &[aria-pressed='true'] {
+    border-color: var(--_accent);
+    background: color-mix(in oklab, var(--_accent) 8%, transparent);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.box {
+  display: grid;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  place-items: center;
+  border: 1.5px solid color-mix(in oklab, #{lw.v(color-foreground)} 28%, transparent);
+  border-radius: 0.3125rem;
+  color: #fff;
+
+  svg {
+    scale: 0;
+
+    @include lw.motion {
+      transition: scale 200ms lw.v(ease-spring);
+    }
+  }
+
+  [aria-pressed='true'] > & {
+    border-color: var(--_accent);
+    background: var(--_accent);
+
+    svg {
+      scale: 1;
+    }
+  }
+}
+
+.extra-label {
+  flex: 1;
+}
+
+.extra-price {
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-muted-foreground);
+}
+
+.question {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 0.375rem;
+  border-radius: 2px;
+  font-size: lw.v(text-xs);
+  text-decoration: none;
+  color: lw.v(color-muted-foreground);
+  outline: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
