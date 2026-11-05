@@ -203,3 +203,4 @@ export * from './components/star-rating/index.js';
 export * from './components/edge-glow/index.js';
 export * from './components/features-matrix/index.js';
 export * from './components/pricing-matrix/index.js';
+export * from './components/leader-graph/index.js';
