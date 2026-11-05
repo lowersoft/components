@@ -1,0 +1,215 @@
+@use '../../styles' as lw;
+
+:host {
+  --_paper: light-dark(#fff, #111113);
+  --_ink-line: color-mix(in oklab, #{lw.v(color-foreground)} 22%, transparent);
+}
+
+// The meters on the left, the receipt beside them.
+.section {
+  display: grid;
+  gap: 2.5rem;
+
+  @container (min-width: 56rem) {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: start;
+    gap: 4rem;
+  }
+}
+
+.title {
+  max-width: 28rem;
+  font-size: clamp(2.25rem, 5.5vw, 3.25rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 28rem;
+  margin-top: 1rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  color: lw.v(color-muted-foreground);
+}
+
+.switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-top: 2rem;
+}
+
+.save {
+  font: lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-accent);
+}
+
+.meters {
+  display: grid;
+  margin-top: 2.25rem;
+  border-top: 1px solid lw.v(color-border);
+}
+
+.meter {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid lw.v(color-border);
+
+  lw-range {
+    width: 100%;
+  }
+
+  lw-range::part(value) {
+    min-width: 4.5rem;
+    font-family: lw.v(font-mono);
+    font-size: lw.v(text-sm);
+  }
+}
+
+// A till receipt: square, monospaced, framed by corner brackets.
+.receipt {
+  position: relative;
+  padding: 1.75rem 1.5rem 1.5rem;
+  border: 1px solid lw.v(color-border);
+  background: var(--_paper);
+  font-family: lw.v(font-mono);
+  font-size: 0.8125rem;
+
+  @container (min-width: 56rem) {
+    position: sticky;
+    top: 1.5rem;
+    padding: 2rem 2rem 1.75rem;
+  }
+
+  &::before {
+    --_l: 0.875rem;
+    --_c: #{lw.v(color-foreground)};
+
+    content: '';
+    position: absolute;
+    inset: -0.375rem;
+    background:
+      linear-gradient(var(--_c) 0 0) top left / var(--_l) 1.5px,
+      linear-gradient(var(--_c) 0 0) top left / 1.5px var(--_l),
+      linear-gradient(var(--_c) 0 0) top right / var(--_l) 1.5px,
+      linear-gradient(var(--_c) 0 0) top right / 1.5px var(--_l),
+      linear-gradient(var(--_c) 0 0) bottom left / var(--_l) 1.5px,
+      linear-gradient(var(--_c) 0 0) bottom left / 1.5px var(--_l),
+      linear-gradient(var(--_c) 0 0) bottom right / var(--_l) 1.5px,
+      linear-gradient(var(--_c) 0 0) bottom right / 1.5px var(--_l);
+    background-repeat: no-repeat;
+    pointer-events: none;
+  }
+}
+
+.receipt-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed var(--_ink-line);
+  font-size: lw.v(text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: lw.v(color-muted-foreground);
+}
+
+.receipt-title {
+  font-weight: 600;
+  color: lw.v(color-foreground);
+}
+
+.lines,
+.sums {
+  display: grid;
+  gap: 0.875rem;
+  padding: 0;
+  list-style: none;
+}
+
+.lines {
+  padding-top: 1.25rem;
+}
+
+.sums:not(:empty) {
+  margin-bottom: 1rem;
+}
+
+.line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.item {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.detail {
+  font-size: 0.6875rem;
+  color: lw.v(color-muted-foreground);
+}
+
+.cost {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.off .cost {
+  color: lw.v(color-accent);
+}
+
+// The tear between the lines and the sums.
+.rule {
+  height: 1px;
+  margin: 1.25rem 0;
+  background: repeating-linear-gradient(to right, var(--_ink-line) 0 6px, transparent 6px 10px);
+}
+
+.total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid lw.v(color-foreground);
+}
+
+.total-label {
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.amount {
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.billed {
+  margin-top: 0.5rem;
+  font-size: lw.v(text-xs);
+  text-align: right;
+  color: lw.v(color-muted-foreground);
+}
+
+.actions {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+
+  lw-button::part(button) {
+    width: 100%;
+    height: 2.75rem;
+    border-radius: 0;
+    font-family: lw.v(font-sans);
+  }
+}
