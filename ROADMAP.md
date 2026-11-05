@@ -202,6 +202,7 @@
 - [x] Single plan pricing
 - [x] Agency services pricing
 - [x] Features matrix
+- [x] Pricing matrix
 - [x] Testimonial grid
 - [x] Testimonial spotlight
 - [x] Annotated quote

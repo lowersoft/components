@@ -1,0 +1,177 @@
+@use '../../styles' as lw;
+
+:host {
+  --_sky: light-dark(oklch(0.96 0.025 235), oklch(0.27 0.045 250));
+  --_sand: light-dark(oklch(0.96 0.03 80), oklch(0.27 0.035 60));
+  --_flag: #f97316;
+  --_rule: color-mix(in oklab, #{lw.v(color-border)} 75%, transparent);
+}
+
+// One grid for the whole sheet: the features down the left, a column per
+// plan, so a plan's wash runs unbroken from its price to the last row.
+.sheet {
+  display: grid;
+  grid-template-columns: minmax(13rem, 1.25fr) repeat(var(--_count), minmax(12rem, 1fr));
+  min-width: calc(13rem + var(--_count) * 12rem);
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  padding: 0.875rem 1.25rem;
+}
+
+// Features stay put while the plans scroll.
+.corner,
+.label,
+.group-label {
+  position: sticky;
+  z-index: 1;
+  left: 0;
+  background: lw.v(color-background);
+}
+
+.corner {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 1.25rem;
+  padding: 1.5rem 1.25rem 2rem 0;
+}
+
+.wash.sky {
+  background: var(--_sky);
+}
+
+.wash.sand {
+  background: var(--_sand);
+}
+
+// A plan's head: name, line, price and its call to action.
+.plan {
+  position: relative;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.375rem;
+  padding: 1.5rem 1.5rem 2rem;
+  border-radius: 1rem 1rem 0 0;
+}
+
+// A corner flag in place of a "most popular" badge.
+.flagged::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1.375rem;
+  height: 1.375rem;
+  border-top-right-radius: 1rem;
+  background: var(--_flag);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.plan-name {
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  min-height: 2.6em;
+  line-height: 1.3;
+  color: lw.v(color-muted-foreground);
+  text-wrap: pretty;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+}
+
+.amount {
+  display: inline-flex;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.per {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+// Kept in the layout either way, so switching billing moves nothing.
+.billed {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+  visibility: hidden;
+
+  &.shown {
+    visibility: visible;
+  }
+}
+
+.action {
+  margin-top: 1rem;
+  font-weight: 500;
+}
+
+.action-arrow {
+  display: inline-flex;
+  vertical-align: -2px;
+
+  @include lw.motion {
+    transition: translate 200ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+.action:hover .action-arrow {
+  translate: 2px 0;
+}
+
+// Group labels, with room above.
+.group-label,
+.group-gap {
+  padding-top: 2rem;
+  padding-bottom: 0.625rem;
+}
+
+.group-label {
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: lw.v(color-muted-foreground);
+}
+
+.label,
+.value {
+  border-bottom: 1px solid var(--_rule);
+}
+
+.label {
+  padding-left: 0;
+}
+
+.value {
+  justify-content: flex-start;
+  padding-inline: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.last {
+  border-bottom: 0;
+}
+
+.value.last {
+  padding-bottom: 1.5rem;
+}
+
+.wash.last {
+  border-radius: 0 0 1rem 1rem;
+}
