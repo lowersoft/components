@@ -65,7 +65,7 @@
 - [x] Push button
 - [ ] Attract button
 - [x] Type writer
-- [ ] Shimmer text
+- [x] Shimmer text
 - [x] Dynamic text
 - [x] Glitch text
 - [x] Plucked text

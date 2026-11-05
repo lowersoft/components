@@ -1,0 +1,42 @@
+@use '../../styles' as lw;
+
+:host {
+  --_base: var(--lw-text-shimmer-base, #{lw.v(color-muted-foreground)});
+  --_shine: var(--lw-text-shimmer-color, #{lw.v(color-foreground)});
+
+  display: inline-block;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  font-weight: 600;
+  vertical-align: bottom;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.text {
+  display: inline-block;
+  max-width: 100%;
+  background-image: linear-gradient(
+    var(--_angle, 90deg),
+    var(--_base) calc(50% - var(--_band, 10%)),
+    var(--_shine) 50%,
+    var(--_base) calc(50% + var(--_band, 10%))
+  );
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  background-size: var(--_size, 244%) 100%;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  &::selection {
+    -webkit-text-fill-color: var(--_shine);
+  }
+}
+
+// Reduced motion: the band holds still across the middle.
+:host([data-still]) .text {
+  background-position: 50% 0;
+}
