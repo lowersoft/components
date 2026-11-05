@@ -77,6 +77,7 @@
 - [x] Text ripple
 - [x] Text flip
 - [x] Text cycle
+- [x] Text chroma reveal
 - [ ] Matrix text
 - [ ] Swoosh text
 - [ ] Scroll text

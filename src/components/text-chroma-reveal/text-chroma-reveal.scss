@@ -1,0 +1,67 @@
+@use '../../styles' as lw;
+
+:host {
+  --_ink: var(--lw-text-chroma-reveal-color, currentColor);
+
+  display: inline-block;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  font-weight: 700;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.sr {
+  @include lw.visually-hidden;
+}
+
+// The phrase and, with `fixed-width`, an invisible copy of every phrase,
+// all in one cell so the box is as wide as the longest.
+.stage {
+  display: inline-grid;
+  max-width: 100%;
+}
+
+.sizers {
+  display: contents;
+}
+
+.sizer,
+.text {
+  grid-area: 1 / 1;
+}
+
+.sizer {
+  visibility: hidden;
+}
+
+.text {
+  display: block;
+  // The gradient only paints inside the box; room around it keeps tight
+  // line heights from clipping descenders and overhangs.
+  margin: -0.2em -0.08em;
+  padding: 0.2em 0.08em;
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  &::selection {
+    -webkit-text-fill-color: var(--_ink);
+  }
+}
+
+// Before its sweep the phrase is hidden; after it, painted.
+:host([data-rtl]) .text {
+  background-position: 0% 0;
+}
+
+:host([data-shown]) .text {
+  background-position: 0% 0;
+}
+
+:host([data-shown][data-rtl]) .text {
+  background-position: 100% 0;
+}
