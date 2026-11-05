@@ -203,6 +203,7 @@
 - [x] Agency services pricing
 - [x] Cloud pricing
 - [x] Usage receipt pricing
+- [x] Soft gradient pricing
 - [x] Features matrix
 - [x] Pricing matrix
 - [x] Leader graph

@@ -149,6 +149,7 @@ export * from './components/single-plan-pricing/index.js';
 export * from './components/agency-services-pricing/index.js';
 export * from './components/cloud-pricing/index.js';
 export * from './components/usage-receipt-pricing/index.js';
+export * from './components/soft-gradient-pricing/index.js';
 export * from './components/testimonial-grid/index.js';
 export * from './components/testimonial-spotlight/index.js';
 export * from './components/annotated-quote/index.js';
