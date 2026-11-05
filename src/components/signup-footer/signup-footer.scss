@@ -2,427 +2,115 @@
 
 @include lw.footer-base;
 
-:host {
-  --_accent: var(--lw-signup-footer-accent, #8b5cf6);
-  --_line: #{lw.v(color-border)};
-  --_soft: color-mix(in oklab, #{lw.v(color-muted)} 45%, #{lw.v(color-background)});
-
-  overflow: hidden;
-}
-
-:host([hidden]) {
-  display: none;
-}
-
-.container {
-  padding-top: clamp(3rem, 6vw, 4.5rem);
-}
-
-:host([wordmark]) .container {
-  padding-bottom: 0;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-// The sign-up panel: the pitch on the left, the form on the right.
-.newsletter {
-  position: relative;
-  isolation: isolate;
+// The brand and the sign-up beside the links; stacked on narrow screens.
+.top {
   display: grid;
-  gap: 1.75rem;
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  overflow: hidden;
-  border: 1px solid var(--_line);
-  border-radius: 1.25rem;
-  background: var(--_soft);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3.5rem;
 
-  @container (min-width: 860px) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
-    align-items: center;
+  @container (min-width: 56rem) {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     gap: 4rem;
-  }
-
-  // A faint glow and a field of dots, fading in from the top right corner.
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  &::before {
-    background: radial-gradient(ellipse 60% 90% at 100% 0%, color-mix(in oklab, var(--_accent) 14%, transparent), transparent 70%);
-  }
-
-  &::after {
-    background-image: radial-gradient(color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent) 1px, transparent 1.5px);
-    background-size: 16px 16px;
-    mask-image: radial-gradient(ellipse 55% 85% at 100% 0%, #000, transparent 75%);
-  }
-}
-
-.pitch {
-  display: grid;
-  justify-items: start;
-  gap: 0.75rem;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4375rem;
-  padding: 0.25rem 0.625rem 0.25rem 0.5rem;
-  border: 1px solid var(--_line);
-  border-radius: lw.v(radius-full);
-  background: lw.v(color-background);
-  font-size: lw.v(text-xs);
-  font-weight: 500;
-  color: lw.v(color-muted-foreground);
-}
-
-.eyebrow-icon {
-  display: inline-flex;
-  color: var(--_accent);
-
-  svg {
-    display: block;
-  }
-}
-
-.heading {
-  font-size: clamp(1.375rem, 2.4vw, 1.75rem);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
-  text-wrap: balance;
-}
-
-.description {
-  max-width: 34rem;
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  color: lw.v(color-muted-foreground);
-  text-wrap: pretty;
-}
-
-.signup {
-  display: grid;
-  gap: 1rem;
-}
-
-.form {
-  display: grid;
-  gap: 0.625rem;
-}
-
-.field {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.25rem 0.25rem 0.875rem;
-  border: 1px solid var(--_line);
-  border-radius: 0.75rem;
-  background: lw.v(color-background);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
-
-  @include lw.motion {
-    transition:
-      border-color 150ms ease-out,
-      box-shadow 150ms ease-out;
-  }
-
-  &:focus-within {
-    border-color: color-mix(in oklab, var(--_accent) 65%, var(--_line));
-    box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.05),
-      0 0 0 3px color-mix(in oklab, var(--_accent) 18%, transparent);
-  }
-
-  :host([data-invalid]) & {
-    border-color: lw.v(color-destructive);
-    box-shadow: 0 0 0 3px color-mix(in oklab, #{lw.v(color-destructive)} 14%, transparent);
-  }
-}
-
-.field-icon {
-  display: inline-flex;
-  flex: none;
-  color: lw.v(color-muted-foreground);
-
-  svg {
-    display: block;
-  }
-}
-
-.input {
-  flex: 1;
-  min-width: 0;
-  height: 2.5rem;
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  font-size: lw.v(text-sm);
-  color: lw.v(color-foreground);
-  outline: none;
-
-  &::placeholder {
-    color: color-mix(in oklab, #{lw.v(color-muted-foreground)} 80%, transparent);
-  }
-}
-
-.submit {
-  position: relative;
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  gap: 0.375rem;
-  height: 2.5rem;
-  padding: 0 0.875rem 0 1rem;
-  border: 0;
-  border-radius: 0.5rem;
-  background: lw.v(color-foreground);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.14),
-    0 1px 2px rgb(0 0 0 / 0.16);
-  font: inherit;
-  font-size: lw.v(text-sm);
-  font-weight: 500;
-  color: lw.v(color-background);
-  cursor: pointer;
-  outline: none;
-
-  @include lw.motion {
-    transition:
-      background-color 150ms ease-out,
-      scale 150ms ease-out;
-  }
-
-  &:hover {
-    background: color-mix(in oklab, #{lw.v(color-foreground)} 86%, #{lw.v(color-background)});
-  }
-
-  &:active {
-    scale: 0.97;
-  }
-
-  &:focus-visible {
-    @include lw.focus-ring;
-  }
-
-  :host([data-busy]) & {
-    cursor: progress;
-  }
-}
-
-.arrow {
-  display: inline-flex;
-
-  svg {
-    display: block;
-  }
-
-  @include lw.motion {
-    transition: translate 200ms cubic-bezier(0.23, 1, 0.32, 1);
-
-    .submit:hover & {
-      translate: 2px 0;
-    }
-  }
-}
-
-.spinner {
-  position: absolute;
-  inset: 0;
-  display: none;
-  width: 1rem;
-  height: 1rem;
-  margin: auto;
-  border: 2px solid color-mix(in oklab, #{lw.v(color-background)} 35%, transparent);
-  border-top-color: lw.v(color-background);
-  border-radius: 50%;
-  animation: lw-signup-spin 700ms linear infinite;
-}
-
-@keyframes lw-signup-spin {
-  to {
-    rotate: 1turn;
-  }
-}
-
-:host([data-busy]) {
-  .spinner {
-    display: block;
-  }
-
-  .submit-label,
-  .arrow {
-    visibility: hidden;
-  }
-}
-
-.note {
-  font-size: lw.v(text-xs);
-  line-height: 1.5;
-  color: lw.v(color-muted-foreground);
-
-  :host([data-invalid]) & {
-    color: lw.v(color-destructive);
-  }
-}
-
-.privacy {
-  color: lw.v(color-foreground);
-  white-space: nowrap;
-  text-decoration: underline;
-  text-decoration-color: color-mix(in oklab, currentColor 30%, transparent);
-  text-underline-offset: 2px;
-
-  &:hover {
-    text-decoration-color: currentColor;
-  }
-}
-
-.thanks {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.875rem 1rem;
-  border: 1px solid color-mix(in oklab, var(--_accent) 32%, var(--_line));
-  border-radius: 0.75rem;
-  background: color-mix(in oklab, var(--_accent) 7%, #{lw.v(color-background)});
-  outline: none;
-
-  @include lw.fade-in(400ms);
-}
-
-.thanks-icon {
-  display: grid;
-  width: 1.375rem;
-  height: 1.375rem;
-  flex: none;
-  place-items: center;
-  margin-top: 0.0625rem;
-  border-radius: 50%;
-  background: var(--_accent);
-  color: #fff;
-}
-
-.thanks-text {
-  display: grid;
-  gap: 0.125rem;
-  font-size: lw.v(text-sm);
-  color: lw.v(color-muted-foreground);
-
-  strong {
-    font-weight: 600;
-    color: lw.v(color-foreground);
-  }
-
-  b {
-    font-weight: 500;
-    color: lw.v(color-foreground);
-    overflow-wrap: anywhere;
-  }
-}
-
-// A few faces and the count.
-.readers {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.8125rem;
-  color: lw.v(color-muted-foreground);
-}
-
-.faces {
-  display: flex;
-}
-
-.face {
-  display: grid;
-  width: 1.75rem;
-  height: 1.75rem;
-  place-items: center;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--_soft);
-  background: light-dark(oklch(0.92 0.04 var(--_hue)), oklch(0.34 0.05 var(--_hue)));
-  font-size: 0.5625rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: light-dark(oklch(0.42 0.08 var(--_hue)), oklch(0.88 0.05 var(--_hue)));
-
-  & + & {
-    margin-left: -0.375rem;
-  }
-}
-
-// The brand beside four columns of links.
-.main {
-  display: grid;
-  gap: 2.75rem;
-  padding-block: clamp(2.75rem, 5vw, 4rem);
-
-  @container (min-width: 860px) {
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 3fr);
-    gap: 3rem;
   }
 }
 
 .about {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
   justify-items: start;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .tagline {
-  max-width: 19rem;
+  max-width: 22rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  color: lw.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// The sign-up, set off from the brand by a hairline.
+.signup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  max-width: 26rem;
+  margin-top: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid lw.v(color-border);
+}
+
+.title {
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.lead {
+  margin-top: 0.5rem;
   line-height: 1.6;
   color: lw.v(color-muted-foreground);
   text-wrap: pretty;
 }
 
-.socials {
+.form {
   display: flex;
-  gap: 0.375rem;
-  margin-top: 0.25rem;
-  padding: 0;
-  list-style: none;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
 }
 
-.social {
-  display: grid;
-  width: 2.125rem;
-  height: 2.125rem;
-  place-items: center;
-  border: 1px solid var(--_line);
-  border-radius: 0.5rem;
+.email {
+  flex: 1;
+  min-width: 0;
+
+  &::part(label) {
+    @include lw.visually-hidden;
+  }
+}
+
+.field-icon {
+  display: inline-flex;
   color: lw.v(color-muted-foreground);
+}
+
+.subscribe {
+  flex: none;
+}
+
+.done {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-lg);
+  outline: none;
 
   @include lw.motion {
-    transition:
-      color 150ms ease-out,
-      background-color 150ms ease-out,
-      border-color 150ms ease-out;
-  }
-
-  &:hover {
-    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 22%, var(--_line));
-    background: var(--_soft);
-    color: lw.v(color-foreground);
-  }
-
-  &:focus-visible {
-    border-radius: 0.5rem;
+    animation: done-in 400ms cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   svg {
-    display: block;
+    flex: none;
+    color: lw.v(color-accent);
+  }
+
+  b {
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+}
+
+@keyframes done-in {
+  from {
+    opacity: 0;
+    translate: 0 0.375rem;
   }
 }
 
@@ -430,135 +118,75 @@
 .columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2.5rem 1.5rem;
+  gap: 2.5rem 2rem;
 
-  @container (min-width: 640px) {
+  @container (min-width: 36rem) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-.column-title {
-  margin-bottom: 1rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
-
-.links {
-  gap: 0.75rem;
-}
-
-// Copyright, legal links and the status line.
-.bar {
+// The small print, then social links and the theme switch.
+.bottom {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.875rem 2rem;
-  padding-block: 1.5rem 2rem;
-  border-top: 1px solid var(--_line);
-  font-size: lw.v(text-xs);
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  margin-top: 4.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid lw.v(color-border);
+}
+
+.legal,
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
   color: lw.v(color-muted-foreground);
 }
 
-.copyright {
-  margin-right: auto;
-}
-
-.legal {
+.tools {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.25rem;
+  align-items: center;
+  gap: 1rem;
 }
 
-.status {
-  --_tone: #22c55e;
+.socials {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0;
+  list-style: none;
+}
 
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.3125rem 0.625rem;
-  border: 1px solid var(--_line);
-  border-radius: lw.v(radius-full);
+.social {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: lw.v(radius-md);
   color: lw.v(color-muted-foreground);
 
   @include lw.motion {
-    transition: color 150ms ease-out, border-color 150ms ease-out;
+    transition:
+      color 150ms ease-out,
+      background-color 150ms ease-out;
   }
 
   &:hover {
-    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 22%, var(--_line));
+    background: lw.v(color-muted);
     color: lw.v(color-foreground);
   }
 
   &:focus-visible {
-    border-radius: lw.v(radius-full);
-  }
-}
-
-:host([status='degraded']) .status {
-  --_tone: #f59e0b;
-}
-
-:host([status='outage']) .status {
-  --_tone: #ef4444;
-}
-
-.dot {
-  position: relative;
-  width: 0.4375rem;
-  height: 0.4375rem;
-  border-radius: 50%;
-  background: var(--_tone);
-
-  // A ring that keeps breathing out, so the status reads as live.
-  @include lw.motion {
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      background: var(--_tone);
-      animation: lw-signup-breathe 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
-    }
-  }
-}
-
-@keyframes lw-signup-breathe {
-  0% {
-    opacity: 0.6;
-    scale: 1;
+    border-radius: lw.v(radius-md);
   }
 
-  80%,
-  100% {
-    opacity: 0;
-    scale: 2.6;
-  }
-}
-
-// The brand name, oversized, fading into the page at the bottom.
-.wordmark {
-  display: none;
-  margin: -0.75rem 0 -0.2em;
-  font-size: clamp(4.5rem, 21cqi, 17rem);
-  font-weight: 800;
-  line-height: 0.9;
-  letter-spacing: -0.065em;
-  text-align: center;
-  white-space: nowrap;
-  background: linear-gradient(to bottom, color-mix(in oklab, #{lw.v(color-foreground)} 16%, transparent) 20%, transparent 85%);
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  user-select: none;
-
-  :host([wordmark]) & {
+  svg {
     display: block;
   }
 }
 
-// Phones: the bar stacks.
-@container (max-width: 639px) {
-  .bar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+:host([no-theme-toggle]) .theme {
+  display: none;
 }
