@@ -76,6 +76,7 @@
 - [x] Text morphing
 - [x] Text ripple
 - [x] Text flip
+- [x] Text cycle
 - [ ] Matrix text
 - [ ] Swoosh text
 - [ ] Scroll text

@@ -1,0 +1,35 @@
+@use '../../styles' as lw;
+
+:host {
+  display: inline;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.sr {
+  @include lw.visually-hidden;
+}
+
+.stage {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.word {
+  display: inline-block;
+}
+
+// The outgoing word lies over the incoming one while it blurs away.
+.leaving {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.char {
+  display: inline-block;
+  white-space: pre;
+}
