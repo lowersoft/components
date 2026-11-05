@@ -1,5 +1,6 @@
 import { LwElement } from '../../core/lw-element.js';
 import { reducedMotion } from '../../core/motion.js';
+import { setHeadingLevel } from '../../core/text.js';
 import styles from './text-morphing.scss?inline';
 
 let uid = 0;
@@ -65,14 +66,7 @@ export class LwTextMorphing extends LwElement {
   updated(changed) {
     const texts = this.#texts;
     this.query('.sr').textContent = texts.join(', ');
-    const level = Math.round(this.level ?? 0);
-    if (level >= 1 && level <= 6) {
-      this.setAttribute('role', 'heading');
-      this.setAttribute('aria-level', String(level));
-    } else if (changed.has('level')) {
-      this.removeAttribute('role');
-      this.removeAttribute('aria-level');
-    }
+    if (changed.has('level')) setHeadingLevel(this, this.level);
     if (changed.has('texts')) {
       this.#index = 0;
       this.#morph = 0;

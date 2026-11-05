@@ -16,3 +16,29 @@ export const indexAfterDigits = (text, count) => {
   }
   return text.length;
 };
+
+/**
+ * Calls `callback()` whenever `element`'s own content changes, until `signal`
+ * aborts. Text components that take their words as content or as a `text`
+ * attribute read it again then.
+ */
+export const watchContent = (element, callback, signal) => {
+  const observer = new MutationObserver(callback);
+  observer.observe(element, { childList: true, subtree: true, characterData: true });
+  signal.addEventListener('abort', () => observer.disconnect());
+};
+
+/**
+ * Makes `element` a heading of `level`, 1 to 6. Any other level takes the
+ * heading role away again, leaving a role set for another reason alone.
+ */
+export const setHeadingLevel = (element, level) => {
+  const value = Math.round(level ?? 0);
+  if (value >= 1 && value <= 6) {
+    element.setAttribute('role', 'heading');
+    element.setAttribute('aria-level', String(value));
+  } else if (element.getAttribute('role') === 'heading') {
+    element.removeAttribute('role');
+    element.removeAttribute('aria-level');
+  }
+};
