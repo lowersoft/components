@@ -590,6 +590,16 @@
     font-size: 0.6875rem;
     color: fn.v(color-muted-foreground);
   }
+
+  // External links carry a small arrow and tell screen readers they open a new tab.
+  .external {
+    display: inline-flex;
+    opacity: 0.6;
+  }
+
+  .visually-hidden {
+    @include visually-hidden;
+  }
 }
 
 // The pieces testimonial components share: the company and its mark, a
