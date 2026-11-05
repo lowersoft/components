@@ -9,12 +9,16 @@ export default {
   parameters: { layout: 'fullscreen' },
   render: (args) => page(`<lw-signup-footer ${attributes(args)}></lw-signup-footer>`),
   argTypes: {
+    readers: { name: 'Readers', control: { type: 'number', min: 0, step: 10 } },
+    status: { name: 'Status', control: 'inline-radio', options: ['normal', 'degraded', 'outage', ''] },
+    wordmark: { name: 'Wordmark', control: 'boolean' },
     accent: { name: 'Accent', control: 'color' },
   },
-  args: { brand: 'Lower' },
+  args: { brand: 'Lower', readers: 12480, status: 'normal', wordmark: false },
 };
 
-// Subscribe with an address. Sending nothing, or half an address, says why.
+// Subscribe with an address. Sending nothing, or half an address, says why;
+// success thanks the reader and counts them in.
 export const Default = {};
 
 // The sign-up waits on a real request: this one takes a second and turns
@@ -32,13 +36,22 @@ export const WithRequest = {
   },
 };
 
-// Another brand in another color.
-export const Teal = {
+// Closes the page with the brand name, oversized and fading out.
+export const Wordmark = {
+  args: { wordmark: true },
+};
+
+// Another brand in another color, mid-incident, without a reader count.
+export const Northline = {
   args: {
     brand: 'Northline',
-    tagline: 'Routing for fleets that cannot be late.',
-    heading: 'The dispatch: route-planning tips and release notes, twice a month.',
+    tagline: 'Route planning for fleets that cannot afford to be late.',
+    eyebrow: 'The Dispatch',
+    heading: 'Better routes, every other Thursday',
+    description: 'Field notes from dispatch teams, product updates and the occasional benchmark.',
+    readers: 0,
     'button-label': 'Join',
+    status: 'degraded',
     accent: '#14b8a6',
   },
 };
