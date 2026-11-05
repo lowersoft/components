@@ -78,6 +78,7 @@
 - [x] Text flip
 - [x] Text cycle
 - [x] Text chroma reveal
+- [x] Canvas text
 - [ ] Matrix text
 - [ ] Swoosh text
 - [ ] Scroll text

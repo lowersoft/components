@@ -195,3 +195,4 @@ export * from './components/text-cycle/index.js';
 export * from './components/infinite-marquee/index.js';
 export * from './components/text-chroma-reveal/index.js';
 export * from './components/social-footer/index.js';
+export * from './components/canvas-text/index.js';
