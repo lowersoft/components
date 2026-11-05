@@ -205,6 +205,7 @@
 - [x] Pricing matrix
 - [x] Leader graph
 - [x] Compare plans
+- [x] Benchmark matrix
 - [x] Testimonial grid
 - [x] Testimonial spotlight
 - [x] Annotated quote
