@@ -1,0 +1,83 @@
+@use '../../styles' as lw;
+
+:host {
+  --_fill: var(--lw-gooey-slider-fill, #{lw.v(color-foreground)});
+  --_ink: var(--lw-gooey-slider-ink, #{lw.v(color-background)});
+
+  display: inline-block;
+  width: var(--_width, 300px);
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  vertical-align: middle;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.slider {
+  position: relative;
+  height: 56px;
+  border-radius: lw.v(radius-full);
+  cursor: pointer;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:host([data-held]) .slider {
+  cursor: grabbing;
+}
+
+:host([disabled]) .slider {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+// The empty part of the track, under the liquid.
+.lane {
+  position: absolute;
+  top: 23px;
+  right: 0;
+  left: 0;
+  height: 10px;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, var(--_fill) 14%, transparent);
+}
+
+.goo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.blobs {
+  fill: var(--_fill);
+}
+
+// The number rides the thumb; it sits outside the filter to stay crisp.
+.value {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--_ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  pointer-events: none;
+}
+
+.slider:focus-visible .value {
+  @include lw.focus-ring;
+
+  outline-offset: 4px;
+}
