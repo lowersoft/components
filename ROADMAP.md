@@ -204,6 +204,7 @@
 - [x] Cloud pricing
 - [x] Usage receipt pricing
 - [x] Soft gradient pricing
+- [x] Credit plan pricing
 - [x] Features matrix
 - [x] Pricing matrix
 - [x] Leader graph
