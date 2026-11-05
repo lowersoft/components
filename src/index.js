@@ -190,3 +190,4 @@ export * from './components/gooey-dock/index.js';
 export * from './components/text-shimmer/index.js';
 export * from './components/text-ripple/index.js';
 export * from './components/gooey-slider/index.js';
+export * from './components/text-flip/index.js';

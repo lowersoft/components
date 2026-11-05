@@ -1,0 +1,57 @@
+@use '../../styles' as lw;
+
+:host {
+  --_front: var(--lw-text-flip-front, #{lw.v(color-foreground)});
+  --_back: var(--lw-text-flip-back, #{lw.v(color-muted-foreground)});
+
+  display: inline-block;
+  max-width: 100%;
+  font-family: lw.v(font-sans);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.sr {
+  @include lw.visually-hidden;
+}
+
+.stage {
+  display: inline-block;
+  cursor: default;
+}
+
+.char {
+  // Rolling up or down, the prism is as deep as half a line.
+  --_depth: 0.55em;
+
+  display: inline-block;
+  perspective: 10em;
+  white-space: pre;
+}
+
+.cube {
+  position: relative;
+  display: block;
+  transform: translateZ(calc(var(--_depth) * -1));
+  transform-style: preserve-3d;
+}
+
+.face {
+  display: block;
+  color: var(--_front);
+  backface-visibility: hidden;
+
+  // The first face sizes the character; the others lie on top of it.
+  & + & {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.back {
+  color: var(--_back);
+}
