@@ -201,3 +201,4 @@ export * from './components/text-highlight/index.js';
 export * from './components/hamburger-menu/index.js';
 export * from './components/star-rating/index.js';
 export * from './components/edge-glow/index.js';
+export * from './components/features-matrix/index.js';

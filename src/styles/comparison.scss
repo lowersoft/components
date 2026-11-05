@@ -1,0 +1,95 @@
+// Shared by the comparison sections, with markup from `core/comparison.js`.
+@use 'abstracts/functions' as fn;
+@use 'abstracts/mixins' as m;
+
+:host {
+  container-type: inline-size;
+  display: block;
+  font-family: fn.v(font-sans);
+  font-size: fn.v(text-sm);
+  color: fn.v(color-foreground);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.section {
+  @include m.hero-container(72rem);
+
+  box-sizing: border-box;
+  padding: clamp(3rem, 7vw, 5rem) clamp(1.25rem, 4vw, 2rem);
+}
+
+.heading {
+  font-size: clamp(1.75rem, 4vw, 2.375rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.lede {
+  max-width: 36rem;
+  margin-top: 0.875rem;
+  font-size: fn.v(text-md);
+  line-height: 1.6;
+  color: fn.v(color-muted-foreground);
+  text-wrap: pretty;
+}
+
+// Wide tables keep their width and scroll sideways on small screens.
+.scroller {
+  // Positioned, so hidden labels inside are clipped with the rest.
+  position: relative;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+
+  &:focus-visible {
+    @include m.focus-ring;
+
+    border-radius: fn.v(radius-lg);
+  }
+}
+
+// Included: a check.
+.yes {
+  display: inline-flex;
+  color: fn.v(color-foreground);
+
+  svg {
+    display: block;
+  }
+}
+
+// Missing: a small crossed circle, read as "Not included".
+.no {
+  display: inline-grid;
+  width: 1.125rem;
+  height: 1.125rem;
+  place-items: center;
+  border: 1.5px solid color-mix(in oklab, #{fn.v(color-muted-foreground)} 55%, transparent);
+  border-radius: 50%;
+  color: fn.v(color-muted-foreground);
+
+  svg {
+    display: block;
+  }
+}
+
+.mark {
+  display: block;
+  flex: none;
+}
+
+.visually-hidden {
+  @include m.visually-hidden;
+}

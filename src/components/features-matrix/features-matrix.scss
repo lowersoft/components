@@ -1,0 +1,122 @@
+@use '../../styles' as lw;
+
+.scroller {
+  margin-top: 2.5rem;
+}
+
+// A hairline grid: the lines are the border color showing through 1px gaps.
+.table {
+  display: grid;
+  grid-template-columns: minmax(15rem, 1.35fr) repeat(var(--_count), minmax(10rem, 1fr));
+  gap: 1px;
+  min-width: calc(15rem + var(--_count) * 10rem);
+  overflow: clip;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-lg);
+  background: lw.v(color-border);
+}
+
+// Phones: a narrower feature column, so more of the values show.
+@container (max-width: 640px) {
+  .table {
+    grid-template-columns: minmax(10rem, 1fr) repeat(var(--_count), minmax(8.5rem, 1fr));
+    min-width: calc(10rem + var(--_count) * 8.5rem);
+  }
+
+  .description {
+    display: none;
+  }
+}
+
+.row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  padding: 1.125rem 1.25rem;
+  background: lw.v(color-background);
+
+  @include lw.motion {
+    transition: background-color 150ms ease-out;
+  }
+}
+
+// The feature names stay put while the products scroll.
+.feature,
+.corner {
+  position: sticky;
+  z-index: 1;
+  left: 0;
+}
+
+.row:not(.head):hover .cell {
+  background: color-mix(in oklab, #{lw.v(color-muted)} 45%, #{lw.v(color-background)});
+}
+
+.product {
+  padding-block: 1.375rem;
+}
+
+.product,
+.product-link {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: lw.v(text-md);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: lw.v(color-foreground);
+}
+
+.product-link {
+  margin: -0.25rem;
+  padding: 0.25rem;
+  border-radius: lw.v(radius-sm);
+  text-decoration: none;
+  outline: none;
+
+  &:hover .product-name {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.feature {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.title {
+  font-weight: 500;
+}
+
+.description {
+  max-width: 16.5rem;
+  font-size: lw.v(text-xs);
+  line-height: 1.45;
+  color: lw.v(color-muted-foreground);
+}
+
+.value {
+  font-variant-numeric: tabular-nums;
+}
+
+// The best value in a row stands out; the rest step back.
+.best .text {
+  font-weight: 600;
+  color: lw.v(color-foreground);
+}
+
+.behind .text {
+  color: lw.v(color-muted-foreground);
+}
