@@ -198,3 +198,4 @@ export * from './components/social-footer/index.js';
 export * from './components/canvas-text/index.js';
 export * from './components/underline-animation/index.js';
 export * from './components/text-highlight/index.js';
+export * from './components/hamburger-menu/index.js';

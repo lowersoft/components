@@ -63,6 +63,7 @@
 - [x] Reaction button
 - [x] Theme toggle button
 - [x] Push button
+- [x] Hamburger menu
 - [ ] Attract button
 - [x] Type writer
 - [x] Shimmer text

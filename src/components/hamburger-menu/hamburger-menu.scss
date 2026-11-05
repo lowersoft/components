@@ -1,0 +1,331 @@
+@use '../../styles' as lw;
+
+:host {
+  --_color: var(--lw-hamburger-color, currentColor);
+  --_size: 24px;
+  --_thick: 2;
+  --_duration: 420ms;
+  --_half: calc(var(--_duration) / 2);
+  --_ease: cubic-bezier(0.65, 0, 0.35, 1);
+
+  display: inline-grid;
+  padding: 8px;
+  place-items: center;
+  border-radius: lw.v(radius-md);
+  color: lw.v(color-foreground);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  vertical-align: middle;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host(:focus-visible) {
+  @include lw.focus-ring;
+}
+
+.icon {
+  display: block;
+  width: var(--_size);
+  height: var(--_size);
+  overflow: visible;
+  transform-origin: center;
+}
+
+.bar,
+.cross {
+  fill: none;
+  stroke: var(--_color);
+  stroke-width: var(--_thick);
+  stroke-linecap: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+  transform-box: view-box;
+  transform-origin: 12px 12px;
+}
+
+:host([square]) :is(.bar, .cross) {
+  stroke-linecap: butt;
+}
+
+// Only some variants use the halves of the middle bar or the drawn cross.
+.half,
+.cross {
+  display: none;
+}
+
+@include lw.motion {
+  .icon,
+  .bar,
+  .cross {
+    transition:
+      translate var(--_duration) var(--_ease),
+      rotate var(--_duration) var(--_ease),
+      scale var(--_duration) var(--_ease),
+      opacity var(--_half) var(--_ease),
+      stroke-dasharray var(--_half) var(--_ease),
+      stroke-dashoffset var(--_half) var(--_ease);
+  }
+}
+
+// The cross every variant but arrow and wipe ends in.
+@mixin crossed {
+  .top {
+    translate: 0 6px;
+    rotate: 45deg;
+  }
+
+  .bottom {
+    translate: 0 -6px;
+    rotate: -45deg;
+  }
+
+  .middle {
+    opacity: 0;
+    scale: 0 1;
+  }
+}
+
+@mixin closed-hover {
+  :host(:not([open]):hover) {
+    @content;
+  }
+}
+
+// Squeeze: together first, then across; apart in the reverse order.
+:host([variant='squeeze']) {
+  @include lw.motion {
+    .top,
+    .bottom {
+      transition:
+        translate var(--_half) var(--_ease) var(--_half),
+        rotate var(--_half) var(--_ease);
+    }
+  }
+}
+
+:host([variant='squeeze'][open]) {
+  @include crossed;
+
+  @include lw.motion {
+    .top,
+    .bottom {
+      transition:
+        translate var(--_half) var(--_ease),
+        rotate var(--_half) var(--_ease) var(--_half);
+    }
+  }
+}
+
+:host([variant='squeeze']:not([open]):hover) {
+  .top {
+    translate: 0 1.5px;
+  }
+
+  .bottom {
+    translate: 0 -1.5px;
+  }
+}
+
+// Pivot: across in one move as the icon turns over.
+:host([variant='pivot'][open]) {
+  @include crossed;
+
+  .icon {
+    rotate: 180deg;
+  }
+}
+
+:host([variant='pivot']:not([open]):hover) .icon {
+  rotate: -12deg;
+}
+
+// Arrow: the outer bars fold in from the left end into an arrowhead.
+:host([variant='arrow']) {
+  .top {
+    transform-origin: 4px 6px;
+  }
+
+  .bottom {
+    transform-origin: 4px 18px;
+  }
+}
+
+:host([variant='arrow'][open]) {
+  .top {
+    translate: 0 6px;
+    rotate: -45deg;
+    scale: 0.5 1;
+  }
+
+  .bottom {
+    translate: 0 -6px;
+    rotate: 45deg;
+    scale: 0.5 1;
+  }
+
+  .middle {
+    translate: -0.5px 0;
+  }
+}
+
+:host([variant='arrow']:not([open]):hover) {
+  .top,
+  .bottom {
+    scale: 0.75 1;
+  }
+}
+
+// Stagger: three lengths even out, then cross.
+:host([variant='stagger']) {
+  .middle {
+    stroke-dasharray: 0.72 1;
+  }
+
+  .bottom {
+    stroke-dasharray: 0.45 1;
+  }
+}
+
+:host([variant='stagger']:not([open]):hover) :is(.middle, .bottom) {
+  stroke-dasharray: 1 1;
+}
+
+:host([variant='stagger'][open]) {
+  @include crossed;
+
+  .bottom {
+    stroke-dasharray: 1 1;
+  }
+}
+
+// Duo: two bars, crossed.
+:host([variant='duo']) {
+  .middle {
+    display: none;
+  }
+
+  .top {
+    translate: 0 2px;
+  }
+
+  .bottom {
+    translate: 0 -2px;
+  }
+}
+
+:host([variant='duo']:not([open]):hover) .bottom {
+  stroke-dasharray: 0.6 1;
+}
+
+:host([variant='duo'][open]) {
+  @include crossed;
+}
+
+// Split: the middle bar parts while the others cross.
+:host([variant='split']) {
+  .middle {
+    display: none;
+  }
+
+  .half {
+    display: inline;
+  }
+}
+
+:host([variant='split']:not([open]):hover) {
+  .left {
+    translate: -1.5px 0;
+  }
+
+  .right {
+    translate: 1.5px 0;
+  }
+}
+
+:host([variant='split'][open]) {
+  @include crossed;
+
+  .left {
+    translate: -7px 0;
+    opacity: 0;
+  }
+
+  .right {
+    translate: 7px 0;
+    opacity: 0;
+  }
+}
+
+// Wipe: the bars wipe away one after another, then the cross draws in.
+:host([variant='wipe']) {
+  .cross {
+    display: inline;
+    stroke-dashoffset: 1;
+  }
+
+  @include lw.motion {
+    .middle {
+      transition-delay: 50ms;
+    }
+
+    .bottom {
+      transition-delay: 100ms;
+    }
+
+    .cross {
+      transition-delay: 0ms;
+    }
+  }
+}
+
+:host([variant='wipe']:not([open]):hover) {
+  .top {
+    stroke-dashoffset: -0.18;
+  }
+
+  .bottom {
+    stroke-dashoffset: 0.18;
+  }
+}
+
+:host([variant='wipe'][open]) {
+  .bar {
+    stroke-dashoffset: -1;
+  }
+
+  .cross {
+    stroke-dashoffset: 0;
+  }
+
+  @include lw.motion {
+    .top {
+      transition-delay: 0ms;
+    }
+
+    .cross.one {
+      transition-delay: var(--_half);
+    }
+
+    .cross.two {
+      transition-delay: calc(var(--_half) + 70ms);
+    }
+  }
+}
+
+// Loop: one full turn on the way to the cross.
+:host([variant='loop'][open]) {
+  @include crossed;
+
+  .icon {
+    rotate: 360deg;
+  }
+}
+
+:host([variant='loop']:not([open]):hover) .icon {
+  rotate: 20deg;
+}
