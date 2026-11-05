@@ -194,3 +194,4 @@ export * from './components/text-flip/index.js';
 export * from './components/text-cycle/index.js';
 export * from './components/infinite-marquee/index.js';
 export * from './components/text-chroma-reveal/index.js';
+export * from './components/signup-footer/index.js';

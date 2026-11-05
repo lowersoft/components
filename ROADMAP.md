@@ -186,6 +186,7 @@
 - [x] Newsletter footer
 - [x] Sitemap footer
 - [x] Status footer
+- [x] Signup footer
 - [x] Layer stack pricing
 - [x] Upgrade summary
 - [x] Three tier pricing
