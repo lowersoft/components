@@ -1,0 +1,272 @@
+@use '../../styles' as lw;
+
+:host {
+  --_accent: var(--lw-plan-table-pricing-accent, light-dark(#2563eb, #3b82f6));
+  --_tint: light-dark(color-mix(in oklab, var(--_accent) 5%, transparent), color-mix(in oklab, var(--_accent) 11%, transparent));
+}
+
+.wrap {
+  @include lw.hero-container(60rem);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+}
+
+.title {
+  max-width: 30rem;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 30rem;
+  margin-top: 0.875rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  color: lw.v(color-muted-foreground);
+}
+
+.action::part(button) {
+  border-radius: lw.v(radius-full);
+}
+
+.arrow {
+  display: inline-flex;
+
+  @include lw.motion {
+    transition: translate 200ms lw.v(ease-out);
+  }
+
+  .action:hover & {
+    translate: 3px 0;
+  }
+}
+
+// Two real radio buttons, drawn as dots.
+.radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 2.25rem 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.radio {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+
+  &:has(:checked) {
+    color: lw.v(color-foreground);
+  }
+
+  input {
+    @include lw.visually-hidden;
+  }
+}
+
+.dot {
+  display: grid;
+  width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border: 1.5px solid color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+  border-radius: 50%;
+
+  @include lw.motion {
+    transition: border-color 150ms ease-out;
+  }
+
+  &::after {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--_accent);
+    scale: 0;
+
+    @include lw.motion {
+      transition: scale 200ms lw.v(ease-spring);
+    }
+  }
+
+  :checked + & {
+    border-color: var(--_accent);
+
+    &::after {
+      scale: 1;
+    }
+  }
+
+  :focus-visible + & {
+    @include lw.focus-ring;
+  }
+}
+
+// More to the right: the edge fades.
+.scroller {
+  margin-top: 1.25rem;
+  padding-top: 1.75rem;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &[data-more] {
+    mask-image: linear-gradient(to left, transparent, #000 3rem);
+  }
+}
+
+.table {
+  --_feature: 12rem;
+
+  @container (max-width: 36rem) {
+    --_feature: 8.5rem;
+  }
+
+  width: 100%;
+  min-width: calc(var(--_feature) + var(--_count) * 9.5rem);
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.feature-col {
+  width: var(--_feature);
+}
+
+// The popular plan's column, tinted top to bottom.
+col.popular {
+  background: var(--_tint);
+}
+
+th,
+td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid lw.v(color-border);
+  text-align: center;
+}
+
+// The features stay put while the plans scroll past.
+.corner,
+.feature,
+.group-row th {
+  position: sticky;
+  z-index: 1;
+  left: 0;
+  background: lw.v(color-background);
+  text-align: left;
+}
+
+.plan {
+  position: relative;
+  padding-block: 1.25rem 1.125rem;
+  vertical-align: bottom;
+  font-weight: 400;
+
+  > span {
+    display: block;
+  }
+
+  &.popular {
+    border-radius: 0.75rem 0.75rem 0 0;
+  }
+}
+
+// The band over the popular plan, joined to its column.
+.band {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  padding: 0.375rem 0;
+  border-radius: 0.75rem 0.75rem 0 0;
+  background: var(--_accent);
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+  color: #fff;
+}
+
+.eyebrow {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.name {
+  margin-top: 0.125rem;
+  font-size: lw.v(text-md);
+  font-weight: 600;
+}
+
+.price {
+  margin-top: 0.75rem;
+}
+
+.amount {
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.per {
+  margin-left: 0.25rem;
+  color: lw.v(color-muted-foreground);
+}
+
+.note {
+  min-height: 1.125rem;
+  margin-top: 0.5rem;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+
+  &[data-save] {
+    color: var(--_accent);
+  }
+}
+
+.group-row th {
+  padding-top: 1.75rem;
+  font-size: lw.v(text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: lw.v(color-muted-foreground);
+}
+
+.feature {
+  font-weight: 500;
+}
+
+.value {
+  .text {
+    color: lw.v(color-foreground);
+  }
+
+  &.popular .yes {
+    color: var(--_accent);
+  }
+}
+
+tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+tbody tr:last-child .popular {
+  border-radius: 0 0 0.75rem 0.75rem;
+}
