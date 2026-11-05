@@ -1,0 +1,64 @@
+@use '../../styles' as lw;
+
+:host {
+  --_gap: var(--lw-infinite-marquee-gap, 5rem);
+  --_fade: var(--lw-infinite-marquee-fade, 12%);
+
+  display: block;
+  min-width: 0;
+  // The strip holds more than it shows, so its content never sizes it.
+  contain: inline-size;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+// Vertical strips take their height from the element.
+:host([data-vertical]) {
+  height: 24rem;
+  contain: size;
+}
+
+.viewport {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 var(--_fade), #000 calc(100% - var(--_fade)), transparent);
+}
+
+:host([data-vertical]) .viewport {
+  height: 100%;
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--_fade), #000 calc(100% - var(--_fade)), transparent);
+}
+
+:host([no-fade]) .viewport {
+  mask-image: none;
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: var(--_gap);
+  width: max-content;
+  will-change: transform;
+}
+
+:host([data-vertical]) .track {
+  flex-direction: column;
+  align-items: stretch;
+  width: auto;
+}
+
+::slotted(*) {
+  flex: none;
+}
+
+// Reduced motion: the strip stands still and scrolls by hand.
+:host([data-still]) .viewport {
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+:host([data-still]) .track {
+  will-change: auto;
+}

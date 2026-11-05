@@ -246,4 +246,5 @@
 - [x] Stack reveal
 - [x] Before after card
 - [x] Perspective marquee
+- [x] Infinite marquee
 - [x] Orbital image carousel
