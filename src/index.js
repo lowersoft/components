@@ -199,3 +199,4 @@ export * from './components/canvas-text/index.js';
 export * from './components/underline-animation/index.js';
 export * from './components/text-highlight/index.js';
 export * from './components/hamburger-menu/index.js';
+export * from './components/star-rating/index.js';

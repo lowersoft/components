@@ -1,0 +1,130 @@
+@use '../../styles' as lw;
+
+:host {
+  --_size: 28px;
+  --_gap: 5px;
+  --_lit: var(--lw-star-rating-color, #f5a524);
+  --_unlit: color-mix(in oklab, #{lw.v(color-foreground)} 13%, transparent);
+
+  display: inline-block;
+  vertical-align: middle;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([tone='silver']) {
+  --_lit: var(--lw-star-rating-color, #a1a1aa);
+}
+
+:host([tone='ember']) {
+  --_lit: var(--lw-star-rating-color, #ef4444);
+}
+
+:host([tone='rose']) {
+  --_lit: var(--lw-star-rating-color, #f43f5e);
+}
+
+:host([tone='violet']) {
+  --_lit: var(--lw-star-rating-color, #8b5cf6);
+}
+
+.stars {
+  position: relative;
+  display: grid;
+  border-radius: lw.v(radius-sm);
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: 4px;
+  }
+
+  :host([readonly]) &,
+  :host([disabled]) & {
+    cursor: default;
+  }
+}
+
+:host([disabled]) {
+  opacity: 0.5;
+}
+
+// Three copies of the row on top of each other: the unlit stars, a faint
+// preview of what a click would change, and the lit stars, the last two cut
+// off where their value ends.
+.row {
+  display: flex;
+  grid-area: 1 / 1;
+  gap: var(--_gap);
+  pointer-events: none;
+}
+
+.base {
+  --_tone: var(--_unlit);
+}
+
+.ghost,
+.lit {
+  --_tone: var(--_lit);
+
+  @include lw.motion {
+    transition: clip-path 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+// Stars a click would add show faintly; stars it would drop dim.
+.ghost {
+  opacity: 0.45;
+}
+
+:host([data-dropping]) .ghost {
+  opacity: 0.3;
+}
+
+.star {
+  display: block;
+  flex: none;
+  width: var(--_size);
+  height: var(--_size);
+  overflow: visible;
+}
+
+.facet {
+  stroke: var(--_tone);
+  stroke-width: 0.25;
+  stroke-linejoin: round;
+
+  @include lw.motion {
+    transition: fill 180ms ease-out;
+  }
+}
+
+.base .facet {
+  // Unlit stars stay flat, so the lit ones read at a glance.
+  fill: var(--_unlit) !important;
+  stroke-width: 0.6;
+}
+
+// Classic: one soft, rounded shape.
+.shape {
+  fill: var(--_tone);
+  stroke: var(--_tone);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+}
+
+.lit .shape {
+  filter: drop-shadow(0 1px 1px color-mix(in oklab, var(--_lit) 40%, transparent));
+}
+
+.stars:active .lit {
+  @include lw.motion {
+    scale: 0.98;
+    transition: scale 120ms ease-out, clip-path 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}

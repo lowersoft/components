@@ -101,6 +101,7 @@
 - [x] Detent dial
 - [x] Liquid slider
 - [x] Gooey slider
+- [x] Star rating
 - [x] Signature pad
 - [x] Date range picker
 - [x] Handle input
