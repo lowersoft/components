@@ -1,0 +1,42 @@
+// Shared by components with terms that explain themselves, with markup and
+// wiring from `core/hint.js`.
+@use 'abstracts/functions' as fn;
+@use 'abstracts/mixins' as m;
+
+// A term that explains itself on hover or focus.
+.term {
+  position: relative;
+  border-radius: 2px;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.3em;
+  cursor: help;
+  outline: none;
+
+  &:focus-visible {
+    @include m.focus-ring;
+  }
+}
+
+// A term's hint, a popover in the top layer placed by the script.
+.tooltip {
+  position: fixed;
+  inset: auto;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(16rem, calc(100vw - 1rem));
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  overflow: visible;
+  border: 1px solid fn.v(color-border);
+  border-radius: fn.v(radius-md);
+  background: fn.v(color-background);
+  box-shadow: fn.v(shadow-md);
+  font-family: fn.v(font-sans);
+  font-size: fn.v(text-xs);
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+  white-space: normal;
+  color: fn.v(color-foreground);
+  pointer-events: none;
+}
