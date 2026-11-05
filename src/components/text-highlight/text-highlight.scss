@@ -1,0 +1,43 @@
+@use '../../styles' as lw;
+
+// The band is the host's own background: an inline box keeps one strip
+// across all its lines, so the sweep runs through them in reading order.
+:host {
+  --_marker: var(--lw-text-highlight-color, #facc15);
+  --_alpha: 40%;
+  --_duration: 0.9s;
+  --_delay: 0s;
+  --_pad: 2px;
+  --_band: color-mix(in oklab, var(--_marker) var(--_alpha), transparent);
+
+  display: inline;
+  margin: 0 calc(var(--_pad) * -1);
+  padding: 0 var(--_pad);
+  border-radius: 0.2em 0.35em 0.25em 0.4em;
+  // Soft, slightly uneven ends, as a marker leaves them.
+  background-image: linear-gradient(100deg, transparent 0, var(--_band) 0.35em, var(--_band) calc(100% - 0.3em), transparent 100%);
+  background-repeat: no-repeat;
+  background-position: 0 62%;
+  background-size: 0% 72%;
+  box-decoration-break: slice;
+  color: inherit;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([data-drawn]) {
+  background-size: 100% 72%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :host {
+    transition: background-size var(--_duration) cubic-bezier(0.65, 0, 0.35, 1) var(--_delay);
+  }
+
+  :host([data-instant-out]:not([data-drawn])) {
+    transition-delay: 0s;
+    transition-duration: calc(var(--_duration) * 0.6);
+  }
+}

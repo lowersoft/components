@@ -80,6 +80,7 @@
 - [x] Text chroma reveal
 - [x] Canvas text
 - [x] Underline animation
+- [x] Text highlight
 - [ ] Matrix text
 - [ ] Swoosh text
 - [ ] Scroll text
