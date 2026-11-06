@@ -222,3 +222,7 @@ export * from './components/pinned-note-steps/index.js';
 export * from './components/radial-glow-hero/index.js';
 export * from './components/cloud-hero/index.js';
 export * from './components/eclipse-hero/index.js';
+export * from './components/editorial-footer/index.js';
+export * from './components/signature-footer/index.js';
+export * from './components/spotlight-footer/index.js';
+export * from './components/pixel-footer/index.js';

@@ -1,0 +1,187 @@
+@use '../../styles' as lw;
+
+@include lw.footer-base;
+
+:host {
+  --_fill: var(--lw-editorial-footer-fill, #{lw.v(color-foreground)});
+  --_rule: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+}
+
+.container {
+  padding-top: clamp(4rem, 9cqi, 6rem);
+}
+
+// The statement on the left, the columns beside it on a wide screen.
+.top {
+  display: grid;
+  gap: 3rem;
+
+  @container (min-width: 56rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 4rem;
+  }
+}
+
+// A running head, as in print.
+.label {
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: lw.v(color-muted-foreground);
+}
+
+.tagline {
+  max-width: 36rem;
+  margin-top: 2rem;
+  font-size: clamp(1.75rem, 3.6cqi, 2.5rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+// Three short columns, two on a narrow phone so longer labels still fit.
+.columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.5rem 1.5rem;
+  align-content: start;
+
+  @container (max-width: 30rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.column-title {
+  margin-bottom: 1.25rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: lw.v(color-muted-foreground);
+}
+
+.links {
+  gap: 0.75rem;
+}
+
+.link {
+  color: lw.v(color-foreground);
+}
+
+// An underline that grows from the left on hover.
+.link-label {
+  background: linear-gradient(currentcolor, currentcolor) 0 100% / 0 1px no-repeat;
+
+  @include lw.motion {
+    transition: background-size 300ms lw.v(ease-out);
+  }
+
+  .link:is(:hover, :focus-visible) & {
+    background-size: 100% 1px;
+  }
+}
+
+// An ink rule, then the copyright and the social links.
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: clamp(3.5rem, 8cqi, 5rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--_rule);
+}
+
+.copyright {
+  color: lw.v(color-muted-foreground);
+}
+
+.socials {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.social {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: lw.v(radius-md);
+  color: lw.v(color-muted-foreground);
+
+  @include lw.motion {
+    transition: color 150ms ease-out;
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+}
+
+// The name in thin outlined capitals, stretched across the width. A filled
+// copy lies over it, shown only inside a soft circle around the mouse.
+.wordmark {
+  position: relative;
+  margin-top: clamp(2rem, 5cqi, 3.5rem);
+}
+
+.outline,
+.fill {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+// On its own layer, so the thin outline is smoothed in grey rather than in
+// coloured subpixels.
+.outline {
+  will-change: transform;
+}
+
+.word {
+  font-family: lw.v(font-sans);
+  font-size: 220px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.outline .word {
+  fill: none;
+  stroke: color-mix(in oklab, #{lw.v(color-foreground)} 34%, transparent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  filter: drop-shadow(0 0 1.25rem color-mix(in oklab, var(--_fill) 35%, transparent));
+  mask-image: radial-gradient(circle 10rem at var(--spot-x, 50%) var(--spot-y, 50%), #000 30%, transparent 72%);
+
+  @include lw.motion {
+    transition: opacity 350ms ease-out;
+  }
+
+  .wordmark[data-lit] & {
+    opacity: 1;
+  }
+
+  .word {
+    fill: url('#fill');
+  }
+
+  .from {
+    stop-color: var(--_fill);
+  }
+
+  .to {
+    stop-color: color-mix(in oklab, var(--_fill) 55%, transparent);
+  }
+}

@@ -197,6 +197,10 @@
 - [x] Sitemap footer
 - [x] Status footer
 - [x] Social footer
+- [x] Editorial footer
+- [x] Signature footer
+- [x] Spotlight footer
+- [x] Pixel footer
 - [x] Zigzag steps
 - [x] Taped note steps
 - [x] Curve steps

@@ -1,0 +1,227 @@
+@use '../../styles' as lw;
+
+@include lw.footer-base;
+
+:host {
+  --_light: var(--lw-pixel-footer-light, #{lw.v(color-foreground)});
+  --_rule: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+}
+
+.container {
+  padding-top: clamp(3.5rem, 7cqi, 4.5rem);
+}
+
+// The brand and the sign-up on the left, four columns on the right.
+.top {
+  display: grid;
+  gap: 3rem;
+
+  @container (min-width: 64rem) {
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    gap: 5rem;
+  }
+}
+
+.description {
+  max-width: 22rem;
+  margin-top: 1.25rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.signup {
+  margin-top: 2.25rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.signup-title {
+  font-size: lw.v(text-sm);
+  font-weight: 600;
+}
+
+.pitch {
+  margin-top: 0.375rem;
+  font-size: lw.v(text-xs);
+  line-height: 1.5;
+  color: lw.v(color-muted-foreground);
+}
+
+// The field and the button side by side, the same height.
+.form {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.email {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+
+.subscribe {
+  --_height: 2.5rem;
+
+  flex: none;
+}
+
+.note {
+  margin-top: 0.625rem;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.done {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+
+  svg {
+    flex: none;
+    color: lw.v(color-accent);
+  }
+
+  b {
+    font-weight: 500;
+  }
+}
+
+// Two across on a phone, four from a tablet.
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem 1.5rem;
+
+  @container (min-width: 40rem) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.column-title {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: lw.v(color-muted-foreground);
+}
+
+.link {
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 82%, transparent);
+}
+
+// The copyright and social links, the legal links set apart by dots.
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-top: clamp(3rem, 7cqi, 4rem);
+  padding-block: 1.25rem;
+  border-block: 1px solid var(--_rule);
+  font-size: lw.v(text-xs);
+}
+
+.owner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+}
+
+.copyright {
+  color: lw.v(color-muted-foreground);
+}
+
+.socials {
+  display: flex;
+  gap: 0.125rem;
+  padding: 0;
+  list-style: none;
+}
+
+.social {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: lw.v(radius-sm);
+  color: lw.v(color-muted-foreground);
+
+  @include lw.motion {
+    transition: color 150ms ease-out;
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  .link + .link::before {
+    content: '';
+    width: 3px;
+    height: 3px;
+    margin-inline: 0.75rem;
+    border-radius: 50%;
+    background: lw.v(color-border);
+  }
+}
+
+// The word in pixels: faint outlines at rest; under the mouse every cell
+// fills with a light that leans towards it.
+.wordmark {
+  margin-top: clamp(2rem, 5cqi, 3rem);
+}
+
+.pixels {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.outline {
+  fill: none;
+  stroke: color-mix(in oklab, #{lw.v(color-foreground)} 16%, transparent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: square;
+}
+
+.cells {
+  fill: url('#light');
+  opacity: 0;
+  // Whole pixels, so neighbouring cells meet without hairline seams.
+  shape-rendering: crispEdges;
+
+  @include lw.motion {
+    transition: opacity 450ms ease-out;
+  }
+
+  .wordmark[data-lit] & {
+    opacity: 1;
+  }
+}
+
+.bright {
+  stop-color: var(--_light);
+}
+
+.dim {
+  stop-color: color-mix(in oklab, var(--_light) 12%, transparent);
+}

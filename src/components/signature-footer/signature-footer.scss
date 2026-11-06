@@ -1,0 +1,201 @@
+@use '../../styles' as lw;
+
+@include lw.footer-base;
+
+:host {
+  --_from: var(--lw-signature-footer-from, #{lw.v(color-foreground)});
+  --_to: var(--lw-signature-footer-to, #{lw.v(color-muted-foreground)});
+  --_rule: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+
+  // Two faint pools of light, low on the left and high on the right.
+  background:
+    radial-gradient(40rem 26rem at 0% 100%, color-mix(in oklab, #{lw.v(color-foreground)} 3.5%, transparent), transparent 70%),
+    radial-gradient(36rem 24rem at 100% 0%, color-mix(in oklab, #{lw.v(color-foreground)} 3%, transparent), transparent 70%),
+    #{lw.v(color-background)};
+}
+
+.container {
+  padding-top: clamp(4rem, 8cqi, 5.5rem);
+}
+
+// Five parts brand to seven parts links on a wide screen; stacked below.
+.top {
+  display: grid;
+  gap: 3rem;
+
+  @container (min-width: 64rem) {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 5rem;
+  }
+}
+
+.description {
+  max-width: 22rem;
+  margin-top: 1.25rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// Round outlined buttons, big enough to tap, filling with ink on hover.
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.social {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid lw.v(color-border);
+  border-radius: 50%;
+  color: lw.v(color-muted-foreground);
+
+  @include lw.motion {
+    transition:
+      color 150ms ease-out,
+      background-color 150ms ease-out,
+      border-color 150ms ease-out;
+  }
+
+  &:hover {
+    border-color: lw.v(color-foreground);
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
+  }
+
+  &:focus-visible {
+    border-radius: 50%;
+  }
+}
+
+// Two across on a phone, three from a tablet.
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem 1.5rem;
+
+  @container (min-width: 40rem) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.column-title {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: lw.v(color-muted-foreground);
+}
+
+.link {
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 82%, transparent);
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-top: clamp(3rem, 7cqi, 4.5rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--_rule);
+  font-size: lw.v(text-xs);
+}
+
+.copyright {
+  color: lw.v(color-muted-foreground);
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+// The name in outline. A pen traces it in once it comes into view; a
+// coloured copy shows only inside a soft circle around the mouse.
+.wordmark {
+  position: relative;
+  margin-top: clamp(2rem, 5cqi, 3rem);
+}
+
+.trace,
+.lit {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+// On its own layer, so the thin outline is smoothed in grey rather than in
+// coloured subpixels.
+.trace {
+  will-change: transform;
+}
+
+.word {
+  font-family: lw.v(font-sans);
+  font-size: 300px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  fill: none;
+}
+
+.base {
+  stroke: color-mix(in oklab, #{lw.v(color-foreground)} 9%, transparent);
+  stroke-width: 1.5;
+}
+
+.pen {
+  stroke: color-mix(in oklab, #{lw.v(color-foreground)} 40%, transparent);
+  stroke-width: 1.5;
+  stroke-dasharray: 2600;
+  stroke-dashoffset: 2600;
+
+  :host([data-signed]) & {
+    stroke-dashoffset: 0;
+  }
+
+  @include lw.motion {
+    transition: stroke-dashoffset 4s cubic-bezier(0.45, 0, 0.2, 1);
+  }
+}
+
+.lit {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  mask-image: radial-gradient(circle 11rem at var(--spot-x, 50%) var(--spot-y, 50%), #000 25%, transparent 70%);
+
+  @include lw.motion {
+    transition: opacity 350ms ease-out;
+  }
+
+  .wordmark[data-lit] & {
+    opacity: 1;
+  }
+
+  .glow {
+    stroke: url('#ink');
+    stroke-width: 2;
+  }
+
+  .from {
+    stop-color: var(--_from);
+  }
+
+  .to {
+    stop-color: var(--_to);
+  }
+}
