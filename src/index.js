@@ -215,3 +215,4 @@ export * from './components/leader-graph/index.js';
 export * from './components/compare-plans/index.js';
 export * from './components/benchmark-matrix/index.js';
 export * from './components/zigzag-steps/index.js';
+export * from './components/taped-note-steps/index.js';

@@ -194,6 +194,7 @@
 - [x] Status footer
 - [x] Social footer
 - [x] Zigzag steps
+- [x] Taped note steps
 - [x] Layer stack pricing
 - [x] Upgrade summary
 - [x] Three tier pricing
