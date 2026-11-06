@@ -59,10 +59,12 @@
 }
 
 // The last line, set apart: the text colour fading down by default, or the
-// accent given. The padding keeps descenders inside the clipped colour.
+// accent given. The colour is clipped to the line's own box, which ends
+// above the tails of a y or a g; padding reaches past them (and above any
+// accent) and the matching negative margin keeps the lines where they were.
 .accent {
-  padding-bottom: 0.08em;
-  margin-bottom: -0.08em;
+  padding-block: 0.12em 0.28em;
+  margin-block: -0.12em -0.28em;
   background: var(--lw-radial-glow-hero-accent, linear-gradient(to bottom, color-mix(in oklab, #{lw.v(color-foreground)} 64%, #{lw.v(color-background)}), color-mix(in oklab, #{lw.v(color-foreground)} 40%, #{lw.v(color-background)})));
   background-clip: text;
   color: transparent;
