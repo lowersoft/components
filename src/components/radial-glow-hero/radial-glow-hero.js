@@ -1,8 +1,7 @@
 import '../button/index.js';
 import '../infinite-marquee/index.js';
 import { escapeHtml } from '../../core/dom.js';
-import { strokeIcon } from '../../core/icons.js';
-import { arrowRight } from '../../core/lucide.js';
+import { heroPillActions, paintPillActions } from '../../core/hero.js';
 import { LwElement } from '../../core/lw-element.js';
 import styles from './radial-glow-hero.scss?inline';
 
@@ -83,7 +82,7 @@ export class LwRadialGlowHero extends LwElement {
   render() {
     return `<section class="hero" aria-labelledby="heading"><div class="glow" part="glow" aria-hidden="true"></div>
 <div class="content"><h1 class="title rise" id="heading"></h1><p class="description rise"></p>
-<div class="actions rise"><slot name="actions"><lw-button class="primary" size="lg"><span class="primary-label"></span><span class="arrow" slot="end">${strokeIcon(arrowRight, 16)}</span></lw-button><lw-button class="secondary" size="lg" variant="outline"></lw-button></slot></div>
+<div class="actions rise">${heroPillActions()}</div>
 <div class="trust rise" part="logos"><p class="trusted" id="trusted"></p><lw-infinite-marquee class="strip" speed="36" pause-on-hover gap="3rem" fade-size="6rem"></lw-infinite-marquee><ul class="still" aria-labelledby="trusted"></ul></div></div></section>`;
   }
 
@@ -101,10 +100,7 @@ export class LwRadialGlowHero extends LwElement {
   updated(changed) {
     if (changed.has('heading')) this.#paintHeading();
     this.query('.description').textContent = this.description ?? '';
-    this.query('.primary-label').textContent = this.primary ?? '';
-    const secondary = this.query('.secondary');
-    secondary.textContent = this.secondary ?? '';
-    secondary.hidden = !this.secondary;
+    paintPillActions(this);
     this.query('.trusted').textContent = this.trusted ?? '';
     this.query('.strip').label = this.trusted || 'Customers';
     if (changed.has('logos')) this.#paintLogos();

@@ -334,6 +334,77 @@
   }
 }
 
+// A centred hero's two large pill actions, from `heroPillActions()` in
+// core/hero.js, stacked to one width on a phone. The primary's arrow waits
+// out of sight with the label centred; on hover or keyboard focus the label
+// makes room and the arrow slides in from the right, the button keeping its
+// width. The second action is a wash of the page colour with an edge as
+// firm as the primary's fill, so it holds up over any background and the
+// two read the same size. No backdrop blur: under a rising entrance it can
+// hold the button back until the animation ends.
+@mixin hero-pill-actions {
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+
+    @container (max-width: 30rem) {
+      flex-direction: column;
+      align-items: stretch;
+      width: min(100%, 20rem);
+    }
+  }
+
+  .primary::part(button),
+  .secondary::part(button) {
+    padding-inline: 1.375rem;
+    border-radius: fn.v(radius-full);
+  }
+
+  .secondary {
+    --_bg: color-mix(in oklab, #{fn.v(color-background)} 72%, transparent);
+    --_border: color-mix(in oklab, #{fn.v(color-foreground)} 16%, transparent);
+  }
+
+  // Half the arrow's room, with the gap, is how far the label moves.
+  .primary {
+    --_shift: calc((1rem + 0.5rem) / 2);
+  }
+
+  .primary-label,
+  .arrow {
+    @include motion {
+      transition:
+        translate fn.v(duration-normal) fn.v(ease-out),
+        opacity fn.v(duration-normal) fn.v(ease-out);
+    }
+  }
+
+  .primary-label {
+    translate: var(--_shift) 0;
+  }
+
+  .arrow {
+    display: flex;
+    opacity: 0;
+    translate: 0.75rem 0;
+  }
+
+  .primary:is(:hover, :focus-within) {
+    .primary-label {
+      translate: 0 0;
+    }
+
+    .arrow {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}
+
 // Fades a hero's stage out towards the bottom edge.
 @mixin hero-fade($solid: 45%) {
   mask-image: linear-gradient(to bottom, #000 $solid, transparent 96%);

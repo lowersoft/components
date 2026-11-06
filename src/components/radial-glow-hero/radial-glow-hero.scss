@@ -77,76 +77,7 @@
   color: lw.v(color-muted-foreground);
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: 2.5rem;
-}
-
-// Stacked, the same width, on a phone.
-@container (max-width: 30rem) {
-  .actions {
-    flex-direction: column;
-    align-items: stretch;
-    width: min(100%, 20rem);
-  }
-}
-
-.primary::part(button),
-.secondary::part(button) {
-  padding-inline: 1.375rem;
-  border-radius: lw.v(radius-full);
-}
-
-// Over the glow: a wash of the page colour keeps its label clear, and an
-// edge as firm as the primary's fill keeps the two the same size to the eye.
-// No backdrop blur: under the rising entrance it can hold the button back
-// until the animation ends.
-.secondary {
-  --_bg: color-mix(in oklab, #{lw.v(color-background)} 72%, transparent);
-  --_border: color-mix(in oklab, #{lw.v(color-foreground)} 16%, transparent);
-}
-
-// The arrow waits out of sight, the label centred in the button without
-// it; on hover or keyboard focus the label makes room and the arrow slides
-// in from the right. The button keeps its width throughout, the arrow's
-// room held for it: half of it, with the gap, is how far the label moves.
-.primary {
-  --_shift: calc((1rem + 0.5rem) / 2);
-}
-
-.primary-label,
-.arrow {
-  @include lw.motion {
-    transition:
-      translate lw.v(duration-normal) lw.v(ease-out),
-      opacity lw.v(duration-normal) lw.v(ease-out);
-  }
-}
-
-.primary-label {
-  translate: var(--_shift) 0;
-}
-
-.arrow {
-  display: flex;
-  opacity: 0;
-  translate: 0.75rem 0;
-}
-
-.primary:is(:hover, :focus-within) {
-  .primary-label {
-    translate: 0 0;
-  }
-
-  .arrow {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
+@include lw.hero-pill-actions;
 
 // The logos: a strip that slides by, or a still row on phones.
 .trust {
