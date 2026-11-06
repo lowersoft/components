@@ -1,7 +1,8 @@
 @use '../../styles' as lw;
 
 :host {
-  --_accent: var(--lw-soft-gradient-pricing-accent, #7c3aed);
+  --_accent: var(--lw-soft-gradient-pricing-accent, #{lw.v(color-primary)});
+  --_on-accent: var(--lw-soft-gradient-pricing-on-accent, #{lw.v(color-primary-foreground)});
   --_card: light-dark(#fff, #15141c);
   --_hand: 'Segoe Print', 'Bradley Hand', 'Marker Felt', 'Comic Sans MS', cursive;
 }
@@ -49,7 +50,8 @@
   color: lw.v(color-muted-foreground);
 }
 
-// "Bill monthly ( ) Bill yearly", the note pointing at the yearly side.
+// "Bill monthly ( ) Bill yearly": the library switch, labelled on both
+// sides, the side in force in full ink.
 .switch {
   position: relative;
   display: flex;
@@ -62,60 +64,26 @@
 
 .side {
   font-weight: 500;
-  color: lw.v(color-muted-foreground);
   cursor: pointer;
   user-select: none;
+}
+
+.side,
+.toggle::part(label) {
+  color: lw.v(color-muted-foreground);
 
   @include lw.motion {
     transition: color 200ms ease-out;
   }
+}
 
-  &[data-on] {
-    color: lw.v(color-foreground);
-  }
+.switch:not([data-yearly]) .side,
+.switch[data-yearly] .toggle::part(label) {
+  color: lw.v(color-foreground);
 }
 
 .toggle {
-  position: relative;
-  width: 2.75rem;
-  height: 1.5rem;
-  padding: 0;
-  border: 0;
-  border-radius: lw.v(radius-full);
-  background: light-dark(#d9d6e6, #34313f);
-  cursor: pointer;
-  outline: none;
-
-  @include lw.motion {
-    transition: background-color 200ms ease-out;
-  }
-
-  &[aria-checked='true'] {
-    background: var(--_accent);
-  }
-
-  &:focus-visible {
-    @include lw.focus-ring;
-  }
-}
-
-.knob {
-  position: absolute;
-  top: 0.1875rem;
-  left: 0.1875rem;
-  width: 1.125rem;
-  height: 1.125rem;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
-
-  @include lw.motion {
-    transition: translate 250ms lw.v(ease-spring);
-  }
-
-  [aria-checked='true'] > & {
-    translate: 1.25rem 0;
-  }
+  --lw-color-primary: var(--_accent);
 }
 
 // The handwritten saving beside the yearly side, its arrow curling back at it.
@@ -125,7 +93,7 @@
   left: calc(100% + 0.25rem);
   display: flex;
   align-items: flex-start;
-  color: var(--_accent);
+  color: lw.v(color-muted-foreground);
   pointer-events: none;
 
   &[hidden] {
@@ -162,7 +130,8 @@
   .save {
     padding: 0.125rem 0.625rem;
     border-radius: lw.v(radius-full);
-    background: color-mix(in oklab, var(--_accent) 12%, transparent);
+    background: color-mix(in oklab, #{lw.v(color-accent)} 12%, transparent);
+    color: lw.v(color-accent);
     font-family: lw.v(font-sans);
     font-size: lw.v(text-xs);
     font-weight: 500;
@@ -200,10 +169,10 @@
 
   // Taller, so the main choice reads first.
   &[data-featured] {
-    border-color: color-mix(in oklab, var(--_accent) 28%, transparent);
+    border-color: color-mix(in oklab, var(--_accent) 22%, transparent);
     box-shadow:
-      0 0 0 4px color-mix(in oklab, var(--_accent) 8%, transparent),
-      0 28px 60px -16px light-dark(color-mix(in oklab, var(--_accent) 35%, transparent), rgb(0 0 0 / 0.6));
+      0 0 0 4px color-mix(in oklab, var(--_accent) 5%, transparent),
+      0 28px 60px -16px light-dark(rgb(60 40 140 / 0.28), rgb(0 0 0 / 0.6));
 
     @container (min-width: 52rem) {
       padding-block: 3rem;
@@ -234,10 +203,10 @@
 .badge {
   padding: 0.25rem 0.625rem;
   border-radius: lw.v(radius-full);
-  background: color-mix(in oklab, var(--_accent) 12%, transparent);
+  background: var(--_accent);
   font-size: lw.v(text-xs);
-  font-weight: 600;
-  color: light-dark(var(--_accent), color-mix(in oklab, var(--_accent) 55%, white));
+  font-weight: 500;
+  color: var(--_on-accent);
 }
 
 .blurb {
@@ -266,6 +235,14 @@
   color: lw.v(color-muted-foreground);
 }
 
+// The monthly price a yearly one replaces.
+.was {
+  margin-left: 0.25rem;
+  font-size: lw.v(text-md);
+  color: lw.v(color-muted-foreground);
+  text-decoration-thickness: 1px;
+}
+
 .billed {
   min-height: 1.25rem;
   margin-top: 0.5rem;
@@ -278,17 +255,17 @@
 
   &::part(button) {
     width: 100%;
+    height: 2.75rem;
     border-radius: lw.v(radius-full);
   }
 
   [data-featured] > &::part(button) {
-    border-color: transparent;
     background: var(--_accent);
-    color: #fff;
+    color: var(--_on-accent);
   }
 
   [data-featured] > &:hover::part(button) {
-    background: color-mix(in oklab, var(--_accent) 88%, black);
+    background: color-mix(in oklab, var(--_accent) 86%, var(--_on-accent));
   }
 }
 
@@ -306,6 +283,7 @@
   }
 }
 
+// Soft round checks, filled with the accent on the featured plan.
 .tick {
   display: grid;
   width: 1.125rem;
@@ -313,6 +291,11 @@
   flex: none;
   place-items: center;
   border-radius: 50%;
-  background: color-mix(in oklab, var(--_accent) 12%, transparent);
-  color: light-dark(var(--_accent), color-mix(in oklab, var(--_accent) 55%, white));
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 7%, transparent);
+  color: lw.v(color-foreground);
+
+  [data-featured] & {
+    background: var(--_accent);
+    color: var(--_on-accent);
+  }
 }
