@@ -22,10 +22,10 @@ export default {
   args: {},
 };
 
-// The price, the promise and the comparison, in moss and lime.
+// The price on a card in the opposite scheme, the promise and the comparison.
 export const Default = {};
 
-// An engineering retainer in slate and sky blue.
+// An engineering retainer on a slate card.
 export const Retainer = {
   args: {
     heading: 'Your dev team. One fee.',
@@ -40,5 +40,5 @@ export const Retainer = {
     columns: COLUMNS,
     rows: ROWS,
   },
-  render: (args) => `<div style="margin: 3rem auto; --lw-flat-rate-pricing-tone: #273449; --lw-flat-rate-pricing-action: #7dd3fc"><lw-flat-rate-pricing ${attributes(args)}></lw-flat-rate-pricing></div>`,
+  render: (args) => `<div style="margin: 3rem auto; --lw-flat-rate-pricing-tone: #1e293b; --lw-flat-rate-pricing-on-tone: #f1f5f9"><lw-flat-rate-pricing ${attributes(args)}></lw-flat-rate-pricing></div>`,
 };

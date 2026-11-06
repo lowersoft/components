@@ -1,9 +1,8 @@
 @use '../../styles' as lw;
 
 :host {
-  --_tone: var(--lw-flat-rate-pricing-tone, light-dark(#4a5a2e, #3d4b25));
-  --_lime: var(--lw-flat-rate-pricing-action, #d6f26a);
-  --_cream: #f4f2e3;
+  --_tone: var(--lw-flat-rate-pricing-tone, #{lw.v(color-foreground)});
+  --_on-tone: var(--lw-flat-rate-pricing-on-tone, #{lw.v(color-background)});
 }
 
 .wrap {
@@ -15,14 +14,20 @@
   font-size: clamp(1.75rem, 6.2cqi, 3.25rem);
   font-weight: 700;
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   text-align: center;
   text-transform: uppercase;
   text-wrap: balance;
 }
 
-// The moss card: two soft glows and a fine grain, as if printed.
+// The card in the opposite scheme, so the library's own controls follow it:
+// a soft light from the top right and a fine grain, as if printed.
 .card {
+  --_ink: var(--_tone);
+  --_paper: var(--_on-tone);
+
+  @include lw.inverted;
+
   position: relative;
   isolation: isolate;
   display: grid;
@@ -31,12 +36,13 @@
   padding: clamp(1.75rem, 5vw, 3rem);
   overflow: hidden;
   border-radius: 1.75rem;
+  // Tinted from the card's own text, so a light card shades as gently as
+  // a dark one lights.
   background:
-    radial-gradient(70% 90% at 100% 0%, color-mix(in oklab, var(--_lime) 30%, transparent), transparent 60%),
-    radial-gradient(60% 80% at 0% 100%, color-mix(in oklab, black 35%, transparent), transparent 70%),
-    var(--_tone);
-  color: var(--_cream);
-  box-shadow: 0 24px 60px -24px color-mix(in oklab, var(--_tone) 70%, transparent);
+    radial-gradient(70% 90% at 100% 0%, color-mix(in oklab, var(--_paper) 12%, transparent), transparent 60%),
+    radial-gradient(60% 80% at 0% 100%, rgb(0 0 0 / 0.12), transparent 70%),
+    var(--_ink);
+  box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.45);
 
   @container (min-width: 44rem) {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -51,7 +57,7 @@
     inset: 0;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     mix-blend-mode: overlay;
-    opacity: 0.35;
+    opacity: 0.3;
     pointer-events: none;
   }
 }
@@ -63,11 +69,11 @@
 
 .label {
   padding: 0.25rem 0.75rem;
-  border: 1px solid rgb(244 242 227 / 0.25);
+  border: 1px solid lw.v(color-border);
   border-radius: lw.v(radius-full);
   font-size: lw.v(text-xs);
   font-weight: 500;
-  letter-spacing: 0.04em;
+  color: lw.v(color-muted-foreground);
 }
 
 .price {
@@ -88,13 +94,13 @@
 
 .period {
   font-size: lw.v(text-lg);
-  opacity: 0.75;
+  color: lw.v(color-muted-foreground);
 }
 
 .note {
   margin-top: 0.875rem;
   font-size: lw.v(text-xs);
-  opacity: 0.7;
+  color: lw.v(color-muted-foreground);
 }
 
 .body {
@@ -102,60 +108,24 @@
   font-size: lw.v(text-md);
   line-height: 1.6;
   text-wrap: pretty;
-  opacity: 0.9;
+  color: color-mix(in oklab, var(--_paper) 86%, var(--_ink));
 }
 
-// The lime action, its arrow in a darker tile that slides on hover.
+// The library button, a pill with its arrow in a well.
 .action {
-  display: inline-flex;
-  align-items: center;
-  gap: 1rem;
   margin-top: 1.75rem;
-  padding: 0.375rem 0.375rem 0.375rem 1.25rem;
-  border: 0;
-  border-radius: 0.875rem;
-  background: var(--_lime);
-  font: 600 lw.v(text-md) lw.v(font-sans);
-  color: #1f2a0e;
-  cursor: pointer;
-  outline: none;
 
-  @include lw.motion {
-    transition: background-color 200ms ease-out;
-  }
-
-  &:hover {
-    background: color-mix(in oklab, var(--_lime) 88%, white);
-  }
-
-  &:active {
-    scale: 0.98;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--_lime);
-    outline-offset: 3px;
+  &::part(button) {
+    gap: 1rem;
+    height: 3rem;
+    padding-inline: 1.25rem 0.375rem;
+    border-radius: lw.v(radius-full);
+    font-size: lw.v(text-md);
   }
 }
 
-.tile {
-  display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
-  place-items: center;
-  border-radius: 0.625rem;
-  background: #1f2a0e;
-  color: var(--_lime);
-
-  svg {
-    @include lw.motion {
-      transition: translate 250ms lw.v(ease-out);
-    }
-  }
-
-  .action:hover & svg {
-    translate: 3px 0;
-  }
+.well {
+  @include lw.arrow-well('.action', 2.25rem);
 }
 
 // The promise: hold the plan any month.
@@ -166,9 +136,9 @@
   gap: 0.5rem 1rem;
   margin-top: 1rem;
   padding: 1.25rem 1.5rem;
-  border: 1px solid color-mix(in oklab, var(--_tone) 22%, #{lw.v(color-border)});
+  border: 1px solid lw.v(color-border);
   border-radius: 1.25rem;
-  background: color-mix(in oklab, var(--_tone) 7%, #{lw.v(color-background)});
+  background: color-mix(in oklab, #{lw.v(color-muted)} 55%, #{lw.v(color-background)});
 
   @container (min-width: 36rem) {
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -186,7 +156,7 @@
   place-items: center;
   border-radius: 50%;
   background: var(--_tone);
-  color: var(--_cream);
+  color: var(--_on-tone);
 }
 
 .promise-title {
@@ -200,19 +170,27 @@
   color: lw.v(color-muted-foreground);
 }
 
+// A small, positive promise.
 .pill {
+  display: inline-flex;
   grid-column: 2;
   justify-self: start;
+  align-items: center;
+  gap: 0.375rem;
   padding: 0.25rem 0.75rem;
   border-radius: lw.v(radius-full);
-  background: var(--_lime);
+  background: color-mix(in oklab, #{lw.v(color-accent)} 12%, transparent);
   font-size: lw.v(text-xs);
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
-  color: #1f2a0e;
+  color: lw.v(color-accent);
 
   @container (min-width: 36rem) {
     grid-column: auto;
+  }
+
+  &[hidden] {
+    display: none;
   }
 }
 
@@ -222,8 +200,15 @@
 }
 
 .table {
+  --_label: 40%;
+
+  // Narrow: a slimmer feature column, so more of the plans show beside it.
+  @container (max-width: 36rem) {
+    --_label: 9.5rem;
+  }
+
   width: 100%;
-  min-width: 36rem;
+  min-width: calc(9.5rem + var(--_count, 3) * 8rem);
   border-collapse: collapse;
 
   th,
@@ -235,13 +220,22 @@
 
   thead th {
     padding-block: 0 0.875rem;
-    font-weight: 600;
+    font-weight: 500;
     color: lw.v(color-muted-foreground);
   }
 
   tbody th {
     font-weight: 500;
     text-align: left;
+  }
+
+  // The features stay put while the columns scroll past.
+  tbody th,
+  .corner {
+    position: sticky;
+    z-index: 1;
+    left: 0;
+    background: lw.v(color-background);
   }
 
   tbody tr:last-child > * {
@@ -251,21 +245,23 @@
   .text {
     font-size: lw.v(text-xs);
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
     color: lw.v(color-muted-foreground);
   }
 }
 
 .corner {
-  width: 40%;
+  width: var(--_label);
 }
 
-// Your column, tinted and checked in the card's colour.
+// Your column, tinted and checked in solid circles.
 .ours {
-  background: light-dark(color-mix(in oklab, var(--_tone) 8%, transparent), color-mix(in oklab, var(--_tone) 32%, transparent));
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 4%, transparent);
 
   thead & {
     border-radius: 0.75rem 0.75rem 0 0;
     padding-top: 0.875rem;
+    font-weight: 600;
     color: lw.v(color-foreground);
   }
 
@@ -279,8 +275,8 @@
     height: 1.5rem;
     place-items: center;
     border-radius: 50%;
-    background: light-dark(var(--_tone), color-mix(in oklab, var(--_tone), white 22%));
-    color: var(--_cream);
+    background: var(--_tone);
+    color: var(--_on-tone);
 
     svg {
       width: 0.875rem;

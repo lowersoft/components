@@ -1,8 +1,9 @@
-import { cellMarkup, comparisonStyles } from '../../core/comparison.js';
+import { cellMarkup, comparisonStyles, watchScrollEdge } from '../../core/comparison.js';
 import { escapeHtml } from '../../core/dom.js';
 import { strokeIcon } from '../../core/icons.js';
-import { arrowRight, pause } from '../../core/lucide.js';
+import { arrowRight, check, pause } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
+import '../button/index.js';
 import styles from './flat-rate-pricing.scss?inline';
 
 const DEMO_COLUMNS = [
@@ -21,11 +22,16 @@ const DEMO_ROWS = [
 ];
 
 /**
- * One flat price with everything included: the price on a grainy moss
- * card with what is billed at cost, what you get and the button, then the
- * promise to pause any month, then a table setting your offer against the
- * alternatives a buyer would otherwise weigh. Your column comes first and
- * is tinted. Static: no state, nothing animated.
+ * One flat price with everything included: the price on a grainy card in
+ * the opposite scheme, with what is billed at cost, what you get and the
+ * button, then the promise to pause any month, then a table setting your
+ * offer against the alternatives a buyer would otherwise weigh. Your column
+ * comes first, tinted and checked in solid circles; on a narrow screen the
+ * features stay put as the table scrolls, and its edge fades while there
+ * is more.
+ *
+ * Give the card a colour of its own with `--lw-flat-rate-pricing-tone` and
+ * the text on it with `--lw-flat-rate-pricing-on-tone`.
  *
  * Columns are `{ id, label }`, your offer first; rows are `{ label, values }`,
  * `values` keyed by column id: `true`, `false` or text.
@@ -44,8 +50,8 @@ const DEMO_ROWS = [
  * @attr {Array<object>} rows (JSON)
  * @fires lw-choose - The action was pressed
  * @csspart card
- * @cssprop --lw-flat-rate-pricing-tone - The card's colour; moss by default
- * @cssprop --lw-flat-rate-pricing-action - The button's colour; lime by default
+ * @cssprop --lw-flat-rate-pricing-tone - The card's colour; the foreground by default
+ * @cssprop --lw-flat-rate-pricing-on-tone - Text on the card; the background by default
  */
 export class LwFlatRatePricing extends LwElement {
   static styles = [comparisonStyles, styles];
@@ -67,13 +73,14 @@ export class LwFlatRatePricing extends LwElement {
   render() {
     return `<section class="wrap" aria-labelledby="heading"><h2 class="title" id="heading"></h2>
 <div class="card" part="card"><div class="price-side"><span class="label"></span><p class="price"><span class="amount"></span><span class="period"></span></p><p class="note"></p></div>
-<div class="pitch"><p class="body"></p><button class="action" type="button"><span class="action-text"></span><span class="tile">${strokeIcon(arrowRight, 18)}</span></button></div></div>
-<div class="promise"><span class="promise-icon">${strokeIcon(pause, 16)}</span><div class="promise-text"><h3 class="promise-title"></h3><p class="promise-body"></p></div><span class="pill"></span></div>
+<div class="pitch"><p class="body"></p><lw-button class="action"><span class="action-text"></span><span class="well" slot="end">${strokeIcon(arrowRight, 16)}</span></lw-button></div></div>
+<div class="promise"><span class="promise-icon">${strokeIcon(pause, 16)}</span><div class="promise-text"><h3 class="promise-title"></h3><p class="promise-body"></p></div><span class="pill">${strokeIcon(check, 14, 2.5)}<span class="pill-text"></span></span></div>
 <div class="scroller" tabindex="0" role="region" aria-label="How the plan compares"><table class="table"><thead></thead><tbody></tbody></table></div></section>`;
   }
 
   connected() {
     this.query('.action').addEventListener('click', () => this.emit('choose'), { signal: this.signal });
+    watchScrollEdge(this.query('.scroller'), this.signal);
   }
 
   updated(changed) {
@@ -91,7 +98,8 @@ export class LwFlatRatePricing extends LwElement {
     this.query('.action-text').textContent = this.action ?? '';
     text('.promise-title', this['guarantee-title']);
     text('.promise-body', this.guarantee);
-    text('.pill', this.pill);
+    this.query('.pill-text').textContent = this.pill ?? '';
+    this.query('.pill').hidden = !this.pill;
     this.query('.promise').hidden = !this['guarantee-title'] && !this.guarantee;
     if (changed.has('columns') || changed.has('rows')) this.#buildTable();
   }
@@ -100,6 +108,7 @@ export class LwFlatRatePricing extends LwElement {
     const columns = Array.isArray(this.columns) ? this.columns : [];
     const rows = Array.isArray(this.rows) ? this.rows : [];
     this.query('.scroller').hidden = !columns.length || !rows.length;
+    this.query('.table').style.setProperty('--_count', String(columns.length || 1));
     this.query('thead').innerHTML = `<tr><td class="corner"></td>${columns.map((column, i) => `<th scope="col"${i === 0 ? ' class="ours"' : ''}>${escapeHtml(column.label)}</th>`).join('')}</tr>`;
     this.query('tbody').innerHTML = rows
       .map((row) => `<tr><th scope="row">${escapeHtml(row.label)}</th>${columns.map((column, i) => `<td${i === 0 ? ' class="ours"' : ''}>${cellMarkup(row.values?.[column.id] ?? false)}</td>`).join('')}</tr>`)
