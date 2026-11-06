@@ -62,12 +62,20 @@ slot {
   }
 }
 
-:host([floating]) .field:has(.control:is(:focus, :not(:placeholder-shown))) ::slotted(:not(svg)),
-:host([floating]) .field:has(.control:autofill) ::slotted(:not(svg)),
-:host([floating='always']) ::slotted(:not(svg)) {
+:host([floating]:focus-within) ::slotted(:not(svg)),
+:host([floating][data-filled]) ::slotted(:not(svg)),
+:host([floating~='always']) ::slotted(:not(svg)) {
   translate: 0 calc(var(--_float-top) / 2);
 }
 
-:host([floating]:not([floating='always'])) .field:has(.control:placeholder-shown:not(:focus, :autofill)) slot[name='start']::slotted(:not(svg)) {
+:host([floating]) .field:has(.control:autofill) ::slotted(:not(svg)) {
+  translate: 0 calc(var(--_float-top) / 2);
+}
+
+:host([floating]:not([floating~='always'], [data-filled], :focus-within)) slot[name='start']::slotted(:not(svg)) {
   opacity: 0;
+}
+
+:host([floating]) .field:has(.control:autofill) slot[name='start']::slotted(:not(svg)) {
+  opacity: 1;
 }

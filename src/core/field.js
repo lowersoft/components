@@ -91,12 +91,6 @@ export class LwField extends FormControl(LwElement) {
       if (value === undefined || value === null || Number.isNaN(value)) control.removeAttribute(name);
       else control.setAttribute(name, value);
     }
-    // `:placeholder-shown` is how the styles tell an empty control, so a
-    // floating label needs a placeholder, if only a space.
-    if ((changed.has('floating') || changed.has('placeholder')) && !this.placeholder) {
-      if (this.floating == null) control.removeAttribute('placeholder');
-      else control.placeholder = ' ';
-    }
     control.required = this.required;
     control.readOnly = this.readonly;
     this.#syncDisabled();
@@ -187,6 +181,9 @@ export class LwField extends FormControl(LwElement) {
     else this[INTERNALS].setValidity(control.validity, control.validationMessage, control);
     const invalid = Boolean(this.error) || (this.#touched && !this[INTERNALS].validity.valid);
     this.toggleAttribute('data-invalid', invalid);
+    // A floating label rises over anything in the control, a half-typed
+    // number included.
+    this.toggleAttribute('data-filled', this.floating != null && (control.value !== '' || Boolean(control.validity.badInput)));
     control.ariaInvalid = invalid ? 'true' : null;
     this.query('.error').textContent = invalid ? message || control.validationMessage : '';
     const count = this.query('.count');

@@ -138,8 +138,7 @@
 // A floating label: inside the box, resting over the control's text while
 // the field is empty, then up and smaller once the control is focused or
 // holds a value, typed, set or autofilled. `core/field.js` lines it up with
-// the control's text and gives an empty control a placeholder, so
-// `:placeholder-shown` can tell when it is empty.
+// the control's text and marks the host `data-filled`.
 :host([floating]) {
   --_float-height: 3.5rem;
   // Room above the value for the raised label.
@@ -206,19 +205,25 @@
 
 // The placeholder waits for the label to move out of its way, unless the
 // label stays up.
-:host([floating]:not([floating='always'])) .label:not([hidden]) + .field .control:not(:focus)::placeholder {
+:host([floating]:not([floating~='always'])) .label:not([hidden]) + .field .control:not(:focus)::placeholder {
   color: transparent;
 }
 
-// Raised: focused, filled, autofilled, or always.
-:host([floating]) .label:has(+ .field .control:is(:focus, :not(:placeholder-shown))),
-:host([floating]) .label:has(+ .field .control:autofill),
-:host([floating='always']) .label {
+// Raised: focused, filled or always; autofilled too, where the browser
+// fills the control without telling the page.
+:host([floating]:focus-within) .label,
+:host([floating][data-filled]) .label,
+:host([floating~='always']) .label {
   translate: 0 var(--_float-y);
   scale: var(--_float-scale);
 }
 
-:host([floating]:not([data-invalid])) .label:has(+ .field .control:focus) {
+:host([floating]) .label:has(+ .field .control:autofill) {
+  translate: 0 var(--_float-y);
+  scale: var(--_float-scale);
+}
+
+:host([floating]:focus-within:not([data-invalid])) .label {
   color: fn.v(color-foreground);
 }
 
