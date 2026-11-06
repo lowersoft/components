@@ -1,28 +1,42 @@
 import { escapeHtml } from '../../core/dom.js';
 import { strokeIcon } from '../../core/icons.js';
-import { check, clock, mail, search } from '../../core/lucide.js';
+import { check, clock, lock, mail, search } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
-import { reducedMotion } from '../../core/motion.js';
 import { paintHead, stepsStyles } from '../../core/steps.js';
 import styles from './sticky-scroll-steps.scss?inline';
 
 const DEMO_STEPS = [
-  { id: 'capture', title: 'Capture anything', body: 'Forward emails and links straight into your list, and they arrive as tasks with the details kept.', mockup: 'inbox' },
-  { id: 'plan', title: 'Plan the week', body: 'Drag tasks onto days and see at a glance which day is already full.', mockup: 'planner' },
-  { id: 'review', title: 'Finish and review', body: 'A Friday summary shows what moved, what slipped and what to carry over.', mockup: 'review' },
+  {
+    id: 'capture',
+    title: 'Capture anything',
+    body: 'Forward an email or paste a link, and it lands in your list as a task with every detail kept.',
+    points: ['A private address for forwarding', 'Attachments come along'],
+    mockup: 'inbox',
+  },
+  {
+    id: 'plan',
+    title: 'Plan the week',
+    body: 'Drag tasks onto days and see at a glance which day is already full before you promise more.',
+    points: ['A warning before a day overflows', 'Meetings pulled from your calendar'],
+    mockup: 'planner',
+  },
+  {
+    id: 'review',
+    title: 'Finish and review',
+    body: 'A Friday summary shows what moved, what slipped and what to carry into next week.',
+    points: ['One tap to carry tasks over', 'A week-by-week history'],
+    mockup: 'review',
+  },
 ];
 
-// The line, this far down the box, that a picture crosses to make its step
-// the current one.
-const LINE = 0.35;
+const tick = strokeIcon(check, 12, 2.5);
 
-const windowMarkup = (title, content) => `<div class="window"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="window-title">${title}</span></div><div class="window-body">${content}</div></div>`;
-
-// Drawn product screens, for when there are no screenshots to show.
+// Drawn product screens, for steps without a screenshot: each fills the
+// window it is shown in and scales with it.
 const MOCKUPS = {
-  inbox: () =>
-    windowMarkup(
-      'Inbox',
+  inbox: {
+    path: 'inbox',
+    html: () =>
       `<div class="toolbar"><span class="search">${strokeIcon(search, 12)}Search mail</span><span class="count">2 new tasks</span></div><ul class="mails">${[
         ['Invoice for October', 'Accounts', 'Due on the 30th', true],
         ['Notes from Tuesday’s call', 'Priya', 'Three follow-ups for us', true],
@@ -30,12 +44,12 @@ const MOCKUPS = {
         ['Your trip on the 14th', 'Travel', 'Boarding passes attached', false],
         ['Weekly digest', 'Studio', 'Twelve updates this week', false],
       ]
-        .map(([subject, from, preview, task]) => `<li class="mail${task ? ' task' : ''}"><span class="avatar">${from.charAt(0)}</span><span class="mail-text"><b>${subject}</b><span>${from} · ${preview}</span></span>${task ? `<span class="chip">${strokeIcon(check, 12, 2.5)}Task</span>` : `<span class="mail-icon">${strokeIcon(mail, 12)}</span>`}</li>`)
+        .map(([subject, from, preview, task]) => `<li class="mail${task ? ' task' : ''}"><span class="avatar">${from.charAt(0)}</span><span class="mail-text"><b>${subject}</b><span>${from} · ${preview}</span></span>${task ? `<span class="chip">${tick}Task</span>` : `<span class="mail-icon">${strokeIcon(mail, 12)}</span>`}</li>`)
         .join('')}</ul>`,
-    ),
-  planner: () =>
-    windowMarkup(
-      'This week',
+  },
+  planner: {
+    path: 'week',
+    html: () =>
       `<div class="week">${[
         ['Mon', [['Client call', 2], ['Invoices', 1]]],
         ['Tue', [['Draft the deck', 3], ['Copy review', 1]]],
@@ -43,12 +57,12 @@ const MOCKUPS = {
         ['Thu', [['Focus time', 2]]],
         ['Fri', [['Release', 2], ['Retro', 1], ['Week review', 1]]],
       ]
-        .map(([day, tasks], i) => `<div class="day${i === 2 ? ' full' : ''}"><span class="day-name">${day}</span>${tasks.map(([task, size]) => `<span class="slot" style="--size: ${size}">${task}</span>`).join('')}</div>`)
+        .map(([day, tasks], i) => `<div class="day${i === 2 ? ' full' : ''}"><span class="day-name">${day}</span>${tasks.map(([task, size]) => `<span class="slot${size > 1 ? ' tall' : ''}" style="--size: ${size}">${task}</span>`).join('')}</div>`)
         .join('')}</div>`,
-    ),
-  review: () =>
-    windowMarkup(
-      'Friday review',
+  },
+  review: {
+    path: 'review',
+    html: () =>
       `<div class="review"><div class="score"><b>18</b><span>tasks done</span></div><div class="meters">${[
         ['Moved', 82],
         ['Slipped', 18],
@@ -62,145 +76,135 @@ const MOCKUPS = {
         ['F', 4],
       ]
         .map(([day, done]) => `<span class="day-bar" style="--done: ${done}"><i></i>${day}</span>`)
-        .join('')}</div><ul class="outcomes"><li>${strokeIcon(check, 12, 2.5)}Ship the onboarding emails</li><li>${strokeIcon(check, 12, 2.5)}Book the venue</li><li class="late">${strokeIcon(clock, 12, 2.5)}Draft the budget</li></ul></div>`,
-    ),
+        .join('')}</div><ul class="outcomes"><li>${tick}Ship the onboarding emails</li><li>${tick}Book the venue</li><li class="late">${strokeIcon(clock, 12, 2.5)}Draft the budget</li></ul></div>`,
+  },
 };
 const KINDS = Object.keys(MOCKUPS);
 
 /**
- * Steps beside the pictures that show them. The pictures scroll in a box of
- * their own; the step whose picture is in view lights up, opens its
- * description and fills its bar as you scroll through it, and choosing a
- * step scrolls straight to its picture. Every description stays in the
- * page, folded, so all of it can be found. With no screenshots, drawn
- * product screens stand in.
+ * Steps told as the page scrolls. The steps run down the left, each its
+ * own stretch of the page, while a product screen stays in view beside
+ * them and changes, with a soft cross-fade, to the step crossing the
+ * middle of the window; a rail beside the steps fills as you go. On a
+ * narrow screen each step shows its screen under it instead. There is no
+ * scroll box to get stuck in: the page itself scrolls.
  *
- * Steps are `{ id, title, body, image?, alt?, mockup? }`: `image` a
- * screenshot's URL with `alt` describing it, or else `mockup`, one of
- * inbox, planner or review, drawn in its place.
+ * Steps are `{ id, title, body, points?, image?, alt?, mockup? }`: `points`
+ * a short list under the body, `image` a screenshot's URL with `alt`
+ * describing it, or else `mockup`, one of inbox, planner or review, drawn
+ * in its place.
  *
  * @attr {string} heading
  * @attr {string} lede
+ * @attr {string} address - The address shown in the screen's bar
  * @attr {Array<object>} steps (JSON)
  * @fires lw-change - Another step became the current one; `detail: { index, id }`
- * @csspart steps - The list of steps
- * @csspart shots - The box the pictures scroll in
- * @cssprop --lw-sticky-scroll-steps-height - The box's height; 32.5rem by default
+ * @csspart step - Each step's text
+ * @csspart screen - Each step's screen
+ * @cssprop --lw-sticky-scroll-steps-height - The screen's height beside the steps; up to 34rem by default
  */
 export class LwStickyScrollSteps extends LwElement {
   static styles = [stepsStyles, styles];
   static props = {
     heading: { default: 'Everything scattered, finally in one view' },
     lede: { default: 'Three habits the app builds into your week, one screen at a time.' },
+    address: { default: 'app.example.com' },
     steps: { type: Object, default: DEMO_STEPS },
   };
 
   #current = -1;
   #frame = 0;
+  #observer = null;
 
   render() {
     return `<section class="section" aria-labelledby="heading"><header class="head"><h2 class="heading" id="heading"></h2><p class="lede"></p></header>
-<div class="frame"><nav class="steps" part="steps" aria-label="How it works steps"><ol class="list"></ol></nav><div class="shots" part="shots" tabindex="0" role="region" aria-label="Screens"></div></div></section>`;
+<div class="story"><div class="rail" aria-hidden="true"><span class="rail-fill"></span></div><div class="list"></div></div></section>`;
   }
 
   connected() {
-    const options = { signal: this.signal };
-    const shots = this.query('.shots');
-    const track = () => {
+    // The step whose text crosses the middle of the window is the current one.
+    this.#observer = new IntersectionObserver((entries) => {
+      const crossing = entries.filter((entry) => entry.isIntersecting).map((entry) => Number(entry.target.dataset.index));
+      if (crossing.length) this.#activate(Math.max(...crossing));
+    }, { rootMargin: '-50% 0px -50% 0px' });
+    this.#watch();
+    const update = () => {
       cancelAnimationFrame(this.#frame);
-      this.#frame = requestAnimationFrame(() => this.#track());
+      this.#frame = requestAnimationFrame(() => this.#fillRail());
     };
-    shots.addEventListener('scroll', track, { ...options, passive: true });
-    const observer = new ResizeObserver(track);
-    observer.observe(shots);
-    this.query('.list').addEventListener('click', (event) => {
-      const button = event.target.closest('.step');
-      if (button) this.#goTo(Number(button.dataset.index));
-    }, options);
-    // Beside the pictures, the wheel over the steps scrolls them while they
-    // can scroll; above them on a narrow screen, it scrolls the page.
-    const steps = this.query('.steps');
-    steps.addEventListener('wheel', (event) => {
-      const { scrollTop, scrollHeight, clientHeight } = shots;
-      const room = event.deltaY > 0 ? scrollHeight - clientHeight - scrollTop : scrollTop;
-      const beside = steps.getBoundingClientRect().right <= shots.getBoundingClientRect().left + 1;
-      if (!beside || room < 1) return;
-      event.preventDefault();
-      shots.scrollBy({ top: event.deltaY, behavior: 'instant' });
-    }, options);
+    addEventListener('scroll', update, { passive: true, signal: this.signal });
+    const resize = new ResizeObserver(update);
+    resize.observe(this.query('.list'));
     this.signal.addEventListener('abort', () => {
-      observer.disconnect();
+      this.#observer.disconnect();
+      resize.disconnect();
       cancelAnimationFrame(this.#frame);
     });
   }
 
   updated(changed) {
     paintHead(this);
-    if (changed.has('steps')) this.#build();
+    if (changed.has('steps') || changed.has('address')) this.#build();
   }
 
   get #steps() {
     return Array.isArray(this.steps) ? this.steps : [];
   }
 
+  // Each step's text, then its screen, so a narrow screen reads them in turn.
   #build() {
     const steps = this.#steps;
-    this.query('.list').innerHTML = steps
+    const address = escapeHtml(this.address ?? '');
+    const list = this.query('.list');
+    list.style.setProperty('--_count', String(steps.length || 1));
+    list.innerHTML = steps
       .map((step, i) => {
         const number = String(i + 1).padStart(2, '0');
-        return `<li><button class="step" type="button" data-index="${i}"><span class="bar" aria-hidden="true"><span class="fill"></span></span><span class="number">${number}</span><span class="title">${escapeHtml(step.title ?? '')}</span>
-<span class="fold"><span class="body">${escapeHtml(step.body ?? '')}</span></span></button></li>`;
-      })
-      .join('');
-    this.query('.shots').innerHTML = steps
-      .map((step, i) => {
+        const points = (step.points ?? []).length ? `<ul class="points">${step.points.map((point) => `<li>${tick}${escapeHtml(point)}</li>`).join('')}</ul>` : '';
+        const kind = MOCKUPS[step.mockup] ? step.mockup : KINDS[i % KINDS.length];
         const label = escapeHtml(step.alt ?? step.title ?? '');
-        const picture = step.image
-          ? `<img src="${escapeHtml(step.image)}" alt="${label}"${i ? ' loading="lazy"' : ''}>`
-          : `<div class="mockup" role="img" aria-label="${label}">${(MOCKUPS[step.mockup] ?? MOCKUPS[KINDS[i % KINDS.length]])()}</div>`;
-        return `<figure class="shot" data-index="${i}">${picture}</figure>`;
+        const screen = step.image ? `<img class="shot" src="${escapeHtml(step.image)}" alt="${label}"${i ? ' loading="lazy"' : ''}>` : `<div class="mockup" role="img" aria-label="${label}">${MOCKUPS[kind].html()}</div>`;
+        const path = step.image ? '' : `/${MOCKUPS[kind].path}`;
+        return `<article class="step" part="step" data-index="${i}" style="--row: ${i + 1}" aria-labelledby="step-${i}"><span class="node" aria-hidden="true"></span><span class="number" aria-hidden="true">${number}</span><h3 class="title" id="step-${i}">${escapeHtml(step.title ?? '')}</h3><p class="body">${escapeHtml(step.body ?? '')}</p>${points}</article>
+<figure class="stage" part="screen" data-index="${i}"><div class="window"><div class="chrome" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span><span class="address">${strokeIcon(lock, 10, 2.5)}${address}${path}</span></div><div class="pane">${screen}</div></div></figure>`;
       })
       .join('');
     this.#current = -1;
-    this.#track();
+    this.#activate(0, true);
+    this.#watch();
+    this.#fillRail();
   }
 
-  // The current step: the last picture whose top has crossed the line, or
-  // the last of all once the box is scrolled to its end.
-  #track() {
-    const shots = this.query('.shots');
-    const figures = [...shots.querySelectorAll('.shot')];
-    if (!figures.length) return;
-    const box = shots.getBoundingClientRect();
-    const line = box.top + box.height * LINE;
-    let index = 0;
-    figures.forEach((figure, i) => {
-      if (figure.getBoundingClientRect().top <= line) index = i;
-    });
-    if (shots.scrollTop + shots.clientHeight >= shots.scrollHeight - 2) index = figures.length - 1;
-    // How far through its picture the line has come, for the bar.
-    const rect = figures[index].getBoundingClientRect();
-    const progress = Math.min(1, Math.max(0, (line - rect.top) / rect.height));
-    const end = index === figures.length - 1 && shots.scrollTop + shots.clientHeight >= shots.scrollHeight - 2;
-    for (const button of this.shadowRoot.querySelectorAll('.step')) {
-      const i = Number(button.dataset.index);
-      const active = i === index;
-      if (active) button.setAttribute('aria-current', 'step');
-      else button.removeAttribute('aria-current');
-      button.style.setProperty('--progress', String(i < index ? 1 : active ? (end ? 1 : progress) : 0));
-    }
-    if (index !== this.#current) {
-      const first = this.#current < 0;
-      this.#current = index;
-      if (!first) this.emit('change', { index, id: this.#steps[index]?.id });
-    }
+  #watch() {
+    if (!this.#observer) return;
+    this.#observer.disconnect();
+    for (const step of this.shadowRoot.querySelectorAll('.step')) this.#observer.observe(step);
   }
 
-  #goTo(index) {
-    const shots = this.query('.shots');
-    const figure = shots.querySelector(`.shot[data-index="${index}"]`);
-    if (!figure) return;
-    const top = figure.getBoundingClientRect().top - shots.getBoundingClientRect().top + shots.scrollTop - 24;
-    shots.scrollTo({ top, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+  #activate(index, quiet = false) {
+    if (index === this.#current) return;
+    this.#current = index;
+    for (const element of this.shadowRoot.querySelectorAll('.step, .stage')) {
+      const i = Number(element.dataset.index);
+      element.toggleAttribute('data-active', i === index);
+      element.toggleAttribute('data-past', i < index);
+    }
+    if (!quiet) this.emit('change', { index, id: this.#steps[index]?.id });
+  }
+
+  // The rail fills from the first step's node to the last as the middle of
+  // the window passes them.
+  #fillRail() {
+    const nodes = [...this.shadowRoot.querySelectorAll('.node')];
+    if (!nodes.length) return;
+    const first = nodes[0].getBoundingClientRect().top;
+    const span = nodes.at(-1).getBoundingClientRect().top - first;
+    const progress = span > 0 ? (innerHeight / 2 - first) / span : 0;
+    const rail = this.query('.rail');
+    // Laid along the nodes, centre to centre.
+    const offset = first + nodes[0].offsetHeight / 2 - this.query('.story').getBoundingClientRect().top;
+    rail.style.setProperty('--_top', `${offset}px`);
+    rail.style.setProperty('--_span', `${Math.max(0, span)}px`);
+    rail.style.setProperty('--progress', String(Math.min(1, Math.max(0, progress))));
   }
 }

@@ -2,4 +2,4 @@
 '@lowersoft/lw': minor
 ---
 
-Add `<lw-sticky-scroll-steps>`: steps beside a box of screens that scrolls on its own; the step in view lights up, opens and fills its bar, choosing a step jumps to its screen, and drawn product screens stand in when there are no screenshots.
+Add `<lw-sticky-scroll-steps>`: steps told as the page scrolls, a product screen staying in view beside them and cross-fading to the step in the middle of the window, a rail that fills as you go, each screen under its step on phones, and drawn screens when there are no screenshots.
