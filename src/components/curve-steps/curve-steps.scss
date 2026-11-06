@@ -1,0 +1,330 @@
+@use '../../styles' as lw;
+
+:host {
+  --_accent: var(--lw-curve-steps-accent, #{lw.v(color-primary)});
+  --_on-accent: var(--lw-curve-steps-on-accent, #{lw.v(color-primary-foreground)});
+  --_line: color-mix(in oklab, #{lw.v(color-foreground)} 32%, transparent);
+  --_art: 11rem;
+}
+
+.section {
+  @include lw.hero-container(68rem);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: clamp(3rem, 8cqi, 4.5rem);
+  text-align: center;
+
+  .lede {
+    max-width: 32.5rem;
+  }
+}
+
+.row {
+  position: relative;
+}
+
+// One column on phones, a dashed thread between the steps.
+.steps {
+  position: relative;
+  display: grid;
+  gap: 3.5rem;
+}
+
+.step {
+  position: relative;
+  text-align: center;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    left: 50%;
+    height: 2rem;
+    border-left: 1.5px dashed var(--_line);
+  }
+}
+
+// The curve behind the pictures, seen in the gaps between them.
+.curve {
+  display: none;
+}
+
+@container (min-width: 48rem) {
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.5rem, 4cqi, 3rem);
+  }
+
+  .step:not(:last-child)::after {
+    display: none;
+  }
+
+  .curve {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: var(--_art);
+    overflow: visible;
+  }
+}
+
+.dashes {
+  fill: none;
+  stroke: var(--_line);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 7;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+// The mask that uncovers the dashes from the first picture to the last.
+.reveal {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 24;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+
+  @include lw.motion {
+    transition: stroke-dashoffset 1.15s lw.v(ease-in-out);
+  }
+
+  [data-drawn] & {
+    stroke-dashoffset: 0;
+  }
+}
+
+// Strokes in the pictures that draw in after the curve sets off.
+.draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+
+  @include lw.motion {
+    transition: stroke-dashoffset 500ms lw.v(ease-out) 550ms;
+  }
+
+  [data-drawn] & {
+    stroke-dashoffset: 0;
+  }
+}
+
+.tick {
+  @include lw.motion {
+    transition-delay: 950ms;
+  }
+}
+
+// The frame each picture sits in, opaque so the curve passes behind.
+.art {
+  position: relative;
+  display: grid;
+  max-width: 17rem;
+  height: var(--_art);
+  margin-inline: auto;
+  place-items: center;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1.25rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 2.5%, #{lw.v(color-background)});
+}
+
+.bar {
+  display: block;
+  width: 100%;
+  height: 0.375rem;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 12%, transparent);
+
+  &.short {
+    width: 70%;
+  }
+
+  &.shorter {
+    width: 45%;
+  }
+}
+
+// A plain card behind, the accent card with the locked cloud in front.
+.account {
+  position: relative;
+  width: 11rem;
+  height: 7.25rem;
+}
+
+.sheet {
+  position: absolute;
+  border-radius: 0.75rem;
+}
+
+.back {
+  top: 0;
+  left: 0;
+  display: grid;
+  width: 8.5rem;
+  height: 5.5rem;
+  box-sizing: border-box;
+  align-content: start;
+  gap: 0.5rem;
+  padding: 0.875rem;
+  border: 1px solid lw.v(color-border);
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+  rotate: -6deg;
+}
+
+.front {
+  right: 0;
+  bottom: 0;
+  display: grid;
+  width: 6.75rem;
+  height: 4.5rem;
+  place-items: center;
+  background: var(--_accent);
+  box-shadow: 0 10px 20px -8px rgb(0 0 0 / 0.35);
+  rotate: 5deg;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.cloud {
+  width: 3.5rem;
+  fill: var(--_on-accent);
+}
+
+.padlock {
+  display: flex;
+  color: var(--_accent);
+  translate: 0 0.25rem;
+}
+
+// A laptop sending a file up.
+.laptop {
+  width: 10rem;
+  overflow: visible;
+}
+
+.lid {
+  fill: lw.v(color-background);
+  stroke: lw.v(color-foreground);
+  stroke-width: 2;
+}
+
+.screen {
+  fill: color-mix(in oklab, #{lw.v(color-foreground)} 6%, #{lw.v(color-background)});
+}
+
+.base {
+  fill: lw.v(color-foreground);
+}
+
+.notch {
+  fill: lw.v(color-muted-foreground);
+}
+
+.disc {
+  fill: var(--_accent);
+}
+
+.arrow {
+  fill: none;
+  stroke: var(--_on-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+// A phone with a check at the top and a button at the foot.
+.phone {
+  position: relative;
+  display: flex;
+  width: 5.25rem;
+  height: 8.75rem;
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4375rem;
+  padding: 1.125rem 0.75rem 0.75rem;
+  border: 2px solid lw.v(color-foreground);
+  border-radius: 1.25rem;
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+
+  // The side buttons.
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    border-radius: 1px;
+    background: lw.v(color-foreground);
+  }
+
+  &::before {
+    top: 1.75rem;
+    left: -4px;
+    height: 1.25rem;
+  }
+
+  &::after {
+    top: 2.25rem;
+    right: -4px;
+    height: 1.75rem;
+  }
+}
+
+.badge {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: none;
+  place-items: center;
+  margin-bottom: 0.25rem;
+  border-radius: 50%;
+  background: var(--_accent);
+
+  svg {
+    width: 1.25rem;
+    fill: none;
+    stroke: var(--_on-accent);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.pill {
+  width: 100%;
+  height: 0.875rem;
+  margin-top: auto;
+  border-radius: lw.v(radius-full);
+  background: var(--_accent);
+}
+
+.number {
+  display: block;
+  margin-top: 1.5rem;
+  font: 500 lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+}
+
+.title {
+  margin-top: 0.375rem;
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.description {
+  max-width: 18rem;
+  margin: 0.375rem auto 0;
+  line-height: 1.55;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+}
