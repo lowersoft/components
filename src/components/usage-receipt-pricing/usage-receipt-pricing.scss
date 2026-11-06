@@ -42,8 +42,10 @@
   margin-top: 2rem;
 }
 
+// The saving inside the Annual option.
 .save {
-  font: lw.v(text-xs) lw.v(font-mono);
+  margin-left: 0.25rem;
+  font-variant-numeric: tabular-nums;
   color: lw.v(color-accent);
 }
 
@@ -121,6 +123,15 @@
   color: lw.v(color-foreground);
 }
 
+.receipt-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  font-size: 0.6875rem;
+  color: lw.v(color-muted-foreground);
+}
+
 .lines,
 .sums {
   display: grid;
@@ -130,7 +141,7 @@
 }
 
 .lines {
-  padding-top: 1.25rem;
+  padding-top: 1.5rem;
 }
 
 .sums:not(:empty) {
@@ -211,5 +222,55 @@
     height: 2.75rem;
     border-radius: 0;
     font-family: lw.v(font-sans);
+  }
+
+  // The arrow slips out to the right and back in from the left.
+  svg {
+    @include lw.motion {
+      .estimate:is(:hover, :focus-visible) & {
+        animation: arrow-through 450ms lw.v(ease-in-out);
+      }
+    }
+  }
+}
+
+.estimate {
+  overflow: hidden;
+}
+
+@keyframes arrow-through {
+  45% {
+    translate: 1.5rem 0;
+  }
+
+  45.01% {
+    translate: -1.5rem 0;
+  }
+}
+
+// A barcode and the small print, as at the foot of a till roll.
+.receipt-foot {
+  display: grid;
+  justify-items: center;
+  gap: 0.625rem;
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--_ink-line);
+}
+
+.barcode {
+  width: 11rem;
+  height: 1.75rem;
+  color: lw.v(color-foreground);
+  opacity: 0.85;
+}
+
+.fine {
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: lw.v(color-muted-foreground);
+
+  &:empty {
+    display: none;
   }
 }

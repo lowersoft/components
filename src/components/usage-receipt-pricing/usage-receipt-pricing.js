@@ -1,4 +1,6 @@
 import { escapeHtml } from '../../core/dom.js';
+import { strokeIcon } from '../../core/icons.js';
+import { arrowRight } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
 import { billingToggle, formatMoney, paintBilling, paintPrice, priceMarkup, pricingStyles, wireBilling } from '../../core/pricing.js';
 import { rollingStyles } from '../../core/rolling.js';
@@ -27,12 +29,26 @@ const meterCost = (meter, value) => (Math.max(0, value - (meter.included ?? 0)) 
 // Cents only when the figure has them.
 const money = (value) => formatMoney(Math.round(value * 100) / 100);
 
+const today = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+// The bars of the barcode at the foot of the receipt, as widths in pixels.
+const BARS = [2, 1, 1, 3, 1, 2, 2, 1, 3, 1, 1, 2, 1, 1, 2, 3, 1, 2, 1, 1, 3, 2, 1, 1, 2, 1, 3, 1, 1, 2, 2, 1, 1, 3, 1, 2, 1, 2, 1, 1, 3, 1, 2, 2, 1, 1, 2, 1];
+const barcode = () => {
+  let x = 0;
+  const rects = BARS.map((width, i) => {
+    const rect = i % 2 ? '' : `<rect x="${x}" width="${width}" height="28"/>`;
+    x += width;
+    return rect;
+  });
+  return `<svg class="barcode" viewBox="0 0 ${x} 28" preserveAspectRatio="none" fill="currentColor" aria-hidden="true">${rects.join('')}</svg>`;
+};
+
 /**
  * Usage pricing as a till receipt: drag the meters and the receipt beside
- * them prints a line for each, the base plan above and the total below.
- * Annual billing takes its discount off and adds the yearly charge. Every
- * meter is a native range input; the total is read out once you stop
- * dragging.
+ * them prints a line for each, the base plan above and the total below,
+ * dated and barcoded like the real thing. Annual billing takes its discount
+ * off and adds the yearly charge. Every meter is a native range input; the
+ * total is read out once you stop dragging.
  *
  * Meters are `{ id, label, min, max, step, value, rate, per, included?,
  * unit?, note? }`: each `per` units past `included` cost `rate` dollars a
@@ -45,6 +61,7 @@ const money = (value) => formatMoney(Math.round(value * 100) / 100);
  * @attr {number} discount - Percent off on annual billing
  * @attr {string} action - The estimate's button
  * @attr {string} secondary - The second button
+ * @attr {string} fine - The small print at the foot of the receipt
  * @attr {Array<object>} meters (JSON)
  * @fires lw-change - Billing changed; `detail: { billing }`
  * @fires lw-input - A meter moved; `detail: { id, value, total }`
@@ -61,6 +78,7 @@ export class LwUsageReceiptPricing extends LwElement {
     discount: { type: Number, default: 20 },
     action: { default: 'Start with this estimate' },
     secondary: { default: 'Talk to sales' },
+    fine: { default: 'USD, before tax · Billed on actual use' },
     meters: { type: Object, default: DEMO_METERS },
   };
 
@@ -70,11 +88,13 @@ export class LwUsageReceiptPricing extends LwElement {
 
   render() {
     return `<section class="section" aria-labelledby="heading"><div class="controls"><h2 class="title" id="heading"></h2><p class="description"></p>
-<div class="switch">${billingToggle({ monthly: 'Monthly', yearly: 'Annual' })}<span class="save"></span></div><div class="meters"></div></div>
+<div class="switch">${billingToggle({ monthly: 'Monthly', yearly: 'Annual <span class="save"></span>' })}</div><div class="meters"></div></div>
 <aside class="receipt" part="receipt" aria-labelledby="receipt-title"><header class="receipt-head"><span class="receipt-title" id="receipt-title">Estimate</span><span class="receipt-no">No. 0418</span></header>
+<p class="receipt-meta"><span>${today.format(new Date())}</span><span class="cycle"></span></p>
 <ul class="lines"></ul><div class="rule" role="presentation"></div><ul class="sums"></ul>
 <div class="total"><span class="total-label">Total / month</span>${priceMarkup()}</div><p class="billed"></p>
-<div class="actions"><lw-button class="estimate" data-action="estimate"></lw-button><lw-button class="sales" data-action="sales" variant="outline"></lw-button></div>
+<div class="actions"><lw-button class="estimate" data-action="estimate"><span class="estimate-label"></span>${strokeIcon(arrowRight, 16).replace('<svg', '<svg slot="end"')}</lw-button><lw-button class="sales" data-action="sales" variant="outline"></lw-button></div>
+<footer class="receipt-foot">${barcode()}<span class="fine"></span></footer>
 <p class="visually-hidden announce" aria-live="polite"></p></aside></section>`;
   }
 
@@ -101,10 +121,13 @@ export class LwUsageReceiptPricing extends LwElement {
     const description = this.query('.description');
     description.textContent = this.description ?? '';
     description.hidden = !this.description;
-    this.query('.save').textContent = this.discount ? `Save ${this.discount}% on annual` : '';
-    this.query('.estimate').textContent = this.action ?? '';
+    // The Annual option says what it saves.
+    this.query('.save').textContent = this.discount ? `−${this.discount}%` : '';
+    this.query('.save').hidden = !this.discount;
+    this.query('.estimate-label').textContent = this.action ?? '';
     this.query('.sales').textContent = this.secondary ?? '';
     this.query('.sales').hidden = !this.secondary;
+    this.query('.fine').textContent = this.fine ?? '';
     if (changed.has('meters')) this.#build();
     paintBilling(this);
     this.#paint();
@@ -160,6 +183,7 @@ export class LwUsageReceiptPricing extends LwElement {
     const yearly = this.billing === 'yearly';
     const subtotal = this.#subtotal();
     const total = this.#total();
+    this.query('.cycle').textContent = yearly ? 'Annual plan' : 'Monthly plan';
     this.query('.sums').innerHTML = yearly && this.discount
       ? `<li class="line"><span class="item">Subtotal</span><span class="cost">${money(subtotal)}</span></li><li class="line off"><span class="item">Annual discount ${this.discount}%</span><span class="cost">−${money(subtotal - total)}</span></li>`
       : '';
