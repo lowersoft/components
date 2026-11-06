@@ -1,4 +1,4 @@
-import { cellMarkup, comparisonStyles } from '../../core/comparison.js';
+import { cellMarkup, comparisonStyles, watchScrollEdge } from '../../core/comparison.js';
 import { escapeHtml } from '../../core/dom.js';
 import { hintStyles, termMarkup, wireHints } from '../../core/hint.js';
 import { strokeIcon } from '../../core/icons.js';
@@ -7,13 +7,14 @@ import { LwElement } from '../../core/lw-element.js';
 import { formatMoney, paintPrice, priceMarkup } from '../../core/pricing.js';
 import { rollingStyles } from '../../core/rolling.js';
 import '../button/index.js';
+import '../radio-group/index.js';
 import styles from './plan-table-pricing.scss?inline';
 
 const DEMO_PLANS = [
-  { id: 'free', name: 'Free', eyebrow: 'Try it', monthly: 0 },
-  { id: 'solo', name: 'Solo', eyebrow: 'Freelancers', monthly: 12, save: 25 },
-  { id: 'team', name: 'Team', eyebrow: 'Small teams', monthly: 30, save: 20, popular: true },
-  { id: 'org', name: 'Organization', eyebrow: 'Companies', monthly: 70, save: 15 },
+  { id: 'free', name: 'Free', eyebrow: 'Try it', monthly: 0, action: 'Start free' },
+  { id: 'solo', name: 'Solo', eyebrow: 'Freelancers', monthly: 12, save: 25, action: 'Get Solo' },
+  { id: 'team', name: 'Team', eyebrow: 'Small teams', monthly: 30, save: 20, popular: true, action: 'Get Team' },
+  { id: 'org', name: 'Organization', eyebrow: 'Companies', monthly: 70, save: 15, action: 'Contact sales' },
 ];
 
 const DEMO_FEATURES = [
@@ -32,26 +33,27 @@ const priceOf = (plan, billing) => (billing === 'yearly' ? Math.round(plan.month
 
 /**
  * Plans across the top and features down the side in one semantic table,
- * the popular plan's column tinted from its band to the last row. Pay
- * annually or monthly with two real radio buttons: every price rolls, and
- * each plan says what annual saves. Features can explain themselves on
- * hover or focus. On narrow screens the table scrolls sideways with the
- * features pinned, and a fade shows there is more.
+ * the popular plan's column tinted from its band to the last row, every
+ * plan with its own button under its price. Pay annually or monthly from a
+ * radio group: every price rolls, and each plan says what annual saves.
+ * Features can explain themselves on hover or focus. On narrow screens the
+ * table scrolls sideways with the features pinned, and a fade shows there
+ * is more.
  *
- * Plans are `{ id, name, eyebrow?, monthly, save?, popular? }`, `save` the
- * percent off on annual billing. Features are `{ id, label, hint?, values }`,
- * `values` keyed by plan id: text, `true` or `false`.
+ * Plans are `{ id, name, eyebrow?, monthly, save?, popular?, action? }`,
+ * `save` the percent off on annual billing. Features are `{ id, label,
+ * hint?, values }`, `values` keyed by plan id: text, `true` or `false`.
  *
  * @attr {string} heading
  * @attr {string} description
  * @attr {'monthly'|'yearly'} billing
- * @attr {string} action - The button beside the heading
+ * @attr {string} action - A button beside the heading, for the whole table
  * @attr {string} group - The heading over the features
  * @attr {string} badge - On the popular plan
  * @attr {Array<object>} plans (JSON)
  * @attr {Array<object>} features (JSON)
  * @fires lw-change - Billing changed; `detail: { billing }`
- * @fires lw-choose - The action was pressed; `detail: { billing }`
+ * @fires lw-choose - A plan's button, or the one beside the heading, was pressed; `detail: { plan?, billing, price? }`
  * @csspart table
  */
 export class LwPlanTablePricing extends LwElement {
@@ -60,7 +62,7 @@ export class LwPlanTablePricing extends LwElement {
     heading: { default: 'Plans for every size of team' },
     description: { default: 'Every plan includes unlimited viewers. Pay annually and keep up to a quarter.' },
     billing: { default: 'yearly', reflect: true },
-    action: { default: 'Start a free trial' },
+    action: {},
     group: { default: 'Included' },
     badge: { default: 'Most popular' },
     plans: { type: Object, default: DEMO_PLANS },
@@ -69,29 +71,28 @@ export class LwPlanTablePricing extends LwElement {
 
   render() {
     return `<section class="wrap" aria-labelledby="heading"><header class="head"><div><h2 class="title" id="heading"></h2><p class="description"></p></div>
-<lw-button class="action"><span class="action-text"></span><span slot="end" class="arrow">${strokeIcon(arrowRight, 16)}</span></lw-button></header>
-<fieldset class="radios"><legend class="visually-hidden">Billing</legend><label class="radio"><input type="radio" name="billing" value="yearly"><span class="dot"></span>Pay annually</label><label class="radio"><input type="radio" name="billing" value="monthly"><span class="dot"></span>Pay monthly</label></fieldset>
+<lw-button class="action" variant="outline"><span class="action-text"></span><span slot="end" class="arrow">${strokeIcon(arrowRight, 16)}</span></lw-button></header>
+<lw-radio-group class="radios" orientation="horizontal" aria-label="Billing"><lw-radio value="yearly">Pay annually <span class="save"></span></lw-radio><lw-radio value="monthly">Pay monthly</lw-radio></lw-radio-group>
 <div class="scroller" tabindex="0" role="region" aria-labelledby="heading"><table class="table" part="table"><colgroup></colgroup><thead></thead><tbody></tbody></table></div></section>`;
   }
 
   connected() {
     const options = { signal: this.signal };
-    this.query('.radios').addEventListener('change', (event) => {
-      this.billing = event.target.value;
+    const radios = this.query('.radios');
+    radios.addEventListener('change', () => {
+      this.billing = radios.value;
       this.emit('change', { billing: this.billing });
     }, options);
     this.query('.action').addEventListener('click', () => this.emit('choose', { billing: this.billing }), options);
     const scroller = this.query('.scroller');
+    scroller.addEventListener('click', (event) => {
+      const choose = event.target.closest('.choose');
+      if (!choose) return;
+      const plan = this.#plans.find((each) => each.id === choose.dataset.id);
+      this.emit('choose', { plan: plan.id, billing: this.billing, price: priceOf(plan, this.billing) });
+    }, options);
     wireHints(this, scroller);
-    // A fade at the edge while there is more to scroll to.
-    const edges = () => {
-      const { scrollLeft, scrollWidth, clientWidth } = scroller;
-      scroller.toggleAttribute('data-more', scrollLeft + clientWidth < scrollWidth - 1);
-    };
-    scroller.addEventListener('scroll', edges, { ...options, passive: true });
-    const observer = new ResizeObserver(edges);
-    observer.observe(scroller);
-    this.signal.addEventListener('abort', () => observer.disconnect());
+    watchScrollEdge(scroller, this.signal);
   }
 
   updated(changed) {
@@ -101,7 +102,12 @@ export class LwPlanTablePricing extends LwElement {
     description.hidden = !this.description;
     this.query('.action-text').textContent = this.action ?? '';
     this.query('.action').hidden = !this.action;
-    for (const radio of this.shadowRoot.querySelectorAll('.radios input')) radio.checked = radio.value === this.billing;
+    this.query('.radios').value = this.billing;
+    // The annual option says the most it saves.
+    const best = Math.max(0, ...this.#plans.filter((plan) => plan.monthly).map((plan) => plan.save ?? 0));
+    const save = this.query('.save');
+    save.textContent = best ? `Save up to ${best}%` : '';
+    save.hidden = !best;
     if (changed.has('plans') || changed.has('features') || changed.has('group') || changed.has('badge')) this.#build();
     this.#paintPrices();
   }
@@ -119,7 +125,9 @@ export class LwPlanTablePricing extends LwElement {
     this.query('thead').innerHTML = `<tr><td class="corner"></td>${plans
       .map((plan) => {
         const band = plan.popular && this.badge ? `<span class="band">${escapeHtml(this.badge)}</span>` : '';
-        return `<th scope="col" class="plan${popular(plan)}" data-id="${escapeHtml(plan.id)}">${band}<span class="eyebrow">${escapeHtml(plan.eyebrow ?? '')}</span><span class="name">${escapeHtml(plan.name)}</span><span class="price">${priceMarkup()}<span class="per">/ mo</span></span><span class="note"></span></th>`;
+        const id = escapeHtml(plan.id);
+        return `<th scope="col" class="plan${popular(plan)}" data-id="${id}">${band}<span class="eyebrow">${escapeHtml(plan.eyebrow ?? '')}</span><span class="name">${escapeHtml(plan.name)}</span><span class="price">${priceMarkup()}<span class="per">/ mo</span></span><span class="note"></span>
+<lw-button class="choose" data-id="${id}" size="sm" variant="${plan.popular ? 'primary' : 'outline'}">${escapeHtml(plan.action ?? `Choose ${plan.name}`)}</lw-button></th>`;
       })
       .join('')}</tr>`;
     const group = this.group ? `<tr class="group-row"><th scope="colgroup" colspan="${plans.length + 1}">${escapeHtml(this.group)}</th></tr>` : '';

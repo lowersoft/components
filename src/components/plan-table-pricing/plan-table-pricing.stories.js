@@ -2,9 +2,9 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 const PLANS = JSON.stringify([
-  { id: 'solo', name: 'Solo', eyebrow: 'Just you', monthly: 11, save: 20 },
-  { id: 'team', name: 'Team', eyebrow: 'Up to 25 people', monthly: 29, save: 20, popular: true },
-  { id: 'business', name: 'Business', eyebrow: 'Whole company', monthly: 69, save: 15 },
+  { id: 'solo', name: 'Solo', eyebrow: 'Just you', monthly: 11, save: 20, action: 'Start Solo' },
+  { id: 'team', name: 'Team', eyebrow: 'Up to 25 people', monthly: 29, save: 20, popular: true, action: 'Start Team' },
+  { id: 'business', name: 'Business', eyebrow: 'Whole company', monthly: 69, save: 15, action: 'Book a demo' },
 ]);
 
 const FEATURES = JSON.stringify([
@@ -27,8 +27,7 @@ export default {
 // Pay monthly and every price rolls up; hover the dotted features for more.
 export const Default = {};
 
-// Three plans for a scheduling app, monthly first, in emerald.
+// Three plans for a scheduling app, monthly first, with a trial button beside the heading.
 export const ThreePlans = {
   args: { heading: 'Booking that scales with you', description: 'Start with Solo and add people when you need them.', billing: 'monthly', action: 'Try it free', group: 'Features', plans: PLANS, features: FEATURES },
-  render: (args) => `<div style="margin: 3rem auto; --lw-plan-table-pricing-accent: #059669"><lw-plan-table-pricing ${attributes(args)}></lw-plan-table-pricing></div>`,
 };
