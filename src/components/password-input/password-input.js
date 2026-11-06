@@ -24,7 +24,7 @@ const EYE_OFF_ICON = icon('<path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a1
  *
  * @attr {string} value
  * @attr {string} label
- * @attr {''|'always'} floating - The label inside the box, over the empty control, rising once it is focused or filled; `always` keeps it raised
+ * @attr {string} floating - The label inside the box, over the empty control, rising once it is focused or filled; keywords: `border` raises it onto the top border, `always` keeps it raised
  * @attr {string} hint - Help under the field
  * @attr {string} error - A message that marks the field invalid, e.g. from the server
  * @attr {string} placeholder

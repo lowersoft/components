@@ -13,6 +13,13 @@ export { fieldStyles };
  * form submitted, not while it is first being filled in. `error` sets a
  * message from outside, such as the server.
  *
+ * With `floating` the label sits inside the box, over the control's text
+ * while the field is empty, and moves up, smaller, once the field is
+ * focused or holds a value, typed, set or filled in by the browser. It
+ * takes keywords: `border` raises the label onto the top border, the
+ * border parting around it, and `always` keeps it up with the placeholder
+ * showing, as in `floating="border always"`.
+ *
  * A subclass returns its control from `renderControl()`, an element with
  * `id="control"` and `class="control"`, and lists any further attributes it
  * passes to it in `static nativeAttributes`.
@@ -74,6 +81,7 @@ export class LwField extends FormControl(LwElement) {
     const resize = new ResizeObserver(() => this.#placeLabel());
     resize.observe(control);
     resize.observe(this.query('.field'));
+    resize.observe(this.query('.label'));
     this.signal.addEventListener('abort', () => resize.disconnect());
   }
 
@@ -139,14 +147,17 @@ export class LwField extends FormControl(LwElement) {
   }
 
   // A floating label starts where the control's text starts, after an icon
-  // or a button before it, and is as wide as the text can be. Measured
-  // against the field's own size, so a scaled dialog opening around it
-  // does not skew it.
+  // or a button before it, and is no wider than the text can be; over a
+  // centred control, a number, it is centred too. On the border it also
+  // sets the gap the border opens for it: the raised label and a little
+  // room either side. Measured against the field's own size, so a scaled
+  // dialog opening around it does not skew it.
   #placeLabel() {
     const label = this.query('.label');
+    const field = this.query('.field');
     if (this.floating == null) {
-      label.style.removeProperty('left');
-      label.style.removeProperty('width');
+      for (const name of ['left', 'max-width']) label.style.removeProperty(name);
+      for (const name of ['--_notch-x', '--_notch-w']) field.style.removeProperty(name);
       return;
     }
     const control = this.control;
@@ -154,10 +165,15 @@ export class LwField extends FormControl(LwElement) {
     const scale = box.width / this.offsetWidth || 1;
     const style = getComputedStyle(control);
     const start = Number.parseFloat(style.paddingLeft);
-    const end = Number.parseFloat(style.paddingRight);
-    const left = (control.getBoundingClientRect().left - box.left) / scale + control.clientLeft + start;
+    const room = Math.max(0, control.clientWidth - start - Number.parseFloat(style.paddingRight));
+    label.style.maxWidth = `${room}px`;
+    const width = label.offsetWidth;
+    const centred = getComputedStyle(label).textAlign === 'center';
+    const left = (control.getBoundingClientRect().left - box.left) / scale + control.clientLeft + start + (centred ? (room - width) / 2 : 0);
     label.style.left = `${left}px`;
-    label.style.width = `${Math.max(0, control.clientWidth - start - end)}px`;
+    const raised = Number.parseFloat(getComputedStyle(this).getPropertyValue('--_float-scale')) || 1;
+    field.style.setProperty('--_notch-x', `${left + (centred ? (width * (1 - raised)) / 2 : 0) - 4}px`);
+    field.style.setProperty('--_notch-w', `${width ? width * raised + 8 : 0}px`);
   }
 
   #touch() {

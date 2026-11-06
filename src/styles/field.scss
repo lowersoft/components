@@ -33,9 +33,15 @@
 }
 
 .field {
-  border: 1px solid fn.v(color-border);
+  // The edge and the ring around it, as variables so a floating label on
+  // the border can draw them itself.
+  --_edge: #{fn.v(color-border)};
+  --_glow: transparent;
+
+  border: 1px solid var(--_edge);
   border-radius: fn.v(radius-md);
   background: fn.v(color-background);
+  box-shadow: 0 0 0 3px var(--_glow);
   cursor: text;
   transition:
     border-color 150ms ease-out,
@@ -43,19 +49,19 @@
     background-color 150ms ease-out;
 
   &:hover {
-    border-color: var(--_line);
+    --_edge: var(--_line);
   }
 
   &:focus-within {
-    border-color: var(--_line);
-    box-shadow: 0 0 0 3px color-mix(in oklab, #{fn.v(color-ring)} 30%, transparent);
+    --_edge: var(--_line);
+    --_glow: color-mix(in oklab, #{fn.v(color-ring)} 30%, transparent);
   }
 
   :host([data-invalid]) & {
-    border-color: color-mix(in oklab, #{fn.v(color-destructive)} 70%, transparent);
+    --_edge: color-mix(in oklab, #{fn.v(color-destructive)} 70%, transparent);
 
     &:focus-within {
-      box-shadow: 0 0 0 3px color-mix(in oklab, #{fn.v(color-destructive)} 20%, transparent);
+      --_glow: color-mix(in oklab, #{fn.v(color-destructive)} 20%, transparent);
     }
   }
 
@@ -64,9 +70,10 @@
   }
 
   :host([data-disabled]) & {
-    border-color: fn.v(color-border);
+    --_edge: #{fn.v(color-border)};
+    --_glow: transparent;
+
     background: fn.v(color-muted);
-    box-shadow: none;
     cursor: not-allowed;
     opacity: 0.6;
   }
@@ -138,7 +145,9 @@
 // A floating label: inside the box, resting over the control's text while
 // the field is empty, then up and smaller once the control is focused or
 // holds a value, typed, set or autofilled. `core/field.js` lines it up with
-// the control's text and marks the host `data-filled`.
+// the control's text and marks the host `data-filled`. `floating` takes
+// keywords: `always` keeps the label raised, `border` raises it onto the
+// top border instead of inside the box.
 :host([floating]) {
   --_float-height: 3.5rem;
   // Room above the value for the raised label.
@@ -177,6 +186,7 @@
     z-index: 1;
     top: 1px;
     left: var(--_padding);
+    width: max-content;
     height: calc(var(--_float-height) - 2px);
     margin: 0;
     overflow: hidden;
@@ -233,4 +243,80 @@
 
 :host([floating][data-disabled]) .label {
   opacity: 0.6;
+}
+
+// On the border: the field keeps its usual height, and the raised label
+// sits across the top border, centred on its line, starting where the text
+// does. The border and the focus ring part around it, drawn over the field
+// so the gap shows whatever is behind, on any background.
+:host([floating~='border']),
+:host([floating~='border'][size]) {
+  --_float-height: var(--_height, 2.5rem);
+  --_float-top: 0px;
+  --_float-y: calc(var(--_float-height) / -2 + 0.5px);
+  --_float-scale: 0.857;
+}
+
+:host([floating~='border'][size='lg']) {
+  --_float-scale: 0.75;
+}
+
+:host([floating~='border']) .field {
+  position: relative;
+  border-color: transparent;
+  background-clip: padding-box;
+  box-shadow: none;
+
+  // The ring as this border, the edge as an inset line inside it, both cut
+  // by the gap: a mask with a hole as wide as the raised label, opening
+  // from its middle as the label rises.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 3px solid var(--_glow);
+    border-radius: calc(#{fn.v(radius-md)} + 3px);
+    box-shadow: inset 0 0 0 1px var(--_edge);
+    pointer-events: none;
+    mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+    mask-position:
+      calc(var(--_notch-x, 0px) + var(--_notch-w, 0px) / 2 + 3px) 0,
+      0 0;
+    mask-size:
+      0 0.375rem,
+      100% 100%;
+    mask-repeat: no-repeat;
+    mask-composite: exclude;
+    transition:
+      border-color 150ms ease-out,
+      box-shadow 150ms ease-out;
+
+    @include mx.motion {
+      transition:
+        border-color 150ms ease-out,
+        box-shadow 150ms ease-out,
+        mask-position 200ms fn.v(ease-out),
+        mask-size 200ms fn.v(ease-out);
+    }
+  }
+}
+
+:host([floating~='border']:focus-within) .field::after,
+:host([floating~='border'][data-filled]) .field::after,
+:host([floating~='border'][floating~='always']) .field::after {
+  mask-position:
+    calc(var(--_notch-x, 0px) + 3px) 0,
+    0 0;
+  mask-size:
+    var(--_notch-w, 0px) 0.375rem,
+    100% 100%;
+}
+
+:host([floating~='border']) .field:has(.control:autofill)::after {
+  mask-position:
+    calc(var(--_notch-x, 0px) + 3px) 0,
+    0 0;
+  mask-size:
+    var(--_notch-w, 0px) 0.375rem,
+    100% 100%;
 }

@@ -12,7 +12,7 @@ const TYPES = new Set(['text', 'email', 'url', 'search', 'tel', 'password']);
  *
  * @attr {string} value
  * @attr {string} label
- * @attr {''|'always'} floating - The label inside the box, over the empty control, rising once it is focused or filled; `always` keeps it raised
+ * @attr {string} floating - The label inside the box, over the empty control, rising once it is focused or filled; keywords: `border` raises it onto the top border, `always` keeps it raised
  * @attr {string} hint - Help under the field
  * @attr {string} error - A message that marks the field invalid, e.g. from the server
  * @attr {'text'|'email'|'url'|'search'|'tel'|'password'} type
