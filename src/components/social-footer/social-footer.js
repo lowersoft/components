@@ -1,7 +1,4 @@
-import { escapeHtml } from '../../core/dom.js';
-import { brandMarkup, footerLink, linkColumns } from '../../core/footer.js';
-import { strokeIcon } from '../../core/icons.js';
-import * as lucide from '../../core/lucide.js';
+import { brandMarkup, footerLink, linkColumns, socialLinks } from '../../core/footer.js';
 import { LwElement } from '../../core/lw-element.js';
 import '../theme-toggle-button/index.js';
 import styles from './social-footer.scss?inline';
@@ -21,12 +18,6 @@ const DEMO_SOCIALS = [
 ];
 
 const DEMO_LEGAL = ['Privacy', 'Terms'].map((label) => ({ label }));
-
-const iconMarkup = (icon) => {
-  if (!icon) return '';
-  if (String(icon).trim().startsWith('<svg')) return icon;
-  return strokeIcon(lucide[icon] ?? lucide.link2, 16);
-};
 
 /**
  * A site footer with the brand and a line about it beside four columns of
@@ -75,9 +66,7 @@ export class LwSocialFooter extends LwElement {
     if (changed.has('columns')) this.query('.columns').innerHTML = linkColumns(Array.isArray(this.columns) ? this.columns : []);
     if (changed.has('legal')) this.query('.legal-links').innerHTML = (Array.isArray(this.legal) ? this.legal : []).map(footerLink).join('');
     if (changed.has('socials')) {
-      this.query('.socials').innerHTML = (Array.isArray(this.socials) ? this.socials : [])
-        .map((social) => `<li><a class="social" href="${escapeHtml(social.href ?? '#')}" aria-label="${escapeHtml(social.label)}" title="${escapeHtml(social.label)}">${iconMarkup(social.icon)}</a></li>`)
-        .join('');
+      this.query('.socials').innerHTML = socialLinks(this.socials);
     }
     this.query('.copyright').textContent = this.copyright ?? `© ${new Date().getFullYear()} ${this.brand ?? ''} Inc.`;
   }

@@ -1,5 +1,5 @@
 import { escapeHtml } from '../../core/dom.js';
-import { footerLink } from '../../core/footer.js';
+import { footerLink, wireSignup } from '../../core/footer.js';
 import { strokeIcon } from '../../core/icons.js';
 import { arrowUpRight, check } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
@@ -9,7 +9,6 @@ import '../text-input/index.js';
 import styles from './newsletter-footer.scss?inline';
 
 const DAY_MS = 86_400_000;
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const DEMO_ISSUES = [
   { number: 48, title: 'Shaving 40 ms off a cold start', date: '2026-10-09', minutes: 7 },
@@ -75,12 +74,12 @@ export class LwNewsletterFooter extends LwElement {
   }
 
   connected() {
-    this.query('.form').addEventListener('submit', (event) => {
-      event.preventDefault();
-      this.#submit();
-    }, { signal: this.signal });
-    // The field's input lives in its own shadow root, out of the form's reach for Enter.
-    this.query('.email').addEventListener('keydown', (event) => event.key === 'Enter' && (event.preventDefault(), this.#submit()), { signal: this.signal });
+    wireSignup(this.query('.form'), {
+      input: this.query('.email'),
+      button: this.query('.subscribe'),
+      send: (email) => this.subscribe?.(email),
+      done: (email) => this.#done(email),
+    }, this.signal);
   }
 
   updated(changed) {
@@ -114,26 +113,8 @@ export class LwNewsletterFooter extends LwElement {
     roll(this.query('.readers .rolling'), text);
   }
 
-  async #submit() {
-    if (this.#subscribed) return;
-    const input = this.query('.email');
-    const button = this.query('.subscribe');
-    const email = (input.value ?? '').trim();
-    if (!EMAIL.test(email)) {
-      input.error = email ? 'That address looks incomplete.' : 'Enter your email to subscribe.';
-      input.focus();
-      return;
-    }
-    input.error = '';
-    button.loading = true;
-    try {
-      await this.subscribe?.(email);
-    } catch (error) {
-      input.error = error?.message || 'That did not go through. Try again.';
-      return;
-    } finally {
-      button.loading = false;
-    }
+  // Thanks the reader and counts them in.
+  #done(email) {
     this.#subscribed = true;
     this.query('.form').replaceWith(Object.assign(document.createElement('p'), {
       className: 'done',
