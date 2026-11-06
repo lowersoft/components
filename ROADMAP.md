@@ -197,6 +197,7 @@
 - [x] Taped note steps
 - [x] Curve steps
 - [x] Sticky scroll steps
+- [x] Pinned note steps
 - [x] Layer stack pricing
 - [x] Upgrade summary
 - [x] Three tier pricing

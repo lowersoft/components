@@ -1,0 +1,185 @@
+@use '../../styles' as lw;
+
+:host {
+  --_serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --_rule: color-mix(in oklab, #{lw.v(color-foreground)} 7%, transparent);
+}
+
+// A page of ruled paper, a faint margin line down its left.
+.page {
+  --_side: clamp(1.75rem, 5cqi, 3.5rem);
+  --_margin: color-mix(in oklab, #{lw.v(color-destructive)} 24%, transparent);
+
+  @include lw.hero-container(64rem);
+
+  box-sizing: border-box;
+  padding: clamp(3rem, 8cqi, 5rem) var(--_side) clamp(3.5rem, 9cqi, 5.5rem);
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(to right, transparent calc(var(--_side) - 0.75rem), var(--_margin) 0 calc(var(--_side) - 0.75rem + 1px), transparent 0),
+    repeating-linear-gradient(to bottom, transparent 0 calc(2rem - 1px), var(--_rule) 0 2rem),
+    lw.v(color-background);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: clamp(3rem, 8cqi, 4.5rem);
+  text-align: center;
+}
+
+.board {
+  position: relative;
+}
+
+// The path from note to note, behind them; drawn only beside each other.
+.path {
+  position: absolute;
+  inset: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+
+  path {
+    fill: none;
+    stroke: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+    stroke-width: 1.5;
+    stroke-dasharray: 6 8;
+    stroke-linecap: round;
+  }
+}
+
+// One column on phones.
+.notes {
+  position: relative;
+  display: grid;
+  gap: 2.75rem;
+  justify-items: center;
+}
+
+.note {
+  width: min(100%, 17rem);
+}
+
+// Side by side from tablets: each note starts two thirds of the way down
+// the one before, on the other side, so they step down the page in turns.
+@container (min-width: 44rem) {
+  .path:not([data-empty]) {
+    display: block;
+  }
+
+  .notes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(2rem, 8cqi, 6rem);
+    row-gap: 0;
+  }
+
+  .note {
+    grid-row: var(--start) / span 3;
+    padding-block: 0.5rem;
+
+    &:nth-child(odd) {
+      grid-column: 1;
+    }
+
+    &:nth-child(even) {
+      grid-column: 2;
+    }
+  }
+}
+
+// A cream frame round a pastel wash, all from one hue.
+.card {
+  --_hue: 85;
+
+  position: relative;
+  padding: 1.5rem 1.375rem 1.375rem;
+  border: 0.4375rem solid oklch(0.985 0.012 85);
+  border-radius: 1rem;
+  background: linear-gradient(170deg, oklch(0.965 0.03 var(--_hue)), oklch(0.925 0.05 var(--_hue)));
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.08),
+    0 16px 30px -16px rgb(0 0 0 / 0.3);
+  color: oklch(0.28 0.03 var(--_hue));
+  rotate: var(--rotate);
+  // Swings on its pin.
+  transform-origin: 50% 0.25rem;
+
+  @include lw.motion {
+    transition: rotate 600ms lw.v(ease-spring);
+  }
+
+  [data-tone='red'] & {
+    --_hue: 25;
+  }
+
+  [data-tone='green'] & {
+    --_hue: 150;
+  }
+
+  [data-tone='blue'] & {
+    --_hue: 240;
+  }
+
+  .note:hover & {
+    rotate: calc(var(--rotate) * -0.6);
+  }
+}
+
+// A glossy push pin: a coloured head lit from the top left, its shadow
+// falling on the paper below and to the right.
+.pin {
+  position: absolute;
+  z-index: 1;
+  top: -0.875rem;
+  left: calc(50% - 0.6875rem);
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgb(255 255 255 / 0.85) 0 9%, transparent 32%),
+    radial-gradient(circle at 50% 45%, oklch(0.66 0.17 var(--_hue)), oklch(0.44 0.15 var(--_hue)));
+  box-shadow:
+    inset 0 -2px 3px rgb(0 0 0 / 0.25),
+    0 1px 1px rgb(0 0 0 / 0.3);
+
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 0.625rem;
+    left: 0.625rem;
+    width: 1.125rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: rgb(0 0 0 / 0.28);
+    filter: blur(2px);
+    rotate: 35deg;
+  }
+}
+
+.number {
+  display: block;
+  font-family: var(--_serif);
+  font-size: 2.5rem;
+  line-height: 1;
+  color: oklch(0.5 0.13 var(--_hue));
+}
+
+.title {
+  margin-top: 0.75rem;
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.body {
+  margin-top: 0.25rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: oklch(0.4 0.03 var(--_hue));
+}
