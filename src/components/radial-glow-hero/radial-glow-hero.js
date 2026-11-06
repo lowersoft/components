@@ -22,16 +22,16 @@ const MARKS = {
 };
 
 const DEMO_LOGOS = [
-  { name: 'Lumen', mark: 'disc' },
-  { name: 'Arcadia', mark: 'peak' },
-  { name: 'Halcyon', mark: 'ring' },
-  { name: 'Vertex Labs', mark: 'diamond' },
-  { name: 'Quill', mark: 'leaf' },
-  { name: 'Orbita', mark: 'orbit' },
-  { name: 'Kestrel', mark: 'bars' },
-  { name: 'Monolith', mark: 'pillar' },
-  { name: 'Driftwood', mark: 'wave' },
-  { name: 'Northlight', mark: 'spark' },
+  { name: 'Stackframe', mark: 'bars' },
+  { name: 'Pagefault', mark: 'disc' },
+  { name: 'Opcode Labs', mark: 'diamond' },
+  { name: 'Heapwise', mark: 'pillar' },
+  { name: 'Microcode', mark: 'ring' },
+  { name: 'Bitforge', mark: 'peak' },
+  { name: 'Interrupt', mark: 'spark' },
+  { name: 'Syscall', mark: 'orbit' },
+  { name: 'Bytewise', mark: 'wave' },
+  { name: 'Registerline', mark: 'leaf' },
 ];
 
 // Phones show this many logos in a still, wrapped row instead of the strip.
@@ -48,7 +48,8 @@ const STILL = 5;
  *
  * The glow is CSS gradients only, neutral by default so it follows the
  * theme; give it a brand colour with `--lw-radial-glow-hero-glow`, and the
- * headline's last line with `--lw-radial-glow-hero-accent`.
+ * headline's last line with `--lw-radial-glow-hero-accent`, and the logo row,
+ * which sits on the glow's brightest part, with `--lw-radial-glow-hero-on-glow`.
  *
  * Logos are `{ name, mark?, src? }`: `src` an image's URL, named by `name`,
  * or else `mark`, one of disc, peak, ring, diamond, leaf, orbit, bars,
@@ -65,16 +66,17 @@ const STILL = 5;
  * @csspart logos - The row of logos
  * @cssprop --lw-radial-glow-hero-glow - The glow's colour; a tint of the text colour by default
  * @cssprop --lw-radial-glow-hero-accent - The headline's last line, any colour or gradient
+ * @cssprop --lw-radial-glow-hero-on-glow - The logo row's ink, such as white on a strong glow; the text colour by default
  * @cssprop --lw-radial-glow-hero-min-height - How tall the section is at least; 48rem by default
  */
 export class LwRadialGlowHero extends LwElement {
   static styles = styles;
   static props = {
-    heading: { default: 'Agents that ship\nlike software.' },
-    description: { default: 'lower runs every agent step as a build: versioned, cached and tested against real traces, then rolled out with one command. No queues to tune and no servers to look after.' },
+    heading: { default: 'Write it in C.\nShip it everywhere.' },
+    description: { default: 'lower cross-compiles C, C++ and Rust for every target from one machine, shares each object file across the team and links in milliseconds. No toolchains to install and no build scripts to babysit.' },
     primary: { default: 'Start building free' },
     secondary: { default: 'See how it works' },
-    trusted: { default: 'Trusted by teams at' },
+    trusted: { default: 'Trusted by systems teams at' },
     logos: { type: Object, default: DEMO_LOGOS },
   };
 

@@ -5,6 +5,8 @@
   // glow follows the theme until a brand colour is given.
   --_glow: var(--lw-radial-glow-hero-glow, light-dark(color-mix(in oklab, #{lw.v(color-foreground)} 7%, #{lw.v(color-background)}), color-mix(in oklab, #{lw.v(color-foreground)} 24%, #{lw.v(color-background)})));
   --_dot: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+  // The ink of the logo row, which sits on the brightest part of the glow.
+  --_on-glow: var(--lw-radial-glow-hero-on-glow, #{lw.v(color-foreground)});
 
   display: block;
   container-type: inline-size;
@@ -99,13 +101,13 @@
   border-radius: lw.v(radius-full);
 }
 
-// Frosted over the glow, so its label stays clear wherever the glow is.
+// Over the glow: a wash of the page colour keeps its label clear, and an
+// edge as firm as the primary's fill keeps the two the same size to the eye.
+// No backdrop blur: under the rising entrance it can hold the button back
+// until the animation ends.
 .secondary {
-  --_bg: color-mix(in oklab, #{lw.v(color-background)} 60%, transparent);
-}
-
-.secondary::part(button) {
-  backdrop-filter: blur(8px);
+  --_bg: color-mix(in oklab, #{lw.v(color-background)} 72%, transparent);
+  --_border: color-mix(in oklab, #{lw.v(color-foreground)} 16%, transparent);
 }
 
 // The arrow waits out of sight, the label centred in the button without
@@ -160,7 +162,7 @@
   text-transform: uppercase;
   // See-through ink rather than a fixed grey, so it holds up over a
   // coloured glow too.
-  color: color-mix(in oklab, #{lw.v(color-foreground)} 62%, transparent);
+  color: color-mix(in oklab, var(--_on-glow) 62%, transparent);
 }
 
 .logo {
@@ -171,14 +173,14 @@
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  color: color-mix(in oklab, #{lw.v(color-foreground)} 58%, transparent);
+  color: color-mix(in oklab, var(--_on-glow) 58%, transparent);
 
   @include lw.motion {
     transition: color lw.v(duration-normal) ease-out;
   }
 
   &:hover {
-    color: lw.v(color-foreground);
+    color: var(--_on-glow);
   }
 
   svg {
