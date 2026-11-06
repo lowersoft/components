@@ -1,7 +1,7 @@
 @use '../../styles' as lw;
 
 :host {
-  --_accent: var(--lw-lifetime-pricing-accent, light-dark(#4f46e5, #818cf8));
+  --_accent: var(--lw-lifetime-pricing-accent, #{lw.v(color-accent)});
 }
 
 .head {
@@ -48,6 +48,10 @@
 }
 
 .plan {
+  // The accent pulled towards the card's own text, so it reads on a light
+  // card and a dark one alike, inverted or not.
+  --_accent-ink: color-mix(in oklab, var(--_accent) 72%, #{lw.v(color-foreground)});
+
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -57,14 +61,13 @@
   background: lw.v(color-background);
   box-shadow: lw.v(shadow-sm);
 
-  // The opposite scheme: dark on a light page, light on a dark one.
+  // The opposite scheme, tokens and all, so the button and the checkboxes
+  // in it follow: dark on a light page, light on a dark one.
   &[data-inverted] {
     @include lw.inverted;
 
     border-color: transparent;
-    box-shadow:
-      0 0 0 1px color-mix(in oklab, var(--_ink) 80%, transparent),
-      0 24px 48px -20px rgb(0 0 0 / 0.35);
+    box-shadow: 0 24px 48px -20px rgb(0 0 0 / 0.35);
   }
 }
 
@@ -84,10 +87,10 @@
 .badge {
   padding: 0.25rem 0.625rem;
   border-radius: lw.v(radius-full);
-  background: var(--_accent);
+  background: color-mix(in oklab, var(--_accent) 16%, transparent);
   font-size: lw.v(text-xs);
-  font-weight: 600;
-  color: #fff;
+  font-weight: 500;
+  color: var(--_accent-ink);
 }
 
 .subtitle {
@@ -118,53 +121,48 @@
   font-variant-numeric: tabular-nums;
 }
 
-// Solid, with a sheen across the top and an arrow that nudges ahead.
+.period {
+  align-self: flex-end;
+  margin: 0 0 0.375rem 0.375rem;
+  color: lw.v(color-muted-foreground);
+}
+
+// The library button with a sheen across its top; the arrow slips out to
+// the right and back in from the left.
 .action {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  height: 2.75rem;
   margin-top: 1.5rem;
+
+  &::part(button) {
+    width: 100%;
+    height: 2.75rem;
+    border-radius: lw.v(radius-lg);
+    background-image: linear-gradient(to bottom, rgb(255 255 255 / 0.16), transparent 55%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      0 1px 2px rgb(0 0 0 / 0.2);
+  }
+}
+
+.arrow {
+  display: inline-flex;
   overflow: hidden;
-  border: 0;
-  border-radius: lw.v(radius-lg);
-  background:
-    linear-gradient(to bottom, rgb(255 255 255 / 0.16), transparent 55%),
-    lw.v(color-primary);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.18),
-    0 1px 2px rgb(0 0 0 / 0.2);
-  font: 500 lw.v(text-sm) lw.v(font-sans);
-  color: lw.v(color-primary-foreground);
-  cursor: pointer;
-  outline: none;
-
-  @include lw.motion {
-    transition: filter 200ms ease-out;
-  }
-
-  &:hover {
-    filter: brightness(1.12);
-  }
-
-  &:active {
-    scale: 0.99;
-  }
-
-  &:focus-visible {
-    @include lw.focus-ring;
-  }
 
   svg {
     @include lw.motion {
-      transition: translate 200ms lw.v(ease-out);
+      .action:is(:hover, :focus-visible) & {
+        animation: arrow-through 450ms lw.v(ease-in-out);
+      }
     }
   }
+}
 
-  &:hover svg {
-    translate: 3px 0;
+@keyframes arrow-through {
+  45% {
+    translate: 150% 0;
+  }
+
+  45.01% {
+    translate: -150% 0;
   }
 }
 
@@ -199,7 +197,7 @@
 
   &.accent {
     background: color-mix(in oklab, var(--_accent) 16%, transparent);
-    color: var(--_accent);
+    color: var(--_accent-ink);
   }
 }
 
@@ -228,29 +226,12 @@
   }
 }
 
-.extras li {
+// An add-on with a price: the library checkbox in a box that lights up
+// while it is ticked, its price on the line under its name.
+.extra-row {
   display: block;
-
-  &.included {
-    display: flex;
-  }
-}
-
-// An add-on with a price: press to add it.
-.extra {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.5rem 0.625rem;
   border: 1px solid lw.v(color-border);
   border-radius: lw.v(radius-md);
-  background: none;
-  font: inherit;
-  text-align: left;
-  color: inherit;
-  cursor: pointer;
-  outline: none;
 
   @include lw.motion {
     transition:
@@ -259,54 +240,27 @@
   }
 
   &:hover {
-    border-color: color-mix(in oklab, var(--_accent) 45%, #{lw.v(color-border)});
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
   }
 
-  &[aria-pressed='true'] {
-    border-color: var(--_accent);
-    background: color-mix(in oklab, var(--_accent) 8%, transparent);
-  }
-
-  &:focus-visible {
-    @include lw.focus-ring;
+  &:has(.extra[checked]) {
+    border-color: lw.v(color-foreground);
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 5%, transparent);
   }
 }
 
-.box {
-  display: grid;
-  width: 1.125rem;
-  height: 1.125rem;
-  flex: none;
-  place-items: center;
-  border: 1.5px solid color-mix(in oklab, #{lw.v(color-foreground)} 28%, transparent);
-  border-radius: 0.3125rem;
-  color: #fff;
+.extra {
+  display: block;
 
-  svg {
-    scale: 0;
-
-    @include lw.motion {
-      transition: scale 200ms lw.v(ease-spring);
-    }
+  &::part(base) {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.625rem 0.75rem;
   }
 
-  [aria-pressed='true'] > & {
-    border-color: var(--_accent);
-    background: var(--_accent);
-
-    svg {
-      scale: 1;
-    }
+  &::part(description) {
+    font-variant-numeric: tabular-nums;
   }
-}
-
-.extra-label {
-  flex: 1;
-}
-
-.extra-price {
-  font-variant-numeric: tabular-nums;
-  color: lw.v(color-muted-foreground);
 }
 
 .question {
