@@ -1,7 +1,9 @@
 @use '../../styles' as lw;
 
 :host {
-  --_accent: var(--lw-credit-plan-pricing-accent, light-dark(#2563eb, #3b82f6));
+  --_accent: var(--lw-credit-plan-pricing-accent, #{lw.v(color-primary)});
+  --_on-accent: var(--lw-credit-plan-pricing-on-accent, #{lw.v(color-primary-foreground)});
+  --_line: color-mix(in oklab, #{lw.v(color-foreground)} 22%, transparent);
 }
 
 .head {
@@ -39,10 +41,10 @@
 .save {
   padding: 0.125rem 0.5rem;
   border-radius: lw.v(radius-full);
-  background: color-mix(in oklab, var(--_accent) 12%, transparent);
+  background: color-mix(in oklab, #{lw.v(color-accent)} 12%, transparent);
   font-size: lw.v(text-xs);
   font-weight: 500;
-  color: var(--_accent);
+  color: lw.v(color-accent);
 
   &:empty {
     display: none;
@@ -74,9 +76,27 @@
   background: lw.v(color-background);
 }
 
+.plan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 1.5rem;
+}
+
 .name {
   font-size: lw.v(text-md);
   font-weight: 600;
+}
+
+// A quiet tag on the featured plan.
+.badge {
+  padding: 0.125rem 0.5rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-sm);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
 }
 
 .tagline {
@@ -105,6 +125,13 @@
   color: lw.v(color-muted-foreground);
 }
 
+// The monthly price a yearly one replaces.
+.was {
+  margin-left: 0.125rem;
+  color: lw.v(color-muted-foreground);
+  text-decoration-thickness: 1px;
+}
+
 .billed {
   min-height: 1.25rem;
   margin-top: 0.375rem;
@@ -119,7 +146,8 @@
   color: lw.v(color-muted-foreground);
 }
 
-// The credit menu, or the fixed amount in the same box.
+// The credit menu, boxed like the library's fields, or the fixed amount
+// in the same box, read-only.
 .credits {
   position: relative;
   display: flex;
@@ -129,20 +157,26 @@
   padding: 0 0.75rem;
   border: 1px solid lw.v(color-border);
   border-radius: lw.v(radius-md);
-  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  background: lw.v(color-muted);
   font-weight: 500;
 
   &.select {
     padding: 0;
     background: lw.v(color-background);
 
+    @include lw.motion {
+      transition:
+        border-color 150ms ease-out,
+        box-shadow 150ms ease-out;
+    }
+
     &:hover {
-      border-color: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+      border-color: var(--_line);
     }
 
     &:focus-within {
-      border-color: lw.v(color-ring);
-      box-shadow: 0 0 0 3px color-mix(in oklab, #{lw.v(color-ring)} 25%, transparent);
+      border-color: var(--_line);
+      box-shadow: 0 0 0 3px color-mix(in oklab, #{lw.v(color-ring)} 30%, transparent);
     }
 
     svg {
@@ -201,15 +235,14 @@
     width: 100%;
   }
 
-  // The only colour on the frame.
+  // The only solid button on the frame.
   [data-featured] > &::part(button) {
-    border-color: transparent;
     background: var(--_accent);
-    color: #fff;
+    color: var(--_on-accent);
   }
 
   [data-featured] > &:hover::part(button) {
-    background: color-mix(in oklab, var(--_accent) 88%, black);
+    background: color-mix(in oklab, var(--_accent) 86%, var(--_on-accent));
   }
 }
 

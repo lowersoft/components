@@ -32,8 +32,9 @@ const DEMO_PLANS = [
  * Credit plans in four columns on one frame. A plan with a credit ladder
  * has a menu: choosing an amount reprints that plan's price. The yearly
  * switch moves every column to its yearly price per month at once, and
- * prices roll to their new value. Only the featured plan's button takes
- * the accent. Four columns become two, then one, as the room runs out.
+ * prices roll to their new value, the monthly one struck beside them. Only
+ * the featured plan is marked, by a badge and the one solid button. Four
+ * columns become two, then one, as the room runs out.
  *
  * Plans are `{ id, name, tagline, credits, creditLabel?, action, features,
  * price?, featured? }`. `credits` is either text, with `price` a number or
@@ -44,16 +45,18 @@ const DEMO_PLANS = [
  * @attr {string} description
  * @attr {boolean} yearly - Yearly billing
  * @attr {string} save - Beside the switch
+ * @attr {string} badge - On the featured plan
  * @attr {string} footnote - Under the frame
  * @attr {string} footnote-link - The footnote's link text
  * @attr {string} footnote-href - Where it goes
- * @attr {string} accent - The featured plan's color; blue by default
+ * @attr {string} accent - The featured plan's button; the primary color by default
  * @attr {Array<object>} plans (JSON)
  * @fires lw-change - Billing changed; `detail: { yearly }`
  * @fires lw-select - A credit amount was chosen; `detail: { plan, credits, price }`
  * @fires lw-choose - A plan's button was pressed; `detail: { plan, credits, price, yearly }`
  * @csspart frame
  * @cssprop --lw-credit-plan-pricing-accent - Same as `accent`
+ * @cssprop --lw-credit-plan-pricing-on-accent - Text on the accent
  */
 export class LwCreditPlanPricing extends LwElement {
   static styles = [rollingStyles, pricingStyles, styles];
@@ -62,6 +65,7 @@ export class LwCreditPlanPricing extends LwElement {
     description: { default: 'Pick a plan, then the minutes you need. Change either whenever you like.' },
     yearly: { type: Boolean, reflect: true },
     save: { default: 'Save 20%' },
+    badge: { default: 'Popular' },
     footnote: { default: 'Unused minutes roll over for one month.' },
     'footnote-link': { default: 'Learn more' },
     'footnote-href': { default: '#' },
@@ -74,7 +78,7 @@ export class LwCreditPlanPricing extends LwElement {
 
   render() {
     return `<section class="section" aria-labelledby="heading"><header class="head"><div><h2 class="title" id="heading"></h2><p class="description"></p></div>
-<div class="billing-row"><lw-switch class="yearly" size="sm">Yearly billing</lw-switch><span class="save"></span></div></header>
+<div class="billing-row"><lw-switch class="yearly">Yearly billing</lw-switch><span class="save"></span></div></header>
 <div class="frame" part="frame"></div><p class="footnote"><span class="footnote-text"></span> <a class="footnote-link"></a></p></section>`;
   }
 
@@ -116,9 +120,12 @@ export class LwCreditPlanPricing extends LwElement {
     link.hidden = !this['footnote-link'];
     link.innerHTML = `${escapeHtml(this['footnote-link'] ?? '')}${strokeIcon(arrowUpRight, 14)}`;
     link.href = this['footnote-href'] || '#';
-    if (this.accent) this.style.setProperty('--_accent', this.accent);
-    else this.style.removeProperty('--_accent');
-    if (changed.has('plans')) this.#build();
+    // A colour of your own takes white text.
+    for (const [name, value] of [['--_accent', this.accent], ['--_on-accent', '#fff']]) {
+      if (this.accent) this.style.setProperty(name, value);
+      else this.style.removeProperty(name);
+    }
+    if (changed.has('plans') || changed.has('badge')) this.#build();
     for (const plan of this.#plans) this.#paint(plan);
   }
 
@@ -154,9 +161,9 @@ export class LwCreditPlanPricing extends LwElement {
               .join('')}</select>${strokeIcon(chevronDown, 16)}</div>`
           : `<span class="credits-label">${label}</span><p class="credits">${escapeHtml(plan.credits ?? '')}</p>`;
         return `<article class="plan"${plan.featured ? ' data-featured' : ''} data-id="${id}" aria-labelledby="plan-${id}">
-<h3 class="name" id="plan-${id}">${escapeHtml(plan.name)}</h3><p class="tagline">${escapeHtml(plan.tagline ?? '')}</p>
-<p class="price">${priceMarkup()}<span class="per"></span></p><p class="billed"></p>${credits}
-<ul class="features">${(plan.features ?? []).map((feature) => `<li>${strokeIcon(check, 15)}<span>${escapeHtml(feature)}</span></li>`).join('')}</ul>
+<div class="plan-head"><h3 class="name" id="plan-${id}">${escapeHtml(plan.name)}</h3>${plan.featured && this.badge ? `<span class="badge">${escapeHtml(this.badge)}</span>` : ''}</div><p class="tagline">${escapeHtml(plan.tagline ?? '')}</p>
+<p class="price">${priceMarkup()}<span class="per"></span><s class="was" hidden><span class="visually-hidden">instead of </span><span class="was-amount"></span></s></p><p class="billed"></p>${credits}
+<ul class="features">${(plan.features ?? []).map((feature) => `<li>${strokeIcon(check, 16)}<span>${escapeHtml(feature)}</span></li>`).join('')}</ul>
 <lw-button class="action" data-id="${id}" variant="${plan.featured ? 'primary' : 'outline'}">${escapeHtml(plan.action ?? 'Choose')}</lw-button></article>`;
       })
       .join('');
@@ -169,6 +176,10 @@ export class LwCreditPlanPricing extends LwElement {
     const custom = typeof price !== 'number';
     paintPrice(card.querySelector('.amount'), custom ? 'Custom' : formatMoney(price));
     card.querySelector('.per').textContent = custom ? '' : '/ month';
+    // The monthly price, struck, while the yearly one is cheaper.
+    const credit = this.#credit(plan);
+    card.querySelector('.was').hidden = !(credit && this.yearly && price < credit.monthly);
+    card.querySelector('.was-amount').textContent = credit ? formatMoney(credit.monthly) : '';
     card.querySelector('.billed').textContent = custom ? 'Talk to us about volume' : !price ? 'Free forever' : this.yearly ? `${formatMoney(price * 12)} billed yearly` : 'Billed monthly';
   }
 }
