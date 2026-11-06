@@ -1,3 +1,4 @@
+import { LOWERSOFT, paintMark } from '../../core/brand.js';
 import { providerButtons } from '../../core/login.js';
 import { LwElement } from '../../core/lw-element.js';
 import '../button/index.js';
@@ -17,6 +18,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
  * to your auth; without it, the card simulates the request.
  *
  * @attr {string} brand - The product's name
+ * @attr {string} logo - An image for the logo tile; Lowersoft's mark by default, the initial when empty
  * @attr {string} sign-in-href - The "Sign in" link
  * @fires lw-provider - Google or GitHub was chosen; `detail: { provider }`
  * @fires lw-sign-up - The account was created; `detail: { name, email }`
@@ -25,6 +27,7 @@ export class LwSplitSignupLogin extends LwElement {
   static styles = styles;
   static props = {
     brand: { default: 'LowerSoft' },
+    logo: { default: LOWERSOFT.mark },
     signInHref: { default: '#' },
   };
 
@@ -51,7 +54,7 @@ ${providerButtons()}<p class="divider"><span>or with email</span></p>
 
   updated() {
     const brand = this.brand ?? '';
-    this.query('.logo').textContent = brand.charAt(0).toUpperCase();
+    paintMark(this.query('.logo'), this.logo, brand.charAt(0).toUpperCase());
     this.query('.form .title').textContent = `Create your ${brand} account`;
     this.query('.lead').textContent = `One account for everything you get from ${brand}: downloads, licenses and updates in one place.`;
     this.query('.sign-in').href = this.signInHref ?? '#';

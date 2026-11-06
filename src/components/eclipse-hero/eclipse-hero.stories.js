@@ -24,12 +24,13 @@ export const Violet = {
   },
 };
 
-// Without a brand, an announcement or logos: just the eclipse and the copy.
+// Without a brand, an announcement or customer logos: just the eclipse and the copy.
 export const Minimal = {
   render: () => {
     const hero = document.createElement('lw-eclipse-hero');
     Object.assign(hero, {
       brand: '',
+      logo: '',
       announcement: '',
       logos: [],
       heading: 'Close to the metal.\nFar from the pain.',

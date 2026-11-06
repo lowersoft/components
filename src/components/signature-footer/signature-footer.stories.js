@@ -15,6 +15,6 @@ export const Default = {};
 
 // A warm colour for the outline under the mouse.
 export const Ember = {
-  render: (args) => `<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end"><lw-signature-footer ${attributes(args)} style="--lw-signature-footer-from: #f97316; --lw-signature-footer-to: #facc15"></lw-signature-footer></div>`,
+  render: (args) => `<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end"><lw-signature-footer ${attributes(args)} logo="" style="--lw-signature-footer-from: #f97316; --lw-signature-footer-to: #facc15"></lw-signature-footer></div>`,
   args: { brand: 'Firmware', description: 'Bootloaders, drivers and over-the-air updates for devices that cannot afford to fail.' },
 };

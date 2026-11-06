@@ -1,7 +1,7 @@
 import '../button/index.js';
 import '../text-input/index.js';
 import { escapeHtml } from '../../core/dom.js';
-import { brandMarkup, footerLink, linkColumns, socialLinks, wireSignup } from '../../core/footer.js';
+import { brandMarkup, footerLink, linkColumns, logoProps, socialLinks, wireSignup } from '../../core/footer.js';
 import { strokeIcon } from '../../core/icons.js';
 import { check } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
@@ -45,6 +45,8 @@ const FOLLOW = 9;
  *
  * @attr {string} brand
  * @attr {string} href - Where the brand links
+ * @attr {string} logo - The logo, for a light theme and for a dark one without `logo-dark`; Lowersoft's by default, and the brand's initial and name when empty
+ * @attr {string} logo-dark - The logo for a dark theme
  * @attr {string} description - The line under the brand
  * @attr {string} signup - The sign-up's title; no sign-up when empty
  * @attr {string} pitch - The line under the sign-up's title
@@ -61,8 +63,9 @@ const FOLLOW = 9;
 export class LwPixelFooter extends LwElement {
   static styles = styles;
   static props = {
-    brand: { default: 'lower' },
+    brand: { default: 'Lowersoft' },
     href: { default: '/' },
+    ...logoProps,
     description: { default: 'The build system for teams who read the disassembly. Native toolchains, shared caches and nothing between your code and the machine.' },
     signup: { default: 'Stay in the loop' },
     pitch: { default: 'Release notes, compiler deep dives and the occasional benchmark.' },
@@ -115,7 +118,7 @@ export class LwPixelFooter extends LwElement {
   }
 
   updated(changed) {
-    if (changed.has('brand') || changed.has('href')) this.query('.brand-slot').innerHTML = brandMarkup(this.brand, this.href || '/');
+    if (['brand', 'href', 'logo', 'logoDark'].some((name) => changed.has(name))) this.query('.brand-slot').innerHTML = brandMarkup(this.brand, this.href || '/', this);
     const description = this.query('.description');
     description.textContent = this.description ?? '';
     description.hidden = !this.description;

@@ -1,4 +1,4 @@
-import { brandMarkup, footerLink, linkColumns, socialLinks } from '../../core/footer.js';
+import { brandMarkup, footerLink, linkColumns, logoProps, socialLinks } from '../../core/footer.js';
 import { LwElement } from '../../core/lw-element.js';
 import '../theme-toggle-button/index.js';
 import styles from './social-footer.scss?inline';
@@ -30,6 +30,8 @@ const DEMO_LEGAL = ['Privacy', 'Terms'].map((label) => ({ label }));
  *
  * @attr {string} brand
  * @attr {string} href - Where the brand links
+ * @attr {string} logo - The logo, for a light theme and for a dark one without `logo-dark`; Lowersoft's by default, and the brand's initial and name when empty
+ * @attr {string} logo-dark - The logo for a dark theme
  * @attr {string} tagline - One line under the brand
  * @attr {Array<object>} columns (JSON)
  * @attr {Array<object>} socials (JSON)
@@ -40,8 +42,9 @@ const DEMO_LEGAL = ['Privacy', 'Terms'].map((label) => ({ label }));
 export class LwSocialFooter extends LwElement {
   static styles = styles;
   static props = {
-    brand: { default: 'Lower' },
+    brand: { default: 'Lowersoft' },
     href: { default: '/' },
+    ...logoProps,
     tagline: { default: 'Interface parts that feel finished, for teams who would rather ship than polish.' },
     columns: { type: Object, default: DEMO_COLUMNS },
     socials: { type: Object, default: DEMO_SOCIALS },
@@ -59,7 +62,7 @@ export class LwSocialFooter extends LwElement {
   }
 
   updated(changed) {
-    if (changed.has('brand') || changed.has('href')) this.query('.brand-slot').innerHTML = brandMarkup(this.brand, this.href || '/');
+    if (['brand', 'href', 'logo', 'logoDark'].some((name) => changed.has(name))) this.query('.brand-slot').innerHTML = brandMarkup(this.brand, this.href || '/', this);
     const tagline = this.query('.tagline');
     tagline.textContent = this.tagline ?? '';
     tagline.hidden = !this.tagline;

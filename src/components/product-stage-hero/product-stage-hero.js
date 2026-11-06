@@ -1,3 +1,4 @@
+import { LOWERSOFT, paintMark } from '../../core/brand.js';
 import { writeClipboard } from '../../core/clipboard.js';
 import { escapeHtml } from '../../core/dom.js';
 import { hideHighlight, moveHighlight } from '../../core/highlight.js';
@@ -64,6 +65,7 @@ const labelChip = (name) => `<span class="chip" style="--_hue: ${LABEL_HUES[name
  * @attr {string} heading
  * @attr {string} description
  * @attr {string} product - The app's name in the window's top bar
+ * @attr {string} logo - An image for the logo tile; Lowersoft's mark by default, the initial when empty
  * @attr {string} team
  * @attr {string} cycle - The cycle shown, e.g. "Release 0.9"
  * @attr {string} range - The cycle's dates
@@ -81,6 +83,7 @@ export class LwProductStageHero extends LwElement {
     heading: { default: 'Fix it before it ships.' },
     description: { default: 'Triage crashes, plan releases and land patches for lower from one keyboard-first workspace. Targets and stack traces sit beside every issue, and nothing waits on a spinner.' },
     product: { default: 'lower' },
+    logo: { default: LOWERSOFT.mark },
     team: { default: 'Core' },
     cycle: { default: 'Release 0.9' },
     range: { default: 'Oct 13 – Oct 24' },
@@ -150,7 +153,7 @@ ${heroIntro('Start tracking', 'Read the changelog')}
 
   updated(changed) {
     paintHeroText(this);
-    this.query('.logo').textContent = (this.product ?? '').charAt(0);
+    paintMark(this.query('.logo'), this.logo, (this.product ?? '').charAt(0));
     this.query('.product').textContent = this.product ?? '';
     this.query('.team').textContent = this.team ?? '';
     this.query('.cycle').textContent = this.cycle ?? '';

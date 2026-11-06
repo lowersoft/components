@@ -15,7 +15,7 @@ export const Default = {};
 // Paper and ink with a bronze fill, from the library's own colour tokens
 // set on the footer.
 export const Paper = {
-  render: (args) => `<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end"><lw-editorial-footer ${attributes(args)} style="
+  render: (args) => `<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end"><lw-editorial-footer ${attributes(args)} logo="" style="
     --lw-color-background: light-dark(#f4f1ec, #17130f);
     --lw-color-foreground: light-dark(#1c1914, #e9e4d8);
     --lw-color-muted-foreground: light-dark(#7a6b54, #a89a7e);

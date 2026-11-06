@@ -15,3 +15,13 @@
 *::after {
   box-sizing: inherit;
 }
+
+// Artwork drawn for one scheme, such as a logo in black and one in white:
+// only the one that suits the theme shows.
+.light-only {
+  display: var(--lw-show-light, inline);
+}
+
+.dark-only {
+  display: var(--lw-show-dark, none);
+}

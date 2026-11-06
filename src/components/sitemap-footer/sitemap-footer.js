@@ -1,4 +1,4 @@
-import { brandMarkup, linkColumns } from '../../core/footer.js';
+import { brandMarkup, linkColumns, logoProps } from '../../core/footer.js';
 import { isTyping } from '../../core/dom.js';
 import { LwElement } from '../../core/lw-element.js';
 import styles from './sitemap-footer.scss?inline';
@@ -21,14 +21,17 @@ const DEMO_COLUMNS = [
  *
  * @attr {string} brand
  * @attr {string} href - Where the brand links
+ * @attr {string} logo - The logo, for a light theme and for a dark one without `logo-dark`; Lowersoft's by default, and the brand's initial and name when empty
+ * @attr {string} logo-dark - The logo for a dark theme
  * @attr {Array<object>} columns (JSON)
  * @attr {string} note - The small print under the columns
  */
 export class LwSitemapFooter extends LwElement {
   static styles = styles;
   static props = {
-    brand: { default: 'Lower' },
+    brand: { default: 'Lowersoft' },
     href: { default: '/' },
+    ...logoProps,
     columns: { type: Object, default: DEMO_COLUMNS },
     note: {},
   };
@@ -53,7 +56,7 @@ export class LwSitemapFooter extends LwElement {
   }
 
   updated(changed) {
-    if (changed.has('brand') || changed.has('href')) this.query('.brand-slot').innerHTML = brandMarkup(this.brand, this.href);
+    if (['brand', 'href', 'logo', 'logoDark'].some((name) => changed.has(name))) this.query('.brand-slot').innerHTML = brandMarkup(this.brand, this.href || '/', this);
     if (changed.has('columns')) {
       this.query('.columns').innerHTML = linkColumns(this.columns);
       this.#filter();

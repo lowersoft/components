@@ -1,3 +1,4 @@
+import { LOWERSOFT, paintMark } from '../../core/brand.js';
 import { escapeHtml } from '../../core/dom.js';
 import { heroIntro, paintHeroText } from '../../core/hero.js';
 import { CHECK_ICON, iconStyles, strokeIcon } from '../../core/icons.js';
@@ -45,6 +46,7 @@ const seconds = (ms) => `${(ms / 1000).toFixed(2)}s`;
  * @attr {string} heading
  * @attr {string} description
  * @attr {string} project - The program's name in the window's top bar
+ * @attr {string} logo - An image for the logo tile; Lowersoft's mark by default, the initial when empty
  * @attr {string} run - The build's label, e.g. "Build #4821"
  * @attr {Array<object>} steps (JSON)
  * @attr {string} step - The step open in the inspector
@@ -60,6 +62,7 @@ export class LwWorkFlowHero extends LwElement {
     heading: { default: 'Builds that show their work.' },
     description: { default: 'Every stage of a native build, traced live: configure, compile, test and link. Open any step to see the exact command and what it produced, and nothing ships without the receipts.' },
     project: { default: 'lower' },
+    logo: { default: LOWERSOFT.mark },
     run: { default: 'Build #4821' },
     steps: { type: Object, default: DEMO_STEPS },
     step: { default: 'gui' },
@@ -110,7 +113,7 @@ export class LwWorkFlowHero extends LwElement {
 
   updated(changed) {
     paintHeroText(this);
-    this.query('.logo').textContent = (this.project ?? '').charAt(0).toUpperCase();
+    paintMark(this.query('.logo'), this.logo, (this.project ?? '').charAt(0).toUpperCase());
     this.query('.project').textContent = this.project ?? '';
     this.query('.run').textContent = this.run ?? '';
     if (changed.has('steps')) this.#build();

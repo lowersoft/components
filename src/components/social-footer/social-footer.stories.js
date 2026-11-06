@@ -9,13 +9,14 @@ export default {
   argTypes: {
     'no-theme-toggle': { name: 'No theme toggle', control: 'boolean' },
   },
-  args: { brand: 'Lower', 'no-theme-toggle': false },
+  args: { brand: 'Lowersoft', 'no-theme-toggle': false },
 };
 
 // The brand beside the links, with social links and a theme switch below.
 export const Default = {};
 
-// Another brand, without the theme switch.
+// Another brand, without the theme switch: no logo, so its initial and name.
 export const Northline = {
+  render: (args) => `<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end"><lw-social-footer ${attributes(args)} logo=""></lw-social-footer></div>`,
   args: { brand: 'Northline', tagline: 'Route planning for fleets that cannot afford to be late.', 'no-theme-toggle': true },
 };

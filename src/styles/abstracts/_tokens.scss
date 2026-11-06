@@ -50,6 +50,12 @@ $light: (
     sm: 0 1px 2px rgb(0 0 0 / 0.05),
     md: 0 4px 12px rgb(0 0 0 / 0.08),
   ),
+  // Display values for artwork drawn for one scheme: `.light-only` and
+  // `.dark-only` in host.scss show the one that suits the theme.
+  show: (
+    light: inline,
+    dark: none,
+  ),
 );
 
 $dark: (
@@ -71,5 +77,9 @@ $dark: (
   shadow: (
     sm: 0 1px 2px rgb(0 0 0 / 0.4),
     md: 0 4px 12px rgb(0 0 0 / 0.5),
+  ),
+  show: (
+    light: none,
+    dark: inline,
   ),
 );

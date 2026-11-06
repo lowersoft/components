@@ -6,7 +6,7 @@ export default {
   component: 'lw-sitemap-footer',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end"><lw-sitemap-footer ${attributes(args)}></lw-sitemap-footer></div>`,
-  args: { brand: 'Lower' },
+  args: { brand: 'Lowersoft' },
 };
 
 // Press / and type: links that do not match step back. Enter opens the first match.

@@ -1,3 +1,4 @@
+import { LOWERSOFT, themedImage } from '../../core/brand.js';
 import { escapeHtml } from '../../core/dom.js';
 import { linkColumns, socialLinks } from '../../core/footer.js';
 import { LwElement } from '../../core/lw-element.js';
@@ -31,7 +32,9 @@ const HEIGHT = 180;
  * and social links `{ label, href?, icon }`, with a Lucide name from
  * `core/lucide.js` or `<svg>` markup.
  *
- * @attr {string} brand - The spaced label over the tagline, and the copyright's name
+ * @attr {string} brand - The name over the tagline, and the copyright's
+ * @attr {string} logo - The brand's name as an image over the tagline, for a light theme and for a dark one without `logo-dark`; Lowersoft's wordmark by default, and the name in spaced capitals when empty
+ * @attr {string} logo-dark - The name's image for a dark theme
  * @attr {string} tagline - The statement, one sentence written like a headline
  * @attr {string} wordmark - The outlined word across the foot; the brand by default
  * @attr {Array<object>} columns (JSON)
@@ -43,7 +46,9 @@ const HEIGHT = 180;
 export class LwEditorialFooter extends LwElement {
   static styles = styles;
   static props = {
-    brand: { default: 'Lower' },
+    brand: { default: 'Lowersoft' },
+    logo: { default: LOWERSOFT.wordmark.light },
+    logoDark: { default: LOWERSOFT.wordmark.dark },
     tagline: { default: 'A small systems studio writing compilers, runtimes and the tools between them, for teams who count every cycle.' },
     wordmark: {},
     columns: { type: Object, default: DEMO_COLUMNS },
@@ -56,7 +61,7 @@ export class LwEditorialFooter extends LwElement {
     return `<footer class="container"><div class="top"><div class="statement"><p class="label"></p><p class="tagline"></p></div><div class="columns"></div></div>
 <div class="strip"><p class="copyright"></p><ul class="socials" aria-label="Social"></ul></div>
 <div class="wordmark" part="wordmark" aria-hidden="true"><svg class="outline" viewBox="0 0 ${WIDTH} ${HEIGHT}">${text('word')}</svg>
-<svg class="fill" viewBox="0 0 ${WIDTH} ${HEIGHT}"><defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop class="from" offset="0"/><stop class="to" offset="1"/></linearGradient></defs>${text('word')}</svg></div></footer>`;
+<div class="lit"><svg class="fill" viewBox="0 0 ${WIDTH} ${HEIGHT}"><defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop class="from" offset="0"/><stop class="to" offset="1"/></linearGradient></defs>${text('word')}</svg></div></div></footer>`;
   }
 
   connected() {
@@ -64,7 +69,9 @@ export class LwEditorialFooter extends LwElement {
   }
 
   updated(changed) {
-    this.query('.label').textContent = this.brand ?? '';
+    const label = this.query('.label');
+    if (this.logo) label.innerHTML = themedImage({ light: this.logo, dark: this.logoDark }, this.brand ?? '', 'label-logo');
+    else label.textContent = this.brand ?? '';
     this.query('.tagline').textContent = this.tagline ?? '';
     for (const word of this.shadowRoot.querySelectorAll('.word')) word.textContent = (this.wordmark || this.brand || '').toUpperCase();
     if (changed.has('columns')) this.query('.columns').innerHTML = linkColumns(Array.isArray(this.columns) ? this.columns : []);

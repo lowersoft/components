@@ -1,12 +1,29 @@
+import { LOWERSOFT, themedImage } from './brand.js';
 import { escapeHtml } from './dom.js';
 import { strokeIcon } from './icons.js';
 import * as lucide from './lucide.js';
 
 // Shared markup of the footer components; style it with the `footer-base` mixin.
 
-/** The brand: a letter tile and the name, linking home. */
-export const brandMarkup = (brand, href = '/') =>
-  `<a class="brand" href="${escapeHtml(href)}"><span class="brand-tile" aria-hidden="true">${escapeHtml((brand ?? '').charAt(0).toUpperCase())}</span><span class="brand-name">${escapeHtml(brand ?? '')}</span></a>`;
+/**
+ * The `logo` and `logo-dark` props of a footer with a brand, Lowersoft's
+ * lockup by default: the logo shown in a light theme (and in a dark one
+ * without `logo-dark`), and the one for a dark theme.
+ */
+export const logoProps = {
+  logo: { default: LOWERSOFT.lockup.light },
+  logoDark: { default: LOWERSOFT.lockup.dark },
+};
+
+/**
+ * The brand, linking home: the host's logo, one image per theme, named by
+ * the brand; without a logo, a letter tile and the name.
+ */
+export const brandMarkup = (brand, href = '/', logo = {}) => {
+  const name = brand ?? '';
+  if (logo.logo) return `<a class="brand" href="${escapeHtml(href)}">${themedImage({ light: logo.logo, dark: logo.logoDark }, name, 'brand-logo')}</a>`;
+  return `<a class="brand" href="${escapeHtml(href)}"><span class="brand-tile" aria-hidden="true">${escapeHtml(name.charAt(0).toUpperCase())}</span><span class="brand-name">${escapeHtml(name)}</span></a>`;
+};
 
 /**
  * A link, with its badge when it has one: `{ label, href?, badge?, external? }`.

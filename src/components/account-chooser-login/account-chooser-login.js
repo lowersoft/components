@@ -1,3 +1,4 @@
+import { LOWERSOFT, paintMark } from '../../core/brand.js';
 import { escapeHtml } from '../../core/dom.js';
 import { hideHighlight, moveHighlight } from '../../core/highlight.js';
 import { strokeIcon } from '../../core/icons.js';
@@ -46,6 +47,7 @@ const chip = (method, account) => `<span class="method">${method === 'google' ? 
  * your auth; without it, the card simulates the request.
  *
  * @attr {string} brand - The product's name
+ * @attr {string} logo - An image for the logo tile; Lowersoft's mark by default, the initial when empty
  * @attr {Array<object>} accounts (JSON)
  * @attr {object} sso-domains - Email domain to provider name (JSON)
  * @fires lw-continue - Signed in; `detail: { account }`
@@ -56,6 +58,7 @@ export class LwAccountChooserLogin extends LwElement {
   static styles = styles;
   static props = {
     brand: { default: 'LowerSoft' },
+    logo: { default: LOWERSOFT.mark },
     accounts: { type: Object, default: DEMO_ACCOUNTS },
     ssoDomains: { type: Object, default: DEMO_SSO },
   };
@@ -100,7 +103,7 @@ export class LwAccountChooserLogin extends LwElement {
   }
 
   updated(changed) {
-    this.query('.logo').textContent = (this.brand ?? '').charAt(0).toUpperCase();
+    paintMark(this.query('.logo'), this.logo, (this.brand ?? '').charAt(0).toUpperCase());
     this.query('.lead').textContent = `to continue to ${this.brand}`;
     if (changed.has('accounts') || changed.has('ssoDomains')) this.#build();
   }

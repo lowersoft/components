@@ -1,4 +1,5 @@
 import '../button/index.js';
+import { LOWERSOFT } from '../../core/brand.js';
 import { escapeHtml } from '../../core/dom.js';
 import { heroPillActions, paintPillActions } from '../../core/hero.js';
 import { logoMarkup } from '../../core/logos.js';
@@ -14,6 +15,8 @@ const DEMO_LOGOS = [
   { name: 'Zerocopy', mark: 'disc' },
   { name: 'Lockfree', mark: 'orbit' },
 ];
+
+const SPARK = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 4.8 2.2 6.4 7 7-4.8.6-6.4 2.2-7 7-.6-4.8-2.2-6.4-7-7 4.8-.6 6.4-2.2 7-7Z"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>';
 
 const PLAY = `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">${play}</svg>`;
 
@@ -35,6 +38,7 @@ const PLAY = `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor
  * pillar, wave or spark, drawn beside the name. An empty list hides the row.
  *
  * @attr {string} brand - The name above the announcement; none when empty
+ * @attr {string} logo - The brand's logo, drawn for a dark surface; Lowersoft's in white by default, and a spark beside the name when empty
  * @attr {string} tag - The announcement's short tag, such as "New"
  * @attr {string} announcement - The line in the pill; no pill when empty
  * @attr {string} heading - The headline, set in capitals; a line break starts a new line
@@ -52,7 +56,8 @@ const PLAY = `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor
 export class LwEclipseHero extends LwElement {
   static styles = styles;
   static props = {
-    brand: { default: 'lower' },
+    brand: { default: 'Lowersoft' },
+    logo: { default: LOWERSOFT.lockup.dark },
     tag: { default: 'New' },
     announcement: { default: 'Incremental linking for C++ modules' },
     heading: { default: 'Builds that finish\nbefore you look up.' },
@@ -65,15 +70,16 @@ export class LwEclipseHero extends LwElement {
 
   render() {
     return `<section class="hero" aria-labelledby="heading"><div class="eclipse" part="eclipse" aria-hidden="true"><div class="planet"></div></div><div class="scrim" aria-hidden="true"></div>
-<div class="content"><p class="brand"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 4.8 2.2 6.4 7 7-4.8.6-6.4 2.2-7 7-.6-4.8-2.2-6.4-7-7 4.8-.6 6.4-2.2 7-7Z"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span class="brand-name"></span></p>
+<div class="content"><p class="brand"></p>
 <p class="badge"><span class="tag"></span><span class="announcement"></span></p><h1 class="title" id="heading"></h1><p class="description"></p>
 <div class="actions">${heroPillActions(PLAY)}</div></div>
 <div class="trust" part="logos"><p class="trusted" id="trusted"></p><ul class="logos" aria-labelledby="trusted"></ul></div></section>`;
   }
 
   updated(changed) {
-    this.query('.brand-name').textContent = this.brand ?? '';
-    this.query('.brand').hidden = !this.brand;
+    const brand = this.query('.brand');
+    brand.innerHTML = this.logo ? `<img class="brand-logo" src="${escapeHtml(this.logo)}" alt="${escapeHtml(this.brand ?? '')}" decoding="async">` : `${SPARK}<span>${escapeHtml(this.brand ?? '')}</span>`;
+    brand.hidden = !this.brand && !this.logo;
     this.query('.tag').textContent = this.tag ?? '';
     this.query('.tag').hidden = !this.tag;
     this.query('.announcement').textContent = this.announcement ?? '';

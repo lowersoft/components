@@ -1,5 +1,5 @@
 import { escapeHtml } from '../../core/dom.js';
-import { brandMarkup, linkColumns } from '../../core/footer.js';
+import { brandMarkup, linkColumns, logoProps } from '../../core/footer.js';
 import { strokeIcon } from '../../core/icons.js';
 import { arrowRight } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
@@ -38,6 +38,8 @@ const dayFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numer
  *
  * @attr {string} brand
  * @attr {string} href - Where the brand links
+ * @attr {string} logo - The logo, for a light theme and for a dark one without `logo-dark`; Lowersoft's by default, and the brand's initial and name when empty
+ * @attr {string} logo-dark - The logo for a dark theme
  * @attr {string} description
  * @attr {Array<object>} columns (JSON)
  * @attr {'normal'|'degraded'|'outage'} status
@@ -49,8 +51,9 @@ const dayFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numer
 export class LwStatusFooter extends LwElement {
   static styles = styles;
   static props = {
-    brand: { default: 'Lower' },
+    brand: { default: 'Lowersoft' },
     href: { default: '/' },
+    ...logoProps,
     description: { default: 'Low-level tools for teams who would rather ship than babysit a runtime.' },
     columns: { type: Object, default: DEMO_COLUMNS },
     status: { default: 'normal', reflect: true },
@@ -90,7 +93,7 @@ export class LwStatusFooter extends LwElement {
   }
 
   updated(changed) {
-    if (changed.has('brand') || changed.has('href')) this.query('.brand-slot').innerHTML = brandMarkup(this.brand, this.href);
+    if (['brand', 'href', 'logo', 'logoDark'].some((name) => changed.has(name))) this.query('.brand-slot').innerHTML = brandMarkup(this.brand, this.href || '/', this);
     this.query('.description').textContent = this.description ?? '';
     if (changed.has('columns')) this.query('.columns').innerHTML = linkColumns(this.columns);
     const status = this.query('.status');

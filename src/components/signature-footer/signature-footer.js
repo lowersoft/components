@@ -1,5 +1,5 @@
 import { escapeHtml } from '../../core/dom.js';
-import { brandMarkup, footerLink, linkColumns, socialLinks } from '../../core/footer.js';
+import { brandMarkup, footerLink, linkColumns, logoProps, socialLinks } from '../../core/footer.js';
 import { LwElement } from '../../core/lw-element.js';
 import { followPointer } from '../../core/spotlight.js';
 import styles from './signature-footer.scss?inline';
@@ -38,6 +38,8 @@ const ROOM = 960;
  *
  * @attr {string} brand
  * @attr {string} href - Where the brand links
+ * @attr {string} logo - The logo, for a light theme and for a dark one without `logo-dark`; Lowersoft's by default, and the brand's initial and name when empty
+ * @attr {string} logo-dark - The logo for a dark theme
  * @attr {string} description - The line under the brand
  * @attr {string} wordmark - The outlined word across the foot; the brand by default
  * @attr {Array<object>} columns (JSON)
@@ -51,8 +53,9 @@ const ROOM = 960;
 export class LwSignatureFooter extends LwElement {
   static styles = styles;
   static props = {
-    brand: { default: 'Lower' },
+    brand: { default: 'Lowersoft' },
     href: { default: '/' },
+    ...logoProps,
     description: { default: 'The build system for teams who care about every millisecond. Native toolchains, shared caches, zero lock-in.' },
     wordmark: {},
     columns: { type: Object, default: DEMO_COLUMNS },
@@ -83,7 +86,7 @@ export class LwSignatureFooter extends LwElement {
   }
 
   updated(changed) {
-    if (changed.has('brand') || changed.has('href')) this.query('.brand-slot').innerHTML = brandMarkup(this.brand, this.href || '/');
+    if (['brand', 'href', 'logo', 'logoDark'].some((name) => changed.has(name))) this.query('.brand-slot').innerHTML = brandMarkup(this.brand, this.href || '/', this);
     const description = this.query('.description');
     description.textContent = this.description ?? '';
     description.hidden = !this.description;
