@@ -221,3 +221,4 @@ export * from './components/sticky-scroll-steps/index.js';
 export * from './components/pinned-note-steps/index.js';
 export * from './components/radial-glow-hero/index.js';
 export * from './components/cloud-hero/index.js';
+export * from './components/eclipse-hero/index.js';
