@@ -48,7 +48,9 @@ p {
 }
 
 // Scrolls sideways on narrow screens, the features pinned on the left.
+// Positioned, so hidden labels inside are clipped with the rest.
 .scroller {
+  position: relative;
   overflow-x: auto;
   border: 1px solid var(--_line);
   overscroll-behavior-x: contain;
