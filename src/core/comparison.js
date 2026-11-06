@@ -17,6 +17,23 @@ export const cellMarkup = (value) => {
   return `<span class="text">${escapeHtml(value)}</span>`;
 };
 
+/**
+ * Marks `scroller` with `data-more` while more of it waits to the right,
+ * which fades its edge: a table wider than the screen says it scrolls.
+ */
+export const watchScrollEdge = (scroller, signal) => {
+  const edge = () => {
+    const { scrollLeft, scrollWidth, clientWidth } = scroller;
+    scroller.toggleAttribute('data-more', scrollLeft + clientWidth < scrollWidth - 1);
+  };
+  scroller.addEventListener('scroll', edge, { signal, passive: true });
+  // The scroller, and what is in it, can each change size on their own.
+  const observer = new ResizeObserver(edge);
+  observer.observe(scroller);
+  if (scroller.firstElementChild) observer.observe(scroller.firstElementChild);
+  signal.addEventListener('abort', () => observer.disconnect());
+};
+
 // Geometric marks for the demo products, drawn in the current color. They
 // stand in for real logos, which you supply as `<svg>` markup.
 const MARKS = {

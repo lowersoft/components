@@ -58,6 +58,11 @@ p {
 
     border-radius: fn.v(radius-lg);
   }
+
+  // More to the right, from `watchScrollEdge()`: the edge fades.
+  &[data-more] {
+    mask-image: linear-gradient(to left, transparent, #000 3rem);
+  }
 }
 
 // Included: a check.
