@@ -217,3 +217,4 @@ export * from './components/benchmark-matrix/index.js';
 export * from './components/zigzag-steps/index.js';
 export * from './components/taped-note-steps/index.js';
 export * from './components/curve-steps/index.js';
+export * from './components/sticky-scroll-steps/index.js';

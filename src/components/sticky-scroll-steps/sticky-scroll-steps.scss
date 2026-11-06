@@ -1,0 +1,522 @@
+@use '../../styles' as lw;
+
+:host {
+  --_height: var(--lw-sticky-scroll-steps-height, 32.5rem);
+  --_faint: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+}
+
+.section {
+  @include lw.hero-container(68rem);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: clamp(2.5rem, 7cqi, 4rem);
+  text-align: center;
+}
+
+// The steps and the box of pictures, in one frame.
+.frame {
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1.5rem;
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+
+  @container (min-width: 52rem) {
+    display: grid;
+    grid-template-columns: minmax(16rem, 21rem) minmax(0, 1fr);
+  }
+}
+
+.steps {
+  padding: 1.5rem 1.5rem 1.25rem;
+  border-bottom: 1px solid lw.v(color-border);
+
+  @container (min-width: 52rem) {
+    padding: 2rem 1.75rem;
+    border-right: 1px solid lw.v(color-border);
+    border-bottom: 0;
+  }
+}
+
+.list {
+  display: grid;
+  gap: 0.25rem;
+}
+
+// A step: a bar that fills as you scroll through its picture, the number
+// and title, and the description, folded until it is the current step.
+.step {
+  display: grid;
+  grid-template-areas: 'bar head' 'bar body';
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 1rem;
+  width: 100%;
+  padding: 0.75rem 0.5rem 0.75rem 0;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.bar {
+  position: relative;
+  grid-area: bar;
+  width: 2px;
+  overflow: hidden;
+  border-radius: 1px;
+  background: var(--_faint);
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  background: lw.v(color-foreground);
+  transform: scaleY(var(--progress, 0));
+  transform-origin: top;
+
+  @include lw.motion {
+    transition: transform 120ms linear;
+  }
+}
+
+.number,
+.title,
+.fold {
+  opacity: 0.45;
+
+  @include lw.motion {
+    transition: opacity 250ms ease-out;
+  }
+
+  .step:hover & {
+    opacity: 0.75;
+  }
+
+  [aria-current] & {
+    opacity: 1;
+  }
+}
+
+.number {
+  grid-area: head;
+  font: 500 lw.v(text-xs) / 1.75rem lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+}
+
+.title {
+  grid-area: head;
+  padding-left: 2rem;
+  font-size: lw.v(text-md);
+  font-weight: 600;
+  line-height: 1.75rem;
+  letter-spacing: -0.01em;
+}
+
+// Folded to nothing but still in the page, for the reader who searches it.
+.fold {
+  display: grid;
+  grid-area: body;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition:
+      grid-template-rows 300ms lw.v(ease-out),
+      opacity 250ms ease-out;
+  }
+
+  [aria-current] & {
+    grid-template-rows: 1fr;
+  }
+}
+
+.body {
+  min-height: 0;
+  overflow: hidden;
+  padding-left: 2rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+
+  [aria-current] & {
+    padding-top: 0.25rem;
+  }
+}
+
+// The pictures scroll in a box of their own, never the page behind it.
+.shots {
+  display: flex;
+  height: var(--_height);
+  box-sizing: border-box;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 2.5%, #{lw.v(color-background)});
+  scrollbar-width: thin;
+  outline: none;
+
+  @container (max-width: 52rem) {
+    --_height: min(var(--lw-sticky-scroll-steps-height, 26rem), 70vh);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px lw.v(color-ring);
+  }
+}
+
+// Full size, never squeezed to fit the box.
+.shot {
+  flex: none;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1rem;
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+}
+
+// Drawn product screens, sized in em from a font that follows their own
+// width, so each scales as a picture would.
+.mockup {
+  container-type: inline-size;
+  aspect-ratio: 16 / 10;
+}
+
+.window {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  font-size: 1.85cqi;
+}
+
+.chrome {
+  display: flex;
+  height: 2.75em;
+  flex: none;
+  align-items: center;
+  gap: 1em;
+  padding: 0 1.25em;
+  border-bottom: 1px solid lw.v(color-border);
+}
+
+.dots {
+  display: flex;
+  gap: 0.4em;
+
+  i {
+    width: 0.65em;
+    height: 0.65em;
+    border-radius: 50%;
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 16%, transparent);
+  }
+}
+
+.window-title {
+  font-family: lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+}
+
+.window-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: 1em;
+  overflow: hidden;
+  padding: 1.5em;
+
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+// Inbox: a search, then mails, the forwarded ones turned into tasks.
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.search {
+  display: flex;
+  width: 45%;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.6em 0.9em;
+  border: 1px solid lw.v(color-border);
+  border-radius: 0.6em;
+  color: lw.v(color-muted-foreground);
+}
+
+.count {
+  font-family: lw.v(font-mono);
+  color: lw.v(color-accent);
+}
+
+.mails {
+  display: grid;
+  flex: 1;
+  grid-auto-rows: 1fr;
+  gap: 0.6em;
+}
+
+.mail {
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  gap: 1em;
+  padding: 0 1em;
+  border: 1px solid lw.v(color-border);
+  border-radius: 0.75em;
+
+  &.task {
+    border-color: color-mix(in oklab, #{lw.v(color-accent)} 35%, #{lw.v(color-border)});
+    background: color-mix(in oklab, #{lw.v(color-accent)} 6%, transparent);
+  }
+}
+
+.avatar {
+  display: grid;
+  width: 2.25em;
+  height: 2.25em;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: lw.v(color-muted);
+  font-weight: 600;
+}
+
+.mail-text {
+  display: grid;
+  min-width: 0;
+  gap: 0.15em;
+
+  b,
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  b {
+    font-size: 1.15em;
+    font-weight: 500;
+  }
+
+  span {
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.35em;
+  margin-left: auto;
+  padding: 0.25em 0.75em;
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-accent)} 14%, transparent);
+  font-weight: 500;
+  color: lw.v(color-accent);
+}
+
+.mail-icon {
+  display: flex;
+  margin-left: auto;
+  color: lw.v(color-muted-foreground);
+}
+
+// Planner: five days of tasks, one of them over full.
+.week {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.75em;
+}
+
+.day {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 0.75em;
+  overflow: hidden;
+  border-radius: 0.75em;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 4%, transparent);
+
+  &.full {
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, #{lw.v(color-destructive)} 45%, transparent);
+    background: color-mix(in oklab, #{lw.v(color-destructive)} 6%, transparent);
+  }
+}
+
+.day-name {
+  font-family: lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+
+  .full &::after {
+    content: ' · full';
+    color: lw.v(color-destructive);
+  }
+}
+
+.slot {
+  flex: 0 0 calc(var(--size) * 2.6em);
+  overflow: hidden;
+  padding: 0.5em 0.65em;
+  border-radius: 0.5em;
+  background: lw.v(color-background);
+  box-shadow: 0 0 0 1px lw.v(color-border);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .day-name + & {
+    background: lw.v(color-primary);
+    box-shadow: none;
+    color: lw.v(color-primary-foreground);
+  }
+}
+
+// Review: the week's score, what moved and slipped, the days, the outcomes.
+.review {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 1.25em 2.5em;
+}
+
+.score {
+  display: grid;
+
+  b {
+    font-size: 3.75em;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  span {
+    margin-top: 0.35em;
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.meters {
+  display: grid;
+  align-content: center;
+  gap: 0.85em;
+}
+
+.meter {
+  display: grid;
+  grid-template-columns: 5em minmax(0, 1fr) 3em;
+  align-items: center;
+  gap: 0.75em;
+  font-variant-numeric: tabular-nums;
+
+  > span:last-child {
+    text-align: right;
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.meter-track {
+  height: 0.5em;
+  overflow: hidden;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-muted);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: lw.v(color-foreground);
+  }
+
+  .meter + .meter & span {
+    background: lw.v(color-destructive);
+  }
+}
+
+// Tasks done each day, as bars.
+.days {
+  display: flex;
+  min-height: 0;
+  grid-column: 1 / -1;
+  align-items: flex-end;
+  gap: 1em;
+}
+
+.day-bar {
+  display: flex;
+  height: 100%;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4em;
+  font-family: lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+
+  i {
+    width: min(100%, 3.5em);
+    height: calc(var(--done) * 16%);
+    border-radius: 0.4em 0.4em 0.15em 0.15em;
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent);
+  }
+
+  &:nth-child(2) i {
+    background: lw.v(color-foreground);
+  }
+}
+
+.outcomes {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 0.5em 1.5em;
+  padding-top: 1em;
+  border-top: 1px solid lw.v(color-border);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+
+    svg {
+      flex: none;
+      color: lw.v(color-accent);
+    }
+
+    &.late svg {
+      color: lw.v(color-destructive);
+    }
+  }
+}
