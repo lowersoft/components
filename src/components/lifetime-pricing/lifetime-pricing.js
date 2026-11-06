@@ -33,8 +33,8 @@ const number = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
  * and badged, placed after the yearly plan so its one price reads against
  * the yearly one. Below a plus rule each plan lists what stacks on top: an
  * add-on with a price is a checkbox, and the plan's price rolls to include
- * it; one without is simply included. A question link sits under every
- * card.
+ * it; one without is simply included. One question link sits under the
+ * plans.
  *
  * Plans are `{ id, name, subtitle, price, period?, action, features,
  * extras?, popular?, inverted? }`, `period` the words after the price
@@ -44,7 +44,7 @@ const number = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
  * @attr {string} description
  * @attr {string} currency - Before every price
  * @attr {string} badge - On the popular plan
- * @attr {string} question - The link under each card
+ * @attr {string} question - The link under the plans
  * @attr {string} question-href
  * @attr {Array<object>} plans (JSON)
  * @fires lw-change - An add-on was ticked or unticked; `detail: { plan, extras, price }`
@@ -68,7 +68,8 @@ export class LwLifetimePricing extends LwElement {
   #chosen = new Map();
 
   render() {
-    return `<section class="section" aria-labelledby="heading"><header class="head"><h2 class="title" id="heading"></h2><p class="description"></p></header><div class="plans"></div></section>`;
+    return `<section class="section" aria-labelledby="heading"><header class="head"><h2 class="title" id="heading"></h2><p class="description"></p></header><div class="plans"></div>
+<p class="ask"><a class="question">${strokeIcon(mail, 14)}<span class="question-text"></span></a></p></section>`;
   }
 
   connected() {
@@ -97,7 +98,10 @@ export class LwLifetimePricing extends LwElement {
     const description = this.query('.description');
     description.textContent = this.description ?? '';
     description.hidden = !this.description;
-    if (changed.has('plans') || changed.has('badge') || changed.has('question') || changed.has('question-href') || changed.has('currency')) this.#build();
+    this.query('.question-text').textContent = this.question ?? '';
+    this.query('.question').href = this['question-href'] || '#';
+    this.query('.ask').hidden = !this.question;
+    if (changed.has('plans') || changed.has('badge') || changed.has('currency')) this.#build();
   }
 
   get #plans() {
@@ -122,7 +126,6 @@ export class LwLifetimePricing extends LwElement {
   #build() {
     this.#chosen = new Map();
     const currency = this.currency ?? '';
-    const question = this.question ? `<a class="question" href="${escapeHtml(this['question-href'] || '#')}">${strokeIcon(mail, 14)}${escapeHtml(this.question)}</a>` : '';
     const plans = this.query('.plans');
     plans.style.setProperty('--_count', String(this.#plans.length || 1));
     plans.innerHTML = this.#plans
@@ -136,11 +139,11 @@ export class LwLifetimePricing extends LwElement {
           )
           .join('');
         const stack = extras ? `<div class="plus-rule" role="presentation"><span>${strokeIcon(plus, 12, 2.5)}</span></div><ul class="extras" aria-label="Add-ons">${extras}</ul>` : '';
-        return `<div class="slot"><article class="plan"${plan.inverted ? ' data-inverted' : ''}${plan.popular ? ' data-popular' : ''} part="plan" data-id="${id}" aria-labelledby="plan-${id}">
+        return `<article class="plan"${plan.inverted ? ' data-inverted' : ''}${plan.popular ? ' data-popular' : ''} part="plan" data-id="${id}" aria-labelledby="plan-${id}">
 <div class="plan-head"><h3 class="name" id="plan-${id}">${escapeHtml(plan.name)}</h3>${plan.popular && this.badge ? `<span class="badge">${escapeHtml(this.badge)}</span>` : ''}</div><p class="subtitle">${escapeHtml(plan.subtitle ?? '')}</p>
 <p class="price"><span class="currency" aria-hidden="true">${escapeHtml(currency)}</span>${priceMarkup()}${plan.period ? `<span class="period">${escapeHtml(plan.period)}</span>` : ''}</p>
 <lw-button class="action" data-id="${id}">${escapeHtml(plan.action ?? 'Choose')}<span class="arrow" slot="end">${strokeIcon(arrowRight, 16)}</span></lw-button>
-<ul class="features">${(plan.features ?? []).map((feature) => `<li><span class="tick">${strokeIcon(check, 12, 3)}</span>${escapeHtml(feature)}</li>`).join('')}</ul>${stack}</article>${question}</div>`;
+<ul class="features">${(plan.features ?? []).map((feature) => `<li><span class="tick">${strokeIcon(check, 12, 3)}</span>${escapeHtml(feature)}</li>`).join('')}</ul>${stack}</article>`;
       })
       .join('');
     for (const card of plans.querySelectorAll('.plan')) this.#paint(card, this.#plan(card));
