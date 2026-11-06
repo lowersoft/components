@@ -20,7 +20,7 @@ export default {
   args: {},
 };
 
-// Four notes, each tilted its own way; point at one and it straightens.
+// Four notes, each tilted its own way and held up by torn tape.
 export const Default = {};
 
 // Eight notes, two full rows, on a tinted page so the white frames stand out.

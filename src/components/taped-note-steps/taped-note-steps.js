@@ -15,8 +15,7 @@ const DEMO_NOTES = [
 /**
  * The process on sticky notes: square notes, each tilted its own way and
  * held up by a strip of torn tape, a big serif number at the top and one
- * sentence at the bottom. Point at a note and it straightens and lifts off
- * the page. The notes stay paper-light on a dark page too.
+ * sentence at the bottom. The notes stay paper-light on a dark page too.
  *
  * Notes are `{ id, body, number?, tone?, rotate?, tapeRotate? }`: `tone`
  * one of rose, mint, gold or cyan, `rotate` and `tapeRotate` in degrees,

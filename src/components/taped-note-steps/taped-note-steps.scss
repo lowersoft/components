@@ -41,12 +41,6 @@
   position: relative;
   rotate: var(--rotate);
 
-  @include lw.motion {
-    transition:
-      rotate 350ms lw.v(ease-spring),
-      translate 350ms lw.v(ease-spring);
-  }
-
   &[data-tone='rose'] {
     --_hue: 12;
   }
@@ -57,12 +51,6 @@
 
   &[data-tone='cyan'] {
     --_hue: 215;
-  }
-
-  // Pointed at, it straightens and lifts off the page.
-  &:hover {
-    rotate: 0deg;
-    translate: 0 -0.375rem;
   }
 }
 
@@ -81,16 +69,6 @@
     0 1px 2px rgb(0 0 0 / 0.08),
     0 14px 28px -12px rgb(0 0 0 / 0.22);
   color: oklch(0.27 0.03 var(--_hue));
-
-  @include lw.motion {
-    transition: box-shadow 350ms ease-out;
-  }
-
-  .note:hover & {
-    box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.08),
-      0 24px 40px -14px rgb(0 0 0 / 0.3);
-  }
 }
 
 .number {
