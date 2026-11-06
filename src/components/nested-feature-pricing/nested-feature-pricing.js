@@ -56,12 +56,13 @@ const DEMO_PLANS = [
 ];
 
 /**
- * Four plans in an editorial hand: serif type on warm paper, the headline's
- * second half in gold italics. Each plan leads with three highlights, then
- * a ruled list that starts from the plan below ("Everything in Desk, plus")
- * and names only what is new, so the cards stay even. Monthly or annual
- * rolls every price, and a handwritten note points at the saving. One plan
- * can be emphasized with the orange button.
+ * Four plans in an editorial hand: serif display type on the library's own
+ * colours, the headline's second half in italics. Each plan leads with
+ * three highlights, then a ruled list that starts from the plan below
+ * ("Everything in Desk, plus") and names only what is new, so the cards
+ * stay even. Monthly or annual rolls every price, the monthly one struck
+ * beside an annual price, and a handwritten note points at the saving. One
+ * plan can be emphasized: ruled in ink, with the solid button.
  *
  * Plans are `{ id, name, description, monthly, action, highlights,
  * includes, extras, more?, emphasized? }`: `monthly` a number or
@@ -71,7 +72,7 @@ const DEMO_PLANS = [
  * link under the list.
  *
  * @attr {string} heading - The headline's first half
- * @attr {string} accent-heading - Its second half, in gold italics
+ * @attr {string} accent-heading - Its second half, in italics
  * @attr {string} description
  * @attr {'monthly'|'yearly'} billing
  * @attr {number} discount - Percent off on annual billing; prices are rounded to the dollar
@@ -145,7 +146,7 @@ export class LwNestedFeaturePricing extends LwElement {
         const more = plan.more?.label ? `<a class="more" href="${escapeHtml(plan.more.href ?? '#')}">${escapeHtml(plan.more.label)}${strokeIcon(arrowUpRight, 14)}</a>` : '';
         return `<article class="plan"${plan.emphasized ? ' data-emphasized' : ''} part="plan" data-id="${id}" style="--i: ${i}" aria-labelledby="plan-${id}">
 <h3 class="name" id="plan-${id}">${escapeHtml(plan.name)}</h3><p class="blurb">${escapeHtml(plan.description ?? '')}</p>
-<p class="price">${priceMarkup()}<span class="per"></span></p><p class="billed"></p>
+<p class="price">${priceMarkup()}<span class="per"></span><s class="was" hidden><span class="visually-hidden">instead of </span><span class="was-amount"></span></s></p><p class="billed"></p>
 <ul class="highlights">${highlights}</ul>
 <lw-button class="action" data-id="${id}" variant="${plan.emphasized ? 'primary' : 'outline'}">${escapeHtml(plan.action ?? 'Choose')}</lw-button>
 <div class="extras"><p class="includes">${escapeHtml(plan.includes ?? '')}</p><ul>${(plan.extras ?? []).map((extra) => `<li>${escapeHtml(extra)}</li>`).join('')}</ul>${more}</div></article>`;
@@ -161,6 +162,9 @@ export class LwNestedFeaturePricing extends LwElement {
       const custom = typeof price !== 'number';
       paintPrice(card.querySelector('.amount'), custom ? 'Custom' : formatMoney(price));
       card.querySelector('.per').textContent = custom ? '' : 'a month';
+      // The monthly price, struck, while the annual one is cheaper.
+      card.querySelector('.was').hidden = custom || !(price < plan.monthly);
+      card.querySelector('.was-amount').textContent = custom ? '' : formatMoney(plan.monthly);
       card.querySelector('.billed').textContent = custom ? 'Priced with you' : yearly ? `${formatMoney(price * 12)} billed annually` : 'Billed monthly';
     }
   }

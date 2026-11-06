@@ -3,24 +3,12 @@
 :host {
   --_serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
   --_hand: 'Segoe Print', 'Bradley Hand', 'Marker Felt', 'Comic Sans MS', cursive;
-  --_gold: var(--lw-nested-feature-pricing-gold, light-dark(#a86b12, #e2b24f));
-  --_orange: var(--lw-nested-feature-pricing-accent, light-dark(#d9480f, #f76707));
 }
 
-// Warm paper and brown ink; the library's colours take the same tone, so
-// the switch and the buttons belong on it.
+// An editorial hand on the library's own colours: serif display type, an
+// italic second line, and rules between the parts of each card.
 .section {
-  --lw-color-background: light-dark(#f6f0e4, #15110c);
-  --lw-color-foreground: light-dark(#2b2118, #f1e8d8);
-  --lw-color-muted: light-dark(#ece3d2, #241d15);
-  --lw-color-muted-foreground: light-dark(#7a6a58, #a8987f);
-  --lw-color-border: light-dark(#e2d6c0, #33291e);
-  --lw-color-primary: light-dark(#2b2118, #f1e8d8);
-  --lw-color-primary-foreground: light-dark(#f6f0e4, #15110c);
-
   padding: clamp(4rem, 9vw, 6.5rem) clamp(1rem, 4vw, 2.5rem);
-  background: lw.v(color-background);
-  color: lw.v(color-foreground);
 }
 
 .content {
@@ -48,7 +36,7 @@
 
 .accent {
   font-style: italic;
-  color: var(--_gold);
+  color: lw.v(color-muted-foreground);
 }
 
 .description {
@@ -64,10 +52,7 @@
   margin-top: 1rem;
 }
 
-.billing {
-  border-radius: lw.v(radius-full);
-}
-
+.billing,
 .billing-pill,
 .billing-option {
   border-radius: lw.v(radius-full);
@@ -80,7 +65,7 @@
   left: calc(100% + 0.25rem);
   display: flex;
   align-items: flex-start;
-  color: var(--_gold);
+  color: lw.v(color-muted-foreground);
   pointer-events: none;
 
   &[hidden] {
@@ -144,16 +129,19 @@
   padding: 1.75rem 1.5rem 1.5rem;
   border: 1px solid lw.v(color-border);
   border-radius: 1.25rem;
-  background: light-dark(#fbf8f1, #1c1711);
+  background: lw.v(color-background);
 
   @include lw.motion {
     animation: rise 600ms lw.v(ease-out) backwards;
     animation-delay: calc(var(--i) * 70ms + 60ms);
   }
 
+  // Ruled in ink, raised, and given the solid button.
   &[data-emphasized] {
-    border-color: color-mix(in oklab, var(--_orange) 40%, #{lw.v(color-border)});
-    box-shadow: 0 18px 40px -20px color-mix(in oklab, var(--_orange) 45%, transparent);
+    border-color: lw.v(color-foreground);
+    box-shadow:
+      0 0 0 1px lw.v(color-foreground),
+      0 18px 40px -20px rgb(0 0 0 / 0.35);
   }
 }
 
@@ -180,8 +168,9 @@
 
 .price {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: 0.25rem 0.5rem;
   margin-top: 1.5rem;
 }
 
@@ -194,10 +183,16 @@
   font-variant-numeric: lining-nums tabular-nums;
 }
 
-.per {
+.per,
+.was {
   font-family: var(--_serif);
   font-style: italic;
   color: lw.v(color-muted-foreground);
+}
+
+// The monthly price an annual one replaces.
+.was {
+  text-decoration-thickness: 1px;
 }
 
 .billed {
@@ -230,8 +225,8 @@
   place-items: center;
   border: 1px solid lw.v(color-border);
   border-radius: 0.625rem;
-  background: lw.v(color-background);
-  color: var(--_gold);
+  background: lw.v(color-muted);
+  color: lw.v(color-foreground);
 }
 
 .action {
@@ -239,17 +234,8 @@
 
   &::part(button) {
     width: 100%;
+    height: 2.5rem;
     border-radius: lw.v(radius-full);
-  }
-
-  [data-emphasized] > &::part(button) {
-    border-color: transparent;
-    background: var(--_orange);
-    color: #fff;
-  }
-
-  [data-emphasized] > &:hover::part(button) {
-    background: color-mix(in oklab, var(--_orange) 88%, black);
   }
 }
 
@@ -278,7 +264,7 @@
       flex: none;
       width: 0.75rem;
       font-family: var(--_serif);
-      color: var(--_gold);
+      color: lw.v(color-muted-foreground);
     }
   }
 }
@@ -296,13 +282,18 @@
   margin-top: 1rem;
   border-radius: 2px;
   font-weight: 500;
-  text-decoration: none;
-  color: var(--_orange);
+  text-decoration: underline;
+  text-decoration-color: lw.v(color-border);
+  text-underline-offset: 0.25em;
+  color: lw.v(color-foreground);
   outline: none;
 
+  @include lw.motion {
+    transition: text-decoration-color 150ms ease-out;
+  }
+
   &:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+    text-decoration-color: currentColor;
   }
 
   &:focus-visible {
