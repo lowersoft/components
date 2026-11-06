@@ -153,6 +153,7 @@
 - [ ] AI input
 - [x] Text input
 - [x] Textarea
+- [x] Floating labels
 - [x] Number input
 - [x] Checkbox
 - [x] Radio group

@@ -1,6 +1,7 @@
 // Text fields from `core/field.js`: the label, the boxed field and the line
 // under it with the hint, the error and the counter.
 @use 'abstracts/functions' as fn;
+@use 'abstracts/mixins' as mx;
 
 :host {
   --_padding: 0.75rem;
@@ -132,4 +133,99 @@
   &[hidden] {
     display: none;
   }
+}
+
+// A floating label: inside the box, resting over the control's text while
+// the field is empty, then up and smaller once the control is focused or
+// holds a value, typed, set or autofilled. `core/field.js` lines it up with
+// the control's text and gives an empty control a placeholder, so
+// `:placeholder-shown` can tell when it is empty.
+:host([floating]) {
+  --_float-height: 3.5rem;
+  // Room above the value for the raised label.
+  --_float-top: 1rem;
+  --_float-y: -0.6875rem;
+  --_float-scale: 0.85;
+
+  position: relative;
+}
+
+:host([floating][size='sm']) {
+  --_float-height: 3rem;
+  --_float-top: 0.875rem;
+  --_float-y: -0.625rem;
+}
+
+:host([floating][size='lg']) {
+  --_float-height: 4rem;
+  --_float-top: 1.125rem;
+  --_float-y: -0.8125rem;
+  --_float-scale: 0.8;
+}
+
+:host([floating]) {
+  .field {
+    height: var(--_float-height);
+  }
+
+  .control {
+    padding-top: var(--_float-top);
+  }
+
+  // One line as tall as the box, so the resting label sits in its middle.
+  .label {
+    position: absolute;
+    z-index: 1;
+    top: 1px;
+    left: var(--_padding);
+    height: calc(var(--_float-height) - 2px);
+    margin: 0;
+    overflow: hidden;
+    font-weight: 400;
+    line-height: calc(var(--_float-height) - 2px);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: fn.v(color-muted-foreground);
+    pointer-events: none;
+    transform-origin: 0 50%;
+
+    @include mx.motion {
+      transition:
+        translate 200ms fn.v(ease-out),
+        scale 200ms fn.v(ease-out),
+        color 150ms ease-out;
+    }
+  }
+
+  .control::placeholder {
+    @include mx.motion {
+      transition: color 150ms ease-out;
+    }
+  }
+}
+
+// The placeholder waits for the label to move out of its way, unless the
+// label stays up.
+:host([floating]:not([floating='always'])) .label:not([hidden]) + .field .control:not(:focus)::placeholder {
+  color: transparent;
+}
+
+// Raised: focused, filled, autofilled, or always.
+:host([floating]) .label:has(+ .field .control:is(:focus, :not(:placeholder-shown))),
+:host([floating]) .label:has(+ .field .control:autofill),
+:host([floating='always']) .label {
+  translate: 0 var(--_float-y);
+  scale: var(--_float-scale);
+}
+
+:host([floating]:not([data-invalid])) .label:has(+ .field .control:focus) {
+  color: fn.v(color-foreground);
+}
+
+:host([floating][data-invalid]) .label {
+  color: fn.v(color-destructive);
+}
+
+:host([floating][data-disabled]) .label {
+  opacity: 0.6;
 }

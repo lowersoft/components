@@ -15,3 +15,28 @@
     resize: none;
   }
 }
+
+// Floating: the label rests on the first line and rises above it; text
+// scrolled up into the padding goes under a strip in the field's colour,
+// not under the raised label.
+:host([floating]) {
+  .field {
+    position: relative;
+    height: auto;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: var(--_padding);
+      left: var(--_padding);
+      height: calc(var(--_float-top) + 0.5rem);
+      background: inherit;
+      pointer-events: none;
+    }
+  }
+
+  .control {
+    padding-top: calc(var(--_float-top) + 0.5rem);
+  }
+}

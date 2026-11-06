@@ -33,6 +33,7 @@ export class LwField extends FormControl(LwElement) {
     maxlength: { type: Number },
     autocomplete: {},
     counter: { type: Boolean },
+    floating: { reflect: true },
   };
 
   // Named as the native attributes, so `maxlength` works as on the control.
@@ -69,6 +70,11 @@ export class LwField extends FormControl(LwElement) {
     this.query('.field').addEventListener('pointerdown', (event) => event.target !== control && !this.isDisabled && (event.preventDefault(), control.focus()), options);
     // The form's submit checks every field; this one shows its error then.
     this.addEventListener('invalid', () => this.#touch(), options);
+    // A floating label follows the control as icons or buttons beside it change.
+    const resize = new ResizeObserver(() => this.#placeLabel());
+    resize.observe(control);
+    resize.observe(this.query('.field'));
+    this.signal.addEventListener('abort', () => resize.disconnect());
   }
 
   updated(changed) {
@@ -85,11 +91,18 @@ export class LwField extends FormControl(LwElement) {
       if (value === undefined || value === null || Number.isNaN(value)) control.removeAttribute(name);
       else control.setAttribute(name, value);
     }
+    // `:placeholder-shown` is how the styles tell an empty control, so a
+    // floating label needs a placeholder, if only a space.
+    if ((changed.has('floating') || changed.has('placeholder')) && !this.placeholder) {
+      if (this.floating == null) control.removeAttribute('placeholder');
+      else control.placeholder = ' ';
+    }
     control.required = this.required;
     control.readOnly = this.readonly;
     this.#syncDisabled();
     if (changed.has('value') && control.value !== this.value) control.value = this.value ?? '';
     this.sync();
+    if (changed.has('floating')) this.#placeLabel();
   }
 
   formResetCallback() {
@@ -129,6 +142,28 @@ export class LwField extends FormControl(LwElement) {
   typed() {
     this.value = this.control.value;
     this.sync();
+  }
+
+  // A floating label starts where the control's text starts, after an icon
+  // or a button before it, and is as wide as the text can be. Measured
+  // against the field's own size, so a scaled dialog opening around it
+  // does not skew it.
+  #placeLabel() {
+    const label = this.query('.label');
+    if (this.floating == null) {
+      label.style.removeProperty('left');
+      label.style.removeProperty('width');
+      return;
+    }
+    const control = this.control;
+    const box = this.getBoundingClientRect();
+    const scale = box.width / this.offsetWidth || 1;
+    const style = getComputedStyle(control);
+    const start = Number.parseFloat(style.paddingLeft);
+    const end = Number.parseFloat(style.paddingRight);
+    const left = (control.getBoundingClientRect().left - box.left) / scale + control.clientLeft + start;
+    label.style.left = `${left}px`;
+    label.style.width = `${Math.max(0, control.clientWidth - start - end)}px`;
   }
 
   #touch() {

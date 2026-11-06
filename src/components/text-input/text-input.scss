@@ -50,3 +50,24 @@ slot {
   width: 1rem;
   height: 1rem;
 }
+
+// Floating: icons stay centred in the box, beside the resting label. Text
+// at the ends moves onto the value's line as the label rises; text before
+// the value would read into the resting label, so it waits until then.
+:host([floating]) ::slotted(:not(svg)) {
+  @include lw.motion {
+    transition:
+      translate 200ms lw.v(ease-out),
+      opacity 150ms ease-out;
+  }
+}
+
+:host([floating]) .field:has(.control:is(:focus, :not(:placeholder-shown))) ::slotted(:not(svg)),
+:host([floating]) .field:has(.control:autofill) ::slotted(:not(svg)),
+:host([floating='always']) ::slotted(:not(svg)) {
+  translate: 0 calc(var(--_float-top) / 2);
+}
+
+:host([floating]:not([floating='always'])) .field:has(.control:placeholder-shown:not(:focus, :autofill)) slot[name='start']::slotted(:not(svg)) {
+  opacity: 0;
+}

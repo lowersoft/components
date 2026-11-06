@@ -26,6 +26,12 @@
   }
 }
 
+// A floating label centred over the number, between the buttons.
+:host([floating]) .label {
+  text-align: center;
+  transform-origin: 50% 50%;
+}
+
 .step {
   display: grid;
   flex: none;
