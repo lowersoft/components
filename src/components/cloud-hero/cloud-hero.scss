@@ -1,0 +1,154 @@
+@use '../../styles' as lw;
+
+:host {
+  // A neutral sky by default: pale silver by day, near black by night,
+  // following the theme until a palette is given.
+  --_sky-top: var(--lw-cloud-hero-sky-top, light-dark(#c4c4ca, #09090b));
+  --_sky-bottom: var(--lw-cloud-hero-sky-bottom, light-dark(#ececef, #1f1f23));
+  --_cloud: var(--lw-cloud-hero-cloud, light-dark(#fff, #a1a1aa));
+  --_shade: var(--lw-cloud-hero-shade, light-dark(#b9b9c0, #27272a));
+
+  display: block;
+  container-type: inline-size;
+}
+
+.hero {
+  @include lw.backdrop(var(--lw-cloud-hero-min-height, 48rem));
+
+  isolation: isolate;
+}
+
+// The sky is CSS, there from the first paint and left as it is without
+// WebGL; the clouds fade in over it once drawn.
+.sky {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(168deg, var(--_sky-top), var(--_sky-bottom));
+  pointer-events: none;
+}
+
+.clouds {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+
+  @include lw.motion {
+    transition: opacity 1400ms ease-out;
+  }
+
+  :host([data-drawn]) & {
+    opacity: 1;
+  }
+
+  :host([data-fallback]) & {
+    display: none;
+  }
+}
+
+// Read by the script to hand the palette to the shader.
+.probe {
+  display: none;
+
+  &[data-tone='light'] {
+    color: var(--_cloud);
+  }
+
+  &[data-tone='shade'] {
+    color: var(--_shade);
+  }
+}
+
+.content {
+  // A soft halo in the page colour lifts the copy off any cloud that
+  // drifts close.
+  --_halo: color-mix(in oklab, #{lw.v(color-background)} 70%, transparent);
+
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 56rem;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(5rem, 12cqi, 8rem) 1.5rem;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2.5rem, 7cqi, 4.75rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+  text-shadow:
+    0 0 1.5rem var(--_halo),
+    0 0 4rem var(--_halo);
+}
+
+.line {
+  display: block;
+}
+
+.description {
+  max-width: 38rem;
+  margin: 1.75rem 0 0;
+  font-size: clamp(1rem, 1.7cqi, 1.125rem);
+  line-height: 1.7;
+  text-wrap: balance;
+  text-shadow: 0 0 1.25rem var(--_halo);
+  // See-through ink rather than a fixed grey, so it reads on any sky.
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 74%, transparent);
+}
+
+@include lw.hero-pill-actions;
+
+// Level with the content's padding, in the corner.
+.pause {
+  --_bg: color-mix(in oklab, #{lw.v(color-background)} 60%, transparent);
+
+  position: absolute;
+  right: clamp(1rem, 3cqi, 2rem);
+  bottom: clamp(1rem, 3cqi, 2rem);
+
+  &::part(button) {
+    border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent);
+    border-radius: 50%;
+  }
+
+  // Nothing to pause where the sky stands still anyway.
+  :host([data-fallback]) & {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+}
+
+// The copy rises in, one after another, the first time the hero is seen.
+@include lw.motion {
+  .rise {
+    animation: lw-cloud-hero-rise 900ms lw.v(ease-out) both paused;
+  }
+
+  .description {
+    animation-delay: 140ms;
+  }
+
+  .actions {
+    animation-delay: 280ms;
+  }
+
+  :host([data-shown]) .rise {
+    animation-play-state: running;
+  }
+}
+
+@keyframes lw-cloud-hero-rise {
+  from {
+    opacity: 0;
+    translate: 0 1rem;
+  }
+}

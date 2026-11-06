@@ -183,6 +183,7 @@
 - [x] Terminal hero
 - [x] Kinetic type hero
 - [x] Radial glow hero
+- [x] Cloud hero
 - [x] Magic link login
 - [x] Account chooser login
 - [x] Split signup login
