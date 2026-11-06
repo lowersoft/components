@@ -108,17 +108,41 @@
   backdrop-filter: blur(8px);
 }
 
+// The arrow waits out of sight, the label centred in the button without
+// it; on hover or keyboard focus the label makes room and the arrow slides
+// in from the right. The button keeps its width throughout, the arrow's
+// room held for it: half of it, with the gap, is how far the label moves.
+.primary {
+  --_shift: calc((1rem + 0.5rem) / 2);
+}
+
+.primary-label,
+.arrow {
+  @include lw.motion {
+    transition:
+      translate lw.v(duration-normal) lw.v(ease-out),
+      opacity lw.v(duration-normal) lw.v(ease-out);
+  }
+}
+
+.primary-label {
+  translate: var(--_shift) 0;
+}
+
 .arrow {
   display: flex;
+  opacity: 0;
+  translate: 0.75rem 0;
+}
 
-  svg {
-    @include lw.motion {
-      transition: translate lw.v(duration-fast) lw.v(ease-out);
-    }
+.primary:is(:hover, :focus-within) {
+  .primary-label {
+    translate: 0 0;
   }
 
-  .primary:hover & svg {
-    translate: 0.1875rem 0;
+  .arrow {
+    opacity: 1;
+    translate: 0 0;
   }
 }
 
