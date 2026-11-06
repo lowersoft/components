@@ -41,7 +41,7 @@
   font-size: clamp(2.25rem, 6vw, 3.5rem);
   font-weight: 600;
   line-height: 1.05;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
   text-wrap: balance;
   text-shadow: 0 1px 24px rgb(8 24 64 / 0.25);
 }
@@ -54,9 +54,22 @@
   color: rgb(255 255 255 / 0.82);
 }
 
-// The switch as frosted glass, its pill white.
-.billing {
+// The switch as frosted glass, its pill white, the saving under it.
+.switch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
   margin-top: 0.75rem;
+}
+
+.save {
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: rgb(255 255 255 / 0.85);
+}
+
+.billing {
   border-color: rgb(255 255 255 / 0.3);
   background: rgb(255 255 255 / 0.14);
   backdrop-filter: blur(12px);
@@ -173,6 +186,14 @@
   color: lw.v(color-muted-foreground);
 }
 
+// The monthly price a yearly one replaces.
+.was {
+  margin-left: 0.25rem;
+  font-size: lw.v(text-md);
+  color: lw.v(color-muted-foreground);
+  text-decoration-thickness: 1px;
+}
+
 .billed {
   min-height: 1.25rem;
   margin-top: 0.5rem;
@@ -195,16 +216,27 @@
   }
 }
 
-// The featured action's arrow nudges ahead on hover.
+// The featured action's arrow slips out to the right and back in from the left.
 .arrow {
   display: inline-flex;
+  overflow: hidden;
 
-  @include lw.motion {
-    transition: translate 200ms lw.v(ease-out);
+  svg {
+    @include lw.motion {
+      .action:is(:hover, :focus-visible) & {
+        animation: arrow-through 450ms lw.v(ease-in-out);
+      }
+    }
+  }
+}
+
+@keyframes arrow-through {
+  45% {
+    translate: 150% 0;
   }
 
-  .action:hover & {
-    translate: 3px 0;
+  45.01% {
+    translate: -150% 0;
   }
 }
 
@@ -224,6 +256,13 @@
 
   svg {
     flex: none;
-    color: light-dark(#2563eb, #93b4ff);
+    color: lw.v(color-muted-foreground);
   }
+}
+
+.note {
+  margin-top: clamp(2rem, 5vw, 2.75rem);
+  text-align: center;
+  text-wrap: balance;
+  color: rgb(255 255 255 / 0.82);
 }

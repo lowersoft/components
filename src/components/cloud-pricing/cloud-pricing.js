@@ -97,13 +97,21 @@ const buildSky = (width, height, palette) => {
   return clouds;
 };
 
+// What yearly billing saves, "up to" the most when plans save differently.
+const savingText = (plans) => {
+  const savings = plans.filter((plan) => plan.monthly > 0 && plan.yearly != null).map((plan) => Math.round((1 - plan.yearly / plan.monthly) * 100));
+  const best = Math.max(0, ...savings);
+  if (!best) return '';
+  return `Save ${savings.every((saving) => saving === best) ? '' : 'up to '}${best}% with yearly billing`;
+};
+
 /**
  * Plans on frosted glass over a drifting sky: cloud banks rise from the
  * corners and wisps cross the top, deep blue by day and navy by night. The
  * featured plan is brighter, badged and has the solid button. Monthly or
- * yearly rolls every price; each plan gives both prices, so a yearly plan
- * can be priced any way. The sky rests while off screen and stays still
- * for reduced motion.
+ * yearly rolls every price, the monthly one struck beside a yearly price;
+ * each plan gives both prices, so a yearly plan can be priced any way. The
+ * sky rests while off screen and stays still for reduced motion.
  *
  * Plans are `{ id, name, tagline, monthly, yearly, action, features,
  * featured?, badge? }`, `yearly` being the price per month on a yearly plan.
@@ -111,6 +119,8 @@ const buildSky = (width, height, palette) => {
  * @attr {string} heading
  * @attr {string} description
  * @attr {'monthly'|'yearly'} billing
+ * @attr {string} save - Under the switch; worked out from the plans by default
+ * @attr {string} note - Under the plans
  * @attr {number} speed - How fast the clouds drift; 1 by default
  * @attr {Array<object>} plans (JSON)
  * @fires lw-change - Billing changed; `detail: { billing }`
@@ -124,6 +134,8 @@ export class LwCloudPricing extends LwElement {
     heading: { default: 'Simple plans for every journal' },
     description: { default: 'Write anywhere, keep everything. Switch plans or cancel whenever you like.' },
     billing: { default: 'monthly', reflect: true },
+    save: {},
+    note: { default: 'Every plan is encrypted end to end and comes with a 30-day refund.' },
     speed: { type: Number, default: 1 },
     plans: { type: Object, default: DEMO_PLANS },
   };
@@ -139,7 +151,7 @@ export class LwCloudPricing extends LwElement {
 
   render() {
     return `<section class="section" aria-labelledby="heading"><canvas class="sky" part="sky" aria-hidden="true"></canvas>
-<div class="content"><header class="head"><h2 class="title" id="heading"></h2><p class="description"></p>${billingToggle()}</header><div class="plans"></div></div></section>`;
+<div class="content"><header class="head"><h2 class="title" id="heading"></h2><p class="description"></p><div class="switch">${billingToggle()}<p class="save"></p></div></header><div class="plans"></div><p class="note"></p></div></section>`;
   }
 
   connected() {
@@ -172,6 +184,11 @@ export class LwCloudPricing extends LwElement {
     const description = this.query('.description');
     description.textContent = this.description ?? '';
     description.hidden = !this.description;
+    const save = this.save ?? savingText(this.#plans);
+    this.query('.save').textContent = save;
+    this.query('.save').hidden = !save;
+    this.query('.note').textContent = this.note ?? '';
+    this.query('.note').hidden = !this.note;
     if (changed.has('plans')) this.#buildPlans();
     paintBilling(this);
     this.#paintPrices();
@@ -193,9 +210,9 @@ export class LwCloudPricing extends LwElement {
         const arrow = plan.featured ? `<span class="arrow" slot="end">${strokeIcon(arrowRight, 16)}</span>` : '';
         return `<article class="plan"${plan.featured ? ' data-featured' : ''} part="plan" data-id="${id}" style="--i: ${i}" aria-labelledby="plan-${id}">
 <div class="plan-head"><h3 class="name" id="plan-${id}">${escapeHtml(plan.name)}</h3>${badge}</div><p class="tagline">${escapeHtml(plan.tagline ?? '')}</p>
-<p class="price">${priceMarkup()}<span class="per">/ month</span></p><p class="billed"></p>
+<p class="price">${priceMarkup()}<span class="per">/ month</span><s class="was" hidden><span class="visually-hidden">instead of </span><span class="was-amount"></span></s></p><p class="billed"></p>
 <lw-button class="action" data-id="${id}" variant="${plan.featured ? 'primary' : 'outline'}">${escapeHtml(plan.action ?? 'Choose')}${arrow}</lw-button>
-<ul class="features">${(plan.features ?? []).map((feature) => `<li>${strokeIcon(check, 15)}<span>${escapeHtml(feature)}</span></li>`).join('')}</ul></article>`;
+<ul class="features">${(plan.features ?? []).map((feature) => `<li>${strokeIcon(check, 16)}<span>${escapeHtml(feature)}</span></li>`).join('')}</ul></article>`;
       })
       .join('');
   }
@@ -206,7 +223,10 @@ export class LwCloudPricing extends LwElement {
       const plan = this.#plans.find((each) => each.id === card.dataset.id);
       const price = this.#price(plan);
       paintPrice(card.querySelector('.amount'), price);
-      card.querySelector('.billed').textContent = !price ? 'Free forever' : yearly ? `Billed yearly · ${formatMoney(price * 12)} a year` : 'Billed monthly';
+      // The monthly price, struck, while the yearly one is cheaper.
+      card.querySelector('.was').hidden = !(yearly && price < plan.monthly);
+      card.querySelector('.was-amount').textContent = formatMoney(plan.monthly);
+      card.querySelector('.billed').textContent = !price ? 'Free forever' : yearly ? `${formatMoney(price * 12)} billed yearly` : 'Billed monthly';
     }
   }
 

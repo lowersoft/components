@@ -19,10 +19,10 @@ export default {
   args: { billing: 'monthly', speed: 1 },
 };
 
-// Switch to yearly and every price rolls; the clouds drift behind the glass.
+// Switch to yearly and every price rolls, the monthly one struck beside it; the clouds drift behind the glass.
 export const Default = {};
 
 // Yearly first, the featured plan last, the sky drifting at half speed.
 export const SlowDrift = {
-  args: { heading: 'Plan the trip, not the budget', description: 'Every plan works offline, anywhere you go.', billing: 'yearly', speed: 0.5, plans: FOUR },
+  args: { heading: 'Plan the trip, not the budget', description: 'Every plan works offline, anywhere you go.', note: 'Prices in USD. Change or cancel your plan from the app at any time.', billing: 'yearly', speed: 0.5, plans: FOUR },
 };
