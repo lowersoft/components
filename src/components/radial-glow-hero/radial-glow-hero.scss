@@ -1,0 +1,248 @@
+@use '../../styles' as lw;
+
+:host {
+  // A tint of the text colour, a little stronger on a dark page, so the
+  // glow follows the theme until a brand colour is given.
+  --_glow: var(--lw-radial-glow-hero-glow, light-dark(color-mix(in oklab, #{lw.v(color-foreground)} 7%, #{lw.v(color-background)}), color-mix(in oklab, #{lw.v(color-foreground)} 24%, #{lw.v(color-background)})));
+  --_dot: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+
+  display: block;
+  container-type: inline-size;
+}
+
+.hero {
+  @include lw.backdrop(var(--lw-radial-glow-hero-min-height, 48rem));
+
+  isolation: isolate;
+}
+
+// The glow: an ellipse hung from the top centre, clear for its first 40%
+// so nothing sits behind the copy, then the glow colour, then the page
+// colour again at its rim. A 1px dot every 2.5rem lies over it.
+.glow {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(circle, var(--_dot) 1px, transparent 1.5px) 50% 0 / 2.5rem 2.5rem,
+    radial-gradient(125% 125% at 50% 0%, transparent 40%, var(--_glow) 68%, #{lw.v(color-background)} 100%);
+  pointer-events: none;
+  // Eased out over the last stretch, so the section meets the next one
+  // without a seam.
+  mask-image: linear-gradient(to bottom, #000 84%, transparent);
+}
+
+.content {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 60rem;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(5.5rem, 13cqi, 8.5rem) 1.5rem clamp(4rem, 9cqi, 6rem);
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2.5rem, 7.2cqi, 4.75rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.line {
+  display: block;
+}
+
+// The last line, set apart: the text colour fading down by default, or the
+// accent given. The padding keeps descenders inside the clipped colour.
+.accent {
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+  background: var(--lw-radial-glow-hero-accent, linear-gradient(to bottom, color-mix(in oklab, #{lw.v(color-foreground)} 64%, #{lw.v(color-background)}), color-mix(in oklab, #{lw.v(color-foreground)} 40%, #{lw.v(color-background)})));
+  background-clip: text;
+  color: transparent;
+}
+
+.description {
+  max-width: 34rem;
+  margin: 1.75rem 0 0;
+  font-size: clamp(1rem, 1.7cqi, 1.125rem);
+  line-height: 1.7;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+}
+
+// Stacked, the same width, on a phone.
+@container (max-width: 30rem) {
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: min(100%, 20rem);
+  }
+}
+
+.primary::part(button),
+.secondary::part(button) {
+  padding-inline: 1.375rem;
+  border-radius: lw.v(radius-full);
+}
+
+// Frosted over the glow, so its label stays clear wherever the glow is.
+.secondary {
+  --_bg: color-mix(in oklab, #{lw.v(color-background)} 60%, transparent);
+}
+
+.secondary::part(button) {
+  backdrop-filter: blur(8px);
+}
+
+.arrow {
+  display: flex;
+
+  svg {
+    @include lw.motion {
+      transition: translate lw.v(duration-fast) lw.v(ease-out);
+    }
+  }
+
+  .primary:hover & svg {
+    translate: 0.1875rem 0;
+  }
+}
+
+// The logos: a strip that slides by, or a still row on phones.
+.trust {
+  width: 100%;
+  margin-top: clamp(3.5rem, 9cqi, 5.5rem);
+}
+
+.trusted {
+  margin: 0 0 1.5rem;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  // See-through ink rather than a fixed grey, so it holds up over a
+  // coloured glow too.
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 62%, transparent);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: lw.v(text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 58%, transparent);
+
+  @include lw.motion {
+    transition: color lw.v(duration-normal) ease-out;
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  svg {
+    flex: none;
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+}
+
+// Real logos, in grey until pointed at.
+.logo-image {
+  display: block;
+  width: auto;
+  height: 1.75rem;
+  filter: grayscale(1);
+  opacity: 0.65;
+
+  @include lw.motion {
+    transition:
+      filter lw.v(duration-normal) ease-out,
+      opacity lw.v(duration-normal) ease-out;
+  }
+
+  .logo:hover & {
+    filter: none;
+    opacity: 1;
+  }
+}
+
+.still {
+  display: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@container (max-width: 39.99rem) {
+  .strip {
+    display: none;
+  }
+
+  .still {
+    display: flex;
+  }
+}
+
+// Rising in, one after another, the last half a second after the first;
+// held until the hero is first in view.
+@include lw.motion {
+  .glow {
+    animation: lw-radial-glow-in 1600ms lw.v(ease-out) both paused;
+  }
+
+  .rise {
+    animation: lw-radial-glow-rise 900ms lw.v(ease-out) both paused;
+  }
+
+  .description {
+    animation-delay: 120ms;
+  }
+
+  .actions {
+    animation-delay: 240ms;
+  }
+
+  .trust {
+    animation-delay: 500ms;
+  }
+
+  :host([data-shown]) :is(.glow, .rise) {
+    animation-play-state: running;
+  }
+}
+
+@keyframes lw-radial-glow-in {
+  from {
+    opacity: 0;
+    translate: 0 6%;
+  }
+}
+
+@keyframes lw-radial-glow-rise {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    translate: 0 1rem;
+  }
+}
