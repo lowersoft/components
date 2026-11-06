@@ -1,0 +1,51 @@
+// Shared by the how-it-works sections, with helpers from `core/steps.js`.
+@use 'abstracts/functions' as fn;
+@use 'abstracts/mixins' as m;
+
+// A section sized by its own width.
+:host {
+  container-type: inline-size;
+  display: block;
+  font-family: fn.v(font-sans);
+  font-size: fn.v(text-sm);
+  color: fn.v(color-foreground);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+h2,
+h3,
+p,
+ol,
+ul {
+  margin: 0;
+}
+
+ol,
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+.heading {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.lede {
+  max-width: 34rem;
+  margin-top: 0.875rem;
+  font-size: fn.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: fn.v(color-muted-foreground);
+}
+
+.visually-hidden {
+  @include m.visually-hidden;
+}

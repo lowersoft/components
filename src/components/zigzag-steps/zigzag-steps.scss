@@ -1,0 +1,271 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: color-mix(in oklab, #{lw.v(color-foreground)} 28%, transparent);
+  --_gap: clamp(2rem, 6cqi, 4.5rem);
+  --_row: clamp(2.5rem, 6cqi, 3.5rem);
+}
+
+.section {
+  @include lw.hero-container(64rem);
+}
+
+// The pitch on the left, the project's dates in the corner.
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+  margin-bottom: clamp(2.5rem, 7cqi, 4rem);
+}
+
+.intro {
+  max-width: 36rem;
+}
+
+// A tag with a small accent square, the square the end date carries too.
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.625rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+
+  &::before {
+    content: '';
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 1px;
+    background: lw.v(color-accent);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.dates {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  font: 500 lw.v(text-xs) lw.v(font-mono);
+  white-space: nowrap;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.start,
+.end {
+  padding: 0.375rem 0.625rem;
+  border-radius: lw.v(radius-sm);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.start {
+  background: lw.v(color-muted);
+  color: lw.v(color-muted-foreground);
+}
+
+.dash {
+  width: 1rem;
+  border-top: 1px dashed var(--_line);
+
+  .start:empty + & {
+    display: none;
+  }
+}
+
+// The end, in ink, with the accent square raised over its corner.
+.end {
+  position: relative;
+  background: lw.v(color-primary);
+  color: lw.v(color-primary-foreground);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -0.3125rem;
+    right: -0.3125rem;
+    width: 0.625rem;
+    height: 0.625rem;
+    border: 2px solid lw.v(color-background);
+    border-radius: 2px;
+    background: lw.v(color-accent);
+  }
+}
+
+// One column on phones, joined by a dashed thread down the tabs.
+.steps {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.step {
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 1.75rem;
+    height: 1.5rem;
+    border-left: 1.5px dashed var(--_line);
+  }
+}
+
+// Two columns from tablets: odd steps on the left, even on the right, each
+// on its own row, an elbow running from each card to the top of the next.
+@container (min-width: 48rem) {
+  .steps {
+    row-gap: var(--_row);
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--_gap);
+
+    &:nth-child(even) .card {
+      grid-column: 2;
+    }
+
+    // From the side of the card, across the gap, and down to the middle of
+    // the next card in the other column.
+    &:not(:last-child)::after {
+      top: 50%;
+      left: calc((100% - var(--_gap)) / 2);
+      width: calc(var(--_gap) + (100% - var(--_gap)) / 4);
+      height: calc(50% + var(--_row));
+      border-top: 1.5px dashed var(--_line);
+      border-right: 1.5px dashed var(--_line);
+      border-left: 0;
+      border-top-right-radius: 1.25rem;
+    }
+
+    &:nth-child(even):not(:last-child)::after {
+      left: calc((100% - var(--_gap)) / 4);
+      border-right: 0;
+      border-left: 1.5px dashed var(--_line);
+      border-top-right-radius: 0;
+      border-top-left-radius: 1.25rem;
+    }
+
+    // Where the elbow lands: a small ring on the next card's top edge.
+    &:not(:first-child) .card::before {
+      content: '';
+      position: absolute;
+      top: -0.3125rem;
+      left: calc(50% - 0.3125rem);
+      width: 0.625rem;
+      height: 0.625rem;
+      box-sizing: border-box;
+      border: 1.5px solid var(--_line);
+      border-radius: 50%;
+      background: lw.v(color-background);
+    }
+  }
+}
+
+// A card: the duration printed down a tab at its side, then the step.
+.card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.25rem;
+  padding: 0.5rem 1.5rem 0.5rem 0.5rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: 1.25rem;
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-sm);
+
+  @include lw.motion {
+    transition:
+      border-color 200ms ease-out,
+      box-shadow 200ms ease-out;
+  }
+
+  &:hover {
+    border-color: var(--_line);
+    box-shadow: lw.v(shadow-md);
+  }
+}
+
+// Read bottom to top, as on the spine of a book.
+.tab {
+  display: flex;
+  width: 2.5rem;
+  min-height: 7rem;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  border-radius: 0.875rem;
+  font: 500 lw.v(text-xs) lw.v(font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+
+  [data-tone='accent'] & {
+    background: lw.v(color-accent);
+    color: lw.v(color-background);
+  }
+
+  [data-tone='ink'] & {
+    background: lw.v(color-primary);
+    color: lw.v(color-primary-foreground);
+  }
+}
+
+.body {
+  padding-block: 1.25rem;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.icon {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid lw.v(color-border);
+  border-radius: 0.625rem;
+  background: lw.v(color-muted);
+}
+
+.number {
+  font: 500 lw.v(text-xs) lw.v(font-mono);
+  color: lw.v(color-muted-foreground);
+}
+
+.title {
+  margin-top: 1rem;
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.description {
+  margin-top: 0.375rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+}
