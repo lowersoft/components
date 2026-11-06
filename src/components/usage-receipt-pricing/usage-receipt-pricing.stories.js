@@ -16,7 +16,7 @@ export default {
   args: { billing: 'monthly', base: 29, discount: 20 },
 };
 
-// Drag a meter and its line, the total and the yearly charge update.
+// Drag a meter: its cost, its line on the receipt and the total update; Reset puts every meter back.
 export const Default = {};
 
 // Three meters for hosting, annual billing at 15% off, no second button.
