@@ -50,7 +50,7 @@ export class LwStepperForm extends LwElement {
   static styles = [iconStyles, styles];
   static props = {
     heading: { default: 'Set up your workspace' },
-    domain: { default: 'lowersoft.dev' },
+    domain: { default: 'lowersoft.com' },
   };
 
   #step = 0;

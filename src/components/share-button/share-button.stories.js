@@ -2,10 +2,10 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 const PEOPLE = [
-  { name: 'Dana Whitfield', email: 'dana@lowersoft.dev', role: 'owner' },
-  { name: 'Omar Haddad', email: 'omar@lowersoft.dev', role: 'editor' },
-  { name: 'Lena Fischer', email: 'lena@lowersoft.dev', role: 'viewer' },
-  { name: 'Kai Tanaka', email: 'kai@lowersoft.dev', role: 'viewer' },
+  { name: 'Dana Whitfield', email: 'dana@lowersoft.com', role: 'owner' },
+  { name: 'Omar Haddad', email: 'omar@lowersoft.com', role: 'editor' },
+  { name: 'Lena Fischer', email: 'lena@lowersoft.com', role: 'viewer' },
+  { name: 'Kai Tanaka', email: 'kai@lowersoft.com', role: 'viewer' },
 ];
 
 export default {
@@ -25,7 +25,7 @@ export default {
   },
   args: {
     heading: 'Share “Q3 roadmap”',
-    link: 'https://example.com/docs/q3-roadmap',
+    link: 'https://lowersoft.com/docs/q3-roadmap',
     access: 'restricted',
   },
 };

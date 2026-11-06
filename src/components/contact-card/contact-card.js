@@ -48,7 +48,7 @@ export class LwContactCard extends LwElement {
   static props = {
     name: { default: 'Lena Fischer' },
     role: { default: 'Staff engineer · Platform' },
-    email: { default: 'lena@lowersoft.dev' },
+    email: { default: 'lena@lowersoft.com' },
     phone: { default: '+49 30 901820' },
     location: { default: 'Berlin, Germany' },
     zone: { default: 'Europe/Berlin' },

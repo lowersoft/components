@@ -40,7 +40,7 @@ export class LwDeploymentCard extends LwElement {
   static styles = styles;
   static props = {
     project: { default: 'lowersoft-runtime' },
-    domain: { default: 'nightly.lowersoft.dev' },
+    domain: { default: 'nightly.lowersoft.com' },
     branch: { default: 'main' },
     commit: { default: 'a1c9e3f' },
     message: { default: 'Cut cold start below 10 ms' },

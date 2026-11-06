@@ -33,7 +33,7 @@ export const WithHint = {
 
 // A message from outside, like the server, marks the field invalid.
 export const WithError = {
-  args: { label: 'Email', type: 'email', value: 'ada@example', error: 'That email has no domain ending, like .com.' },
+  args: { label: 'Email', type: 'email', value: 'ada@lowersoft', error: 'That email has no domain ending, like .com.' },
 };
 
 export const WithIcons = {

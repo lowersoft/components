@@ -37,7 +37,7 @@ const settings = () => {
         {
           rows: [
             { id: 'name', label: 'Name', detail: 'Maya Chen' },
-            { id: 'email', label: 'Email', detail: 'maya@lowersoft.dev' },
+            { id: 'email', label: 'Email', detail: 'maya@lowersoft.com' },
             { id: 'security', label: 'Password & security', to: 'security' },
           ],
         },

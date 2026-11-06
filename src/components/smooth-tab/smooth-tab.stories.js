@@ -6,7 +6,7 @@ const ACTIVITY = [
   ['Deploy #418 promoted to production', '2m'],
   ['Preview built for fix/auth-redirect', '14m'],
   ['Environment variable rotated', '1h'],
-  ['Domain app.example.com verified', '3h'],
+  ['Domain app.lowersoft.com verified', '3h'],
 ];
 const MEMBERS = [
   ['AL', 'Avery Lane', 'Owner'],

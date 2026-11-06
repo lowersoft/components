@@ -21,5 +21,5 @@ export const Default = {};
 
 // Four steps for a studio inbox, with its own address in the screen's bar.
 export const StudioInbox = {
-  args: { heading: 'Requests in, work out, every week', lede: 'How a small studio runs its client work from one inbox.', address: 'studio.example.com', steps: FOUR },
+  args: { heading: 'Requests in, work out, every week', lede: 'How a small studio runs its client work from one inbox.', address: 'studio.lowersoft.com', steps: FOUR },
 };

@@ -58,7 +58,7 @@ export const Basic = {
 
 // A value set up front starts with the label raised.
 export const WithValue = {
-  args: { value: 'ada@example.com' },
+  args: { value: 'ada@lowersoft.com' },
 };
 
 // The label rests on the first line; text scrolled up passes under a strip,
@@ -95,7 +95,7 @@ export const WithIcons = {
 export const Validation = {
   render: () =>
     stack(`
-      <lw-text-input floating type="email" label="Email address" value="ada@example" error="That email has no domain ending, like .com."></lw-text-input>
+      <lw-text-input floating type="email" label="Email address" value="ada@lowersoft" error="That email has no domain ending, like .com."></lw-text-input>
       <lw-text-input floating label="Username" required hint="Leave it empty and click away to see the error."></lw-text-input>`),
 };
 
@@ -103,7 +103,7 @@ export const Disabled = {
   render: () =>
     stack(`
       <lw-text-input floating label="Email address" disabled></lw-text-input>
-      <lw-text-input floating label="Email address" value="ada@example.com" disabled></lw-text-input>
+      <lw-text-input floating label="Email address" value="ada@lowersoft.com" disabled></lw-text-input>
       <lw-textarea floating label="Comments" value="Disabled, with text inside." disabled></lw-textarea>`),
 };
 
@@ -156,7 +156,7 @@ export const Border = {
   render: () =>
     stack(`
       <lw-text-input floating="border" type="email" label="Email address" placeholder="name@example.com" autocomplete="email"></lw-text-input>
-      <lw-text-input floating="border" type="email" label="Email address" value="ada@example.com"></lw-text-input>
+      <lw-text-input floating="border" type="email" label="Email address" value="ada@lowersoft.com"></lw-text-input>
       <lw-text-input floating="border" type="password" label="Password" placeholder="Password" autocomplete="current-password"></lw-text-input>`),
 };
 
@@ -182,10 +182,10 @@ export const BorderFields = {
 export const BorderStates = {
   render: () =>
     stack(`
-      <lw-text-input floating="border" type="email" label="Email address" value="ada@example" error="That email has no domain ending, like .com."></lw-text-input>
+      <lw-text-input floating="border" type="email" label="Email address" value="ada@lowersoft" error="That email has no domain ending, like .com."></lw-text-input>
       <lw-text-input floating="border" label="Username" required hint="Leave it empty and click away to see the error."></lw-text-input>
       <lw-text-input floating="border" label="Workspace ID" value="ws_7f3a91c2" readonly></lw-text-input>
-      <lw-text-input floating="border" label="Email address" value="ada@example.com" disabled></lw-text-input>
+      <lw-text-input floating="border" label="Email address" value="ada@lowersoft.com" disabled></lw-text-input>
       <lw-text-input floating="border always" label="Display name" placeholder="How others see you"></lw-text-input>`),
 };
 

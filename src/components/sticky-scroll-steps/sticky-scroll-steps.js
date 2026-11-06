@@ -108,7 +108,7 @@ export class LwStickyScrollSteps extends LwElement {
   static props = {
     heading: { default: 'Everything scattered, finally in one view' },
     lede: { default: 'Three habits the app builds into your week, one screen at a time.' },
-    address: { default: 'app.example.com' },
+    address: { default: 'app.lowersoft.com' },
     steps: { type: Object, default: DEMO_STEPS },
   };
 

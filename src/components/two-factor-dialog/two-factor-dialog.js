@@ -49,7 +49,7 @@ export class LwTwoFactorDialog extends LwModal {
   static styles = [modalStyles, styles];
   static props = {
     ...LwModal.props,
-    email: { default: 'mara@lowersoft.dev' },
+    email: { default: 'mara@lowersoft.com' },
     secret: { default: 'JBSWY3DPEHPK3PXPLOWR' },
     qrSrc: {},
     codes: { type: Object, default: DEMO_CODES },

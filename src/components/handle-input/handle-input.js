@@ -35,7 +35,7 @@ const demoCheck = (handle, { signal }) =>
  * submits the handle, and only once it is known to be free.
  *
  * @attr {string} value
- * @attr {string} prefix - Shown before the handle, e.g. "lowersoft.dev/"
+ * @attr {string} prefix - Shown before the handle, e.g. "lowersoft.com/"
  * @attr {string} label
  * @attr {string} placeholder
  * @attr {number} min-length
@@ -52,7 +52,7 @@ export class LwHandleInput extends FormControl(LwElement) {
   static shadowOptions = { mode: 'open', delegatesFocus: true };
   static props = {
     value: { default: '' },
-    prefix: { default: 'lowersoft.dev/' },
+    prefix: { default: 'lowersoft.com/' },
     label: { default: 'Workspace URL' },
     placeholder: { default: 'your-team' },
     minLength: { type: Number, default: 3 },

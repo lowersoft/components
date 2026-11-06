@@ -41,7 +41,7 @@ export class LwNewProjectDialog extends LwModal {
     ...LwModal.props,
     template: { default: 'cli', reflect: true },
     workspace: { default: 'lowersoft' },
-    domain: { default: 'lowersoft.dev' },
+    domain: { default: 'lowersoft.com' },
     templates: { type: Object, default: DEMO_TEMPLATES },
   };
 

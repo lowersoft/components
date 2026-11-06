@@ -5,7 +5,7 @@ export default {
   title: 'Inputs/Input/Handle Input',
   component: 'lw-handle-input',
   render: (args) => `<lw-handle-input ${attributes(args)}></lw-handle-input>`,
-  args: { prefix: 'lowersoft.dev/', label: 'Workspace URL', placeholder: 'your-team' },
+  args: { prefix: 'lowersoft.com/', label: 'Workspace URL', placeholder: 'your-team' },
 };
 
 // Try "Lower Dev!" (rewritten as you type) or a taken name like "studio".
@@ -15,7 +15,7 @@ export const Default = {};
 export const CustomCheck = {
   render: () => {
     const field = document.createElement('lw-handle-input');
-    Object.assign(field, { prefix: 'lowersoft.dev/', value: 'xylo' });
+    Object.assign(field, { prefix: 'lowersoft.com/', value: 'xylo' });
     field.checkAvailability = (handle, { signal }) =>
       new Promise((resolve, reject) => {
         const timer = setTimeout(() => resolve(!handle.includes('x')), 500);

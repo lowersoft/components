@@ -9,7 +9,7 @@ import styles from './profile-dropdown.scss?inline';
 
 const DEMO_ACCOUNTS = [
   { id: 'personal', name: 'Maya Ortega', email: 'maya@ortega.me', plan: 'Pro' },
-  { id: 'lowersoft', name: 'LowerSoft', email: 'team@lowersoft.dev', plan: 'Team' },
+  { id: 'lowersoft', name: 'LowerSoft', email: 'team@lowersoft.com', plan: 'Team' },
   { id: 'side', name: 'Night Shift', email: 'hello@nightshift.dev', plan: 'Free' },
 ];
 

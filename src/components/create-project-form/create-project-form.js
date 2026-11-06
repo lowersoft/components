@@ -67,7 +67,7 @@ export class LwCreateProjectForm extends LwElement {
   static props = {
     heading: { default: 'New project' },
     description: { default: 'Builds on every push to main and ships a release binary for each target. You can change any of this later.' },
-    domain: { default: 'lowersoft.dev' },
+    domain: { default: 'lowersoft.com' },
     template: { default: 'cli' },
     region: { default: 'fra1' },
     visibility: { default: 'private' },

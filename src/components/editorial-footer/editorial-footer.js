@@ -8,7 +8,7 @@ import styles from './editorial-footer.scss?inline';
 const DEMO_COLUMNS = [
   { title: 'Studio', links: [{ label: 'Work' }, { label: 'Process' }, { label: 'Journal' }] },
   { title: 'Practice', links: [{ label: 'Compilers' }, { label: 'Runtimes' }, { label: 'Profiling' }] },
-  { title: 'Contact', links: [{ label: 'Email', href: 'mailto:studio@example.com' }, { label: 'Mastodon', external: true }, { label: 'Source', external: true }] },
+  { title: 'Contact', links: [{ label: 'Email', href: 'mailto:info@lowersoft.com' }, { label: 'Mastodon', external: true }, { label: 'Source', external: true }] },
 ];
 
 const DEMO_SOCIALS = [

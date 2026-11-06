@@ -60,7 +60,7 @@ export class LwLifetimePricing extends LwElement {
     currency: { default: '$' },
     badge: { default: 'Best value' },
     question: { default: 'Questions? Email us' },
-    'question-href': { default: 'mailto:hello@example.com' },
+    'question-href': { default: 'mailto:info@lowersoft.com' },
     plans: { type: Object, default: DEMO_PLANS },
   };
 

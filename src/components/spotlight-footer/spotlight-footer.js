@@ -55,7 +55,7 @@ export class LwSpotlightFooter extends LwElement {
     href: { default: '/' },
     ...logoProps,
     tagline: { default: 'A native build system for teams that ship C, C++ and Rust. Faster builds, smaller binaries, nothing to babysit.' },
-    email: { default: 'hello@lower.dev' },
+    email: { default: 'info@lowersoft.com' },
     wordmark: {},
     columns: { type: Object, default: DEMO_COLUMNS },
     socials: { type: Object, default: DEMO_SOCIALS },
