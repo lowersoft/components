@@ -282,3 +282,4 @@
 - [x] Perspective marquee
 - [x] Infinite marquee
 - [x] Orbital image carousel
+- [x] Video player
