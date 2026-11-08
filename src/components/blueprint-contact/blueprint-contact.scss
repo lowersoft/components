@@ -1,0 +1,141 @@
+@use '../../styles' as lw;
+
+@include lw.contact-status;
+@include lw.quiet-labels(':is(lw-text-input, lw-textarea, lw-select)');
+
+:host {
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_dash: color-mix(in oklab, #{lw.v(color-foreground)} 20%, transparent);
+  --_well: color-mix(in oklab, #{lw.v(color-foreground)} 7%, #{lw.v(color-background)});
+  // How far in the side guides run, and the column with them.
+  --_guide: clamp(1rem, 22%, 13rem);
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+// A dashed frame: two dashed guides down inside its sides and dashed rules
+// between the header, the fields and the actions. The guides fade out at
+// the top and bottom.
+.frame {
+  position: relative;
+  display: grid;
+  margin-inline: auto;
+  border-block: 1px dashed var(--_dash);
+
+  &::before {
+    position: absolute;
+    inset: 0 var(--_guide);
+    border-inline: 1px dashed var(--_dash);
+    content: '';
+    mask-image: linear-gradient(transparent, #000 4rem, #000 calc(100% - 4rem), transparent);
+    pointer-events: none;
+  }
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(3rem, 8cqi, 5rem) calc(var(--_guide) + 1.25rem) clamp(2rem, 5cqi, 2.75rem);
+  border-bottom: 1px dashed var(--_dash);
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(2.75rem, 8cqi, 4.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.description {
+  max-width: 30ch;
+  margin-top: 1.125rem;
+  line-height: 1.6;
+  color: var(--_muted);
+}
+
+.form {
+  display: grid;
+}
+
+// The fields in the narrow column: filled wells, without borders.
+.fields {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(2rem, 5cqi, 2.5rem) calc(var(--_guide) + 0.75rem);
+  border-bottom: 1px dashed var(--_dash);
+
+  lw-text-input,
+  lw-textarea,
+  lw-select {
+    width: 100%;
+  }
+
+  :is(lw-text-input, lw-textarea, lw-select)::part(field) {
+    border-color: transparent;
+    border-radius: 1rem;
+    background: var(--_well);
+  }
+
+  :is(lw-text-input, lw-select)::part(field) {
+    height: 2.75rem;
+  }
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+// The message beside the face of the person who reads it.
+.note {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+
+  lw-textarea {
+    min-width: 0;
+    flex: 1;
+  }
+}
+
+.face {
+  display: block;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: none;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  border-radius: 50%;
+
+  svg,
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: clamp(1.75rem, 4cqi, 2.25rem) calc(var(--_guide) + 1rem);
+}

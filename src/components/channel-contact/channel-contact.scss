@@ -1,0 +1,168 @@
+@use '../../styles' as lw;
+
+:host {
+  --_muted: #{lw.v(color-muted-foreground)};
+  // The leading card's colours: turned over, or a colour of its own.
+  --_card: var(--lw-channel-contact-accent, #{lw.v(color-foreground)});
+  --_on-card: var(--lw-channel-contact-on-accent, #{lw.v(color-background)});
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+h3,
+p,
+ul {
+  margin: 0;
+}
+
+.section {
+  max-width: 68rem;
+  margin-inline: auto;
+}
+
+// Two channels side by side, centred; stacked on narrow screens.
+.channels {
+  display: grid;
+  gap: 3rem;
+
+  @container (min-width: 44rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.channel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.channel-heading {
+  font-size: clamp(1.75rem, 4cqi, 2.25rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.channel-body {
+  max-width: 21.25rem;
+  margin-top: 1rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--_muted);
+}
+
+.channel-action {
+  margin-top: 1.75rem;
+
+  &::part(button) {
+    min-width: 13.75rem;
+  }
+}
+
+// Three cards pointing to where answers already are.
+.cards {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: clamp(3.5rem, 8cqi, 6rem);
+  padding: 0;
+  list-style: none;
+
+  @container (min-width: 40rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @container (min-width: 60rem) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1.75rem;
+  border-radius: 1.5rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 5%, #{lw.v(color-background)});
+
+  &.accent {
+    --_ink: var(--_card);
+    --_paper: var(--_on-card);
+
+    @include lw.inverted;
+  }
+}
+
+.card-icon {
+  display: flex;
+  color: lw.v(color-foreground);
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.card-heading {
+  margin-top: 1.5rem;
+  font-size: lw.v(text-lg);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.card-body {
+  margin: 0.75rem 0 2rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+}
+
+.card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  // The links line up along the cards’ feet.
+  margin-top: auto;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: lw.v(radius-md);
+  font-weight: 500;
+  color: lw.v(color-foreground);
+  text-decoration: none;
+  outline: none;
+
+  @include lw.motion {
+    transition: background-color lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  svg {
+    @include lw.motion {
+      transition: translate lw.v(duration-normal) lw.v(ease-out);
+    }
+  }
+
+  &:hover {
+    background: lw.v(color-muted);
+
+    svg {
+      translate: 0.1875rem 0;
+    }
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  // On the leading card the link is solid.
+  .accent & {
+    border-color: transparent;
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
+  }
+}

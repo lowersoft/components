@@ -1020,3 +1020,43 @@
     drop-shadow(0 0 0.5px light-dark(rgb(0 0 0 / 30%), rgb(255 255 255 / 18%)))
     drop-shadow(0 10px 18px rgb(0 0 0 / 16%));
 }
+
+// The line under a contact form from `core/contact.js`: an error in the
+// destructive colour, a success in the text colour with a tick.
+@mixin contact-status {
+  .status {
+    margin: 0;
+    font-size: fn.v(text-sm);
+    line-height: 1.5;
+
+    &:empty {
+      display: none;
+    }
+
+    &[data-tone='error'] {
+      color: fn.v(color-destructive);
+    }
+
+    &[data-tone='success'] {
+      color: fn.v(color-foreground);
+
+      &::before {
+        margin-right: 0.375rem;
+        content: '✓';
+      }
+    }
+  }
+}
+
+// Hides a field's label from sight but not from screen readers, for forms
+// whose placeholders say what each field is.
+@mixin quiet-labels($selector) {
+  #{$selector}::part(label) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

@@ -1,0 +1,170 @@
+@use '../../styles' as lw;
+
+@include lw.contact-status;
+
+:host {
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_glow: var(--lw-quote-contact-glow, light-dark(color-mix(in oklab, #{lw.v(color-foreground)} 9%, transparent), color-mix(in oklab, #{lw.v(color-foreground)} 20%, transparent)));
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+p,
+blockquote,
+figure {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+// The form beside the quote; stacked on narrow screens, the quote after.
+.section {
+  display: grid;
+  align-items: center;
+  gap: 3rem;
+  // The glow may spread past the sides but never widens the page.
+  overflow-x: clip;
+
+  @container (min-width: 52rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(3rem, 8cqi, 7rem);
+  }
+}
+
+.title {
+  font-size: clamp(2.25rem, 5cqi, 3.25rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 26rem;
+  margin-top: 1rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  color: var(--_muted);
+}
+
+.form {
+  display: grid;
+  max-width: 24rem;
+  gap: 1rem;
+  margin-top: 2.25rem;
+
+  lw-text-input,
+  lw-textarea {
+    width: 100%;
+  }
+}
+
+.submit {
+  justify-self: start;
+  margin-top: 0.5rem;
+
+  &::part(button) {
+    padding-inline: 1.5rem;
+    border-radius: lw.v(radius-full);
+  }
+}
+
+// The quote card on a soft glow from its lower right.
+.side {
+  position: relative;
+  isolation: isolate;
+}
+
+// It fades out inside its own box, so the edge that clips it never shows.
+.glow {
+  position: absolute;
+  z-index: -1;
+  inset: 10% 0 -30% 20%;
+  background: radial-gradient(closest-side at 60% 60%, var(--_glow), transparent);
+  pointer-events: none;
+}
+
+.card {
+  display: flex;
+  min-height: 21rem;
+  flex-direction: column;
+  padding: 1.75rem;
+  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+  border-radius: 1.5rem;
+  background: color-mix(in oklab, #{lw.v(color-background)} 80%, transparent);
+  box-shadow: 0 1.5rem 3rem -2rem rgb(0 0 0 / 45%);
+  backdrop-filter: blur(20px) saturate(1.2);
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.vendor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.vendor-mark {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+}
+
+.arrows {
+  display: flex;
+  gap: 0.375rem;
+}
+
+// The quote, its key phrase in bold.
+.quote {
+  margin-top: 2rem;
+  font-size: clamp(1.125rem, 2.4cqi, 1.3125rem);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+  color: var(--_muted);
+
+  mark {
+    background: none;
+    font-weight: 600;
+    color: lw.v(color-foreground);
+  }
+}
+
+.client {
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+
+  svg {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+}
+
+.logo-image {
+  display: block;
+  height: 1.5rem;
+}

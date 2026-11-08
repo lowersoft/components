@@ -241,3 +241,8 @@ export * from './components/split-headline-faq/index.js';
 export * from './components/consult-faq/index.js';
 export * from './components/support-card-faq/index.js';
 export * from './components/pill-faq/index.js';
+export * from './components/quote-contact/index.js';
+export * from './components/blueprint-contact/index.js';
+export * from './components/channel-contact/index.js';
+export * from './components/three-column-contact/index.js';
+export * from './components/map-contact/index.js';

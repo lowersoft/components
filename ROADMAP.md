@@ -199,6 +199,11 @@
 - [x] Consult FAQ
 - [x] Support card FAQ
 - [x] Pill FAQ
+- [x] Quote contact
+- [x] Blueprint contact
+- [x] Channel contact
+- [x] Three column contact
+- [x] Map contact
 - [x] Newsletter footer
 - [x] Sitemap footer
 - [x] Status footer
