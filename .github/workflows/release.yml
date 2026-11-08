@@ -26,9 +26,17 @@ jobs:
       # token is stored, and provenance is attached automatically.
       - run: npm install --global npm@11
       - run: npm ci
-      - uses: changesets/action@v1
+      # The version is bumped on a maintainer's machine with
+      # `npm run version-packages`, which turns the pending changesets into
+      # the new version and changelog, and pushed to main; this job then
+      # publishes it and tags the release. While changesets are pending there
+      # is nothing to publish, and the action would instead open a "Version
+      # Packages" pull request, which this repository does not let Actions do.
+      - id: pending
+        run: echo "count=$(find .changeset -name '*.md' ! -name README.md | wc -l)" >> "$GITHUB_OUTPUT"
+      - if: steps.pending.outputs.count == '0'
+        uses: changesets/action@v1
         with:
-          version: npm run version-packages
           publish: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

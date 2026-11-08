@@ -115,3 +115,9 @@ export class LwExample extends LwElement {
 - [ ] Documented with JSDoc `@attr`, `@slot`, `@csspart`, `@fires` (Storybook's Usage tab is built from it)
 - [ ] `npm run build` passes
 - [ ] Changeset added (`npm run changeset`)
+
+## Releasing
+
+1. `npm run version-packages` turns the pending changesets into the new version in `package.json` and its entry in `CHANGELOG.md`.
+2. Commit that and push it to `main`.
+3. The Release workflow sees no pending changesets, publishes the version to npm through trusted publishing, and tags it on GitHub. A push that still has changesets publishes nothing.
