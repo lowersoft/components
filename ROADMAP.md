@@ -210,7 +210,6 @@
 - [x] Editorial footer
 - [x] Spotlight footer
 - [x] Pixel footer
-- [x] Four column footer
 - [x] Zigzag steps
 - [x] Taped note steps
 - [x] Curve steps
