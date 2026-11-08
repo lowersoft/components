@@ -1,11 +1,9 @@
 @use '../../styles' as lw;
 
-@include lw.testimonial-base;
-
 :host {
   --_line: #{lw.v(color-border)};
   --_muted: #{lw.v(color-muted-foreground)};
-  // The story panel's colours, taken here so the panel can swap them.
+  // The plain quote panel's colours, taken here so the panel can swap them.
   --_ink: #{lw.v(color-foreground)};
   --_paper: #{lw.v(color-background)};
 
@@ -19,9 +17,7 @@
 h2,
 p,
 blockquote,
-figure,
-dl,
-dd {
+figure {
   margin: 0;
 }
 
@@ -29,56 +25,81 @@ dd {
   display: none !important;
 }
 
+// The badge, the heading and the tabs, centred.
 .head {
-  max-width: 36rem;
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.75rem;
+  text-align: center;
 }
 
-.eyebrow {
-  margin-bottom: 1rem;
-  font: 500 lw.v(text-xs) lw.v(font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--_muted);
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 1.25rem;
+  padding: 0.3125rem 0.75rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 4%, #{lw.v(color-background)});
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 82%, transparent);
+
+  svg {
+    color: var(--_muted);
+  }
 }
 
 .title {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 500;
+  font-size: clamp(2rem, 5cqi, 3rem);
+  font-weight: 600;
   line-height: 1.08;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 
 .description {
-  margin-top: 0.875rem;
-  font-size: lw.v(text-md);
+  max-width: 32rem;
+  margin-top: 1rem;
   line-height: 1.6;
   text-wrap: pretty;
   color: var(--_muted);
 }
 
-// The tabs: the open one outlined by a box that glides between them. On a
-// narrow screen the row scrolls sideways.
+// The tabs: pills with the company's mark over the person's face, the open
+// one outlined in its company's colour by a box that glides between them.
+// Centred while they fit; on a narrow screen the row scrolls sideways.
 .tabs {
   position: relative;
   display: flex;
-  gap: 0.25rem;
-  margin: 0 -0.25rem 1rem;
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  gap: 0.5rem;
+  margin: 0 auto 2rem;
   padding: 0.25rem;
   overflow-x: auto;
   scrollbar-width: none;
-  // Tabs past the edge fade out, a hint that the row scrolls.
-  mask-image: linear-gradient(90deg, #000 calc(100% - 1.5rem), transparent);
 }
 
 .tab-highlight {
   @include lw.sliding-highlight;
 
-  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 55%, transparent);
+  z-index: 1;
+  border: 1.5px solid var(--_tint, #{lw.v(color-foreground)});
   border-radius: lw.v(radius-full);
-  background: lw.v(color-background);
-  box-shadow: lw.v(shadow-sm);
+  background: none;
+
+  @include lw.motion {
+    transition:
+      translate 300ms lw.v(ease-out),
+      width 300ms lw.v(ease-out),
+      height 300ms lw.v(ease-out),
+      border-color 300ms lw.v(ease-out),
+      opacity 150ms lw.v(ease-out);
+  }
 }
 
 .tab {
@@ -86,84 +107,70 @@ dd {
   display: inline-flex;
   flex: none;
   align-items: center;
-  padding: 0.5rem 0.875rem 0.5rem 0.625rem;
-  border: 1px solid transparent;
+  gap: 0.5rem;
+  padding: 0.25rem 0.875rem 0.25rem 0.25rem;
+  border: 1px solid var(--_line);
   border-radius: lw.v(radius-full);
-  background: none;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
   font: inherit;
+  font-weight: 500;
   color: var(--_muted);
   cursor: pointer;
   outline: none;
 
   @include lw.motion {
-    transition: color lw.v(duration-normal) lw.v(ease-out);
+    transition:
+      color lw.v(duration-normal) lw.v(ease-out),
+      border-color lw.v(duration-normal) lw.v(ease-out);
   }
 
-  &:hover,
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
   &[aria-selected='true'] {
+    border-color: transparent;
     color: lw.v(color-foreground);
   }
 
   &:focus-visible {
     @include lw.focus-ring;
   }
-
-  .company-mark {
-    opacity: 0.7;
-    filter: grayscale(1);
-
-    @include lw.motion {
-      transition:
-        opacity lw.v(duration-normal) lw.v(ease-out),
-        filter lw.v(duration-normal) lw.v(ease-out);
-    }
-  }
-
-  &:hover .company-mark,
-  &[aria-selected='true'] .company-mark {
-    opacity: 1;
-    filter: none;
-  }
 }
 
-// The portrait beside the story, both the same height; stacked on narrow
-// screens.
-.panel {
-  display: grid;
-  gap: 0.75rem;
-  border-radius: 1.25rem;
-  outline: none;
-
-  &:focus-visible {
-    @include lw.focus-ring;
-  }
-
-  @container (min-width: 52rem) {
-    grid-template-columns: 18.75rem minmax(0, 1fr);
-  }
-}
-
-// The portrait: the face on a ground tinted with the company's colour, the
-// name on a card over its foot.
-.portrait {
-  position: relative;
+.tab-marks {
   display: flex;
-  min-height: 16rem;
-  align-items: flex-end;
-  justify-content: center;
-  overflow: hidden;
-  border: 1px solid var(--_line);
-  border-radius: 1.25rem;
-  background:
-    radial-gradient(circle at 50% 38%, color-mix(in oklab, var(--_tint, #{lw.v(color-foreground)}) 18%, transparent), transparent 62%),
-    color-mix(in oklab, var(--_tint, #{lw.v(color-foreground)}) 6%, #{lw.v(color-muted)});
+
+  // The mark sits over the face, parted from it by the tab's colour.
+  .mark {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 0 2px color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+  }
 }
 
-.portrait-face {
+.mark {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--_mark, #{lw.v(color-foreground)});
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tab-face {
   display: block;
-  width: min(72%, 13rem);
-  aspect-ratio: 1;
-  margin: 2rem 0 4.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  margin-left: -0.375rem;
+  overflow: hidden;
+  border-radius: 50%;
+  object-fit: cover;
 
   svg {
     display: block;
@@ -172,123 +179,190 @@ dd {
   }
 }
 
-.who {
-  position: absolute;
-  right: 0.75rem;
-  bottom: 0.75rem;
-  left: 0.75rem;
-  padding: 0.75rem 0.875rem;
-  border: 1px solid var(--_line);
-  border-radius: 0.875rem;
-  background: color-mix(in oklab, #{lw.v(color-background)} 92%, transparent);
-  box-shadow: lw.v(shadow-sm);
-  backdrop-filter: blur(8px);
-}
-
-// The story, turned over in the opposite scheme over a faint square grid.
-.story {
-  @include lw.inverted;
-
-  position: relative;
-  display: flex;
-  min-height: 22rem;
-  flex-direction: column;
-  isolation: isolate;
-  overflow: hidden;
-  padding: clamp(1.5rem, 4cqi, 2.5rem);
-  border-radius: 1.25rem;
-
-  &::before {
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-    background-image:
-      linear-gradient(color-mix(in oklab, var(--_paper) 7%, transparent) 1px, transparent 1px),
-      linear-gradient(90deg, color-mix(in oklab, var(--_paper) 7%, transparent) 1px, transparent 1px);
-    background-size: 1.75rem 1.75rem;
-    content: '';
-    mask-image: radial-gradient(ellipse 80% 90% at 100% 0%, #000, transparent 75%);
-  }
-}
-
-.story-top {
-  font-size: lw.v(text-xs);
-}
-
-.quote {
-  margin-top: 1.75rem;
-  font-size: clamp(1.25rem, 2.6cqi, 1.75rem);
-  font-weight: 450;
-  line-height: 1.4;
-  letter-spacing: -0.02em;
-  text-wrap: pretty;
-}
-
-// The numbers behind the story, parted by a hairline.
-.metrics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.25rem 2.5rem;
-  margin-top: auto;
-  padding-top: 2rem;
-}
-
-.metric {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 0.25rem;
-
-  & + & {
-    padding-left: 2.5rem;
-    border-left: 1px solid lw.v(color-border);
-  }
-}
-
-.metric-value {
-  font-size: clamp(1.75rem, 3.4cqi, 2.25rem);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.metric-label {
-  font-size: lw.v(text-xs);
-  color: lw.v(color-muted-foreground);
-}
-
-.cta {
-  display: inline-flex;
-  align-self: flex-start;
-  align-items: center;
-  gap: 0.375rem;
-  margin-top: 1.75rem;
-  padding: 0.5rem 0.875rem;
-  border: 1px solid lw.v(color-border);
-  border-radius: lw.v(radius-full);
-  font-weight: 500;
-  color: lw.v(color-foreground);
-  text-decoration: none;
+// The portrait beside the quote, both the same height; stacked on narrow
+// screens.
+.panel {
+  display: grid;
+  gap: 0.75rem;
+  border-radius: 1.5rem;
   outline: none;
-
-  @include lw.motion {
-    transition: background-color lw.v(duration-normal) lw.v(ease-out);
-  }
-
-  svg {
-    @include lw.motion {
-      transition: translate lw.v(duration-normal) lw.v(ease-out);
-    }
-  }
-
-  &:hover {
-    background: lw.v(color-muted);
-
-    svg {
-      translate: 0.1875rem 0;
-    }
-  }
 
   &:focus-visible {
     @include lw.focus-ring;
+  }
+
+  @container (min-width: 46rem) {
+    grid-template-columns: 17.5rem minmax(0, 1fr);
+  }
+}
+
+// The portrait: a photo, or the person drawn from the shoulders up against
+// a sky tinted with the company's colour, the name on a dark chip over it.
+.portrait {
+  position: relative;
+  display: flex;
+  min-height: 17.5rem;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--_tint, #a1a1aa) 26%, #f4f4f5), color-mix(in oklab, var(--_tint, #a1a1aa) 46%, #3f3f46));
+}
+
+.portrait-art {
+  display: block;
+  width: min(74%, 12.5rem);
+  aspect-ratio: 1;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  // The drawn face stands in the sky, without its own background.
+  [data-part='bg'] {
+    display: none;
+  }
+
+  .portrait[data-photo] & {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    aspect-ratio: auto;
+  }
+}
+
+.portrait-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.who {
+  position: absolute;
+  bottom: 0.875rem;
+  left: 0.875rem;
+  display: flex;
+  max-width: calc(100% - 1.75rem);
+  box-sizing: border-box;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.875rem 0.5rem 0.5rem;
+  border-radius: 0.875rem;
+  background: rgb(9 9 11 / 72%);
+  color: #fafafa;
+  backdrop-filter: blur(10px);
+}
+
+.person-name {
+  display: block;
+  font-weight: 600;
+}
+
+.person-role {
+  display: block;
+  font-size: lw.v(text-xs);
+  color: rgb(250 250 250 / 62%);
+}
+
+// The quote on a wash of the company's colour, with large rounded squares
+// drawn faintly at two corners. Without a colour it is turned over in the
+// opposite scheme instead.
+.story {
+  position: relative;
+  display: flex;
+  min-height: 17.5rem;
+  flex-direction: column;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(1.5rem, 3.6cqi, 2.25rem);
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--_tint) 84%, #fff), var(--_tint) 45%, color-mix(in oklab, var(--_tint) 72%, #000));
+  color: #fff;
+
+  .panel[data-plain] & {
+    @include lw.inverted;
+  }
+
+  &::before,
+  &::after {
+    position: absolute;
+    z-index: -1;
+    width: 13rem;
+    aspect-ratio: 1;
+    border: 2px solid rgb(255 255 255 / 13%);
+    border-radius: 2.25rem;
+    content: '';
+  }
+
+  &::before {
+    top: -4rem;
+    right: 3rem;
+  }
+
+  &::after {
+    bottom: -7rem;
+    left: 3.5rem;
+  }
+}
+
+.quote-mark {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  margin-bottom: 1.25rem;
+}
+
+.quote {
+  font-size: clamp(1.25rem, 2.7cqi, 1.625rem);
+  font-weight: 500;
+  line-height: 1.38;
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+  margin-bottom: 1.75rem;
+
+  mark {
+    padding: 0 0.15em;
+    border-radius: 0.2em;
+    background: rgb(255 255 255 / 18%);
+    color: inherit;
+    box-decoration-break: clone;
+  }
+}
+
+// The link to the whole story, a light button at the foot.
+.cta {
+  align-self: flex-end;
+  margin-top: auto;
+  padding: 0.625rem 1.125rem;
+  border-radius: lw.v(radius-lg);
+  background: #fff;
+  font-weight: 500;
+  color: #09090b;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
+  outline: none;
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-normal) lw.v(ease-out),
+      translate lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  &:hover {
+    background: #f4f4f5;
+    translate: 0 -1px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  .panel[data-plain] & {
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
   }
 }

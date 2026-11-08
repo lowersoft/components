@@ -5,6 +5,7 @@
 :host {
   --_line: #{lw.v(color-border)};
   --_muted: #{lw.v(color-muted-foreground)};
+  --_accent: var(--lw-metric-testimonials-accent, currentColor);
   // The turned-over card's colours, taken here so the card can swap them.
   --_ink: #{lw.v(color-foreground)};
   --_paper: #{lw.v(color-background)};
@@ -27,47 +28,57 @@ figure {
   display: none !important;
 }
 
-// The eyebrow and heading on the left, the description beside them.
+// The eyebrow in its corner marks, the headline in two tones and a line
+// under it, all centred.
 .head {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem 3rem;
-  margin-bottom: 2.25rem;
-}
-
-.lead {
-  max-width: 34rem;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: clamp(2rem, 5cqi, 3rem);
+  text-align: center;
 }
 
 .eyebrow {
-  margin-bottom: 1rem;
-  font: 500 lw.v(text-xs) lw.v(font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--_muted);
+  --_corner: var(--lw-metric-testimonials-accent, color-mix(in oklab, #{lw.v(color-foreground)} 45%, transparent));
+  --_arm: 0.5rem;
 
-  &::before {
-    content: '[ ';
-  }
-
-  &::after {
-    content: ' ]';
-  }
+  margin-bottom: 1.25rem;
+  padding: 0.5rem 1rem;
+  background:
+    linear-gradient(var(--_corner), var(--_corner)) left top / var(--_arm) 1px,
+    linear-gradient(var(--_corner), var(--_corner)) left top / 1px var(--_arm),
+    linear-gradient(var(--_corner), var(--_corner)) right top / var(--_arm) 1px,
+    linear-gradient(var(--_corner), var(--_corner)) right top / 1px var(--_arm),
+    linear-gradient(var(--_corner), var(--_corner)) left bottom / var(--_arm) 1px,
+    linear-gradient(var(--_corner), var(--_corner)) left bottom / 1px var(--_arm),
+    linear-gradient(var(--_corner), var(--_corner)) right bottom / var(--_arm) 1px,
+    linear-gradient(var(--_corner), var(--_corner)) right bottom / 1px var(--_arm);
+  background-repeat: no-repeat;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 82%, transparent);
 }
 
 .title {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.035em;
+  font-size: clamp(2rem, 5.2cqi, 3.25rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 
+.title-main,
+.title-sub {
+  display: block;
+}
+
+.title-sub {
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 42%, transparent);
+}
+
 .description {
-  max-width: 24rem;
-  font-size: lw.v(text-md);
+  max-width: 32rem;
+  margin-top: 1.25rem;
   line-height: 1.6;
   text-wrap: pretty;
   color: var(--_muted);
@@ -90,7 +101,7 @@ figure {
   }
 
   @container (min-width: 60rem) {
-    grid-template-columns: minmax(0, 1.15fr) repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.75fr) repeat(2, minmax(0, 1fr));
 
     .featured {
       grid-row: span 2;
@@ -105,12 +116,12 @@ figure {
 
 .card {
   display: flex;
-  min-height: 13rem;
+  min-height: 14rem;
   flex-direction: column;
-  padding: 1.5rem;
-  border: 1px solid var(--_line);
-  border-radius: 1rem;
-  background: color-mix(in oklab, #{lw.v(color-foreground)} 2%, #{lw.v(color-background)});
+  padding: clamp(1.375rem, 2.6cqi, 1.75rem);
+  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 7%, transparent);
+  border-radius: 1.25rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3.5%, #{lw.v(color-background)});
 }
 
 // The opposite scheme: dark on a light page, light on a dark one.
@@ -118,25 +129,12 @@ figure {
   @include lw.inverted;
 
   border-color: transparent;
-
-  .person-role {
-    color: lw.v(color-muted-foreground);
-  }
-}
-
-.card-top {
-  display: flex;
-  min-height: 1.25rem;
-  align-items: center;
-  margin-bottom: 1.25rem;
-  font-size: lw.v(text-xs);
 }
 
 // The tall card's number: digits that roll up once seen.
 .metric {
-  margin-top: auto;
-  font-size: clamp(3.5rem, 9cqi, 5.5rem);
-  font-weight: 600;
+  font-size: clamp(3.75rem, 7.5cqi, 5.25rem);
+  font-weight: 700;
   line-height: 1;
   letter-spacing: -0.05em;
 
@@ -159,36 +157,90 @@ figure {
   @include lw.visually-hidden;
 }
 
+.metric-label,
+.headline {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
 .metric-label {
-  max-width: 16rem;
+  max-width: 20rem;
   margin-top: 0.75rem;
-  line-height: 1.5;
-  color: var(--_muted);
+}
+
+.headline {
+  margin-bottom: 1.25rem;
+}
+
+.quote-mark {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+  margin-bottom: 1rem;
+  color: var(--_accent);
+
+  .featured & {
+    margin-top: 2.25rem;
+  }
 }
 
 .quote {
   flex: 1;
   line-height: 1.6;
   text-wrap: pretty;
-  color: color-mix(in oklab, #{lw.v(color-foreground)} 80%, transparent);
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 78%, transparent);
 
-  .featured & {
-    flex: 0 1 auto;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px dashed var(--_line);
+  .featured &,
+  .wide & {
     font-size: lw.v(text-md);
   }
 
-  .wide & {
-    font-size: clamp(lw.v(text-md), 2.2cqi, 1.3125rem);
-    line-height: 1.5;
-    letter-spacing: -0.01em;
+  p::before {
+    content: '“';
+  }
+
+  p::after {
+    content: '”';
   }
 }
 
+// The person, with the company's mark at the end of the row.
 .person {
-  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+
+  .face,
+  .avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: none;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .who {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .company {
+    margin-left: auto;
+  }
+
+  .company-mark {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+  }
+
+  .company-name {
+    @include lw.visually-hidden;
+  }
 }
 
 // The clients, the rating and the link to every review.
@@ -196,42 +248,34 @@ figure {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem 2rem;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
+  margin-top: 1.75rem;
+  padding-top: 1.75rem;
   border-top: 1px solid var(--_line);
   font-size: lw.v(text-xs);
   color: var(--_muted);
 }
 
-.clients,
 .rating {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.faces {
+.rating-icon {
   display: flex;
   margin-right: 0.25rem;
-
-  .face {
-    width: 1.5rem;
-    height: 1.5rem;
-    box-shadow: 0 0 0 2px lw.v(color-background);
-
-    & + .face {
-      margin-left: -0.375rem;
-    }
-  }
 }
 
 .stars {
-  letter-spacing: 0.05em;
+  font-size: lw.v(text-sm);
+  letter-spacing: 0.08em;
   color: lw.v(color-foreground);
 }
 
 .score {
+  font-size: lw.v(text-sm);
   font-weight: 600;
   color: lw.v(color-foreground);
 }
@@ -239,13 +283,32 @@ figure {
 .all {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  margin-left: auto;
-  border-radius: lw.v(radius-sm);
+  gap: 0.625rem;
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-sm);
   font-weight: 500;
   color: lw.v(color-foreground);
   text-decoration: none;
   outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.all-icon {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border: 1px solid var(--_line);
+  border-radius: 50%;
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-normal) lw.v(ease-out),
+      border-color lw.v(duration-normal) lw.v(ease-out);
+  }
 
   svg {
     @include lw.motion {
@@ -253,11 +316,13 @@ figure {
     }
   }
 
-  &:hover svg {
-    translate: 0.1875rem 0;
-  }
+  .all:hover & {
+    border-color: lw.v(color-foreground);
+    background: lw.v(color-foreground);
+    color: lw.v(color-background);
 
-  &:focus-visible {
-    @include lw.focus-ring;
+    svg {
+      translate: 1px -1px;
+    }
   }
 }

@@ -22,3 +22,7 @@ export const drawFace = (container, name) => {
   container.replaceChildren(face.svg);
   return face;
 };
+
+/** A pair of solid opening quote marks, drawn in the current colour. */
+export const QUOTE_ICON =
+  '<svg class="quote-mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 19v-7.2C3 7.6 5.5 4.7 9.4 3.8l.7 2C8 6.6 6.9 8.2 6.8 10.6H10.5V19H3Zm10.5 0v-7.2c0-4.2 2.5-7.1 6.4-8l.7 2c-2.1.8-3.2 2.4-3.3 4.8H21V19h-7.5Z"/></svg>';

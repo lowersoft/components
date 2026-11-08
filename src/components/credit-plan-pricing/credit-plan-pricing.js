@@ -1,10 +1,11 @@
 import { escapeHtml } from '../../core/dom.js';
 import { strokeIcon } from '../../core/icons.js';
-import { arrowUpRight, check, chevronDown } from '../../core/lucide.js';
+import { arrowUpRight, check } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
 import { formatMoney, paintPrice, priceMarkup, pricingStyles } from '../../core/pricing.js';
 import { rollingStyles } from '../../core/rolling.js';
 import '../button/index.js';
+import '../select/index.js';
 import '../switch/index.js';
 import styles from './credit-plan-pricing.scss?inline';
 
@@ -155,10 +156,10 @@ export class LwCreditPlanPricing extends LwElement {
       .map((plan) => {
         const id = escapeHtml(plan.id);
         const label = escapeHtml(plan.creditLabel ?? 'Credits');
+        // A ladder of amounts is the library's select; a fixed amount sits in the same box, read-only.
+        const options = Array.isArray(plan.credits) ? escapeHtml(JSON.stringify(plan.credits.map((credit, i) => ({ value: String(i), label: credit.label })))) : '';
         const credits = Array.isArray(plan.credits)
-          ? `<label class="credits-label" for="credits-${id}">${label}</label><div class="credits select"><select class="credits-select" id="credits-${id}" data-id="${id}">${plan.credits
-              .map((credit, i) => `<option value="${i}">${escapeHtml(credit.label)}</option>`)
-              .join('')}</select>${strokeIcon(chevronDown, 16)}</div>`
+          ? `<lw-select class="credits-select" data-id="${id}" label="${label}" value="0" options="${options}"></lw-select>`
           : `<span class="credits-label">${label}</span><p class="credits">${escapeHtml(plan.credits ?? '')}</p>`;
         return `<article class="plan"${plan.featured ? ' data-featured' : ''} data-id="${id}" aria-labelledby="plan-${id}">
 <div class="plan-head"><h3 class="name" id="plan-${id}">${escapeHtml(plan.name)}</h3>${plan.featured && this.badge ? `<span class="badge">${escapeHtml(this.badge)}</span>` : ''}</div><p class="tagline">${escapeHtml(plan.tagline ?? '')}</p>
