@@ -5,44 +5,56 @@
 :host {
   --_fill: var(--lw-editorial-footer-fill, #{lw.v(color-foreground)});
   --_rule: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+  --_quiet: color-mix(in oklab, #{lw.v(color-foreground)} 55%, transparent);
+
+  // The light around the name reaches past the footer's foot, and past its
+  // sides when narrow; it stops at the footer's edge.
+  overflow: clip;
 }
 
 .container {
-  padding-top: clamp(4rem, 9cqi, 6rem);
+  max-width: 76rem;
+  padding-top: clamp(4rem, 9cqi, 6.5rem);
+  padding-bottom: 0;
 }
 
-// The statement on the left, the columns beside it on a wide screen.
+// The statement on the left, the columns beside it on a wide screen; both
+// start on the running head's line.
 .top {
   display: grid;
-  gap: 3rem;
+  gap: 3.5rem;
 
   @container (min-width: 56rem) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 4rem;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: clamp(3rem, 8cqi, 7rem);
   }
 }
 
 // A running head, as in print: the brand's wordmark, or its name spaced out.
-.label-logo {
-  width: auto;
-  height: 1rem;
-  vertical-align: top;
-}
-
 .label {
-  font-size: lw.v(text-xs);
+  display: flex;
+  height: 0.875rem;
+  align-items: center;
+  font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: lw.v(color-muted-foreground);
+  color: var(--_quiet);
 }
 
+// A flex item already, so it leaves `display` to the theme's choice of image.
+.label-logo {
+  width: auto;
+  height: 0.875rem;
+}
+
+// One sentence, set large and light, in a measure that reads as a headline.
 .tagline {
-  max-width: 36rem;
-  margin-top: 2rem;
-  font-size: clamp(1.75rem, 3.6cqi, 2.5rem);
-  font-weight: 400;
-  line-height: 1.15;
+  max-width: 32rem;
+  margin-top: 2.25rem;
+  font-size: clamp(1.75rem, 3.4cqi, 2.5rem);
+  font-weight: 300;
+  line-height: 1.16;
   letter-spacing: -0.025em;
   text-wrap: balance;
 }
@@ -60,23 +72,27 @@
 }
 
 .column-title {
-  margin-bottom: 1.25rem;
+  display: flex;
+  height: 0.875rem;
+  align-items: center;
+  margin-bottom: 2.25rem;
   font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: lw.v(color-muted-foreground);
+  color: var(--_quiet);
 }
 
 .links {
-  gap: 0.75rem;
+  gap: 0.875rem;
 }
 
 .link {
+  font-size: lw.v(text-md);
   color: lw.v(color-foreground);
 }
 
-// An underline that grows from the left on hover.
+// An underline that grows from the left on hover and focus.
 .link-label {
   background: linear-gradient(currentcolor, currentcolor) 0 100% / 0 1px no-repeat;
 
@@ -89,20 +105,20 @@
   }
 }
 
-// An ink rule, then the copyright and the social links.
+// A hairline, then the copyright and the social links.
 .strip {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: clamp(3.5rem, 8cqi, 5rem);
+  margin-top: clamp(4rem, 9cqi, 6rem);
   padding-top: 1.25rem;
   border-top: 1px solid var(--_rule);
 }
 
 .copyright {
-  color: lw.v(color-muted-foreground);
+  color: var(--_quiet);
 }
 
 .socials {
@@ -118,7 +134,7 @@
   height: 2rem;
   place-items: center;
   border-radius: lw.v(radius-md);
-  color: lw.v(color-muted-foreground);
+  color: var(--_quiet);
 
   @include lw.motion {
     transition: color 150ms ease-out;
@@ -127,15 +143,22 @@
   &:hover {
     color: lw.v(color-foreground);
   }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
 }
 
-// The name in outlined capitals, stretched across the width. A filled copy
-// lies over it, shown only inside a soft circle around the mouse.
+// The name in thin outlined capitals, spaced across the full width and
+// standing on the footer's foot. A filled copy lies over it, shown only
+// inside a soft circle around the mouse.
 .wordmark {
   --_bleed: 3rem;
 
   position: relative;
-  margin-top: clamp(2rem, 5cqi, 3.5rem);
+  margin-top: clamp(2.5rem, 6cqi, 4.5rem);
+  padding-bottom: clamp(1.5rem, 3cqi, 2.5rem);
 }
 
 .outline,
@@ -146,41 +169,39 @@
   overflow: visible;
 }
 
-// On its own layer, so the thin outline is smoothed in grey rather than in
-// coloured subpixels.
-.outline {
-  will-change: transform;
+// Measures the word at a known size; never seen.
+.ruler {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 
 .word {
   font-family: lw.v(font-sans);
-  font-size: 220px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 300;
 }
 
-.outline .word {
-  fill: none;
-  stroke: color-mix(in oklab, #{lw.v(color-foreground)} 34%, transparent);
-  stroke-width: 1.25;
-  vector-effect: non-scaling-stroke;
+// On its own layer, so the thin outline is smoothed in grey rather than in
+// coloured subpixels.
+.outline {
+  will-change: transform;
+
+  .word {
+    fill: none;
+    stroke: color-mix(in oklab, #{lw.v(color-foreground)} 38%, transparent);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
 }
 
-.fill {
-  position: absolute;
-  inset: var(--_bleed);
-  width: calc(100% - 2 * var(--_bleed));
-  filter: drop-shadow(0 0 1.5rem color-mix(in oklab, var(--_fill) 40%, transparent));
-}
-
-// The circle the filled copy shows through. It reaches past the word on
-// every side, so the glow around the letters is not cut at their edge.
 .lit {
   position: absolute;
   inset: calc(-1 * var(--_bleed));
+  padding: var(--_bleed);
   opacity: 0;
   pointer-events: none;
-  mask-image: radial-gradient(circle 11rem at calc(var(--spot-x, 50%) + var(--_bleed)) calc(var(--spot-y, 50%) + var(--_bleed)), #000 30%, transparent 72%);
+  mask-image: radial-gradient(circle 12rem at calc(var(--spot-x, 50%) + var(--_bleed)) calc(var(--spot-y, 50%) + var(--_bleed)), #000 25%, transparent 72%);
 
   @include lw.motion {
     transition: opacity 350ms ease-out;
@@ -191,16 +212,14 @@
   }
 }
 
+// The filled copy, softly glowing in the fill colour.
 .fill {
+  filter: drop-shadow(0 0 1.25rem color-mix(in oklab, var(--_fill) 45%, transparent));
+
   .word {
-    fill: url('#fill');
-  }
-
-  .from {
-    stop-color: var(--_fill);
-  }
-
-  .to {
-    stop-color: color-mix(in oklab, var(--_fill) 55%, transparent);
+    fill: var(--_fill);
+    stroke: var(--_fill);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
   }
 }
