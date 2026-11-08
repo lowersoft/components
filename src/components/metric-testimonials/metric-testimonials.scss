@@ -1,0 +1,263 @@
+@use '../../styles' as lw;
+
+@include lw.testimonial-base;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  // The turned-over card's colours, taken here so the card can swap them.
+  --_ink: #{lw.v(color-foreground)};
+  --_paper: #{lw.v(color-background)};
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+p,
+blockquote,
+figure {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+// The eyebrow and heading on the left, the description beside them.
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 3rem;
+  margin-bottom: 2.25rem;
+}
+
+.lead {
+  max-width: 34rem;
+}
+
+.eyebrow {
+  margin-bottom: 1rem;
+  font: 500 lw.v(text-xs) lw.v(font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--_muted);
+
+  &::before {
+    content: '[ ';
+  }
+
+  &::after {
+    content: ' ]';
+  }
+}
+
+.title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 24rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--_muted);
+}
+
+// One column on phones; two from 40rem, the tall and wide cards across;
+// from 60rem the tall card on the left, the wide one beside it and the
+// two compact cards under that.
+.grid {
+  display: grid;
+  gap: 0.75rem;
+
+  @container (min-width: 40rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    .featured,
+    .wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @container (min-width: 60rem) {
+    grid-template-columns: minmax(0, 1.15fr) repeat(2, minmax(0, 1fr));
+
+    .featured {
+      grid-row: span 2;
+      grid-column: 1;
+    }
+
+    .wide {
+      grid-column: 2 / span 2;
+    }
+  }
+}
+
+.card {
+  display: flex;
+  min-height: 13rem;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 2%, #{lw.v(color-background)});
+}
+
+// The opposite scheme: dark on a light page, light on a dark one.
+.inverted {
+  @include lw.inverted;
+
+  border-color: transparent;
+
+  .person-role {
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.card-top {
+  display: flex;
+  min-height: 1.25rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  font-size: lw.v(text-xs);
+}
+
+// The tall card's number: digits that roll up once seen.
+.metric {
+  margin-top: auto;
+  font-size: clamp(3.5rem, 9cqi, 5.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.05em;
+
+  .rolling {
+    line-height: 1.1em;
+  }
+
+  .digit {
+    height: 1.1em;
+  }
+
+  .reel {
+    @include lw.motion {
+      transition: translate 1.4s cubic-bezier(0.22, 0.7, 0.2, 1);
+    }
+  }
+}
+
+.metric-value {
+  @include lw.visually-hidden;
+}
+
+.metric-label {
+  max-width: 16rem;
+  margin-top: 0.75rem;
+  line-height: 1.5;
+  color: var(--_muted);
+}
+
+.quote {
+  flex: 1;
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 80%, transparent);
+
+  .featured & {
+    flex: 0 1 auto;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--_line);
+    font-size: lw.v(text-md);
+  }
+
+  .wide & {
+    font-size: clamp(lw.v(text-md), 2.2cqi, 1.3125rem);
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+}
+
+.person {
+  margin-top: 1.5rem;
+}
+
+// The clients, the rating and the link to every review.
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 2rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--_line);
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.clients,
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.faces {
+  display: flex;
+  margin-right: 0.25rem;
+
+  .face {
+    width: 1.5rem;
+    height: 1.5rem;
+    box-shadow: 0 0 0 2px lw.v(color-background);
+
+    & + .face {
+      margin-left: -0.375rem;
+    }
+  }
+}
+
+.stars {
+  letter-spacing: 0.05em;
+  color: lw.v(color-foreground);
+}
+
+.score {
+  font-weight: 600;
+  color: lw.v(color-foreground);
+}
+
+.all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-left: auto;
+  border-radius: lw.v(radius-sm);
+  font-weight: 500;
+  color: lw.v(color-foreground);
+  text-decoration: none;
+  outline: none;
+
+  svg {
+    @include lw.motion {
+      transition: translate lw.v(duration-normal) lw.v(ease-out);
+    }
+  }
+
+  &:hover svg {
+    translate: 0.1875rem 0;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}

@@ -1,0 +1,124 @@
+@use '../../styles' as lw;
+
+:host {
+  --_serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+p,
+ul {
+  margin: 0;
+}
+
+.head {
+  max-width: 38rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.description {
+  margin-top: 0.875rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// An open row: no boxes, the names on the page itself. It wraps on narrow
+// screens rather than shrinking the names.
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.75rem clamp(2rem, 6cqi, 4rem);
+  margin-top: clamp(2.5rem, 6cqi, 3.5rem);
+  padding: 0;
+  list-style: none;
+}
+
+// A place stacks its wordmarks in one spot, as wide as the widest, so the
+// row never shifts as they change.
+.place {
+  display: grid;
+  place-items: center;
+}
+
+.wordmark {
+  display: inline-flex;
+  grid-area: 1 / 1;
+  align-items: center;
+  gap: 0.4em;
+  // A style scales the size, so smaller type still holds its own.
+  font-size: calc(clamp(1.375rem, 2.6cqi, 1.75rem) * var(--_scale, 1));
+  line-height: 1;
+  white-space: nowrap;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 72%, transparent);
+
+  &:not([data-active]) {
+    opacity: 0;
+  }
+
+  svg {
+    width: 0.9em;
+    height: 0.9em;
+    flex: none;
+  }
+}
+
+// Each wordmark in a type of its own.
+[data-style='geometric'] {
+  font-weight: 700;
+  letter-spacing: -0.055em;
+}
+
+[data-style='serif'] {
+  font-family: var(--_serif);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+[data-style='mono'] {
+  --_scale: 0.8;
+
+  font-family: lw.v(font-mono);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+[data-style='heavy'] {
+  font-weight: 800;
+  letter-spacing: -0.06em;
+}
+
+[data-style='wide'] {
+  --_scale: 0.72;
+
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+[data-style='light'] {
+  font-weight: 300;
+  letter-spacing: -0.03em;
+}

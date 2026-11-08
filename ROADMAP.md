@@ -231,6 +231,10 @@
 - [x] Testimonial grid
 - [x] Testimonial spotlight
 - [x] Annotated quote
+- [x] Metric testimonials
+- [x] Customer stories
+- [x] Morphing logo grid
+- [x] Morphing wordmarks
 - [x] Stats headline
 - [x] Install headline
 - [x] Inline chips headline

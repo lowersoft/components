@@ -1,0 +1,128 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+p,
+ul {
+  margin: 0;
+}
+
+.head {
+  max-width: 38rem;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.description {
+  margin-top: 0.875rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// Cells parted by hairlines: the grid's own colour shows through the gaps.
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: var(--_line);
+  list-style: none;
+
+  @container (min-width: 40rem) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.cell {
+  display: grid;
+  min-width: 0;
+  height: clamp(6rem, 14cqi, 8rem);
+  place-items: center;
+  padding: 0 1rem;
+  background: lw.v(color-background);
+
+  @include lw.motion {
+    transition: background-color lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  &:hover {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 2.5%, #{lw.v(color-background)});
+  }
+}
+
+// A cell's logos stacked in one place; only the active one shows.
+.slot {
+  display: grid;
+  max-width: 100%;
+  place-items: center;
+}
+
+.logo {
+  display: inline-flex;
+  max-width: 100%;
+  grid-area: 1 / 1;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: clamp(lw.v(text-md), 2.2cqi, 1.1875rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: lw.v(color-muted-foreground);
+
+  @include lw.motion {
+    transition: color lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  &:not([data-active]) {
+    opacity: 0;
+  }
+
+  .cell:hover & {
+    color: lw.v(color-foreground);
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  svg {
+    width: 1.375rem;
+    height: 1.375rem;
+    flex: none;
+  }
+}
+
+.logo-image {
+  display: block;
+  width: auto;
+  max-width: 11.5rem;
+  height: 1.75rem;
+  object-fit: contain;
+}

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Sections/Testimonials/Testimonial Grid',
+  title: 'Sections/Social Proof/Testimonial Grid',
   component: 'lw-testimonial-grid',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="max-width: 64rem; margin: 3rem auto"><lw-testimonial-grid ${attributes(args)}></lw-testimonial-grid></div>`,
