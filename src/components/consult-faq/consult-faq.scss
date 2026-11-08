@@ -1,0 +1,222 @@
+@use '../../styles' as lw;
+
+@include lw.accordion(380ms);
+
+:host {
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_edge: color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
+  --_card: color-mix(in oklab, #{lw.v(color-background)} 94%, transparent);
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+// The badge, the headline and a line, centred.
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.badge {
+  margin-bottom: 1.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: lw.v(radius-md);
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 75%, transparent);
+}
+
+.title {
+  max-width: 40rem;
+  font-size: clamp(2rem, 4.8cqi, 3rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 34rem;
+  margin-top: 1rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  color: var(--_muted);
+}
+
+// The photograph with the cards floating on it: the consultation on one
+// side, the questions on the other; stacked on narrow screens.
+.panel-stage {
+  position: relative;
+  display: grid;
+  align-items: start;
+  gap: 0.875rem;
+  isolation: isolate;
+  overflow: hidden;
+  margin-top: clamp(2.5rem, 6cqi, 3.5rem);
+  padding: clamp(1rem, 3cqi, 1.75rem);
+  border-radius: 2.25rem;
+  background: #4a2f1c;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+
+  @container (min-width: 52rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 1.25rem;
+  }
+}
+
+// A river valley at sundown, blurred into colour: a gold sky in the middle,
+// warm hills either side and dark ground.
+.scene {
+  position: absolute;
+  z-index: -1;
+  inset: -12%;
+  background:
+    radial-gradient(34% 26% at 56% 30%, #e9c45c, transparent 72%),
+    radial-gradient(48% 34% at 70% 40%, #d27a26, transparent 74%),
+    radial-gradient(40% 40% at 12% 30%, #7d3d21, transparent 72%),
+    radial-gradient(50% 30% at 50% 100%, #1c140f, transparent 72%),
+    linear-gradient(180deg, #9a5a2a 0%, #b9692a 38%, #5d3519 70%, #23170f 100%);
+  filter: blur(28px);
+
+  .panel-stage[data-photo] & {
+    display: none;
+  }
+}
+
+.photo {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(28px) brightness(0.9);
+  scale: 1.18;
+}
+
+.consult,
+.item {
+  border: 1px solid var(--_edge);
+  background: var(--_card);
+  box-shadow: 0 1rem 2rem -1.25rem rgb(0 0 0 / 50%);
+  backdrop-filter: blur(16px);
+}
+
+.consult {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+  padding: clamp(1.5rem, 3cqi, 2rem);
+  border-radius: 1.625rem;
+}
+
+.consult-title {
+  font-size: clamp(1.25rem, 2.4cqi, 1.5rem);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.consult-body {
+  max-width: 26rem;
+  line-height: 1.6;
+  color: var(--_muted);
+}
+
+.book {
+  margin-top: 1rem;
+
+  &::part(button) {
+    border-radius: lw.v(radius-full);
+  }
+}
+
+.list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.item {
+  border-radius: 1.625rem;
+}
+
+.trigger {
+  align-items: flex-start;
+  gap: 0.375rem;
+  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  font-size: lw.v(text-md);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.number {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+// A plus in a round well that turns into a cross.
+.well {
+  display: grid;
+  width: 1.875rem;
+  height: 1.875rem;
+  flex: none;
+  margin: -0.25rem 0 0 0.75rem;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 7%, transparent);
+  color: var(--_muted);
+}
+
+.cross {
+  position: relative;
+  width: 0.75rem;
+  height: 0.75rem;
+
+  @include lw.motion {
+    transition: rotate 380ms cubic-bezier(0.22, 0.7, 0.2, 1);
+  }
+
+  &::before,
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    margin-top: -0.75px;
+    border-radius: 1px;
+    background: currentColor;
+    content: '';
+  }
+
+  &::after {
+    rotate: 90deg;
+  }
+
+  [data-open] & {
+    rotate: 45deg;
+  }
+}
+
+.answer {
+  padding: 0 1.5rem 1.375rem;
+  color: var(--_muted);
+}

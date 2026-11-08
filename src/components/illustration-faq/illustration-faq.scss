@@ -1,0 +1,242 @@
+@use '../../styles' as lw;
+
+@include lw.accordion(350ms);
+
+:host {
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_line: #{lw.v(color-border)};
+  // The question mark's colour, from light at the top to deep at the foot.
+  --_accent: var(--lw-illustration-faq-accent, light-dark(#3f3f46, #e4e4e7));
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+// The heading and the illustration beside the questions; stacked on narrow
+// screens, the illustration smaller.
+.section {
+  display: grid;
+  gap: 2.5rem;
+
+  @container (min-width: 52rem) {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+    gap: clamp(3rem, 7cqi, 5.5rem);
+  }
+}
+
+.title {
+  max-width: 13ch;
+  font-size: clamp(2.25rem, 5cqi, 3.25rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 21rem;
+  margin-top: 1.25rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--_muted);
+}
+
+// The question mark: a deep copy for depth, the gradient body, a sheen
+// and a glint, floating between two faint outlined ghosts.
+.illustration {
+  display: block;
+  width: min(100%, 15rem);
+  margin: 2rem auto 0;
+  overflow: visible;
+
+  @container (min-width: 52rem) {
+    width: min(100%, 22rem);
+    margin: 3.5rem 0 0;
+  }
+
+  path,
+  circle {
+    stroke-linecap: round;
+  }
+}
+
+.stop-light {
+  stop-color: color-mix(in oklab, var(--_accent) 55%, #fff);
+}
+
+.stop-mid {
+  stop-color: var(--_accent);
+}
+
+.stop-deep {
+  stop-color: color-mix(in oklab, var(--_accent) 70%, #000);
+}
+
+.body,
+.depth {
+  path {
+    fill: none;
+    stroke-width: 46;
+  }
+}
+
+.body {
+  path {
+    stroke: var(--_fill);
+  }
+
+  circle {
+    fill: var(--_fill);
+  }
+}
+
+.depth {
+  translate: 12px 14px;
+
+  path {
+    stroke: color-mix(in oklab, var(--_accent) 30%, #{lw.v(color-background)});
+  }
+
+  circle {
+    fill: color-mix(in oklab, var(--_accent) 30%, #{lw.v(color-background)});
+  }
+}
+
+.sheen {
+  fill: none;
+  stroke: rgb(255 255 255 / 55%);
+  stroke-width: 10;
+}
+
+.glint {
+  fill: rgb(255 255 255 / 60%);
+}
+
+.ghost {
+  opacity: 0.32;
+
+  path {
+    fill: none;
+    stroke: color-mix(in oklab, var(--_accent) 70%, #{lw.v(color-background)});
+    stroke-width: 7;
+  }
+
+  circle {
+    fill: color-mix(in oklab, var(--_accent) 70%, #{lw.v(color-background)});
+  }
+}
+
+.ghost-left {
+  transform: translate(-58px, 34px) rotate(-14deg) scale(0.42);
+  transform-origin: 110px 150px;
+}
+
+.ghost-right {
+  transform: translate(150px, 112px) rotate(12deg) scale(0.34);
+  transform-origin: 110px 150px;
+}
+
+.mark {
+  transform-box: fill-box;
+
+  @include lw.motion {
+    animation: float 7s ease-in-out infinite;
+
+    :host([data-paused]) & {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes float {
+  50% {
+    translate: 0 -8px;
+    rotate: -2deg;
+  }
+}
+
+// Square question cards, the open one filled with a dot at each corner.
+.list {
+  display: grid;
+  align-content: start;
+  gap: 0.625rem;
+}
+
+.item {
+  --_dot: var(--lw-illustration-faq-accent, #{lw.v(color-foreground)});
+
+  position: relative;
+  border: 1px solid var(--_line);
+  background: lw.v(color-background);
+
+  @include lw.motion {
+    transition:
+      background-color 250ms ease-out,
+      border-color 250ms ease-out;
+  }
+
+  &::before {
+    position: absolute;
+    inset: -3px;
+    background:
+      radial-gradient(circle, var(--_dot) 2.5px, transparent 3px) left top / 6px 6px,
+      radial-gradient(circle, var(--_dot) 2.5px, transparent 3px) right top / 6px 6px,
+      radial-gradient(circle, var(--_dot) 2.5px, transparent 3px) left bottom / 6px 6px,
+      radial-gradient(circle, var(--_dot) 2.5px, transparent 3px) right bottom / 6px 6px;
+    background-repeat: no-repeat;
+    content: '';
+    opacity: 0;
+    pointer-events: none;
+
+    @include lw.motion {
+      transition: opacity 250ms ease-out;
+    }
+  }
+
+  &[data-open] {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 22%, transparent);
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 4%, #{lw.v(color-background)});
+
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+.trigger {
+  padding: 1.125rem 1.375rem;
+  font-weight: 500;
+
+  svg {
+    flex: none;
+    color: var(--_muted);
+
+    @include lw.motion {
+      transition: rotate 300ms cubic-bezier(0.22, 0.7, 0.2, 1);
+    }
+  }
+
+  [data-open] & svg {
+    rotate: 180deg;
+    color: lw.v(color-foreground);
+  }
+}
+
+.answer {
+  max-width: 34rem;
+  padding: 0 1.375rem 1.25rem;
+  color: var(--_muted);
+}

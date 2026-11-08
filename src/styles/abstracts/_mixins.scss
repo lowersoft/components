@@ -928,3 +928,77 @@
     }
   }
 }
+
+// The FAQ accordions from `core/accordion.js`: the question as a full-width
+// button, and an answer that folds open by its own height, its contents
+// easing in just after.
+@mixin accordion($duration: 400ms) {
+  .question {
+    margin: 0;
+    font: inherit;
+  }
+
+  .trigger {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 1rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: start;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+
+  .label {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .panel {
+    display: grid;
+    grid-template-rows: 0fr;
+
+    @include motion {
+      transition: grid-template-rows $duration cubic-bezier(0.22, 0.7, 0.2, 1);
+    }
+
+    [data-open] > & {
+      grid-template-rows: 1fr;
+    }
+  }
+
+  .clip {
+    min-height: 0;
+    overflow: hidden;
+
+    > * {
+      opacity: 0;
+      translate: 0 -0.5rem;
+
+      @include motion {
+        transition:
+          opacity 280ms ease-out 50ms,
+          translate 280ms ease-out 50ms;
+      }
+    }
+
+    [data-open] > .panel > & > * {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  .answer {
+    margin: 0;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+}

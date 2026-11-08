@@ -194,6 +194,11 @@
 - [x] Help center FAQ
 - [x] Tabbed FAQ
 - [x] Support thread FAQ
+- [x] Illustration FAQ
+- [x] Split headline FAQ
+- [x] Consult FAQ
+- [x] Support card FAQ
+- [x] Pill FAQ
 - [x] Newsletter footer
 - [x] Sitemap footer
 - [x] Status footer

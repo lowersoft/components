@@ -236,3 +236,8 @@ export * from './components/security-grid/index.js';
 export * from './components/workspace-composer/index.js';
 export * from './components/upload-stage/index.js';
 export * from './components/prompt-stage/index.js';
+export * from './components/illustration-faq/index.js';
+export * from './components/split-headline-faq/index.js';
+export * from './components/consult-faq/index.js';
+export * from './components/support-card-faq/index.js';
+export * from './components/pill-faq/index.js';

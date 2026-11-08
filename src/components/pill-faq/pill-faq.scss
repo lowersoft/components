@@ -1,0 +1,161 @@
+@use '../../styles' as lw;
+
+@include lw.accordion(380ms);
+
+:host {
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_dash: color-mix(in oklab, #{lw.v(color-foreground)} 20%, transparent);
+  --_pill: color-mix(in oklab, #{lw.v(color-foreground)} 9%, #{lw.v(color-background)});
+  // How far in the side guides run, and the content with them.
+  --_guide: clamp(1rem, 10%, 6rem);
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+// A dashed frame with two dashed guides running down inside its sides and
+// dashed rules between the header, the questions and the actions.
+.frame {
+  position: relative;
+  display: grid;
+  max-width: 61.25rem;
+  margin-inline: auto;
+  border: 1px dashed var(--_dash);
+
+  &::before {
+    position: absolute;
+    inset: 0 var(--_guide);
+    border-inline: 1px dashed var(--_dash);
+    content: '';
+    pointer-events: none;
+  }
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(2.5rem, 7cqi, 4rem) calc(var(--_guide) + 1.25rem) clamp(2rem, 5cqi, 3rem);
+  border-bottom: 1px dashed var(--_dash);
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(2.75rem, 7cqi, 4rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.description {
+  max-width: 28ch;
+  margin-top: 1.125rem;
+  line-height: 1.6;
+  color: var(--_muted);
+}
+
+// The questions as pills, the answers as replies.
+.list {
+  display: grid;
+  gap: 0.75rem;
+  padding: clamp(2rem, 5cqi, 2.5rem) calc(var(--_guide) + 0.5rem);
+  border-bottom: 1px dashed var(--_dash);
+}
+
+.trigger {
+  justify-content: space-between;
+}
+
+.label {
+  flex: 0 1 auto;
+  padding: 0.6875rem 1.25rem;
+  border-radius: lw.v(radius-full);
+  background: var(--_pill);
+  font-weight: 500;
+  line-height: 1.35;
+
+  @include lw.motion {
+    transition: background-color 200ms ease-out;
+  }
+
+  .trigger:hover & {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 14%, #{lw.v(color-background)});
+  }
+}
+
+// A round plus at the far end of a closed question's row.
+.add {
+  display: grid;
+  width: 2.125rem;
+  height: 2.125rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--_pill);
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 80%, transparent);
+
+  @include lw.motion {
+    transition:
+      opacity 250ms ease-out,
+      scale 250ms ease-out;
+  }
+
+  [data-open] & {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+
+.reply {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  padding: 0.75rem 0 0.25rem;
+}
+
+.face {
+  display: block;
+  width: 2.625rem;
+  height: 2.625rem;
+  flex: none;
+  overflow: hidden;
+  border-radius: 50%;
+  object-fit: cover;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.bubble {
+  max-width: 36rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+  border-radius: 1.25rem 1.25rem 1.25rem 0.375rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 5%, #{lw.v(color-background)});
+  box-shadow: 0 0.75rem 1.5rem -1rem rgb(0 0 0 / 35%);
+  line-height: 1.6;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 80%, transparent);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: clamp(1.75rem, 4cqi, 2.25rem) calc(var(--_guide) + 1rem);
+}

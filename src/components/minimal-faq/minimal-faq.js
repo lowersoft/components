@@ -1,3 +1,4 @@
+import { accordionKeys, itemId, paintAccordion } from '../../core/accordion.js';
 import { writeClipboard } from '../../core/clipboard.js';
 import { escapeHtml } from '../../core/dom.js';
 import { strokeIcon } from '../../core/icons.js';
@@ -20,9 +21,6 @@ const DEMO_ITEMS = [
 ];
 
 const DEMO_TEAM = ['Ana Moreno', 'Jules Laurent', 'Sam Okafor'];
-
-// An answer's id, from its question unless it has its own.
-const idOf = (item) => item.id ?? item.question.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 /**
  * A quiet FAQ: the heading and a way to reach the team on one side,
@@ -69,7 +67,7 @@ export class LwMinimalFaq extends LwElement {
       const trigger = event.target.closest('.trigger');
       if (trigger) this.#toggle(trigger.dataset.id);
     }, options);
-    list.addEventListener('keydown', (event) => this.#key(event), options);
+    list.addEventListener('keydown', (event) => accordionKeys(event, list), options);
     this.query('.ask').addEventListener('click', () => this.emit('ask'), options);
     // `#faq-<id>` opens that answer, on load and whenever it changes.
     window.addEventListener('hashchange', () => this.#fromHash(true), options);
@@ -90,7 +88,7 @@ export class LwMinimalFaq extends LwElement {
   #build() {
     this.query('.list').innerHTML = (this.items ?? [])
       .map((item) => {
-        const id = escapeHtml(idOf(item));
+        const id = escapeHtml(itemId(item));
         return `<div class="item" id="${HASH}${id}"><h3 class="question"><button class="trigger" type="button" data-id="${id}" aria-expanded="false" aria-controls="answer-${id}"><span>${escapeHtml(item.question)}</span><span class="cross" aria-hidden="true"></span></button></h3>
 <div class="panel" id="answer-${id}" role="region" aria-label="${escapeHtml(item.question)}"><div class="clip"><p class="answer">${escapeHtml(item.answer)}</p><button class="copy" type="button" data-id="${id}">${strokeIcon(link2, 14)}<span>Copy link</span></button></div></div></div>`;
       })
@@ -100,13 +98,7 @@ export class LwMinimalFaq extends LwElement {
   // One answer open; the other questions step back while it is.
   #paint() {
     this.query('.list').toggleAttribute('data-open', Boolean(this.open));
-    for (const trigger of this.shadowRoot.querySelectorAll('.trigger')) {
-      const open = trigger.dataset.id === this.open;
-      trigger.ariaExpanded = String(open);
-      trigger.closest('.item').toggleAttribute('data-open', open);
-      // A closed answer is out of the tab order and the accessibility tree.
-      trigger.closest('.item').querySelector('.panel').inert = !open;
-    }
+    paintAccordion(this.query('.list'), this.open);
   }
 
   #toggle(id) {
@@ -118,7 +110,7 @@ export class LwMinimalFaq extends LwElement {
   #fromHash(scroll) {
     if (!location.hash.startsWith(`#${HASH}`)) return;
     const id = decodeURIComponent(location.hash.slice(HASH.length + 1));
-    if (!(this.items ?? []).some((item) => idOf(item) === id)) return;
+    if (!(this.items ?? []).some((item) => itemId(item) === id)) return;
     this.open = id;
     if (scroll) requestAnimationFrame(() => this.query(`#${HASH}${CSS.escape(id)}`)?.scrollIntoView({ block: 'center' }));
   }
@@ -141,15 +133,4 @@ export class LwMinimalFaq extends LwElement {
     }, COPIED_MS);
   }
 
-  // Up and down move between questions; Home and End go to the ends.
-  #key(event) {
-    const trigger = event.target.closest('.trigger');
-    if (!trigger) return;
-    const triggers = [...this.shadowRoot.querySelectorAll('.trigger')];
-    const index = triggers.indexOf(trigger);
-    const next = { ArrowDown: index + 1, ArrowUp: index - 1, Home: 0, End: triggers.length - 1 }[event.key];
-    if (next === undefined) return;
-    event.preventDefault();
-    triggers[(next + triggers.length) % triggers.length].focus();
-  }
 }
