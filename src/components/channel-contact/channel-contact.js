@@ -24,11 +24,12 @@ const ICONS = { github: GITHUB, docs: strokeIcon(bookOpen, 20), changelog: strok
  * them to write. Two channels sit side by side, booking a call and sending a
  * message, each with a heading, a sentence and the library's button; under
  * them, three cards point to where answers already are, such as the code,
- * the docs and the changelog. One card can be turned over in the opposite
- * scheme to lead. On narrow screens the channels and cards stack.
+ * the docs and the changelog, each with the library's button too. One card
+ * can be turned over in the opposite scheme to lead. On narrow screens the
+ * channels and cards stack.
  *
- * A channel's button fires `lw-action`; unless it is cancelled, the page
- * then goes to the channel's `href`. The cards are links.
+ * Every button fires `lw-action` with its channel's or card's id; unless it
+ * is cancelled, the page then goes to its `href`.
  *
  * Channels are `{ id, heading, body, action, href }`; cards are `{ id,
  * icon, heading, body, label, href, accent? }`, `icon` one of github, docs,
@@ -36,7 +37,7 @@ const ICONS = { github: GITHUB, docs: strokeIcon(bookOpen, 20), changelog: strok
  *
  * @attr {Array<object>} channels (JSON)
  * @attr {Array<object>} cards (JSON)
- * @fires lw-action - A channel's button was pressed; `detail: { action, href }`, `action` the channel's id. Unless cancelled, the page then goes to `href`
+ * @fires lw-action - A channel's or a card's button was pressed; `detail: { action, href }`, `action` its id. Unless cancelled, the page then goes to `href`
  * @csspart card - Each card
  * @cssprop --lw-channel-contact-accent - The leading card's colour; it is turned over in the opposite scheme by default
  * @cssprop --lw-channel-contact-on-accent - The text on the leading card
@@ -53,29 +54,34 @@ export class LwChannelContact extends LwElement {
   }
 
   connected() {
-    this.query('.channels').addEventListener('click', (event) => {
-      const button = event.target.closest('[data-index]');
-      const channel = button && this.#channels[Number(button.dataset.index)];
-      if (!channel) return;
-      if (this.emit('action', { action: channel.id ?? '', href: channel.href ?? '' }) && channel.href) location.assign(channel.href);
+    // A channel's or a card's button says which, then goes where it points.
+    this.query('.section').addEventListener('click', (event) => {
+      const button = event.target.closest('[data-kind]');
+      if (!button) return;
+      const target = (button.dataset.kind === 'card' ? this.#cards : this.#channels)[Number(button.dataset.index)];
+      if (!target) return;
+      if (this.emit('action', { action: target.id ?? '', href: target.href ?? '' }) && target.href) location.assign(target.href);
     }, { signal: this.signal });
   }
 
   updated(changed) {
     if (changed.has('channels')) {
       this.query('.channels').innerHTML = this.#channels
-        .map((channel, at) => `<div class="channel"><h2 class="channel-heading">${escapeHtml(channel.heading ?? '')}</h2><p class="channel-body">${escapeHtml(channel.body ?? '')}</p>${channel.action ? `<lw-button class="channel-action" data-index="${at}"><span>${escapeHtml(channel.action)}</span><span slot="end">${strokeIcon(arrowRight, 16)}</span></lw-button>` : ''}</div>`)
+        .map((channel, at) => `<div class="channel"><h2 class="channel-heading">${escapeHtml(channel.heading ?? '')}</h2><p class="channel-body">${escapeHtml(channel.body ?? '')}</p>${channel.action ? `<lw-button class="channel-action" data-kind="channel" data-index="${at}"><span>${escapeHtml(channel.action)}</span><span slot="end">${strokeIcon(arrowRight, 16)}</span></lw-button>` : ''}</div>`)
         .join('');
     }
     if (changed.has('cards')) {
-      const cards = Array.isArray(this.cards) ? this.cards : [];
-      this.query('.cards').innerHTML = cards
-        .map((card) => `<li class="card${card.accent ? ' accent' : ''}" part="card"><span class="card-icon" aria-hidden="true">${ICONS[card.icon] ?? ''}</span><h3 class="card-heading">${escapeHtml(card.heading ?? '')}</h3><p class="card-body">${escapeHtml(card.body ?? '')}</p>${card.label ? `<a class="card-link" href="${escapeHtml(card.href ?? '#')}">${escapeHtml(card.label)}${strokeIcon(arrowRight, 14)}</a>` : ''}</li>`)
+      this.query('.cards').innerHTML = this.#cards
+        .map((card, at) => `<li class="card${card.accent ? ' accent' : ''}" part="card"><span class="card-icon" aria-hidden="true">${ICONS[card.icon] ?? ''}</span><h3 class="card-heading">${escapeHtml(card.heading ?? '')}</h3><p class="card-body">${escapeHtml(card.body ?? '')}</p>${card.label ? `<lw-button class="card-action" data-kind="card" data-index="${at}" size="sm"${card.accent ? '' : ' variant="outline"'}><span>${escapeHtml(card.label)}</span><span slot="end">${strokeIcon(arrowRight, 14)}</span></lw-button>` : ''}</li>`)
         .join('');
     }
   }
 
   get #channels() {
     return Array.isArray(this.channels) ? this.channels : [];
+  }
+
+  get #cards() {
+    return Array.isArray(this.cards) ? this.cards : [];
   }
 }

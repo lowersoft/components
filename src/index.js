@@ -244,5 +244,4 @@ export * from './components/pill-faq/index.js';
 export * from './components/quote-contact/index.js';
 export * from './components/blueprint-contact/index.js';
 export * from './components/channel-contact/index.js';
-export * from './components/three-column-contact/index.js';
 export * from './components/map-contact/index.js';

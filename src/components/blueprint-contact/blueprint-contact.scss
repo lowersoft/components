@@ -7,8 +7,6 @@
   --_muted: #{lw.v(color-muted-foreground)};
   --_dash: color-mix(in oklab, #{lw.v(color-foreground)} 20%, transparent);
   --_well: color-mix(in oklab, #{lw.v(color-foreground)} 7%, #{lw.v(color-background)});
-  // How far in the side guides run, and the column with them.
-  --_guide: clamp(1rem, 22%, 13rem);
 
   container-type: inline-size;
   display: block;
@@ -30,10 +28,18 @@ p {
 // between the header, the fields and the actions. The guides fade out at
 // the top and bottom.
 .frame {
+  // How far in the side guides run, and the column with them; close to the
+  // edges on narrow screens, where every pixel goes to the fields.
+  --_guide: clamp(1rem, 22%, 13rem);
+
   position: relative;
   display: grid;
   margin-inline: auto;
   border-block: 1px dashed var(--_dash);
+
+  @container (max-width: 36rem) {
+    --_guide: 0.75rem;
+  }
 
   &::before {
     position: absolute;
@@ -72,9 +78,11 @@ p {
   display: grid;
 }
 
-// The fields in the narrow column: filled wells, without borders.
+// The fields in the narrow column: filled wells, without borders, in one
+// column that never grows past its guides, whatever the fields ask for.
 .fields {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   padding: clamp(2rem, 5cqi, 2.5rem) calc(var(--_guide) + 0.75rem);
   border-bottom: 1px dashed var(--_dash);

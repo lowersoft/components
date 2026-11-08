@@ -123,46 +123,7 @@ ul {
   color: lw.v(color-muted-foreground);
 }
 
-.card-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  // The links line up along the cards’ feet.
+// The card's button lines up along the cards' feet.
+.card-action {
   margin-top: auto;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid lw.v(color-border);
-  border-radius: lw.v(radius-md);
-  font-weight: 500;
-  color: lw.v(color-foreground);
-  text-decoration: none;
-  outline: none;
-
-  @include lw.motion {
-    transition: background-color lw.v(duration-normal) lw.v(ease-out);
-  }
-
-  svg {
-    @include lw.motion {
-      transition: translate lw.v(duration-normal) lw.v(ease-out);
-    }
-  }
-
-  &:hover {
-    background: lw.v(color-muted);
-
-    svg {
-      translate: 0.1875rem 0;
-    }
-  }
-
-  &:focus-visible {
-    @include lw.focus-ring;
-  }
-
-  // On the leading card the link is solid.
-  .accent & {
-    border-color: transparent;
-    background: lw.v(color-foreground);
-    color: lw.v(color-background);
-  }
 }

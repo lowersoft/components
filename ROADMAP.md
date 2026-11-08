@@ -202,7 +202,6 @@
 - [x] Quote contact
 - [x] Blueprint contact
 - [x] Channel contact
-- [x] Three column contact
 - [x] Map contact
 - [x] Newsletter footer
 - [x] Sitemap footer
