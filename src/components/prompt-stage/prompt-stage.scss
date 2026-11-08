@@ -1,0 +1,355 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_glass: color-mix(in oklab, #{lw.v(color-background)} 90%, transparent);
+  --_edge: color-mix(in oklab, #{lw.v(color-foreground)} 9%, transparent);
+  --_ease: cubic-bezier(0.22, 0.7, 0.2, 1);
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// The copy beside the stage; stacked, copy first, on narrow screens.
+.split {
+  display: grid;
+  gap: 2.5rem;
+
+  @container (min-width: 56rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: center;
+    gap: clamp(3rem, 6cqi, 5rem);
+  }
+}
+
+// A short claim in heavy type, two tight lines.
+.title {
+  max-width: 15ch;
+  font-size: clamp(2.25rem, 5.4cqi, 3.5rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 27rem;
+  margin-top: 1.25rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--_muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  margin-top: 2rem;
+}
+
+.link {
+  border-radius: lw.v(radius-sm);
+  font-weight: 500;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 82%, transparent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent);
+  text-underline-offset: 0.4em;
+  outline: none;
+
+  @include lw.motion {
+    transition:
+      color lw.v(duration-normal) lw.v(ease-out),
+      text-decoration-color lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+    text-decoration-color: currentColor;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+// The desks: one open at a time, its description sliding down.
+.desks {
+  max-width: 28rem;
+  margin-top: 2.75rem;
+  border-top: 1px solid var(--_line);
+}
+
+.desk {
+  border-bottom: 1px solid var(--_line);
+}
+
+.desk-head {
+  font: inherit;
+}
+
+.desk-toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border: 0;
+  border-radius: lw.v(radius-sm);
+  background: none;
+  font-size: lw.v(text-md);
+  text-align: start;
+  color: var(--_muted);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition: color lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  svg {
+    flex: none;
+
+    @include lw.motion {
+      transition: rotate 300ms var(--_ease);
+    }
+  }
+
+  &:hover,
+  .desk[data-open] & {
+    color: lw.v(color-foreground);
+  }
+
+  .desk[data-open] & svg {
+    rotate: 90deg;
+  }
+}
+
+.desk-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition: grid-template-rows 350ms var(--_ease);
+  }
+
+  .desk[data-open] & {
+    grid-template-rows: 1fr;
+  }
+}
+
+.desk-body {
+  min-height: 0;
+  overflow: hidden;
+
+  p {
+    padding-bottom: 1.125rem;
+    line-height: 1.6;
+    color: var(--_muted);
+  }
+}
+
+// The stage: a photograph blurred and dimmed, the card on it and the chips.
+.stage {
+  position: relative;
+  display: flex;
+  min-height: clamp(24rem, 52cqi, 34rem);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(1.25rem, 4cqi, 2.5rem);
+  border-radius: 1.5rem;
+  background: #3a3330;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+
+  // Dims whatever is behind, so the card leads.
+  &::after {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: radial-gradient(70% 60% at 50% 50%, transparent, rgb(0 0 0 / 28%));
+    content: '';
+  }
+}
+
+// A warm room out of focus: lamplight at the upper right, a window's cool
+// grey low in the middle and dark corners.
+.scene {
+  position: absolute;
+  z-index: -2;
+  inset: -14%;
+  background:
+    radial-gradient(34% 30% at 80% 22%, #d1914f, transparent 72%),
+    radial-gradient(30% 26% at 30% 16%, #8d6c55, transparent 72%),
+    radial-gradient(44% 34% at 58% 74%, #59626a, transparent 72%),
+    radial-gradient(40% 34% at 14% 86%, #262120, transparent 72%),
+    linear-gradient(180deg, #5d4c40 0%, #3a3330 55%, #1d1c1d 100%);
+  filter: blur(26px);
+
+  .stage[data-photo] & {
+    display: none;
+  }
+}
+
+.photo {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(26px) brightness(0.8);
+  scale: 1.28;
+}
+
+// The card: the request, its tag, and a row of controls that take no input.
+.card {
+  box-sizing: border-box;
+  width: min(100%, 20.5rem);
+  padding: 1.125rem 1.125rem 0.75rem;
+  border: 1px solid var(--_edge);
+  border-radius: 1.125rem;
+  background: var(--_glass);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 22%) inset,
+    0 1.5rem 3rem -1rem rgb(0 0 0 / 45%);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+
+.prompt {
+  min-height: 4.65em;
+  line-height: 1.55;
+  text-wrap: pretty;
+
+  .word {
+    display: inline-block;
+  }
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.875rem;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--_edge);
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-background);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--_tone);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.125rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--_edge);
+}
+
+.well {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid var(--_edge);
+  border-radius: 50%;
+  color: var(--_muted);
+}
+
+.model {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+
+  svg {
+    color: var(--_muted);
+  }
+}
+
+.model-mark {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+}
+
+// The desks again, as chips: the open one solid.
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--_edge);
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-background)} 70%, transparent);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 75%, transparent);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+
+  @include lw.motion {
+    transition:
+      background-color 250ms var(--_ease),
+      color 250ms var(--_ease),
+      box-shadow 250ms var(--_ease);
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &[aria-pressed='true'] {
+    background: lw.v(color-background);
+    color: lw.v(color-foreground);
+    box-shadow: 0 0.5rem 1rem -0.5rem rgb(0 0 0 / 40%);
+  }
+}

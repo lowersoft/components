@@ -238,6 +238,7 @@
 - [x] Security grid
 - [x] Workspace composer
 - [x] Upload stage
+- [x] Prompt stage
 - [x] Stats headline
 - [x] Install headline
 - [x] Inline chips headline
