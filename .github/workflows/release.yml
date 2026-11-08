@@ -8,7 +8,6 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
   contents: write
-  pull-requests: write
   id-token: write
 
 jobs:
@@ -27,16 +26,11 @@ jobs:
       - run: npm install --global npm@11
       - run: npm ci
       # The version is bumped on a maintainer's machine with
-      # `npm run version-packages`, which turns the pending changesets into
-      # the new version and changelog, and pushed to main; this job then
-      # publishes it and tags the release. While changesets are pending there
-      # is nothing to publish, and the action would instead open a "Version
-      # Packages" pull request, which this repository does not let Actions do.
-      - id: pending
-        run: echo "count=$(find .changeset -name '*.md' ! -name README.md | wc -l)" >> "$GITHUB_OUTPUT"
-      - if: steps.pending.outputs.count == '0'
-        uses: changesets/action@v1
+      # `npm run version-packages` and pushed to main; this repository does
+      # not let Actions open the "Version Packages" pull request instead.
+      # Every push publishes whatever version main carries that npm does not
+      # have yet, then tags it and creates its GitHub release; otherwise it
+      # does nothing.
+      - uses: changesets/action/publish@v2
         with:
-          publish: npm run release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          script: npm run release

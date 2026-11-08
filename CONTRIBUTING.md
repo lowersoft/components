@@ -120,4 +120,4 @@ export class LwExample extends LwElement {
 
 1. `npm run version-packages` turns the pending changesets into the new version in `package.json` and its entry in `CHANGELOG.md`.
 2. Commit that and push it to `main`.
-3. The Release workflow sees no pending changesets, publishes the version to npm through trusted publishing, and tags it on GitHub. A push that still has changesets publishes nothing.
+3. The Release workflow publishes the version npm does not have yet through trusted publishing, then tags it and creates its GitHub release. A push that does not change the version publishes nothing.
