@@ -4,7 +4,7 @@ import './index.js';
 const VARIANTS = ['slide', 'center', 'fill', 'wavy', 'gradient'];
 
 export default {
-  title: 'Texts/Underline Animation',
+  title: 'Effects/Text/Interactive/Underline Animation',
   component: 'lw-underline-animation',
   parameters: { layout: 'centered' },
   render: ({ label, ...args }) => `<p style="margin: 0; font: 500 1.5rem/1.4 var(--lw-font-sans); color: var(--lw-color-foreground)"><lw-underline-animation ${attributes(args)}>${label}</lw-underline-animation></p>`,

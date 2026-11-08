@@ -8,7 +8,7 @@ const FOUR = JSON.stringify([
 ]);
 
 export default {
-  title: 'Pricings/Cloud Pricing',
+  title: 'Sections/Pricing/Plans/Cloud Pricing',
   component: 'lw-cloud-pricing',
   parameters: { layout: 'fullscreen' },
   argTypes: {

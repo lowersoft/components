@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Currency Transfer',
+  title: 'Data Display/Commerce/Currency Transfer',
   component: 'lw-currency-transfer',
   render: (args) => `<lw-currency-transfer ${attributes(args)}></lw-currency-transfer>`,
   argTypes: { status: { control: 'inline-radio', options: [null, 'processing', 'completed', 'failed'] } },

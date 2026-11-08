@@ -8,7 +8,7 @@ const STUDIO = JSON.stringify([
 ]);
 
 export default {
-  title: 'How It Works/Curve Steps',
+  title: 'Sections/How It Works/Curve Steps',
   component: 'lw-curve-steps',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="margin: 3rem auto"><lw-curve-steps ${attributes(args)}></lw-curve-steps></div>`,

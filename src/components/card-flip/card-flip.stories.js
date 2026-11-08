@@ -59,7 +59,7 @@ const BACK = `<div slot="back" class="ticket">
 </div>`;
 
 export default {
-  title: 'Cards/Card Flip',
+  title: 'Data Display/Cards/Card Flip',
   component: 'lw-card-flip',
   render: (args) => `${STYLE}<lw-card-flip ${attributes(args)}>${FRONT}${BACK}</lw-card-flip>`,
   argTypes: { axis: { control: 'inline-radio', options: ['y', 'x'] } },

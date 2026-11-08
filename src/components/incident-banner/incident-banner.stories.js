@@ -3,7 +3,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Banners/Incident Banner',
+  title: 'Feedback/Banners/Incident Banner',
   component: 'lw-incident-banner',
   parameters: { layout: 'padded' },
   argTypes: { severity: { control: 'inline-radio', options: ['minor', 'major'] } },

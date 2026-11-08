@@ -15,7 +15,7 @@ const ROWS = JSON.stringify([
 ]);
 
 export default {
-  title: 'Pricings/Flat Rate Pricing',
+  title: 'Sections/Pricing/Plans/Flat Rate Pricing',
   component: 'lw-flat-rate-pricing',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="margin: 3rem auto"><lw-flat-rate-pricing ${attributes(args)}></lw-flat-rate-pricing></div>`,

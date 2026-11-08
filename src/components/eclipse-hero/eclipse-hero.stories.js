@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Heroes/Eclipse Hero',
+  title: 'Sections/Heroes/Eclipse Hero',
   component: 'lw-eclipse-hero',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-eclipse-hero ${attributes(args)}></lw-eclipse-hero>`,

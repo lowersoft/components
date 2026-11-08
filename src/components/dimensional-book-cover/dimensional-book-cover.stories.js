@@ -8,7 +8,7 @@ const page = (kicker, heading, text) => `<div style="display: grid; gap: 0.5rem;
 </div>`;
 
 export default {
-  title: 'Cards/Dimensional Book Cover',
+  title: 'Media/Galleries/Dimensional Book Cover',
   component: 'lw-dimensional-book-cover',
   render: (args) => `<lw-dimensional-book-cover ${attributes(args)}></lw-dimensional-book-cover>`,
   argTypes: {

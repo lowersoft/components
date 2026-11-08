@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Navigation/Morphic Navbar',
+  title: 'Navigation/Bars & Tabs/Morphic Navbar',
   component: 'lw-morphic-navbar',
   render: (args) => `<lw-morphic-navbar ${attributes(args)}></lw-morphic-navbar>`,
   args: { compact: false },

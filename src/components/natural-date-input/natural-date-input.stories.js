@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Natural Date Input',
+  title: 'Controls/Fields/Natural Date Input',
   component: 'lw-natural-date-input',
   render: (args) => `<lw-natural-date-input ${attributes(args)}></lw-natural-date-input>`,
   args: { disabled: false },

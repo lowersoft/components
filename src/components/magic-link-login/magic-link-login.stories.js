@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Login/Magic Link Login',
+  title: 'Flows/Auth/Magic Link Login',
   component: 'lw-magic-link-login',
   render: (args) => `<lw-magic-link-login ${attributes(args)}></lw-magic-link-login>`,
   argTypes: {

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Job Listing Card',
+  title: 'Data Display/Cards/Job Listing Card',
   component: 'lw-job-listing-card',
   render: (args) => `<lw-job-listing-card ${attributes(args)}></lw-job-listing-card>`,
   args: { title: 'Senior Systems Engineer' },

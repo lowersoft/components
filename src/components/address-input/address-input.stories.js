@@ -1,7 +1,7 @@
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Address Input',
+  title: 'Controls/Fields/Address Input',
   component: 'lw-address-input',
 };
 

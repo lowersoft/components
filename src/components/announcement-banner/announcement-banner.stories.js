@@ -3,7 +3,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Banners/Announcement Banner',
+  title: 'Feedback/Banners/Announcement Banner',
   component: 'lw-announcement-banner',
   parameters: { layout: 'padded' },
   render: (args) => appFrame(`<lw-announcement-banner ${attributes(args)}></lw-announcement-banner>`),

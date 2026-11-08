@@ -13,7 +13,7 @@ const IMAGES = {
 const range = (name, min, max, step = 0.01) => ({ name, control: { type: 'range', min, max, step } });
 
 export default {
-  title: 'Backgrounds/Fluted Glass',
+  title: 'Effects/Surfaces/Fluted Glass',
   component: 'lw-fluted-glass',
   parameters: { layout: 'fullscreen' },
   // `image` picks one of the demo pictures; everything else is an attribute.

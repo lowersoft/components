@@ -16,7 +16,7 @@ const ROWS = JSON.stringify([
 ]);
 
 export default {
-  title: 'Comparisons/Features Matrix',
+  title: 'Sections/Comparisons/Features Matrix',
   component: 'lw-features-matrix',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-features-matrix ${attributes(args)}></lw-features-matrix>`,

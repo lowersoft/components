@@ -12,7 +12,7 @@ const ROWS = JSON.stringify([
 ]);
 
 export default {
-  title: 'Comparisons/Benchmark Matrix',
+  title: 'Sections/Comparisons/Benchmark Matrix',
   component: 'lw-benchmark-matrix',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-benchmark-matrix ${attributes(args)}></lw-benchmark-matrix>`,

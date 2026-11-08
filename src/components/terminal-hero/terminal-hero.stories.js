@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Heroes/Terminal Hero',
+  title: 'Sections/Heroes/Terminal Hero',
   component: 'lw-terminal-hero',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-terminal-hero ${attributes(args)}></lw-terminal-hero>`,

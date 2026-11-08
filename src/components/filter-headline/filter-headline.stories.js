@@ -33,7 +33,7 @@ const card = (post) => `<li data-category="${post.category}" style="display: gri
 <span style="font-size: var(--lw-text-xs); color: var(--lw-color-muted-foreground)">${post.read} min read</span></li>`;
 
 export default {
-  title: 'Headline/Filter Headline',
+  title: 'Sections/Headlines/Filter Headline',
   component: 'lw-filter-headline',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="max-width: 72rem; margin: 4rem auto"><lw-filter-headline ${attributes(args)}></lw-filter-headline></div>`,

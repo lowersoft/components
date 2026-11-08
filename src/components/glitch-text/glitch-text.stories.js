@@ -4,7 +4,7 @@ import './index.js';
 const FONT = 'font: 700 3.5rem/1.1 system-ui; letter-spacing: -0.02em';
 
 export default {
-  title: 'Texts/Glitch Text',
+  title: 'Effects/Text/Accents/Glitch Text',
   component: 'lw-glitch-text',
   render: (args) => `<lw-glitch-text ${attributes(args)} style="${FONT}">Signal lost</lw-glitch-text>`,
   argTypes: {

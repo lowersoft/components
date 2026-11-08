@@ -106,7 +106,7 @@ const settings = () => {
 };
 
 export default {
-  title: 'Navigation/Stack Panel',
+  title: 'Navigation/Menus/Stack Panel',
   component: 'lw-stack-panel',
   render: settings,
 };

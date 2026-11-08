@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Pricings/Three Tier Pricing',
+  title: 'Sections/Pricing/Plans/Three Tier Pricing',
   component: 'lw-three-tier-pricing',
   parameters: { layout: 'padded' },
   argTypes: { billing: { control: 'inline-radio', options: ['monthly', 'yearly'] } },

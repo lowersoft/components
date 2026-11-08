@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Phone Input',
+  title: 'Controls/Fields/Phone Input',
   component: 'lw-phone-input',
   render: (args) => `<lw-phone-input ${attributes(args)}></lw-phone-input>`,
   argTypes: {

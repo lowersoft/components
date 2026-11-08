@@ -11,7 +11,7 @@ const SHARE = JSON.stringify([
 const stage = (markup) => `<div style="display: flex; justify-content: center; min-height: 24rem; padding-top: 3rem">${markup}</div>`;
 
 export default {
-  title: 'Navigation/Gooey Dropdown',
+  title: 'Navigation/Menus/Gooey Dropdown',
   component: 'lw-gooey-dropdown',
   parameters: { layout: 'fullscreen' },
   render: (args) => stage(`<lw-gooey-dropdown ${attributes(args)}></lw-gooey-dropdown>`),

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Media/Photo Straighten',
+  title: 'Media/Editors/Photo Straighten',
   component: 'lw-photo-straighten',
   render: (args) => `<lw-photo-straighten ${attributes(args)}></lw-photo-straighten>`,
   args: { tilt: 4.2 },

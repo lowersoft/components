@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Action Search Bar/Command Palette',
+  title: 'Navigation/Search & Commands/Command Palette',
   component: 'lw-command-palette',
   render: (args) => `<lw-command-palette ${attributes(args)}></lw-command-palette>`,
   args: {},

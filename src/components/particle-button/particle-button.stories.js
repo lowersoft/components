@@ -4,7 +4,7 @@ import './index.js';
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default {
-  title: 'Buttons/Particle',
+  title: 'Controls/Buttons/Styled/Particle',
   component: 'lw-particle-button',
   render: ({ label, outcome, ...args }) => {
     const template = document.createElement('template');

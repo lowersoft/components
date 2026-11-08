@@ -9,7 +9,7 @@ const PEOPLE = [
 ];
 
 export default {
-  title: 'Buttons/Share',
+  title: 'Controls/Buttons/Social/Share',
   component: 'lw-share-button',
   parameters: { layout: 'padded' },
   render: (args) => {

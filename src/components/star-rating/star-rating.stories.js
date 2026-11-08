@@ -4,7 +4,7 @@ import './index.js';
 const TONES = ['gold', 'silver', 'ember', 'rose', 'violet'];
 
 export default {
-  title: 'Inputs/Star Rating',
+  title: 'Controls/Choices/Star Rating',
   component: 'lw-star-rating',
   parameters: { layout: 'centered' },
   render: (args) => `<lw-star-rating ${attributes(args)}></lw-star-rating>`,

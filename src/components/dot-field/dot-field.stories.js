@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Backgrounds/Dot Field',
+  title: 'Effects/Backgrounds/Dot Field',
   component: 'lw-dot-field',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-dot-field ${attributes(args)}></lw-dot-field>`,

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Headline/Install Headline',
+  title: 'Sections/Headlines/Install Headline',
   component: 'lw-install-headline',
   parameters: { layout: 'padded' },
   argTypes: { method: { control: 'inline-radio', options: ['bun', 'npm', 'pnpm', 'agent'] } },

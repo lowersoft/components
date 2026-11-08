@@ -4,7 +4,7 @@ import './index.js';
 const VARIANTS = ['squeeze', 'pivot', 'arrow', 'stagger', 'duo', 'split', 'wipe', 'loop'];
 
 export default {
-  title: 'Buttons/Hamburger Menu',
+  title: 'Controls/Buttons/Toggles/Hamburger Menu',
   component: 'lw-hamburger-menu',
   parameters: { layout: 'centered' },
   render: (args) => `<lw-hamburger-menu ${attributes(args)}></lw-hamburger-menu>`,

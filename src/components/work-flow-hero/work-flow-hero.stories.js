@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Heroes/Work Flow Hero',
+  title: 'Sections/Heroes/Work Flow Hero',
   component: 'lw-work-flow-hero',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-work-flow-hero ${attributes(args)}></lw-work-flow-hero>`,

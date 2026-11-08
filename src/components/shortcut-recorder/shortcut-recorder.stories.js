@@ -1,7 +1,7 @@
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Shortcut Recorder',
+  title: 'Controls/Fields/Shortcut Recorder',
   component: 'lw-shortcut-recorder',
 };
 

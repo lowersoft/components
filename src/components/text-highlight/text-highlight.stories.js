@@ -5,7 +5,7 @@ import './index.js';
 const paragraph = (inner) => `<p style="max-width: 34rem; margin: 0; font: 1.25rem/1.7 var(--lw-font-sans); color: var(--lw-color-foreground)">${inner}</p>`;
 
 export default {
-  title: 'Texts/Text Highlight',
+  title: 'Effects/Text/Accents/Text Highlight',
   component: 'lw-text-highlight',
   parameters: { layout: 'centered' },
   render: (args) => paragraph(`Most interfaces feel unfinished because of the details. <lw-text-highlight ${attributes(args)}>Motion, focus and empty states are where polish actually lives</lw-text-highlight>, long after the layout is done.`),

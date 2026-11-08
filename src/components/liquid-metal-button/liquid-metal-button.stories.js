@@ -6,7 +6,7 @@ import './index.js';
 const row = (markup) => `<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem">${markup}</div>`;
 
 export default {
-  title: 'Buttons/Liquid Metal',
+  title: 'Controls/Buttons/Styled/Liquid Metal',
   component: 'lw-liquid-metal-button',
   render: (args) => row(`<lw-liquid-metal-button ${attributes(args)}>Get started</lw-liquid-metal-button><lw-liquid-metal-button ${attributes({ ...args, shape: 'circle' })} aria-label="Ask the assistant">${strokeIcon(wandSparkles, 20, 1.75)}</lw-liquid-metal-button>`),
   argTypes: {

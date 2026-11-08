@@ -3,7 +3,7 @@ import '../button/index.js';
 import './index.js';
 
 export default {
-  title: 'Texts/Canvas Text',
+  title: 'Effects/Text/Interactive/Canvas Text',
   component: 'lw-canvas-text',
   parameters: { layout: 'padded' },
   render: (args) => `<lw-canvas-text ${attributes(args)} style="max-width: 48rem; margin: 4rem auto"></lw-canvas-text>`,

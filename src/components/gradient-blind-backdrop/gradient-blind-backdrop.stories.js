@@ -17,7 +17,7 @@ const hero = (light) => `<div style="display: grid; place-content: start center;
 const range = (name, min, max, step = 0.01) => ({ name, control: { type: 'range', min, max, step } });
 
 export default {
-  title: 'Backgrounds/Gradient Blind Backdrop',
+  title: 'Effects/Backgrounds/Gradient Blind Backdrop',
   component: 'lw-gradient-blind-backdrop',
   parameters: { layout: 'fullscreen' },
   // `palette` and `copy` drive the demo; everything else is an attribute.

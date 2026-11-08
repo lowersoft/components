@@ -9,7 +9,7 @@ const HIRING = JSON.stringify([
 ]);
 
 export default {
-  title: 'How It Works/Pinned Note Steps',
+  title: 'Sections/How It Works/Pinned Note Steps',
   component: 'lw-pinned-note-steps',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="margin: 3rem auto"><lw-pinned-note-steps ${attributes(args)}></lw-pinned-note-steps></div>`,

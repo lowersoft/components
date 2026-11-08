@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Footers/Pixel Footer',
+  title: 'Sections/Footers/Pixel Footer',
   component: 'lw-pixel-footer',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end"><lw-pixel-footer ${attributes(args)}></lw-pixel-footer></div>`,

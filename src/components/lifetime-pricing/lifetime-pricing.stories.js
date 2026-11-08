@@ -8,7 +8,7 @@ const FONTS = JSON.stringify([
 ]);
 
 export default {
-  title: 'Pricings/Lifetime Pricing',
+  title: 'Sections/Pricing/Plans/Lifetime Pricing',
   component: 'lw-lifetime-pricing',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="max-width: 76rem; margin: 3rem auto"><lw-lifetime-pricing ${attributes(args)}></lw-lifetime-pricing></div>`,

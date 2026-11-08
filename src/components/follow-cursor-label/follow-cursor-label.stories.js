@@ -18,7 +18,7 @@ const content = `<div style="display: grid; gap: 1.75rem; max-width: 40rem; font
 </div>`;
 
 export default {
-  title: 'Texts/Follow Cursor Label',
+  title: 'Effects/Pointer/Follow Cursor Label',
   component: 'lw-follow-cursor-label',
   render: (args) => `<lw-follow-cursor-label ${attributes(args)}>${content}</lw-follow-cursor-label>`,
   argTypes: { color: { control: 'color' }, ink: { control: 'color' } },

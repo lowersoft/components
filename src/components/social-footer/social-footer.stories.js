@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Footers/Social Footer',
+  title: 'Sections/Footers/Social Footer',
   component: 'lw-social-footer',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end"><lw-social-footer ${attributes(args)}></lw-social-footer></div>`,

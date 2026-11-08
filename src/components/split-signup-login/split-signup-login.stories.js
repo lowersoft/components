@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Login/Split Signup Login',
+  title: 'Flows/Auth/Split Signup Login',
   component: 'lw-split-signup-login',
   render: (args) => `<lw-split-signup-login ${attributes(args)}></lw-split-signup-login>`,
   args: { brand: 'LowerSoft' },

@@ -6,7 +6,7 @@ const content = `<p style="margin: 0; font-size: 0.6875rem; font-weight: 600; le
 <p style="margin: 0.5rem 0 0; font-size: 0.875rem; line-height: 1.5; opacity: 0.86">An SVG displacement map warps the color behind this card, so the glass reads as glass while the blobs move.</p>`;
 
 export default {
-  title: 'Cards/Refraction Glass Container',
+  title: 'Effects/Surfaces/Refraction Glass Container',
   component: 'lw-refraction-glass-container',
   render: (args) => `<lw-refraction-glass-container ${attributes(args)}>${content}</lw-refraction-glass-container>`,
   argTypes: {

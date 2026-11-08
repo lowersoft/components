@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Price Range',
+  title: 'Controls/Sliders & Dials/Price Range',
   component: 'lw-price-range',
   render: (args) => `<lw-price-range ${attributes(args)}></lw-price-range>`,
   args: { min: 0, max: 1000, step: 10, from: 120, to: 480, currency: 'USD', disabled: false },

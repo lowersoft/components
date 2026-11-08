@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Buttons/Theme Toggle',
+  title: 'Controls/Buttons/Toggles/Theme Toggle',
   component: 'lw-theme-toggle-button',
   render: (args) => `<lw-theme-toggle-button ${attributes(args)}></lw-theme-toggle-button>`,
   argTypes: {

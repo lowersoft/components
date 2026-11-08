@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Bento Grid',
+  title: 'Data Display/Cards/Bento Grid',
   component: 'lw-bento-grid',
   parameters: { layout: 'padded' },
   render: (args) => `<lw-bento-grid ${attributes(args)}></lw-bento-grid>`,

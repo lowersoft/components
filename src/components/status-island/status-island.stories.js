@@ -80,7 +80,7 @@ const playground = () => {
 };
 
 export default {
-  title: 'Navigation/Status Island',
+  title: 'Feedback/Status & Progress/Status Island',
   component: 'lw-status-island',
   render: playground,
 };

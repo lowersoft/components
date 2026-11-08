@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'File Tree/File Tree',
+  title: 'Data Display/Lists & Boards/File Tree',
   component: 'lw-file-tree',
   render: (args) => `<lw-file-tree ${attributes(args)}></lw-file-tree>`,
   args: { selected: 'src/alloc/arena.c' },

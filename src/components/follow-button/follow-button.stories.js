@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Buttons/Follow',
+  title: 'Controls/Buttons/Social/Follow',
   component: 'lw-follow-button',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="height: 14rem; padding: 2rem"><lw-follow-button ${attributes(args)}></lw-follow-button></div>`,

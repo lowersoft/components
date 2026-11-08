@@ -1,7 +1,7 @@
 import './index.js';
 
 export default {
-  title: 'Inputs/Signature Pad',
+  title: 'Controls/Upload & Signature/Signature Pad',
   component: 'lw-signature-pad',
 };
 

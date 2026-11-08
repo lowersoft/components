@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Team Selector',
+  title: 'Controls/Fields/Team Selector',
   component: 'lw-team-selector',
   render: (args) => `<lw-team-selector ${attributes(args)}></lw-team-selector>`,
   argTypes: {

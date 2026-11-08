@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Toolbars/Canvas Toolbar',
+  title: 'Navigation/Toolbars/Canvas Toolbar',
   component: 'lw-canvas-toolbar',
   parameters: { layout: 'padded' },
   render: (args) => `<lw-canvas-toolbar ${attributes(args)}></lw-canvas-toolbar>`,

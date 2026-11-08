@@ -5,9 +5,31 @@ export default {
   parameters: {
     layout: 'centered',
     controls: { expanded: true },
-    // Grouped by category; the base component leads its group, the rest follow alphabetically.
+    // Root, group and subgroup order; see "Where a component goes" in
+    // CONTRIBUTING.md. Components sort alphabetically inside their group,
+    // except that the plain building blocks lead. Storybook reads this
+    // statically, so it stays a literal here.
     options: {
-      storySort: { method: 'alphabetical', order: ['Buttons', ['Base', '*'], 'Texts', 'Inputs', ['Input', ['Text Input', 'Textarea', 'Floating Label', 'Number Input', 'Checkbox', 'Radio Group', 'Switch', 'Range', 'Password Input', 'Address Input', 'Mention Input', 'Verification Code', 'Price Range', 'Shortcut Recorder', 'Natural Date Input', 'Swatch Fan', 'Period Picker', 'Date Range Brush', '*'], '*'], 'Navigation', ['Morphic Navbar', 'Toolbar', 'Smooth Tab', 'Profile Dropdown', 'Action Search Bar', 'Scroll Index', 'Status Island', 'Stack Panel', 'Gooey Navigation Menu', 'Gooey Dropdown', 'Gooey Dock', '*'], 'Cards', ['Card Flip', 'Card Stack', 'Bento Grid', 'Currency Transfer', 'Carousel Cards', 'Notification Stack', 'Liquid Gauge', 'Activity Terrain', 'Receipt Printer', 'Metric Card', 'Uptime Card', 'Spending Ring', 'Lightbox Grid', 'Audio Player Card', 'Onboarding Checklist', 'Deployment Card', 'Order Summary Card', 'Workspace Switcher', 'Poll Card', 'Profile Card', 'Contact Card', 'Job Listing Card', 'Order Tracker', 'Refraction Glass Container', 'Dimensional Book Cover', 'Glowing Border', '*'], 'Media', ['Clip Trimmer', 'Synced Transcript', 'Focal Point Picker', 'Photo Straighten', 'Stack Reveal', 'Before After Card', 'Perspective Marquee', 'Orbital Image Carousel', 'Infinite Marquee', 'Video Player', '*'], 'Backgrounds', ['Dot Field', 'Background Paths', 'Shape Hero', 'Flow Field', 'Topo Background', 'Cursor Trail', 'SVG Fire', 'Fluted Glass', 'Gradient Blind Backdrop', 'Edge Glow', '*'], 'Heroes', ['Globe Hero', 'Product Stage Hero', 'Work Flow Hero', 'Chart Hero', 'Terminal Hero', 'Kinetic Type Hero', 'Radial Glow Hero', 'Cloud Hero', 'Eclipse Hero', '*'], 'Login', ['Magic Link Login', 'Account Chooser Login', 'Split Signup Login', 'Invite Signup', '*'], 'FAQs', ['Minimal FAQ', 'Help Center FAQ', 'Tabbed FAQ', 'Support Thread FAQ', '*'], 'Footers', ['Newsletter Footer', 'Sitemap Footer', 'Status Footer', 'Social Footer', 'Editorial Footer', 'Signature Footer', 'Spotlight Footer', 'Pixel Footer', '*'], 'How It Works', ['Zigzag Steps', 'Taped Note Steps', 'Curve Steps', 'Sticky Scroll Steps', 'Pinned Note Steps', '*'], 'Pricings', ['Layer Stack Pricing', 'Upgrade Summary', 'Three Tier Pricing', 'Ticket Pricing', 'Comparison Table Pricing', 'Credit Pack Pricing', 'Single Plan Pricing', 'Agency Services Pricing', 'Cloud Pricing', 'Usage Receipt Pricing', 'Soft Gradient Pricing', 'Credit Plan Pricing', 'Flat Rate Pricing', 'Plan Table Pricing', 'Nested Feature Pricing', 'Lifetime Pricing', '*'], 'Comparisons', ['Features Matrix', 'Pricing Matrix', 'Leader Graph', 'Compare Plans', 'Benchmark Matrix', '*'], 'Testimonials', ['Testimonial Grid', 'Testimonial Spotlight', 'Annotated Quote', '*'], 'Headline', ['Stats Headline', 'Install Headline', 'Inline Chips Headline', 'Filter Headline', '*'], 'Banners', ['Trial Status Banner', 'Announcement Banner', 'Sale Strip Banner', 'Incident Banner', 'Cookie Consent Banner', '*'], 'Forms', ['Support Composer', 'Booking Picker', 'Create Project Form', 'Feedback Composer', 'Edit Profile Form', 'Stepper Form', '*'], 'Modals', ['Upgrade Dialog', 'Settings Dialog', 'Two Factor Dialog', 'New Project Dialog', 'Shortcuts Dialog', 'Feedback Dialog', 'Newsletter Dialog', 'Session Timeout Dialog', '*'], 'Toolbars', ['Filter Toolbar', 'View Toggle Toolbar', 'Editor Toolbar', 'Format Toolbar', 'Canvas Toolbar', 'Gooey Toolbar', '*'], 'Animated List', ['Activity Feed', 'Swipe Actions List', 'Sortable List', 'Team Member List', '*'], 'Action Search Bar', ['Command Palette', 'Filter Search Bar', 'Docs Search', 'Slash Command Menu', 'Gooey Search', '*'], 'Action Tool Bar', ['Action Toolbar', '*'], 'Kanban Board', ['*'], 'File Tree', ['*']] },
+      storySort: {
+        method: 'alphabetical',
+        order: [
+          'Controls', [
+            'Buttons', ['Base', 'Actions', 'Social', 'Toggles', 'Styled'],
+            'Fields', ['Text Input', 'Textarea', 'Floating Label', 'Number Input', 'Password Input', '*'],
+            'Choices', ['Checkbox', 'Radio Group', 'Switch', '*'],
+            'Sliders & Dials', ['Range', '*'],
+            'Pickers',
+            'Upload & Signature',
+          ],
+          'Navigation', ['Bars & Tabs', 'Menus', 'Search & Commands', 'Toolbars'],
+          'Data Display', ['Cards', 'Charts & Metrics', 'Commerce', 'Lists & Boards'],
+          'Media', ['Players', 'Editors', 'Galleries', 'Carousels & Marquees'],
+          'Feedback', ['Banners', 'Status & Progress'],
+          'Flows', ['Auth', 'Dialogs', 'Forms'],
+          'Sections', ['Heroes', 'Headlines', 'How It Works', 'Pricing', ['Plans', 'Tables', 'Usage & Checkout'], 'Comparisons', 'Testimonials', 'FAQs', 'Footers'],
+          'Effects', ['Text', ['Cycling', 'Interactive', 'Accents'], 'Backgrounds', 'Surfaces', 'Pointer'],
+        ],
+      },
     },
   },
   globalTypes: {

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Toolbars/Editor Toolbar',
+  title: 'Navigation/Toolbars/Editor Toolbar',
   component: 'lw-editor-toolbar',
   parameters: { layout: 'fullscreen' },
   // It fills its container: here, the whole viewport.

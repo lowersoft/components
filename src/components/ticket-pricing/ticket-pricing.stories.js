@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Pricings/Ticket Pricing',
+  title: 'Sections/Pricing/Plans/Ticket Pricing',
   component: 'lw-ticket-pricing',
   parameters: { layout: 'padded' },
   argTypes: { billing: { control: 'inline-radio', options: ['monthly', 'yearly'] } },

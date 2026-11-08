@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Backgrounds/Background Paths',
+  title: 'Effects/Backgrounds/Background Paths',
   component: 'lw-background-paths',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-background-paths ${attributes(args)}></lw-background-paths>`,

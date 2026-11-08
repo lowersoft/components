@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'FAQs/Support Thread FAQ',
+  title: 'Sections/FAQs/Support Thread FAQ',
   component: 'lw-support-thread-faq',
   render: (args) => `<lw-support-thread-faq ${attributes(args)}></lw-support-thread-faq>`,
   args: { agent: 'Mia Kowalski', company: 'LowerSoft' },

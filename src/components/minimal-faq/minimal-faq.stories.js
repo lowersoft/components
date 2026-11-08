@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'FAQs/Minimal FAQ',
+  title: 'Sections/FAQs/Minimal FAQ',
   component: 'lw-minimal-faq',
   parameters: { layout: 'padded' },
   render: (args) => `<lw-minimal-faq ${attributes(args)}></lw-minimal-faq>`,

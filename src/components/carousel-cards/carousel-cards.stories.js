@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Carousel Cards',
+  title: 'Data Display/Cards/Carousel Cards',
   component: 'lw-carousel-cards',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-carousel-cards ${attributes(args)}></lw-carousel-cards>`,

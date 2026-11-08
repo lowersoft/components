@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Buttons/Bell',
+  title: 'Controls/Buttons/Social/Bell',
   component: 'lw-bell-button',
   render: (args) => `<lw-bell-button ${attributes(args)}></lw-bell-button>`,
   argTypes: {

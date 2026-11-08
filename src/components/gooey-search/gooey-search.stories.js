@@ -4,7 +4,7 @@ import './index.js';
 const stage = (markup) => `<div style="display: flex; justify-content: center; min-height: 34rem; padding-top: 2.5rem">${markup}</div>`;
 
 export default {
-  title: 'Action Search Bar/Gooey Search',
+  title: 'Navigation/Search & Commands/Gooey Search',
   component: 'lw-gooey-search',
   parameters: { layout: 'fullscreen' },
   render: (args) => stage(`<lw-gooey-search ${attributes(args)}></lw-gooey-search>`),

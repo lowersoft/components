@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Password Input',
+  title: 'Controls/Fields/Password Input',
   component: 'lw-password-input',
   render: (args) => `<lw-password-input ${attributes(args)}></lw-password-input>`,
   args: { label: 'Password', minlength: 8, disabled: false },

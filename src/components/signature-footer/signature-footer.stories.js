@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Footers/Signature Footer',
+  title: 'Sections/Footers/Signature Footer',
   component: 'lw-signature-footer',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end"><lw-signature-footer ${attributes(args)}></lw-signature-footer></div>`,

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Backgrounds/Topo Background',
+  title: 'Effects/Backgrounds/Topo Background',
   component: 'lw-topo-background',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-topo-background ${attributes(args)}></lw-topo-background>`,

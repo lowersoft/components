@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Avatar Picker',
+  title: 'Controls/Pickers/Avatar Picker',
   component: 'lw-avatar-picker',
   render: (args) => `<lw-avatar-picker ${attributes(args)}></lw-avatar-picker>`,
   args: { 'display-name': 'Robin Vale', variant: 0 },

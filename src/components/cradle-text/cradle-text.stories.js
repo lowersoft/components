@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Texts/Cradle Text',
+  title: 'Effects/Text/Interactive/Cradle Text',
   component: 'lw-cradle-text',
   render: (args) =>
     `<lw-cradle-text ${attributes(args)} style="font: 600 4.5rem/1 system-ui; letter-spacing: -0.025em">Momentum</lw-cradle-text>`,

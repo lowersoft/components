@@ -8,7 +8,7 @@ const THREE = JSON.stringify([
 ]);
 
 export default {
-  title: 'Pricings/Nested Feature Pricing',
+  title: 'Sections/Pricing/Plans/Nested Feature Pricing',
   component: 'lw-nested-feature-pricing',
   parameters: { layout: 'fullscreen' },
   argTypes: { billing: { control: 'inline-radio', options: ['monthly', 'yearly'] } },

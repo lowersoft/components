@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Contact Card',
+  title: 'Data Display/Cards/Contact Card',
   component: 'lw-contact-card',
   render: (args) => `<lw-contact-card ${attributes(args)}></lw-contact-card>`,
   args: { name: 'Lena Fischer', zone: 'Europe/Berlin' },

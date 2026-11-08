@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Water Progress Bar',
+  title: 'Feedback/Status & Progress/Water Progress Bar',
   component: 'lw-water-progress-bar',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="max-width: 35rem; margin: 3rem auto"><lw-water-progress-bar ${attributes(args)}></lw-water-progress-bar></div>`,

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Action Search Bar/Docs Search',
+  title: 'Navigation/Search & Commands/Docs Search',
   component: 'lw-docs-search',
   render: (args) => `<lw-docs-search ${attributes(args)}></lw-docs-search>`,
   args: { value: 'rotate api key' },

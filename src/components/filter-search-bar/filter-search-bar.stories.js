@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Action Search Bar/Filter Search Bar',
+  title: 'Navigation/Search & Commands/Filter Search Bar',
   component: 'lw-filter-search-bar',
   render: (args) => `<lw-filter-search-bar ${attributes(args)}></lw-filter-search-bar>`,
   args: {},

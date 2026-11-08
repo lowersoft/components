@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Forms/Booking Picker',
+  title: 'Controls/Pickers/Booking Picker',
   component: 'lw-booking-picker',
   render: (args) => `<lw-booking-picker ${attributes(args)}></lw-booking-picker>`,
   args: { 'host-name': 'Maya Lindqvist', duration: 30 },

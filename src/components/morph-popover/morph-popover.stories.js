@@ -4,7 +4,7 @@ import './index.js';
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default {
-  title: 'Buttons/Morph Popover',
+  title: 'Controls/Buttons/Actions/Morph Popover',
   component: 'lw-morph-popover',
   parameters: { layout: 'padded' },
   render: (args) => {

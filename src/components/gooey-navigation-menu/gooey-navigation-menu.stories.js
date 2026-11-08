@@ -12,7 +12,7 @@ const ITEMS = [
 const range = (name, min, max, step = 1) => ({ name, control: { type: 'range', min, max, step } });
 
 export default {
-  title: 'Navigation/Gooey Navigation Menu',
+  title: 'Navigation/Menus/Gooey Navigation Menu',
   component: 'lw-gooey-navigation-menu',
   // `count` picks how many demo items show; everything else is an attribute.
   render: ({ count, ...args }) => `<lw-gooey-navigation-menu ${attributes({ ...args, items: JSON.stringify(ITEMS.slice(0, count)) })}></lw-gooey-navigation-menu>`,

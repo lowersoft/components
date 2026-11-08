@@ -26,7 +26,7 @@ const FILM = {
 const frame = (inner, width = '60rem') => `<div style="width: min(${width}, 100%); margin-inline: auto">${inner}</div>`;
 
 export default {
-  title: 'Media/Video Player',
+  title: 'Media/Players/Video Player',
   component: 'lw-video-player',
   parameters: { layout: 'padded' },
   render: (args) => frame(`<lw-video-player ${attributes(args)}></lw-video-player>`),

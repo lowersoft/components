@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'FAQs/Tabbed FAQ',
+  title: 'Sections/FAQs/Tabbed FAQ',
   component: 'lw-tabbed-faq',
   render: (args) => `<lw-tabbed-faq ${attributes(args)}></lw-tabbed-faq>`,
   argTypes: { tab: { control: 'inline-radio', options: ['setup', 'using', 'license'] } },

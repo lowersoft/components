@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Heroes/Kinetic Type Hero',
+  title: 'Sections/Heroes/Kinetic Type Hero',
   component: 'lw-kinetic-type-hero',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-kinetic-type-hero ${attributes(args)}></lw-kinetic-type-hero>`,

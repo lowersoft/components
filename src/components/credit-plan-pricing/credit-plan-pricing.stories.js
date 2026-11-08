@@ -9,7 +9,7 @@ const IMAGES = JSON.stringify([
 ]);
 
 export default {
-  title: 'Pricings/Credit Plan Pricing',
+  title: 'Sections/Pricing/Plans/Credit Plan Pricing',
   component: 'lw-credit-plan-pricing',
   parameters: { layout: 'padded' },
   argTypes: { accent: { control: 'color' } },

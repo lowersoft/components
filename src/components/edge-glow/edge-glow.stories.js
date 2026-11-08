@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Backgrounds/Edge Glow',
+  title: 'Effects/Backgrounds/Edge Glow',
   component: 'lw-edge-glow',
   parameters: { layout: 'padded' },
   render: (args) => `<lw-edge-glow ${attributes(args)} style="max-width: 44rem; margin: 2rem auto"></lw-edge-glow>`,

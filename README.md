@@ -148,7 +148,7 @@ SCSS users can reuse the token functions and mixins:
 | `npm install` | Install the development dependencies |
 | `npm run storybook` | Component docs and playground; each story's **Usage** tab has its markup and API |
 | `npm run build` | Library build into `dist/` |
-| `npm run new <name> [Category]` | Scaffold a new component |
+| `npm run new <name> <Category>` | Scaffold a new component in a Storybook category |
 
 Something broke? Delete `node_modules/` and `dist/`, run `npm install` again and retry. Still stuck? [Open an issue](https://github.com/lowersoft/components/issues).
 
@@ -219,7 +219,7 @@ default theme ──install──▶ :root { --lw-* } ──read──▶ compon
 | **`npm run new`** | Scaffolds a component (and its story) so every component starts with the same structure. |
 
 #### 2.7 Extending it
-Want a new component? Run `npm run new <name> [Category]`, fill in the generated files and it becomes its own entry point, the same way every existing component is done: no extra libraries, one import from your app. See [CONTRIBUTING.md](CONTRIBUTING.md) and [ROADMAP.md](ROADMAP.md).
+Want a new component? Run `npm run new <name> <Category>`, fill in the generated files and it becomes its own entry point, the same way every existing component is done: no extra libraries, one import from your app. See [CONTRIBUTING.md](CONTRIBUTING.md) and [ROADMAP.md](ROADMAP.md).
 
 ### Contact
 Not sure where to start? Pick the row that matches your situation, so your message reaches the right people on the first try.

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Headline/Inline Chips Headline',
+  title: 'Sections/Headlines/Inline Chips Headline',
   component: 'lw-inline-chips-headline',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="margin: 4rem auto"><lw-inline-chips-headline ${attributes(args)}></lw-inline-chips-headline></div>`,

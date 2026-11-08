@@ -57,7 +57,7 @@ const PANELS = `
   </section>`;
 
 export default {
-  title: 'Navigation/Smooth Tab',
+  title: 'Navigation/Bars & Tabs/Smooth Tab',
   component: 'lw-smooth-tab',
   render: (args) => `${STYLE}<lw-smooth-tab class="demo" ${attributes(args)}>${PANELS}</lw-smooth-tab>`,
   args: { selected: 0 },

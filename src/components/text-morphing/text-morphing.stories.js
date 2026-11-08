@@ -4,7 +4,7 @@ import './index.js';
 const WORDS = JSON.stringify(['LowerSoft', 'components', 'that', 'feel', 'alive']);
 
 export default {
-  title: 'Texts/Text Morphing',
+  title: 'Effects/Text/Cycling/Text Morphing',
   component: 'lw-text-morphing',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="max-width: 56rem; margin: 6rem auto"><lw-text-morphing ${attributes(args)}></lw-text-morphing></div>`,

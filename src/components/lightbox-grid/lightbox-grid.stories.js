@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Lightbox Grid',
+  title: 'Media/Galleries/Lightbox Grid',
   component: 'lw-lightbox-grid',
   render: (args) => `<lw-lightbox-grid ${attributes(args)}></lw-lightbox-grid>`,
   args: {  },

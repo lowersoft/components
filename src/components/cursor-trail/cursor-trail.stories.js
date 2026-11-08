@@ -7,7 +7,7 @@ const stage = `<div style="display: grid; min-height: 30rem; place-items: center
 </div>`;
 
 export default {
-  title: 'Backgrounds/Cursor Trail',
+  title: 'Effects/Pointer/Cursor Trail',
   component: 'lw-cursor-trail',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-cursor-trail ${attributes(args)}>${stage}</lw-cursor-trail>`,

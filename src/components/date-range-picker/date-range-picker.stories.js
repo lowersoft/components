@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Date Range Picker',
+  title: 'Controls/Pickers/Date Range Picker',
   component: 'lw-date-range-picker',
   render: (args) => `<lw-date-range-picker ${attributes(args)}></lw-date-range-picker>`,
   argTypes: {

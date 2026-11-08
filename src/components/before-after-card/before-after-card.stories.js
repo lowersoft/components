@@ -6,7 +6,7 @@ const frame = (markup) => `<div style="max-width: 44rem; margin: 2rem auto">${ma
 const HILLS = 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1600&h=1067&fit=crop&auto=format&q=80';
 
 export default {
-  title: 'Media/Before After Card',
+  title: 'Media/Galleries/Before After Card',
   component: 'lw-before-after-card',
   parameters: { layout: 'padded' },
   render: (args) => frame(`<lw-before-after-card ${attributes(args)}></lw-before-after-card>`),

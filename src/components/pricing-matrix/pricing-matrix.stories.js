@@ -12,7 +12,7 @@ const TWO_GROUPS = JSON.stringify([
 ]);
 
 export default {
-  title: 'Comparisons/Pricing Matrix',
+  title: 'Sections/Pricing/Tables/Pricing Matrix',
   component: 'lw-pricing-matrix',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-pricing-matrix ${attributes(args)}></lw-pricing-matrix>`,

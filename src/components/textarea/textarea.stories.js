@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Textarea',
+  title: 'Controls/Fields/Textarea',
   component: 'lw-textarea',
   render: (args) => `<lw-textarea ${attributes(args)}></lw-textarea>`,
   argTypes: {

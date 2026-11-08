@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Navigation/Profile Dropdown',
+  title: 'Navigation/Menus/Profile Dropdown',
   component: 'lw-profile-dropdown',
   render: (args) => `<div style="display: flex; justify-content: flex-end; width: 320px; height: 460px"><lw-profile-dropdown ${attributes(args)}></lw-profile-dropdown></div>`,
   argTypes: {

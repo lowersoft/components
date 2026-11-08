@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Receipt Printer',
+  title: 'Data Display/Commerce/Receipt Printer',
   component: 'lw-receipt-printer',
   render: (args) => `<lw-receipt-printer ${attributes(args)}></lw-receipt-printer>`,
   args: { merchant: 'LowerSoft Store', order: '#4182', tax: 0.08, currency: '$', manual: false },

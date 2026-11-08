@@ -7,7 +7,7 @@ const PLANS = `
   <lw-radio value="enterprise" description="Talk to us." disabled>Enterprise</lw-radio>`;
 
 export default {
-  title: 'Inputs/Input/Radio Group',
+  title: 'Controls/Choices/Radio Group',
   component: 'lw-radio-group',
   render: (args) => `<lw-radio-group ${attributes(args)}>${PLANS}</lw-radio-group>`,
   argTypes: {

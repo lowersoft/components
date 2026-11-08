@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Login/Invite Signup',
+  title: 'Flows/Auth/Invite Signup',
   component: 'lw-invite-signup',
   render: (args) => `<lw-invite-signup ${attributes(args)}></lw-invite-signup>`,
   args: {},

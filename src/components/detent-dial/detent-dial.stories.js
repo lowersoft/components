@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Detent Dial',
+  title: 'Controls/Sliders & Dials/Detent Dial',
   component: 'lw-detent-dial',
   render: (args) => `<div style="padding: 1.5rem"><lw-detent-dial ${attributes(args)}></lw-detent-dial></div>`,
   argTypes: {

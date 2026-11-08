@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Heroes/Product Stage Hero',
+  title: 'Sections/Heroes/Product Stage Hero',
   component: 'lw-product-stage-hero',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-product-stage-hero ${attributes(args)}></lw-product-stage-hero>`,

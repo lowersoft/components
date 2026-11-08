@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Footers/Status Footer',
+  title: 'Sections/Footers/Status Footer',
   component: 'lw-status-footer',
   parameters: { layout: 'fullscreen' },
   argTypes: { status: { control: 'inline-radio', options: ['normal', 'degraded', 'outage'] } },

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Action Tool Bar/Action Toolbar',
+  title: 'Navigation/Toolbars/Action Toolbar',
   component: 'lw-action-toolbar',
   parameters: { layout: 'padded' },
   render: (args) => `<lw-action-toolbar ${attributes(args)}></lw-action-toolbar>`,

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Card Stack',
+  title: 'Data Display/Cards/Card Stack',
   component: 'lw-card-stack',
   render: (args) => `<lw-card-stack ${attributes(args)}></lw-card-stack>`,
   argTypes: { accent: { control: 'color' } },

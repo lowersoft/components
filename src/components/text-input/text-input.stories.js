@@ -7,7 +7,7 @@ const SEARCH_ICON = icon('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5
 const MAIL_ICON = icon('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>', 'start');
 
 export default {
-  title: 'Inputs/Input/Text Input',
+  title: 'Controls/Fields/Text Input',
   component: 'lw-text-input',
   render: (args) => `<lw-text-input ${attributes(args)}></lw-text-input>`,
   argTypes: {

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Backgrounds/Shape Hero',
+  title: 'Sections/Heroes/Shape Hero',
   component: 'lw-shape-hero',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-shape-hero ${attributes(args)}></lw-shape-hero>`,

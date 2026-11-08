@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Audio Player Card',
+  title: 'Media/Players/Audio Player Card',
   component: 'lw-audio-player-card',
   render: (args) => `<lw-audio-player-card ${attributes(args)}></lw-audio-player-card>`,
   args: { heading: 'Designing for motion' },

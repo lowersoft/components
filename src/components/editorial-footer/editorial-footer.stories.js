@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Footers/Editorial Footer',
+  title: 'Sections/Footers/Editorial Footer',
   component: 'lw-editorial-footer',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end"><lw-editorial-footer ${attributes(args)}></lw-editorial-footer></div>`,

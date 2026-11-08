@@ -17,7 +17,7 @@ const TIME_12 = `
   <select name="period" aria-label="AM or PM"><option value="am">AM</option><option value="pm">PM</option></select>`;
 
 export default {
-  title: 'Inputs/Wheel Picker',
+  title: 'Controls/Pickers/Wheel Picker',
   component: 'lw-wheel-picker',
 };
 

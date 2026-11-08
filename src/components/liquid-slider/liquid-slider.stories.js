@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Liquid Slider',
+  title: 'Controls/Sliders & Dials/Liquid Slider',
   component: 'lw-liquid-slider',
   render: (args) => `<lw-liquid-slider ${attributes(args)}></lw-liquid-slider>`,
   args: { label: 'Water today', value: 1250, min: 0, max: 2000, step: 50, unit: 'ml', disabled: false },

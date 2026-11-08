@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Heroes/Radial Glow Hero',
+  title: 'Sections/Heroes/Radial Glow Hero',
   component: 'lw-radial-glow-hero',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-radial-glow-hero ${attributes(args)}></lw-radial-glow-hero>`,

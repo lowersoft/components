@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Toolbars/Filter Toolbar',
+  title: 'Navigation/Toolbars/Filter Toolbar',
   component: 'lw-filter-toolbar',
   render: (args) => `<lw-filter-toolbar ${attributes(args)}></lw-filter-toolbar>`,
   args: {},

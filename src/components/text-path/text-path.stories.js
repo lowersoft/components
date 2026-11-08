@@ -4,7 +4,7 @@ import './index.js';
 const range = (name, min, max, step = 1) => ({ name, control: { type: 'range', min, max, step } });
 
 export default {
-  title: 'Texts/Text Path',
+  title: 'Effects/Text/Accents/Text Path',
   component: 'lw-text-path',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="max-width: 48rem; margin: 4rem auto"><lw-text-path ${attributes(args)}></lw-text-path></div>`,

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Texts/Text Ripple',
+  title: 'Effects/Text/Accents/Text Ripple',
   component: 'lw-text-ripple',
   parameters: { layout: 'centered' },
   render: (args) => `<lw-text-ripple ${attributes(args)} style="font-size: clamp(2.25rem, 7vw, 4.5rem); letter-spacing: -0.03em"></lw-text-ripple>`,

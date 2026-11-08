@@ -12,7 +12,7 @@ const OPTIONS = `
   <option value="rebase" data-description="The commits are replayed on top of main, one by one." data-pending="Rebasing" data-done="Rebased">Rebase and merge</option>`;
 
 export default {
-  title: 'Buttons/Split',
+  title: 'Controls/Buttons/Actions/Split',
   component: 'lw-split-button',
   parameters: { layout: 'padded' },
   render: (args) => {

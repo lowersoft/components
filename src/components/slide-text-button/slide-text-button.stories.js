@@ -5,7 +5,7 @@ const ARROW_ICON =
   '<svg slot="end" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
 
 export default {
-  title: 'Buttons/Slide Text',
+  title: 'Controls/Buttons/Styled/Slide Text',
   component: 'lw-slide-text-button',
   render: ({ label, ...args }) => `<lw-slide-text-button ${attributes(args)}>${label}</lw-slide-text-button>`,
   argTypes: {

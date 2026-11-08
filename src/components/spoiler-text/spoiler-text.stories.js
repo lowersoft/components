@@ -4,7 +4,7 @@ import './index.js';
 const TEXT = 'font: 15px/1.6 system-ui; max-width: 28rem';
 
 export default {
-  title: 'Texts/Spoiler Text',
+  title: 'Effects/Text/Interactive/Spoiler Text',
   component: 'lw-spoiler-text',
   render: (args) =>
     `<p style="${TEXT}">Same. When it turned out <lw-spoiler-text ${attributes(args)}>the lighthouse keeper had been writing the letters all along</lw-spoiler-text> I had to pause it for a minute.</p>`,

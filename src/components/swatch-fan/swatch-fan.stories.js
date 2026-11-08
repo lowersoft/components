@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Swatch Fan',
+  title: 'Controls/Pickers/Swatch Fan',
   component: 'lw-swatch-fan',
   render: (args) => `<lw-swatch-fan ${attributes(args)}></lw-swatch-fan>`,
   args: { open: false },

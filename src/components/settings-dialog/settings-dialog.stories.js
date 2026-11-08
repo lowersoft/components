@@ -2,7 +2,7 @@ import { modalStory } from '../../../.storybook/modal-story.js';
 import './index.js';
 
 export default {
-  title: 'Modals/Settings Dialog',
+  title: 'Flows/Dialogs/Settings Dialog',
   component: 'lw-settings-dialog',
   render: modalStory('lw-settings-dialog', 'Settings'),
   args: { open: true, section: 'account' },

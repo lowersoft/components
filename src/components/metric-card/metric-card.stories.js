@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Metric Card',
+  title: 'Data Display/Charts & Metrics/Metric Card',
   component: 'lw-metric-card',
   render: (args) => `<lw-metric-card ${attributes(args)}></lw-metric-card>`,
   argTypes: { format: { control: 'inline-radio', options: ['currency', 'number'] } },

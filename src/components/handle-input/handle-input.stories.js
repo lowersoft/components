@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Handle Input',
+  title: 'Controls/Fields/Handle Input',
   component: 'lw-handle-input',
   render: (args) => `<lw-handle-input ${attributes(args)}></lw-handle-input>`,
   args: { prefix: 'lowersoft.com/', label: 'Workspace URL', placeholder: 'your-team' },

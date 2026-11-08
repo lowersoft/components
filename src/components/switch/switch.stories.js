@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Switch',
+  title: 'Controls/Choices/Switch',
   component: 'lw-switch',
   render: ({ label, ...args }) => `<lw-switch ${attributes(args)}>${label}</lw-switch>`,
   argTypes: {

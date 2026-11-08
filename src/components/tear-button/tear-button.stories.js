@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Buttons/Tear',
+  title: 'Controls/Buttons/Styled/Tear',
   component: 'lw-tear-button',
   render: (args) => `<lw-tear-button ${attributes(args)}></lw-tear-button>`,
   argTypes: {

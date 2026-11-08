@@ -20,7 +20,7 @@ const slowFile = (bytesPerSecond) => {
 };
 
 export default {
-  title: 'Buttons/Download',
+  title: 'Controls/Buttons/Actions/Download',
   component: 'lw-download-button',
   render: ({ speed, fail, ...args }) => {
     const template = document.createElement('template');

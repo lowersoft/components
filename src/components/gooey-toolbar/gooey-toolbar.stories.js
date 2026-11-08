@@ -5,7 +5,7 @@ import './index.js';
 const stage = (markup) => `<div style="display: grid; min-height: 34rem; place-items: end center; padding-bottom: 3rem">${markup}</div>`;
 
 export default {
-  title: 'Toolbars/Gooey Toolbar',
+  title: 'Navigation/Toolbars/Gooey Toolbar',
   component: 'lw-gooey-toolbar',
   parameters: { layout: 'fullscreen' },
   render: (args) => stage(`<lw-gooey-toolbar ${attributes(args)}></lw-gooey-toolbar>`),

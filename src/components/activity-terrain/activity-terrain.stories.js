@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Activity Terrain',
+  title: 'Data Display/Charts & Metrics/Activity Terrain',
   component: 'lw-activity-terrain',
   parameters: { layout: 'padded' },
   render: (args) => `<lw-activity-terrain ${attributes(args)}></lw-activity-terrain>`,

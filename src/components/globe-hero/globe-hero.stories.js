@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Heroes/Globe Hero',
+  title: 'Sections/Heroes/Globe Hero',
   component: 'lw-globe-hero',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-globe-hero ${attributes(args)}></lw-globe-hero>`,

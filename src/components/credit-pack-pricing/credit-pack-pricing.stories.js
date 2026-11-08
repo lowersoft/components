@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Pricings/Credit Pack Pricing',
+  title: 'Sections/Pricing/Usage & Checkout/Credit Pack Pricing',
   component: 'lw-credit-pack-pricing',
   parameters: { layout: 'padded' },
   render: (args) => `<lw-credit-pack-pricing ${attributes(args)}></lw-credit-pack-pricing>`,

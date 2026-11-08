@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Backgrounds/Flow Field',
+  title: 'Effects/Backgrounds/Flow Field',
   component: 'lw-flow-field',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-flow-field ${attributes(args)}></lw-flow-field>`,

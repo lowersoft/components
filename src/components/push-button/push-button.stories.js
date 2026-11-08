@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Buttons/Push',
+  title: 'Controls/Buttons/Styled/Push',
   component: 'lw-push-button',
   render: ({ label, ...args }) => `<lw-push-button ${attributes(args)}>${label}</lw-push-button>`,
   argTypes: {

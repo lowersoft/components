@@ -3,7 +3,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Banners/Sale Strip Banner',
+  title: 'Feedback/Banners/Sale Strip Banner',
   component: 'lw-sale-strip-banner',
   parameters: { layout: 'padded' },
   render: (args) => appFrame(`<lw-sale-strip-banner ${attributes(args)}></lw-sale-strip-banner>`),

@@ -8,7 +8,7 @@ const HOSTING = JSON.stringify([
 ]);
 
 export default {
-  title: 'Pricings/Usage Receipt Pricing',
+  title: 'Sections/Pricing/Usage & Checkout/Usage Receipt Pricing',
   component: 'lw-usage-receipt-pricing',
   parameters: { layout: 'padded' },
   argTypes: { billing: { control: 'inline-radio', options: ['monthly', 'yearly'] } },

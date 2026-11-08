@@ -80,7 +80,7 @@ const initials = (name) =>
 const marquee = (args, items) => `<lw-infinite-marquee ${attributes(args)}>${items}</lw-infinite-marquee>`;
 
 export default {
-  title: 'Media/Infinite Marquee',
+  title: 'Media/Carousels & Marquees/Infinite Marquee',
   component: 'lw-infinite-marquee',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<style>

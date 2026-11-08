@@ -8,7 +8,7 @@ const STUDIO = JSON.stringify([
 ]);
 
 export default {
-  title: 'Pricings/Soft Gradient Pricing',
+  title: 'Sections/Pricing/Plans/Soft Gradient Pricing',
   component: 'lw-soft-gradient-pricing',
   parameters: { layout: 'fullscreen' },
   argTypes: {

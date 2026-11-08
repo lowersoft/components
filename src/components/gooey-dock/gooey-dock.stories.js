@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Navigation/Gooey Dock',
+  title: 'Navigation/Bars & Tabs/Gooey Dock',
   component: 'lw-gooey-dock',
   render: (args) => `<lw-gooey-dock ${attributes(args)}></lw-gooey-dock>`,
   argTypes: {

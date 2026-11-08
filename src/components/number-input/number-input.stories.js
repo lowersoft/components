@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Number Input',
+  title: 'Controls/Fields/Number Input',
   component: 'lw-number-input',
   render: (args) => `<lw-number-input ${attributes(args)}></lw-number-input>`,
   args: { label: 'Guests', value: '2', min: 1, max: 10, disabled: false, readonly: false },

@@ -4,7 +4,7 @@ import './index.js';
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default {
-  title: 'Buttons/Pay',
+  title: 'Controls/Buttons/Actions/Pay',
   component: 'lw-pay-button',
   render: ({ outcome, ...args }) => {
     const template = document.createElement('template');

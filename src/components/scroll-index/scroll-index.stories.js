@@ -42,7 +42,7 @@ const ARTICLE = `<article class="notes">
 </article>`;
 
 export default {
-  title: 'Navigation/Scroll Index',
+  title: 'Navigation/Bars & Tabs/Scroll Index',
   component: 'lw-scroll-index',
   parameters: { layout: 'padded' },
   render: (args) => `${STYLE}<lw-scroll-index ${attributes(args)}>${ARTICLE}</lw-scroll-index>`,

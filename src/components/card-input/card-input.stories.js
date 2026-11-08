@@ -1,7 +1,7 @@
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Card Input',
+  title: 'Controls/Fields/Card Input',
   component: 'lw-card-input',
 };
 

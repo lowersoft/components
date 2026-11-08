@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Loader',
+  title: 'Feedback/Status & Progress/Loader',
   component: 'lw-loader',
   render: (args) => `<lw-loader ${attributes(args)}></lw-loader>`,
   argTypes: {

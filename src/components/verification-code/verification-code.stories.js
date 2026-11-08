@@ -7,7 +7,7 @@ const withCheck = (code) => (element) => {
 };
 
 export default {
-  title: 'Inputs/Input/Verification Code',
+  title: 'Controls/Fields/Verification Code',
   component: 'lw-verification-code',
   render: (args) => {
     const template = document.createElement('template');

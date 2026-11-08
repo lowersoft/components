@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Toolbars/Format Toolbar',
+  title: 'Navigation/Toolbars/Format Toolbar',
   component: 'lw-format-toolbar',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="padding-top: 4rem"><lw-format-toolbar ${attributes(args)}></lw-format-toolbar></div>`,

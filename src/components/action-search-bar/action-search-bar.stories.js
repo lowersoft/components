@@ -14,7 +14,7 @@ const run = (item) => {
 };
 
 export default {
-  title: 'Navigation/Action Search Bar',
+  title: 'Navigation/Search & Commands/Action Search Bar',
   component: 'lw-action-search-bar',
   parameters: { layout: 'padded' },
   render: (args) => {

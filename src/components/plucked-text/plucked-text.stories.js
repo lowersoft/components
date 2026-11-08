@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Texts/Plucked Text',
+  title: 'Effects/Text/Interactive/Plucked Text',
   component: 'lw-plucked-text',
   render: (args) =>
     `<lw-plucked-text ${attributes(args)} style="font: 600 4.5rem/1 system-ui; letter-spacing: -0.025em">Good vibrations</lw-plucked-text>`,

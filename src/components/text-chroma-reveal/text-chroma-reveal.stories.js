@@ -10,7 +10,7 @@ const NEON = JSON.stringify(['#a3e635', '#22d3ee', '#e879f9']);
 const display = 'font-size: clamp(2.5rem, 8vw, 5.5rem); letter-spacing: -0.04em; line-height: 1.05';
 
 export default {
-  title: 'Texts/Text Chroma Reveal',
+  title: 'Effects/Text/Accents/Text Chroma Reveal',
   component: 'lw-text-chroma-reveal',
   parameters: { layout: 'centered' },
   render: (args) => `<lw-text-chroma-reveal ${attributes(args)} style="${display}"></lw-text-chroma-reveal>`,

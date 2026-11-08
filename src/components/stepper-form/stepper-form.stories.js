@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Forms/Stepper Form',
+  title: 'Flows/Forms/Stepper Form',
   component: 'lw-stepper-form',
   render: (args) => `<lw-stepper-form ${attributes(args)}></lw-stepper-form>`,
   args: {},

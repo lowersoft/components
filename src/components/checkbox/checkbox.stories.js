@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Checkbox',
+  title: 'Controls/Choices/Checkbox',
   component: 'lw-checkbox',
   render: ({ label, ...args }) => `<lw-checkbox ${attributes(args)}>${label}</lw-checkbox>`,
   args: { label: 'Remember me', checked: false, indeterminate: false, disabled: false, required: false },

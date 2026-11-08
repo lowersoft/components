@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Animated List/Swipe Actions List',
+  title: 'Data Display/Lists & Boards/Swipe Actions List',
   component: 'lw-swipe-actions-list',
   render: (args) => `<lw-swipe-actions-list ${attributes(args)}></lw-swipe-actions-list>`,
   args: {},

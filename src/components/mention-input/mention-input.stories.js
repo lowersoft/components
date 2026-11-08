@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Mention Input',
+  title: 'Controls/Fields/Mention Input',
   component: 'lw-mention-input',
   render: (args) => `<lw-mention-input ${attributes(args)}></lw-mention-input>`,
   args: { disabled: false },

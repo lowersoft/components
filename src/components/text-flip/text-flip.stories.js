@@ -3,7 +3,7 @@ import '../button/index.js';
 import './index.js';
 
 export default {
-  title: 'Texts/Text Flip',
+  title: 'Effects/Text/Cycling/Text Flip',
   component: 'lw-text-flip',
   parameters: { layout: 'centered' },
   render: (args) => `<lw-text-flip ${attributes(args)} style="font-size: clamp(2.25rem, 7vw, 4.5rem); letter-spacing: -0.02em"></lw-text-flip>`,

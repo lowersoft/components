@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Gooey Slider',
+  title: 'Controls/Sliders & Dials/Gooey Slider',
   component: 'lw-gooey-slider',
   parameters: { layout: 'centered' },
   render: (args) => `<lw-gooey-slider ${attributes(args)}></lw-gooey-slider>`,

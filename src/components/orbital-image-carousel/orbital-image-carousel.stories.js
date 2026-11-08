@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Media/Orbital Image Carousel',
+  title: 'Media/Carousels & Marquees/Orbital Image Carousel',
   component: 'lw-orbital-image-carousel',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<div style="padding: 2rem 0"><lw-orbital-image-carousel ${attributes(args)}></lw-orbital-image-carousel></div>`,

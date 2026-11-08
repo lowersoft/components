@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Range',
+  title: 'Controls/Sliders & Dials/Range',
   component: 'lw-range',
   render: (args) => `<lw-range ${attributes(args)}></lw-range>`,
   args: { label: 'Volume', value: '60', min: 0, max: 100, unit: '%', disabled: false },

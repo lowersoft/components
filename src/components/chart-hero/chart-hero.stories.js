@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Heroes/Chart Hero',
+  title: 'Sections/Heroes/Chart Hero',
   component: 'lw-chart-hero',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-chart-hero ${attributes(args)}></lw-chart-hero>`,

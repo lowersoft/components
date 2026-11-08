@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Workspace Switcher',
+  title: 'Navigation/Menus/Workspace Switcher',
   component: 'lw-workspace-switcher',
   render: (args) => `<lw-workspace-switcher ${attributes(args)}></lw-workspace-switcher>`,
   args: { workspace: 'lowersoft' },

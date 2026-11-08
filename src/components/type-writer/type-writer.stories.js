@@ -4,7 +4,7 @@ import './index.js';
 const PHRASES = '<span>Typewriter</span><span>Multiple Words</span><span>Auto Loop</span>';
 
 export default {
-  title: 'Texts/Type Writer',
+  title: 'Effects/Text/Cycling/Type Writer',
   component: 'lw-type-writer',
   render: (args) => `<lw-type-writer ${attributes(args)} style="font-size: 2.5rem">${PHRASES}</lw-type-writer>`,
   argTypes: {

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Buttons/Copy',
+  title: 'Controls/Buttons/Actions/Copy',
   component: 'lw-copy-button',
   render: (args) => `<lw-copy-button ${attributes(args)}></lw-copy-button>`,
   argTypes: {

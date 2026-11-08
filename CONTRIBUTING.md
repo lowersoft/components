@@ -32,12 +32,35 @@ tab stays accurate with it.
 ## Adding a component
 
 ```bash
-npm run new card-flip Cards
+npm run new card-flip "Data Display/Cards"
 ```
 
 This creates `src/components/card-flip/` and exports it from `src/index.js`. The build picks up every component folder automatically.
 
-The second argument is the Storybook category (`Components` when left out); stories appear as `<Category>/<Name>`. Buttons live under `Buttons`, named without the word "Button" (`Buttons/Particle`), with the base component as `Buttons/Base`.
+The second argument is the component's category in Storybook, and its story appears as `<Category>/<Name>`. The category has to be one the stories already use; the script lists them when it is not. Buttons are named without the word "Button" (`Controls/Buttons/Styled/Particle`), and the base component is `Controls/Buttons/Base`.
+
+### Where a component goes
+
+The sidebar has eight roots. Pick the root by what the component is for, then the group inside it:
+
+| Root | For | Groups |
+| --- | --- | --- |
+| Controls | Entering a value or starting an action | Buttons (Actions, Social, Toggles, Styled), Fields, Choices, Sliders & Dials, Pickers, Upload & Signature |
+| Navigation | Moving around an app or running its commands | Bars & Tabs, Menus, Search & Commands, Toolbars |
+| Data Display | Showing an app's data | Cards, Charts & Metrics, Commerce, Lists & Boards |
+| Media | Pictures, video and sound | Players, Editors, Galleries, Carousels & Marquees |
+| Feedback | Status, progress and notices | Banners, Status & Progress |
+| Flows | A whole task in an app: signing in, a dialog, a form | Auth, Dialogs, Forms |
+| Sections | Full-width blocks of a marketing page | Heroes, Headlines, How It Works, Pricing (Plans, Tables, Usage & Checkout), Comparisons, Testimonials, FAQs, Footers |
+| Effects | Decoration behind or around content | Text (Cycling, Interactive, Accents), Backgrounds, Surfaces, Pointer |
+
+Split a group into subgroups only once it holds more than about fifteen components that fall into clear kinds. A new group or subgroup also needs a place in `storySort` in `.storybook/preview.js`, and the scaffold opens one only with `--new-category`:
+
+```bash
+npm run new -- orbit-loader "Feedback/Loaders" --new-category
+```
+
+Inside a group the components sort alphabetically, so a new one needs no other change.
 
 ## Writing a component
 

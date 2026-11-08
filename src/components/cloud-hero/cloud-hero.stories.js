@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Heroes/Cloud Hero',
+  title: 'Sections/Heroes/Cloud Hero',
   component: 'lw-cloud-hero',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-cloud-hero ${attributes(args)}></lw-cloud-hero>`,

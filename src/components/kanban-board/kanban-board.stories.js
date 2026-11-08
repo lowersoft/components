@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Kanban Board/Kanban Board',
+  title: 'Data Display/Lists & Boards/Kanban Board',
   component: 'lw-kanban-board',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="max-width: 64rem; margin: 2rem auto"><lw-kanban-board ${attributes(args)}></lw-kanban-board></div>`,

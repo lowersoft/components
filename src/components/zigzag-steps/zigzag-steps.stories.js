@@ -9,7 +9,7 @@ const ONBOARDING = JSON.stringify([
 ]);
 
 export default {
-  title: 'How It Works/Zigzag Steps',
+  title: 'Sections/How It Works/Zigzag Steps',
   component: 'lw-zigzag-steps',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="margin: 3rem auto"><lw-zigzag-steps ${attributes(args)}></lw-zigzag-steps></div>`,

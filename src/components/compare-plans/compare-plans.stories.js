@@ -14,7 +14,7 @@ const ROWS = JSON.stringify([
 ]);
 
 export default {
-  title: 'Comparisons/Compare Plans',
+  title: 'Sections/Pricing/Tables/Compare Plans',
   component: 'lw-compare-plans',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-compare-plans ${attributes(args)}></lw-compare-plans>`,

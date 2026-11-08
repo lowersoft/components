@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Pricings/Upgrade Summary',
+  title: 'Sections/Pricing/Usage & Checkout/Upgrade Summary',
   component: 'lw-upgrade-summary',
   argTypes: {
     billing: { control: 'inline-radio', options: ['monthly', 'yearly'] },

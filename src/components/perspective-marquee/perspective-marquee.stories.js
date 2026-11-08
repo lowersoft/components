@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Media/Perspective Marquee',
+  title: 'Media/Carousels & Marquees/Perspective Marquee',
   component: 'lw-perspective-marquee',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-perspective-marquee ${attributes(args)}></lw-perspective-marquee>`,

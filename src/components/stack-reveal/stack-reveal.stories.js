@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Media/Stack Reveal',
+  title: 'Media/Galleries/Stack Reveal',
   component: 'lw-stack-reveal',
   parameters: { layout: 'padded' },
   render: (args) => `<lw-stack-reveal ${attributes(args)}></lw-stack-reveal>`,

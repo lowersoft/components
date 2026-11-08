@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Pricings/Comparison Table Pricing',
+  title: 'Sections/Pricing/Tables/Comparison Table Pricing',
   component: 'lw-comparison-table-pricing',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="max-width: 72rem; margin: 3rem auto"><lw-comparison-table-pricing ${attributes(args)}></lw-comparison-table-pricing></div>`,

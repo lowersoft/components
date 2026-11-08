@@ -13,7 +13,7 @@ const HIRING = JSON.stringify([
 ]);
 
 export default {
-  title: 'How It Works/Taped Note Steps',
+  title: 'Sections/How It Works/Taped Note Steps',
   component: 'lw-taped-note-steps',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="margin: 3rem auto"><lw-taped-note-steps ${attributes(args)}></lw-taped-note-steps></div>`,

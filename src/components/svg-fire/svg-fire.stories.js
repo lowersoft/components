@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Backgrounds/SVG Fire',
+  title: 'Effects/Backgrounds/SVG Fire',
   component: 'lw-svg-fire',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-svg-fire ${attributes(args)}></lw-svg-fire>`,

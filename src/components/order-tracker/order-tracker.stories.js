@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Order Tracker',
+  title: 'Data Display/Commerce/Order Tracker',
   component: 'lw-order-tracker',
   render: (args) => `<lw-order-tracker ${attributes(args)}></lw-order-tracker>`,
   args: { order: '#4182' },

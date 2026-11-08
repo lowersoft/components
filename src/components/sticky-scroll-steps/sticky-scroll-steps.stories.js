@@ -9,7 +9,7 @@ const FOUR = JSON.stringify([
 ]);
 
 export default {
-  title: 'How It Works/Sticky Scroll Steps',
+  title: 'Sections/How It Works/Sticky Scroll Steps',
   component: 'lw-sticky-scroll-steps',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="margin: 3rem auto 50vh"><lw-sticky-scroll-steps ${attributes(args)}></lw-sticky-scroll-steps></div>`,

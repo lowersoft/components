@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Pricings/Layer Stack Pricing',
+  title: 'Sections/Pricing/Plans/Layer Stack Pricing',
   component: 'lw-layer-stack-pricing',
   parameters: { layout: 'padded' },
   argTypes: {

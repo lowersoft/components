@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Banners/Cookie Consent Banner',
+  title: 'Feedback/Banners/Cookie Consent Banner',
   component: 'lw-cookie-consent-banner',
   render: (args) => `<lw-cookie-consent-banner ${attributes(args)}></lw-cookie-consent-banner>`,
   args: {},

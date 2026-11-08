@@ -17,7 +17,7 @@ const GREETINGS = words([
 ]);
 
 export default {
-  title: 'Texts/Dynamic Text',
+  title: 'Effects/Text/Cycling/Dynamic Text',
   component: 'lw-dynamic-text',
   render: (args) => `<lw-dynamic-text ${attributes(args)} style="font: 600 3rem/1.2 system-ui">${MORPH}</lw-dynamic-text>`,
   argTypes: {

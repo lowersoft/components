@@ -4,7 +4,7 @@ import './index.js';
 const PHRASES = JSON.stringify(['Thinking', 'Searching the docs', 'Reading three pages', 'Writing a reply', 'Running the tests']);
 
 export default {
-  title: 'Inputs/AI Typing Indicator',
+  title: 'Feedback/Status & Progress/AI Typing Indicator',
   component: 'lw-ai-typing-indicator',
   render: ({ cycle, ...args }) => `<lw-ai-typing-indicator ${attributes({ ...args, phrases: cycle ? PHRASES : undefined })}></lw-ai-typing-indicator>`,
   argTypes: {

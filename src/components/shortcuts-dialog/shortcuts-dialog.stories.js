@@ -2,7 +2,7 @@ import { modalStory } from '../../../.storybook/modal-story.js';
 import './index.js';
 
 export default {
-  title: 'Modals/Shortcuts Dialog',
+  title: 'Flows/Dialogs/Shortcuts Dialog',
   component: 'lw-shortcuts-dialog',
   render: modalStory('lw-shortcuts-dialog', 'Keyboard shortcuts'),
   args: { open: true },

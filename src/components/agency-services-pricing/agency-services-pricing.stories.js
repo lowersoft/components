@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Pricings/Agency Services Pricing',
+  title: 'Sections/Pricing/Usage & Checkout/Agency Services Pricing',
   component: 'lw-agency-services-pricing',
   parameters: { layout: 'padded' },
   argTypes: { value: { control: 'inline-radio', options: ['audit', 'port', 'retainer'] } },

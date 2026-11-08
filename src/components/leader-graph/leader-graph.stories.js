@@ -10,7 +10,7 @@ const FIVE = JSON.stringify([
 ]);
 
 export default {
-  title: 'Comparisons/Leader Graph',
+  title: 'Sections/Comparisons/Leader Graph',
   component: 'lw-leader-graph',
   parameters: { layout: 'fullscreen' },
   render: (args) => `<lw-leader-graph ${attributes(args)}></lw-leader-graph>`,

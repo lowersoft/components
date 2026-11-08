@@ -1,16 +1,37 @@
-// Scaffold a component: `npm run new <kebab-name> [Category]`, e.g. `npm run new card-flip Cards`.
-import { appendFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+// Scaffold a component: `npm run new <kebab-name> <Category>`, e.g.
+// `npm run new card-flip "Data Display/Cards"`. The category is the story's
+// place in the Storybook sidebar; see "Where a component goes" in CONTRIBUTING.md.
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const [name, category = 'Components'] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const allowNewCategory = args.includes('--new-category');
+const [name, category] = args.filter((arg) => arg !== '--new-category');
 
-if (!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(name ?? '')) {
-  console.error('Usage: npm run new <kebab-case-name> [Category]   e.g. npm run new card-flip Cards');
+if (!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(name ?? '') || !category) {
+  console.error('Usage: npm run new <kebab-case-name> <Category>   e.g. npm run new card-flip "Data Display/Cards"');
   process.exit(1);
 }
 
 const root = resolve(import.meta.dirname, '..');
-const dir = resolve(root, 'src/components', name);
+const components = resolve(root, 'src/components');
+const dir = resolve(components, name);
+
+// The categories the stories use now. Opening another is a deliberate step:
+// it takes --new-category, and a place in storySort in .storybook/preview.js.
+const categories = new Set();
+for (const entry of readdirSync(components)) {
+  for (const file of readdirSync(resolve(components, entry)).filter((f) => f.endsWith('.stories.js'))) {
+    const title = readFileSync(resolve(components, entry, file), 'utf8').match(/^ {2}title: ['"]([^'"]+)['"]/m)?.[1];
+    if (title) categories.add(title.slice(0, title.lastIndexOf('/')));
+  }
+}
+
+if (!categories.has(category) && !allowNewCategory) {
+  console.error(`"${category}" is not a category yet. Pick one of:\n  ${[...categories].sort().join('\n  ')}`);
+  console.error('To open a new one, run npm run new -- <name> "<Category>" --new-category and place it in storySort in .storybook/preview.js.');
+  process.exit(1);
+}
 
 if (existsSync(dir)) {
   console.error(`Component "${name}" already exists.`);

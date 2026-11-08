@@ -5,7 +5,7 @@ import './index.js';
 const inDays = (days) => new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
 
 export default {
-  title: 'Banners/Trial Status Banner',
+  title: 'Feedback/Banners/Trial Status Banner',
   component: 'lw-trial-status-banner',
   parameters: { layout: 'padded' },
   render: (args) => appFrame(`<lw-trial-status-banner ${attributes(args)}></lw-trial-status-banner>`),

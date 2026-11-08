@@ -35,7 +35,7 @@ const form = (content) => {
  * `lw-textarea`.
  */
 export default {
-  title: 'Inputs/Input/Floating Label',
+  title: 'Controls/Fields/Floating Label',
   component: 'lw-text-input',
   render: (args) => `<lw-text-input ${attributes(args)}></lw-text-input>`,
   argTypes: {

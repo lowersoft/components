@@ -4,7 +4,7 @@ import './index.js';
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default {
-  title: 'Buttons/Confirm Delete',
+  title: 'Controls/Buttons/Actions/Confirm Delete',
   component: 'lw-confirm-delete-button',
   parameters: { layout: 'padded' },
   render: (args) => {

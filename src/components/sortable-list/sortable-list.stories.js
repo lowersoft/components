@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Animated List/Sortable List',
+  title: 'Data Display/Lists & Boards/Sortable List',
   component: 'lw-sortable-list',
   render: (args) => `<lw-sortable-list ${attributes(args)}></lw-sortable-list>`,
   args: {},

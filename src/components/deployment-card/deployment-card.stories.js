@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Deployment Card',
+  title: 'Data Display/Cards/Deployment Card',
   component: 'lw-deployment-card',
   render: (args) => `<lw-deployment-card ${attributes(args)}></lw-deployment-card>`,
   args: { project: 'lowersoft-runtime', status: 'ready' },

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/Input/Period Picker',
+  title: 'Controls/Pickers/Period Picker',
   component: 'lw-period-picker',
   render: (args) => `<lw-period-picker ${attributes(args)}></lw-period-picker>`,
   args: { compare: true },

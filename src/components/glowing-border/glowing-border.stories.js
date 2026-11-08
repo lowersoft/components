@@ -29,7 +29,7 @@ const card = (args, [icon, title, text, span]) => `<lw-glowing-border ${attribut
 const range = (name, min, max, step = 1) => ({ name, control: { type: 'range', min, max, step } });
 
 export default {
-  title: 'Cards/Glowing Border',
+  title: 'Effects/Surfaces/Glowing Border',
   component: 'lw-glowing-border',
   parameters: { layout: 'padded' },
   // Palette and the percent sliders drive the demo; the rest are attributes.

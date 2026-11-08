@@ -9,7 +9,7 @@ const sentence = (lead, args) =>
   `<p style="margin: 0; font: 600 clamp(1.75rem, 5vw, 3.25rem)/1.15 var(--lw-font-sans); letter-spacing: -0.03em; color: var(--lw-color-foreground)"><span style="color: var(--lw-color-muted-foreground)">${lead}</span> <lw-text-cycle ${attributes(args)}></lw-text-cycle></p>`;
 
 export default {
-  title: 'Texts/Text Cycle',
+  title: 'Effects/Text/Cycling/Text Cycle',
   component: 'lw-text-cycle',
   parameters: { layout: 'centered' },
   render: (args) => sentence('21 · Senior', args),

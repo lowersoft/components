@@ -16,7 +16,7 @@ const FEATURES = JSON.stringify([
 ]);
 
 export default {
-  title: 'Pricings/Plan Table Pricing',
+  title: 'Sections/Pricing/Tables/Plan Table Pricing',
   component: 'lw-plan-table-pricing',
   parameters: { layout: 'padded' },
   argTypes: { billing: { control: 'inline-radio', options: ['yearly', 'monthly'] } },

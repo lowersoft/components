@@ -2,7 +2,7 @@ import { modalStory } from '../../../.storybook/modal-story.js';
 import './index.js';
 
 export default {
-  title: 'Modals/Newsletter Dialog',
+  title: 'Flows/Dialogs/Newsletter Dialog',
   component: 'lw-newsletter-dialog',
   render: modalStory('lw-newsletter-dialog', 'Subscribe'),
   args: { open: true, frequency: 'every' },

@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Headline/Stats Headline',
+  title: 'Sections/Headlines/Stats Headline',
   component: 'lw-stats-headline',
   parameters: { layout: 'padded' },
   render: (args) => `<div style="margin: 4rem auto"><lw-stats-headline ${attributes(args)}></lw-stats-headline></div>`,

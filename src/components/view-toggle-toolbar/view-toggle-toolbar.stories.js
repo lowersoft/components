@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Toolbars/View Toggle Toolbar',
+  title: 'Navigation/Toolbars/View Toggle Toolbar',
   component: 'lw-view-toggle-toolbar',
   parameters: { layout: 'padded' },
   argTypes: { view: { control: 'inline-radio', options: ['board', 'list', 'table'] } },

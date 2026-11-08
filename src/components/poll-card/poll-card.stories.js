@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Cards/Poll Card',
+  title: 'Data Display/Cards/Poll Card',
   component: 'lw-poll-card',
   render: (args) => `<lw-poll-card ${attributes(args)}></lw-poll-card>`,
   args: { question: 'Tabs or spaces?' },

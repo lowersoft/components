@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Buttons/Reaction',
+  title: 'Controls/Buttons/Social/Reaction',
   component: 'lw-reaction-button',
   parameters: { layout: 'padded' },
   render: (args) => {

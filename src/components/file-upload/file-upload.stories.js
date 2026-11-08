@@ -2,7 +2,7 @@ import { attributes } from '../../../.storybook/attributes.js';
 import './index.js';
 
 export default {
-  title: 'Inputs/File Upload',
+  title: 'Controls/Upload & Signature/File Upload',
   component: 'lw-file-upload',
   render: (args) => `<lw-file-upload ${attributes(args)}></lw-file-upload>`,
   argTypes: {
