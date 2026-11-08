@@ -42,3 +42,22 @@ export const setHeadingLevel = (element, level) => {
     element.removeAttribute('aria-level');
   }
 };
+
+/**
+ * Wraps each word of `root`'s text in a `.word` span, inside any marks or
+ * links, so the words can be animated one after another. Returns the spans.
+ */
+export const splitWords = (root) => {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const texts = [];
+  while (walker.nextNode()) texts.push(walker.currentNode);
+  for (const node of texts) {
+    const words = document.createDocumentFragment();
+    for (const part of node.data.split(/(\s+)/)) {
+      if (!part) continue;
+      words.append(/^\s+$/.test(part) ? part : Object.assign(document.createElement('span'), { className: 'word', textContent: part }));
+    }
+    node.replaceWith(words);
+  }
+  return [...root.querySelectorAll('.word')];
+};

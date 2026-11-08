@@ -6,6 +6,7 @@ import { messageSquareText } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
 import { reducedMotion } from '../../core/motion.js';
 import { swapStyles, swapText } from '../../core/swap.js';
+import { splitWords } from '../../core/text.js';
 import { drawFace, QUOTE_ICON, quoteMarkup } from '../../core/testimonial.js';
 import styles from './customer-stories.scss?inline';
 
@@ -60,23 +61,6 @@ const EASE_IN = 'cubic-bezier(0.4, 0, 1, 1)';
 // more slowly, its words a moment apart, spread over at most SPREAD ms.
 const LEAVE = { duration: 260, easing: EASE_IN, fill: 'forwards' };
 const SPREAD = 520;
-
-// Wraps each word of `root`'s text in a span, marks and all, so the words
-// can come in one after another.
-const splitWords = (root) => {
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  const texts = [];
-  while (walker.nextNode()) texts.push(walker.currentNode);
-  for (const text of texts) {
-    const words = document.createDocumentFragment();
-    for (const part of text.data.split(/(\s+)/)) {
-      if (!part) continue;
-      words.append(/^\s+$/.test(part) ? part : Object.assign(document.createElement('span'), { className: 'word', textContent: part }));
-    }
-    text.replaceWith(words);
-  }
-  return [...root.querySelectorAll('.word')];
-};
 
 // A still copy of `element` laid exactly over it, to fade out as the real one changes.
 const ghostOf = (element) => {

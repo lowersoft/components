@@ -1,0 +1,370 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  // The composer's glass and the wells its keys sit in.
+  --_glass: color-mix(in oklab, #{lw.v(color-background)} 90%, transparent);
+  --_well: color-mix(in oklab, #{lw.v(color-foreground)} 5%, #{lw.v(color-background)});
+  --_ease: cubic-bezier(0.22, 0.7, 0.2, 1);
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+h3,
+p,
+ul,
+ol,
+figure {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+// The copy beside the composer; stacked, copy first, on narrow screens.
+.split {
+  display: grid;
+  align-items: center;
+  gap: 2.5rem;
+
+  @container (min-width: 56rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: clamp(3rem, 7cqi, 5.5rem);
+  }
+}
+
+.eyebrow {
+  margin-bottom: 1.25rem;
+  font: 500 lw.v(text-xs) lw.v(font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--_muted);
+}
+
+.title {
+  max-width: 28rem;
+  font-size: clamp(2rem, 4.4cqi, 3rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 30rem;
+  margin-top: 1.25rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--_muted);
+}
+
+.points {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  padding: 0;
+  list-style: none;
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 86%, transparent);
+
+  li {
+    display: flex;
+    gap: 0.75rem;
+    line-height: 1.45;
+
+    &::before {
+      width: 0.3125rem;
+      height: 0.3125rem;
+      flex: none;
+      margin-top: 0.5em;
+      border-radius: 50%;
+      background: var(--_muted);
+      content: '';
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2.25rem;
+}
+
+// The stage: a softened landscape, the composer floating on it and the
+// tools under the composer.
+.stage {
+  position: relative;
+  display: flex;
+  min-height: clamp(20rem, 46cqi, 27rem);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(1.25rem, 4cqi, 2.5rem);
+  border-radius: 1.5rem;
+  background: #6f7f8c;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+
+// Mountains at dusk, out of focus: a sky, a hazy bank of cloud, two ridges
+// and dark ground, blurred as if the lens were set on the card.
+.scene {
+  position: absolute;
+  z-index: -1;
+  inset: -12%;
+  background:
+    radial-gradient(42% 26% at 72% 30%, rgb(255 255 255 / 55%), transparent 70%),
+    radial-gradient(58% 34% at 16% 70%, #2e3936 0 58%, transparent 60%),
+    radial-gradient(66% 38% at 86% 76%, #3a4541 0 58%, transparent 60%),
+    radial-gradient(95% 42% at 50% 100%, #1d2321 0 60%, transparent 62%),
+    linear-gradient(180deg, #7d98b3 0%, #a8bbcc 34%, #8796a2 55%, #4a5651 74%, #262c29 100%);
+  filter: blur(22px) saturate(0.9);
+
+  .stage[data-photo] & {
+    display: none;
+  }
+}
+
+.photo {
+  position: absolute;
+  z-index: -1;
+  inset: -4%;
+  width: 108%;
+  height: 108%;
+  object-fit: cover;
+  filter: blur(6px) saturate(0.9);
+}
+
+// The composer: glass over the landscape, the request, then a row of keys.
+.composer {
+  box-sizing: border-box;
+  width: min(100%, 30rem);
+  padding: 1.25rem 1.25rem 1rem;
+  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
+  border-radius: 1.375rem;
+  background: var(--_glass);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 25%) inset,
+    0 1.5rem 3rem -1rem rgb(0 0 0 / 40%);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+
+// The full request holds the room, unseen, while a copy types over it.
+.prompt {
+  display: grid;
+  min-height: 6.4em;
+  font-size: clamp(lw.v(text-sm), 1.7cqi, lw.v(text-md));
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.prompt-text,
+.prompt-typing {
+  grid-area: 1 / 1;
+}
+
+.prompt-text {
+  color: transparent;
+}
+
+.caret {
+  display: none;
+  width: 2px;
+  height: 1.1em;
+  margin-left: 1px;
+  background: currentColor;
+  vertical-align: text-bottom;
+
+  :host([data-typing]) & {
+    display: inline-block;
+  }
+
+  @include lw.motion {
+    animation: blink 1s steps(1) infinite;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+// Keys pressed into the surface: a soft inset well.
+.well {
+  display: inline-flex;
+  height: 2.125rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: lw.v(radius-full);
+  background: var(--_well);
+  box-shadow:
+    inset 0 1px 2px rgb(0 0 0 / 12%),
+    inset 0 -1px 0 rgb(255 255 255 / 30%);
+  color: color-mix(in oklab, #{lw.v(color-foreground)} 80%, transparent);
+
+  &.round {
+    width: 2.125rem;
+  }
+
+  &.push {
+    margin-left: auto;
+  }
+}
+
+.model {
+  gap: 0.4375rem;
+  padding: 0 0.625rem 0 0.375rem;
+  font-weight: 500;
+
+  svg {
+    color: var(--_muted);
+  }
+}
+
+.model-mark {
+  display: block;
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.send {
+  display: grid;
+  width: 2.125rem;
+  height: 2.125rem;
+  place-items: center;
+  border-radius: 50%;
+  background: lw.v(color-foreground);
+  color: lw.v(color-background);
+  box-shadow: 0 2px 6px -2px rgb(0 0 0 / 45%);
+
+  // Ready once the request is written.
+  :host([data-ready]) & {
+    @include lw.motion {
+      animation: ready 900ms var(--_ease);
+    }
+  }
+}
+
+@keyframes ready {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, #{lw.v(color-foreground)} 40%, transparent);
+    scale: 1;
+  }
+
+  30% {
+    scale: 1.12;
+  }
+
+  100% {
+    box-shadow: 0 0 0 0.75rem transparent;
+    scale: 1;
+  }
+}
+
+// The tools the model can reach, as chips under the card.
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  padding: 0.4375rem 0.75rem;
+  border: 1px solid color-mix(in oklab, #{lw.v(color-foreground)} 8%, transparent);
+  border-radius: 0.75rem;
+  background: var(--_glass);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  box-shadow: 0 0.5rem 1rem -0.5rem rgb(0 0 0 / 35%);
+  backdrop-filter: blur(12px);
+
+  svg {
+    color: var(--_muted);
+  }
+}
+
+// Three numbered claims along the bottom, parted by rules; stacked on
+// narrow screens.
+.claims {
+  display: grid;
+  margin-top: clamp(3rem, 7cqi, 4.5rem);
+  padding: clamp(2rem, 4cqi, 2.75rem) 0 0;
+  border-top: 1px solid var(--_line);
+  list-style: none;
+
+  @container (min-width: 48rem) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.claim {
+  display: grid;
+  align-content: start;
+  gap: 0.625rem;
+  padding: 1.5rem 0;
+
+  & + & {
+    border-top: 1px solid var(--_line);
+  }
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  @container (min-width: 48rem) {
+    padding: 0 2rem;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    & + & {
+      border-top: 0;
+      border-left: 1px solid var(--_line);
+    }
+  }
+}
+
+.index {
+  margin-bottom: 0.375rem;
+  font: 500 lw.v(text-xs) lw.v(font-mono);
+  color: var(--_muted);
+}
+
+.claim-title {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.claim-body {
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--_muted);
+}

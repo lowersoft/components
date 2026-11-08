@@ -236,6 +236,7 @@
 - [x] Morphing logo grid
 - [x] Morphing wordmarks
 - [x] Security grid
+- [x] Workspace composer
 - [x] Stats headline
 - [x] Install headline
 - [x] Inline chips headline
