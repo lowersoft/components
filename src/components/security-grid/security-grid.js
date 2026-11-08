@@ -2,17 +2,17 @@ import '../button/index.js';
 import '../switch/index.js';
 import { escapeHtml } from '../../core/dom.js';
 import { CHECK_ICON, iconStyles, strokeIcon } from '../../core/icons.js';
-import { arrowRight, lock, plus } from '../../core/lucide.js';
+import { arrowRight, box, lock } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
 import styles from './security-grid.scss?inline';
 
 const DEMO_FEATURES = [
-  { art: 'vault', title: 'Region-locked vaults', description: 'Pin each tenant to an EU, US or APAC vault, with a deletion clock your legal team can enforce.' },
-  { art: 'seats', title: 'Least-privilege seats', description: 'Every action is bound to a named role, and unused seats expire when the project ends.' },
-  { art: 'letters', title: 'Yearly control letters', description: 'Independent examiners attest the controls each year, in a letter you can share and search.' },
-  { art: 'masked', title: 'Masked fields, full trail', description: 'Names, emails and tokens are stripped from logs, with a record of who looked and when.' },
-  { art: 'review', title: 'Release change reviews', description: 'Every promotion gets an owner, a test gate and a kill switch before it reaches production.' },
-  { art: 'boundary', title: 'Customer data boundary', description: 'Regulated records stay in their own envelope under a signed agreement, encrypted in transit.' },
+  { art: 'vault', title: 'Region-pinned cache', description: 'The build cache and every artifact stay in the EU, US or APAC region you choose, on a retention clock your legal team sets.' },
+  { art: 'seats', title: 'Scoped build tokens', description: 'Every teammate and runner gets a token scoped to its role, and a runner’s token expires the moment its pipeline ends.' },
+  { art: 'letters', title: 'Signed releases', description: 'Every binary lower ships is signed and carries a provenance attestation anyone downstream can verify.' },
+  { art: 'masked', title: 'Secrets out of the logs', description: 'Signing keys, tokens and connection strings are masked in every build log, with a trail of each time they were read.' },
+  { art: 'review', title: 'Gated promotion', description: 'A release needs an owner, green tests and a clean sanitizer run to ship, and a kill switch rolls it back.' },
+  { art: 'boundary', title: 'Hermetic builds', description: 'Each build runs sealed off from the network, so nothing outside the lockfile can reach the binary.' },
 ];
 
 // A seal's scalloped rim: 22 bumps round a circle of radius 20 in a 48 box.
@@ -34,27 +34,27 @@ const lines = (...widths) => widths.map((width) => `<i style="width: ${width}%">
 // controls in them are the library's own but take no input.
 const ART = {
   vault: `<div class="mock vault"><span class="dial"><span class="spokes"><i></i><i></i><i></i></span><span class="hub"></span></span>
-<span class="regions"><span class="region on">EU Central<em>30d</em></span><span class="region">US East</span><span class="region">APAC South</span><span class="caption">Purged after 30 days</span></span></div>`,
-  seats: `<div class="mock window seats">${[['MO', 'Owner', 72], ['JS', 'Editor', 58], ['AK', 'Viewer', 64]].map(([who, role, width]) => `<span class="seat"><span class="initials">${who}</span><span class="lines">${lines(width, width - 30)}</span><span class="role">${role}</span></span>`).join('')}<span class="seat expiring"><span class="initials dashed"></span><span class="lines">${lines(50, 30)}</span><span class="role">Expires today</span></span></div>`,
-  letters: `<div class="mock letters"><span class="sheet back"></span><span class="sheet front"><span class="lines">${lines(34)}</span><span class="lines faint">${lines(80, 92, 70, 86, 60)}</span><svg class="signature" viewBox="0 0 64 20" aria-hidden="true"><path d="M2 14c4-8 7-9 8-4s-1 7 2 3 5-9 7-5-1 8 3 5 4-7 7-4 2 6 5 3 4-6 7-3 3 4 6 2"/></svg></span>
+<span class="regions"><span class="region on">EU Central<em>30d</em></span><span class="region">US East</span><span class="region">APAC South</span><span class="caption">Cache purged after 30 days</span></span></div>`,
+  seats: `<div class="mock window seats">${[['MO', 'Owner', 72], ['JS', 'Maintainer', 52], ['CI', 'Runner', 64]].map(([who, role, width]) => `<span class="seat"><span class="initials">${who}</span><span class="lines">${lines(width, width - 30)}</span><span class="role">${role}</span></span>`).join('')}<span class="seat expiring"><span class="initials dashed"></span><span class="lines">${lines(50, 30)}</span><span class="role">Expires after run</span></span></div>`,
+  letters: `<div class="mock letters"><span class="sheet back"></span><span class="sheet front"><span class="sheet-title">attestation.json</span><span class="lines faint">${lines(80, 92, 70, 86, 60)}</span><svg class="signature" viewBox="0 0 64 20" aria-hidden="true"><path d="M2 14c4-8 7-9 8-4s-1 7 2 3 5-9 7-5-1 8 3 5 4-7 7-4 2 6 5 3 4-6 7-3 3 4 6 2"/></svg></span>
 <svg class="seal" viewBox="0 0 48 48" aria-hidden="true"><path d="${SEAL}"/><circle cx="24" cy="24" r="14"/><path class="seal-check" d="m18 24 4 4 8-8"/></svg></div>`,
-  masked: `<div class="mock masked"><span class="window fields">${[['name', 62], ['email', 86], ['token', 48]].map(([label, width]) => `<span class="field"><span class="field-label">${label}</span><span class="bar" style="width: ${width}%"></span></span>`).join('')}</span>
-<span class="trail"><span class="track"></span>${[['09:14', 'viewed'], ['11:02', 'export'], ['16:40', 'viewed']].map(([time, what]) => `<span class="stop"><i></i>${time} ${what}</span>`).join('')}</span></div>`,
-  review: `<div class="mock window review"><span class="step"><span class="tick">${CHECK_ICON}</span>Owner assigned<span class="chip">MO</span></span><span class="step"><span class="tick">${CHECK_ICON}</span>Test gate<span class="meter"><i></i></span></span><span class="step">Kill switch<lw-switch class="kill" size="sm" checked></lw-switch></span><lw-button class="promote" size="sm">Promote to production</lw-button></div>`,
+  masked: `<div class="mock masked"><span class="window fields">${[['SIGN_KEY', 58], ['API_TOKEN', 78], ['DB_URL', 46]].map(([label, width]) => `<span class="field"><span class="field-label">${label}</span><span class="bar" style="width: ${width}%"></span></span>`).join('')}</span>
+<span class="trail"><span class="track"></span>${[['09:14', 'build #412'], ['11:02', 'release'], ['16:40', 'rotated']].map(([time, what]) => `<span class="stop"><i></i>${time} ${what}</span>`).join('')}</span></div>`,
+  review: `<div class="mock window review"><span class="step"><span class="tick">${CHECK_ICON}</span>Owner approved<span class="chip">MO</span></span><span class="step"><span class="tick">${CHECK_ICON}</span>Tests and ASan<span class="meter"><i></i></span></span><span class="step">Kill switch<lw-switch class="kill" size="sm" checked></lw-switch></span><lw-button class="promote" size="sm">Promote v3.2.0</lw-button></div>`,
   boundary: `<div class="mock boundary"><svg class="fence" aria-hidden="true"><rect x="1" y="1" rx="18" ry="18"/></svg><span class="lock">${strokeIcon(lock, 14)}</span>
-<span class="window record"><span class="record-head"><span class="plus">${strokeIcon(plus, 14)}</span><span class="lines">${lines(70, 40)}</span></span><span class="lines faint">${lines(100, 90, 60)}</span></span><span class="caption">BAA signed · TLS in transit</span></div>`,
+<span class="window record"><span class="record-head"><span class="tile">${strokeIcon(box, 14)}</span><span class="record-name">build #412</span></span><span class="lines faint">${lines(100, 90, 60)}</span></span><span class="caption">No network · lockfile pinned</span></div>`,
 };
 
 /**
  * Security controls in a grid of six, each with a small drawing of the
- * product that proves it: a vault pinned to a region with its deletion
- * clock, seats bound to roles, a signed and sealed control letter, masked
- * fields with their audit trail, a release gated by owner, tests and a kill
- * switch, and a record inside its data boundary. Over the grid sit the
- * headline and two actions. Pointing at a card brings its drawing to life:
- * the vault wheel turns, a seat expires, the seal stamps, the masks sweep,
- * the gate fills and the boundary's dashes march. Nothing moves with reduced
- * motion.
+ * product that proves it: a build cache pinned to a region with its
+ * retention clock, tokens scoped to roles, a signed release attestation,
+ * secrets masked in the build log over their audit trail, a release gated
+ * by an owner, tests and a kill switch, and a build sealed off from the
+ * network. Over the grid sit the headline and two actions. Pointing at a
+ * card brings its drawing to life: the vault wheel turns, a runner's token
+ * expires, the seal stamps, the masks sweep, the gate fills and the
+ * sandbox's dashes march. Nothing moves with reduced motion.
  *
  * Three columns on wide screens, two on tablets and one on phones.
  *
@@ -74,7 +74,7 @@ const ART = {
 export class LwSecurityGrid extends LwElement {
   static styles = [iconStyles, styles];
   static props = {
-    heading: { default: 'Controls an auditor can read in the product' },
+    heading: { default: 'A build chain your auditor can read' },
     description: { default: '' },
     primary: { default: 'Talk to security' },
     secondary: { default: 'See the controls' },

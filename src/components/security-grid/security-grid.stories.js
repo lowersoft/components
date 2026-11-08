@@ -11,13 +11,13 @@ export default {
   args: {},
 };
 
-// Point at a card: the vault wheel turns, a seat expires, the seal stamps,
-// the masks sweep, the gate fills and the boundary's dashes march.
+// Point at a card: the vault wheel turns, a runner's token expires, the seal
+// stamps, the masks sweep, the gate fills and the sandbox's dashes march.
 export const Default = {};
 
 // With a line under the heading and links of your own as the actions.
 export const WithLinks = {
-  args: { description: 'Data stays in the region you choose, encrypted at rest and in transit, with every access on the record.' },
+  args: { description: 'lower signs, sandboxes and records every build, so a security review takes an afternoon instead of a quarter.' },
   render: (args) =>
     frame(`<lw-security-grid ${attributes(args)}><div slot="actions" style="display: flex; gap: 1.25rem; font: 500 0.875rem var(--lw-font-sans)"><a href="#trust" style="color: inherit">Visit the trust centre</a><a href="#docs" style="color: var(--lw-color-muted-foreground)">Read the docs</a></div></lw-security-grid>`),
 };

@@ -374,9 +374,6 @@ ul {
     box-shadow: 0 0.75em 2em -1em rgb(0 0 0 / 45%);
   }
 
-  .lines:first-child i {
-    width: 34%;
-  }
 }
 
 .signature {
@@ -428,6 +425,12 @@ ul {
   }
 }
 
+.sheet-title {
+  font-family: lw.v(font-mono);
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
 @keyframes sign {
   from {
     stroke-dashoffset: 140;
@@ -473,7 +476,7 @@ ul {
 }
 
 .field-label {
-  width: 3.4em;
+  width: 5.6em;
   flex: none;
   font-family: lw.v(font-mono);
   color: var(--_muted);
@@ -707,7 +710,7 @@ ul {
   gap: 0.8em;
 }
 
-.plus {
+.tile {
   display: grid;
   width: 1.9em;
   height: 1.9em;
@@ -720,6 +723,11 @@ ul {
     width: 1em;
     height: 1em;
   }
+}
+
+.record-name {
+  font-family: lw.v(font-mono);
+  font-weight: 600;
 }
 
 .boundary .caption {
