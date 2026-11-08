@@ -1,107 +1,300 @@
 @use '../../styles' as lw;
 
+// The corona's colour at a strength.
+@function haze($amount) {
+  @return color-mix(in oklab, var(--_haze) $amount, transparent);
+}
+
 :host {
-  // Dark in either theme: the light only reads against a dark sky.
-  --_ink: #09090b;
-  --_paper: #fafafa;
-  --_glow: var(--lw-eclipse-hero-glow, #d4d4d8);
+  // On a dark page the sun is white light; on a light one the eclipse is
+  // printed in ink, so it reads as a negative of the same picture.
+  --_glow: var(--lw-eclipse-hero-glow, light-dark(#52525b, #e4e4e7));
+  --_light: light-dark(#18181b, #fff);
+  --_haze: light-dark(color-mix(in oklab, var(--_glow) 36%, transparent), color-mix(in oklab, var(--_glow) 58%, transparent));
+  --_star: light-dark(transparent, color-mix(in oklab, #fff 70%, transparent));
+  // The bead's glint: white light on a dark page, a soft grey on a light one.
+  --_spark: light-dark(color-mix(in oklab, #18181b 40%, transparent), #fff);
 
   display: block;
   container-type: inline-size;
 }
 
 .hero {
-  @include lw.backdrop(var(--lw-eclipse-hero-min-height, 48rem));
-  // The library's colours turned over for the dark surface, so the
-  // buttons inside follow: a light primary, a dark wash for the second.
-  @include lw.inverted;
+  // The sun's diameter; the moon a little larger.
+  --_d: clamp(40rem, 50cqi, 44rem);
 
-  flex-direction: column;
+  @include lw.backdrop(var(--lw-eclipse-hero-min-height, 52rem));
+
+  display: grid;
+  place-items: center;
   isolation: isolate;
+  padding: 3rem 1.5rem;
+
+  // The corona and the stars fade into the page at the top and bottom
+  // edges instead of stopping at them.
+  &::before,
+  &::after {
+    position: absolute;
+    z-index: 1;
+    inset-inline: 0;
+    height: 5rem;
+    content: '';
+    pointer-events: none;
+  }
+
+  &::before {
+    top: 0;
+    background: linear-gradient(#{lw.v(color-background)}, transparent);
+  }
+
+  &::after {
+    bottom: 0;
+    background: linear-gradient(transparent, #{lw.v(color-background)});
+  }
 }
 
-// The eclipse: a dark planet far larger than the section, hung so its limb
-// arcs from the top left down to the right edge. The rim is lit from the
-// upper right, a haze lies just inside it, and the light spills out into
-// the sky in widening rings.
-.eclipse {
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.planet {
-  --_size: 256cqi;
-
-  position: absolute;
-  top: 3%;
-  left: calc(6% - var(--_size) / 2);
-  width: var(--_size);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--_ink);
-  box-shadow:
-    inset -2px 2px 1px -1px color-mix(in oklab, var(--_paper) 95%, transparent),
-    inset -10px 10px 16px -12px color-mix(in oklab, var(--_paper) 45%, transparent),
-    inset -40px 40px 90px -50px color-mix(in oklab, var(--_glow) 22%, transparent),
-    0 0 4px 1px color-mix(in oklab, var(--_paper) 80%, transparent),
-    0 0 28px 4px color-mix(in oklab, var(--_glow) 70%, transparent),
-    0 0 110px 26px color-mix(in oklab, var(--_glow) 42%, transparent),
-    0 0 260px 80px color-mix(in oklab, var(--_glow) 24%, transparent),
-    0 0 520px 200px color-mix(in oklab, var(--_glow) 10%, transparent);
-}
-
-// Deeper dark behind the copy, so the glow frames the words instead of
-// competing with them.
-.scrim {
+// The sky: a faint lift of light around the eclipse and, on a dark page,
+// stars that thin out towards it.
+.sky {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: radial-gradient(60% 52% at 50% 46%, color-mix(in oklab, var(--_ink) 62%, transparent), color-mix(in oklab, var(--_ink) 26%, transparent) 55%, transparent 78%);
+  background: radial-gradient(ellipse 60% 55% at 50% 50%, color-mix(in oklab, #{lw.v(color-foreground)} 4%, transparent), transparent 75%);
+  pointer-events: none;
+
+  &::before {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 23% 41%, var(--_star) 0 0.6px, transparent 1.2px),
+      radial-gradient(circle at 71% 13%, var(--_star) 0 0.5px, transparent 1.1px),
+      radial-gradient(circle at 47% 77%, var(--_star) 0 0.8px, transparent 1.5px),
+      radial-gradient(circle at 89% 59%, var(--_star) 0 0.5px, transparent 1.1px),
+      radial-gradient(circle at 9% 87%, var(--_star) 0 0.7px, transparent 1.3px),
+      radial-gradient(circle at 61% 33%, var(--_star) 0 0.4px, transparent 1px);
+    background-size: 173px 157px, 211px 193px, 263px 239px, 307px 281px, 359px 331px, 419px 389px;
+    content: '';
+    opacity: 0.7;
+    mask-image: radial-gradient(circle at 50% 50%, transparent 22%, #000 62%);
+  }
+}
+
+// The eclipse, centred behind the copy. Everything is sized from the sun.
+.stage {
+  position: relative;
+  grid-area: 1 / 1;
+  width: var(--_d);
+  aspect-ratio: 1;
   pointer-events: none;
 }
 
+// The corona's streamers: rays of uneven strength round the rim, fading
+// outwards, reaching further at the sides than above and below. Two sets
+// turn slowly against each other.
+.corona,
+.halo {
+  position: absolute;
+  inset: calc(var(--_d) * -0.7);
+}
+
+.corona {
+  mask-image: radial-gradient(ellipse 50% 40% at 50% 50%, #000 52%, transparent 100%);
+}
+
+.streamers {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 8deg,
+    transparent 0deg,
+    haze(70%) 6deg,
+    haze(10%) 14deg,
+    haze(45%) 22deg,
+    transparent 30deg,
+    haze(85%) 41deg,
+    haze(20%) 52deg,
+    haze(55%) 63deg,
+    haze(5%) 74deg,
+    haze(35%) 88deg,
+    haze(90%) 97deg,
+    haze(15%) 109deg,
+    haze(50%) 121deg,
+    transparent 133deg,
+    haze(65%) 146deg,
+    haze(25%) 158deg,
+    haze(80%) 171deg,
+    haze(10%) 184deg,
+    haze(40%) 197deg,
+    haze(75%) 209deg,
+    haze(5%) 222deg,
+    haze(55%) 236deg,
+    haze(20%) 249deg,
+    haze(95%) 261deg,
+    haze(30%) 274deg,
+    haze(60%) 288deg,
+    transparent 301deg,
+    haze(70%) 314deg,
+    haze(15%) 327deg,
+    haze(50%) 340deg,
+    transparent 360deg
+  );
+  // The rim sits at 41.7% of the radius here.
+  mask-image: radial-gradient(circle closest-side, transparent 41.5%, #000 41.9%, rgb(0 0 0 / 45%) 47%, rgb(0 0 0 / 14%) 58%, transparent 80%);
+
+  &.counter {
+    opacity: 0.6;
+    scale: -1 1;
+  }
+
+  @include lw.motion {
+    animation: turn 260s linear infinite;
+
+    &.counter {
+      animation-duration: 380s;
+      animation-direction: reverse;
+    }
+
+    :host([data-paused]) & {
+      animation-play-state: paused;
+    }
+  }
+}
+
+// Fine rays drawn over the streamers, as in an engraving: two sets of
+// hairlines at different spacings, so they fall unevenly.
+.rays {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 3deg, haze(70%) 0deg 0.16deg, transparent 0.2deg 2.3deg),
+    repeating-conic-gradient(from 1deg, haze(45%) 0deg 0.12deg, transparent 0.16deg 3.7deg);
+  mask-image: radial-gradient(circle closest-side, transparent 41.6%, #000 42%, rgb(0 0 0 / 35%) 50%, transparent 72%);
+}
+
+// The light just round the rim, brightest at the edge.
+.halo {
+  background: radial-gradient(circle closest-side, transparent 41.6%, haze(100%) 41.75%, haze(50%) 42.4%, haze(20%) 44.5%, haze(8%) 49%, haze(3%) 58%, transparent 75%);
+}
+
+.sun,
+.moon {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.sun {
+  inset: 0;
+  background: var(--_light);
+  box-shadow:
+    0 0 2px 0 var(--_light),
+    0 0 10px 1px haze(90%),
+    0 0 36px 4px haze(45%);
+}
+
+// The moon covers the sun with a little to spare, shaded faintly from the
+// upper left so it reads as a sphere. It is the page's own colour at its
+// edge, so the copy on it sits on the plain background.
+.moon {
+  inset: calc(var(--_d) * -0.006);
+  background: radial-gradient(circle at 36% 30%, color-mix(in oklab, #{lw.v(color-foreground)} 4%, #{lw.v(color-background)}), #{lw.v(color-background)} 70%);
+  translate: calc(var(--_moon-x, 0) * var(--_d)) calc(var(--_moon-y, 0) * var(--_d));
+
+  @include lw.motion {
+    transition: translate 1.2s cubic-bezier(0.22, 0.7, 0.2, 1);
+  }
+}
+
+// The bead of sunlight where the crescent is widest, with a flare along
+// the rim. It turns about the centre to its place.
+.bead {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--_d) * 0.011);
+  aspect-ratio: 1;
+  margin: calc(var(--_d) * -0.0055);
+  border-radius: 50%;
+  background: var(--_light);
+  box-shadow:
+    0 0 5px 1px var(--_spark),
+    0 0 22px 6px haze(100%),
+    0 0 64px 16px haze(50%);
+  opacity: var(--_bead, 0);
+  rotate: var(--_bead-angle, 45deg);
+  transform: translateY(calc(var(--_d) / -2));
+
+  // A glint: a long flare along the rim and a short one across it.
+  &::before,
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    content: '';
+    translate: -50% -50%;
+  }
+
+  &::before {
+    width: calc(var(--_d) * 0.34);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--_spark) 50%, transparent);
+    opacity: 0.7;
+  }
+
+  &::after {
+    width: 1px;
+    height: calc(var(--_d) * 0.1);
+    background: linear-gradient(transparent, var(--_spark) 50%, transparent);
+    opacity: 0.55;
+  }
+
+  @include lw.motion {
+    transition:
+      rotate 1.2s cubic-bezier(0.22, 0.7, 0.2, 1),
+      opacity 1.2s cubic-bezier(0.22, 0.7, 0.2, 1);
+  }
+}
+
+// The first entrance is slower, easing in and out.
+@include lw.motion {
+  :host([data-arriving]) :is(.moon, .bead) {
+    transition-duration: 3.2s;
+    transition-timing-function: cubic-bezier(0.45, 0, 0.15, 1);
+  }
+}
+
+@keyframes turn {
+  to {
+    rotate: 1turn;
+  }
+}
+
 .content {
+  position: relative;
+  z-index: 2;
   display: flex;
   box-sizing: border-box;
-  width: 100%;
-  max-width: 56rem;
-  flex: 1;
+  max-width: 38rem;
+  grid-area: 1 / 1;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: clamp(5rem, 11cqi, 7.5rem) 1.5rem clamp(3rem, 7cqi, 4.5rem);
   text-align: center;
-}
 
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0 0 1.25rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-
-  &[hidden] {
-    display: none;
-  }
-
-  svg {
-    width: 1.125rem;
-    height: 1.125rem;
+  @include lw.motion {
+    animation: rise 900ms 300ms cubic-bezier(0.22, 0.7, 0.2, 1) both;
   }
 }
 
-.brand-logo {
-  display: block;
-  width: auto;
-  height: 2.75rem;
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 0.75rem;
+  }
 }
 
-// The announcement: a short tag in its own chip, then the line.
+// The announcement: a short tag in a solid chip, then the line, and an
+// arrow when it links somewhere.
 .badge {
   display: inline-flex;
   max-width: 100%;
@@ -109,12 +302,14 @@
   align-items: center;
   gap: 0.5rem;
   margin: 0;
-  padding: 0.25rem 0.875rem 0.25rem 0.25rem;
-  border: 1px solid color-mix(in oklab, var(--_paper) 12%, transparent);
+  padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+  border: 1px solid lw.v(color-border);
   border-radius: lw.v(radius-full);
-  background: color-mix(in oklab, var(--_paper) 5%, transparent);
+  background: color-mix(in oklab, #{lw.v(color-background)} 80%, transparent);
   font-size: lw.v(text-xs);
-  color: color-mix(in oklab, var(--_paper) 66%, transparent);
+  color: lw.v(color-muted-foreground);
+  text-decoration: none;
+  outline: none;
 
   &[hidden] {
     display: none;
@@ -122,7 +317,41 @@
 
   // Without a tag, even room on both sides.
   &:has(.tag[hidden]) {
-    padding-left: 0.875rem;
+    padding-left: 0.75rem;
+  }
+
+  > svg {
+    flex: none;
+    margin-left: -0.125rem;
+
+    @include lw.motion {
+      transition: translate lw.v(duration-normal) lw.v(ease-out);
+    }
+  }
+
+  &:not([href]) > svg {
+    display: none;
+  }
+
+  &[href] {
+    @include lw.motion {
+      transition:
+        border-color lw.v(duration-normal) lw.v(ease-out),
+        color lw.v(duration-normal) lw.v(ease-out);
+    }
+
+    &:hover {
+      border-color: color-mix(in oklab, #{lw.v(color-foreground)} 24%, transparent);
+      color: lw.v(color-foreground);
+
+      > svg {
+        translate: 0.125rem 0;
+      }
+    }
+
+    &:focus-visible {
+      @include lw.focus-ring;
+    }
   }
 }
 
@@ -130,12 +359,12 @@
   flex: none;
   padding: 0.125rem 0.5rem;
   border-radius: lw.v(radius-full);
-  background: color-mix(in oklab, var(--_paper) 13%, transparent);
+  background: lw.v(color-foreground);
   font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--_paper) 86%, transparent);
+  color: lw.v(color-background);
 
   &[hidden] {
     display: none;
@@ -149,104 +378,72 @@
 }
 
 .title {
-  margin: 1.5rem 0 0;
-  font-size: clamp(2.25rem, 6cqi, 4rem);
+  margin: 1.75rem 0 0;
+  font-size: clamp(2.75rem, 4.6cqi, 4.25rem);
   font-weight: 600;
-  line-height: 1.04;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 
 // Each line fades a little towards its foot. The colour is clipped to the
-// line's own box; padding reaches past the tails of a J or a Q, and the
+// line's own box; padding reaches past the tails of a g or a y, and the
 // matching negative margin keeps the lines where they were.
 .line {
   display: block;
   padding-block: 0.12em 0.28em;
   margin-block: -0.12em -0.28em;
-  background: linear-gradient(to bottom, var(--_paper) 50%, color-mix(in oklab, var(--_paper) 70%, transparent));
+  background: linear-gradient(to bottom, #{lw.v(color-foreground)} 50%, color-mix(in oklab, #{lw.v(color-foreground)} 62%, #{lw.v(color-background)}));
   background-clip: text;
   color: transparent;
 }
 
 .description {
-  max-width: 38rem;
-  margin: 1.5rem 0 0;
-  font-size: clamp(0.9375rem, 1.5cqi, 1.0625rem);
-  line-height: 1.7;
+  max-width: 31rem;
+  margin: 1.25rem 0 0;
+  font-size: clamp(0.9375rem, 1.3cqi, 1.0625rem);
+  line-height: 1.65;
   text-wrap: pretty;
-  color: color-mix(in oklab, var(--_paper) 58%, transparent);
+  color: lw.v(color-muted-foreground);
 }
 
 @include lw.hero-pill-actions;
+
+.actions {
+  margin-top: 2rem;
+}
 
 .secondary-icon {
   display: flex;
 }
 
-// The logos: in grey, dimmed, until pointed at.
-.trust {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0 1.5rem clamp(2.5rem, 6cqi, 3.5rem);
-  text-align: center;
-}
+.note {
+  margin: 1.5rem 0 0;
+  font: 500 0.6875rem / 1.5 lw.v(font-mono);
+  letter-spacing: 0.02em;
+  color: color-mix(in oklab, #{lw.v(color-muted-foreground)} 85%, transparent);
 
-.trusted {
-  margin: 0 0 1.25rem;
-  font: 600 0.6875rem lw.v(font-mono);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: color-mix(in oklab, var(--_paper) 34%, transparent);
-}
-
-.logos {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem 2.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: lw.v(text-md);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  opacity: 0.42;
-
-  @include lw.motion {
-    transition: opacity lw.v(duration-normal) ease-out;
-  }
-
-  &:hover {
-    opacity: 1;
-  }
-
-  svg {
-    flex: none;
-    width: 1.375rem;
-    height: 1.375rem;
+  &[hidden] {
+    display: none;
   }
 }
 
-.logo-image {
-  display: block;
-  width: auto;
-  height: 1.75rem;
-  filter: grayscale(1) brightness(1.6);
+// Too narrow for the copy to fit on the moon: the eclipse moves above it.
+@container (max-width: 59.99rem) {
+  .hero {
+    --_d: min(60cqi, 17rem);
 
-  @include lw.motion {
-    transition: filter lw.v(duration-normal) ease-out;
+    min-height: 0;
+    grid-template-rows: auto auto;
+    row-gap: clamp(3.5rem, 11cqi, 5rem);
+    padding: clamp(4.5rem, 14cqi, 6.5rem) 1.25rem clamp(3.5rem, 10cqi, 5rem);
   }
 
-  .logo:hover & {
-    filter: none;
+  .content {
+    grid-area: 2 / 1;
+  }
+
+  .title {
+    font-size: clamp(2.125rem, 8.5cqi, 3.25rem);
   }
 }
