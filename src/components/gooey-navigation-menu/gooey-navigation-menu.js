@@ -50,8 +50,8 @@ const iconMarkup = (icon, size) => {
  * @attr {'up'|'down'|'left'|'right'} direction - Which way the fan opens
  * @attr {number} size - The button's diameter, in pixels
  * @attr {number} child-size - Each petal's diameter, in pixels
- * @attr {string} fill - Color of the button and petals; the theme's foreground by default
- * @attr {string} ink - Color of the icons; the theme's background by default
+ * @attr {string} fill - Color of the button and petals; a surface of the page's own scheme by default, white in a light theme and a step lighter than the page in a dark one
+ * @attr {string} ink - Color of the icons; the theme's text colour by default
  * @attr {string} label - Accessible name of the button
  * @fires lw-select - A petal was chosen; `detail: { id, item }`
  * @fires lw-toggle - The fan opened or closed; `detail: { open }`

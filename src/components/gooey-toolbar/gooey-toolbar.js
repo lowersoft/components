@@ -57,8 +57,8 @@ const iconMarkup = (icon) => {
  * @attr {string} value - The chosen tool's id; the first by default
  * @attr {boolean} open - The panel is out
  * @attr {number} viscosity - How far the blend spreads; 0 keeps hard edges
- * @attr {string} fill - Color of the pill and the panel; the theme's foreground by default
- * @attr {string} ink - Color of the icons and panel text; the theme's background by default
+ * @attr {string} fill - Color of the pill and the panel; a surface of the page's own scheme by default, white in a light theme and a step lighter than the page in a dark one
+ * @attr {string} ink - Color of the icons and panel text; the theme's text colour by default
  * @attr {string} label - Accessible name of the toolbar
  * @fires lw-change - A tool was chosen; `detail: { value }`
  * @fires lw-toggle - The panel opened or closed; `detail: { open }`

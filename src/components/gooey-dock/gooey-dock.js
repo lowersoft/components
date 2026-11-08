@@ -46,8 +46,8 @@ const iconMarkup = (icon) => {
  * @attr {Array<object>} items (JSON)
  * @attr {string} value - The chosen item's id; the first by default
  * @attr {number} viscosity - How far the blend spreads while it stretches; 0 keeps hard edges
- * @attr {string} fill - The dock's color; the theme's foreground by default
- * @attr {string} ink - The icons' and capsule's color; the theme's background by default
+ * @attr {string} fill - The dock's color; a surface of the page's own scheme by default, white in a light theme and a step lighter than the page in a dark one
+ * @attr {string} ink - The icons' and capsule's color; the theme's text colour by default
  * @attr {string} label - Accessible name of the dock
  * @fires lw-change - Another item was chosen; `detail: { value, item }`
  * @csspart dock - The pill

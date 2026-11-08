@@ -1,10 +1,9 @@
 @use '../../styles' as lw;
 
 :host {
-  // The pill and panel take the theme's foreground and the icons its
-  // background, so the toolbar always stands out from the page.
-  --_fill: var(--lw-gooey-toolbar-fill, #{lw.v(color-foreground)});
-  --_ink: var(--lw-gooey-toolbar-ink, #{lw.v(color-background)});
+  // The pill and panel take a surface of the page's own scheme, lifted by
+  // an edge and a shadow, and the icons the text colour.
+  @include lw.gooey-colors(gooey-toolbar);
   --_soft: color-mix(in oklab, var(--_ink) 62%, var(--_fill));
   --_wash: color-mix(in oklab, var(--_ink) 8%, var(--_fill));
   --_wash-strong: color-mix(in oklab, var(--_ink) 14%, var(--_fill));
@@ -37,6 +36,8 @@ input {
 // The liquid: the pill, the panel and the neck between them, drawn under
 // everything else and run together by the goo filter.
 .goo {
+  @include lw.gooey-lift;
+
   position: absolute;
   top: 0;
   left: 0;
@@ -46,10 +47,6 @@ input {
 
 .shapes {
   fill: var(--_fill);
-
-  &[data-plain] {
-    filter: drop-shadow(0 10px 12px rgb(0 0 0 / 0.18));
-  }
 }
 
 .toolbar {

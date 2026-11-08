@@ -1002,3 +1002,21 @@
     text-wrap: pretty;
   }
 }
+
+// The gooey components' colours: their shapes are poured in a surface a
+// step off the page, light in a light theme and dark in a dark one, with
+// the text colour on them. `$name` names their `--lw-<name>-fill` and
+// `--lw-<name>-ink` overrides.
+@mixin gooey-colors($name) {
+  --_fill: var(--lw-#{$name}-fill, light-dark(#{fn.v(color-background)}, color-mix(in oklab, #{fn.v(color-foreground)} 9%, #{fn.v(color-background)})));
+  --_ink: var(--lw-#{$name}-ink, #{fn.v(color-foreground)});
+}
+
+// A hairline edge and a soft shadow that lift poured shapes off a page of
+// nearly the same colour. On the layer that holds the shapes, after the
+// goo filter has run them together.
+@mixin gooey-lift {
+  filter:
+    drop-shadow(0 0 0.5px light-dark(rgb(0 0 0 / 30%), rgb(255 255 255 / 18%)))
+    drop-shadow(0 10px 18px rgb(0 0 0 / 16%));
+}

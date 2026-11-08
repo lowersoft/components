@@ -49,8 +49,8 @@ const iconMarkup = (icon) => {
  * @attr {number} gap - Space between the capsule and the menu, in pixels
  * @attr {number} viscosity - How far the blend spreads; 0 keeps hard edges
  * @attr {boolean} open
- * @attr {string} fill - The capsule and menu color; the theme's foreground by default
- * @attr {string} ink - Text color on them; the theme's background by default
+ * @attr {string} fill - The capsule and menu color; a surface of the page's own scheme by default, white in a light theme and a step lighter than the page in a dark one
+ * @attr {string} ink - Text color on them; the theme's text colour by default
  * @attr {string} danger - Text color of destructive rows
  * @fires lw-select - A row was picked; `detail: { action }`
  * @fires lw-toggle - The menu opened or closed; `detail: { open }`

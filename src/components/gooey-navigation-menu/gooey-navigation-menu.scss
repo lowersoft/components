@@ -1,8 +1,7 @@
 @use '../../styles' as lw;
 
 :host {
-  --_fill: var(--lw-gooey-navigation-menu-fill, #{lw.v(color-foreground)});
-  --_ink: var(--lw-gooey-navigation-menu-ink, #{lw.v(color-background)});
+  @include lw.gooey-colors(gooey-navigation-menu);
   --_size: 60px;
   --_child: 44px;
   --_stage: 244px;
@@ -23,6 +22,8 @@
 }
 
 .goo {
+  @include lw.gooey-lift;
+
   position: absolute;
   inset: 0;
   overflow: visible;

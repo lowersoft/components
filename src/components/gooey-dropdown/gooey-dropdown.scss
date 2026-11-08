@@ -1,8 +1,7 @@
 @use '../../styles' as lw;
 
 :host {
-  --_fill: var(--lw-gooey-dropdown-fill, #{lw.v(color-foreground)});
-  --_ink: var(--lw-gooey-dropdown-ink, #{lw.v(color-background)});
+  @include lw.gooey-colors(gooey-dropdown);
   --_danger: var(--lw-gooey-dropdown-danger, #{lw.v(color-destructive)});
   --_soft: color-mix(in oklab, var(--_ink) 55%, var(--_fill));
   --_wash: color-mix(in oklab, var(--_ink) 9%, var(--_fill));
@@ -31,6 +30,8 @@ button {
 }
 
 .goo {
+  @include lw.gooey-lift;
+
   position: absolute;
   top: 0;
   overflow: visible;
@@ -39,10 +40,6 @@ button {
 
 .blobs {
   fill: var(--_fill);
-
-  &[data-plain] {
-    filter: drop-shadow(0 10px 12px rgb(0 0 0 / 0.2));
-  }
 }
 
 .trigger {

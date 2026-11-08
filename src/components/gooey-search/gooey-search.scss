@@ -1,8 +1,7 @@
 @use '../../styles' as lw;
 
 :host {
-  --_fill: var(--lw-gooey-search-fill, #{lw.v(color-foreground)});
-  --_ink: var(--lw-gooey-search-ink, #{lw.v(color-background)});
+  @include lw.gooey-colors(gooey-search);
   --_soft: color-mix(in oklab, var(--_ink) 55%, var(--_fill));
   --_wash: color-mix(in oklab, var(--_ink) 9%, var(--_fill));
   --_width: 400px;
@@ -38,6 +37,8 @@ input {
 }
 
 .goo {
+  @include lw.gooey-lift;
+
   position: absolute;
   top: 0;
   left: 0;
@@ -47,10 +48,6 @@ input {
 
 .blobs {
   fill: var(--_fill);
-
-  &[data-plain] {
-    filter: drop-shadow(0 10px 12px rgb(0 0 0 / 0.2));
-  }
 }
 
 .trigger {

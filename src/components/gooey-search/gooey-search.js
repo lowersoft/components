@@ -61,8 +61,8 @@ const iconMarkup = (icon, size = 18) => {
  * @attr {number} viscosity - How far the blend spreads; 0 keeps hard edges
  * @attr {boolean} open
  * @attr {boolean} no-shortcut - Turns off ⌘K / Ctrl+K
- * @attr {string} fill - Field and panel color; the theme's foreground by default
- * @attr {string} ink - Text color on them; the theme's background by default
+ * @attr {string} fill - Field and panel color; a surface of the page's own scheme by default, white in a light theme and a step lighter than the page in a dark one
+ * @attr {string} ink - Text color on them; the theme's text colour by default
  * @fires lw-select - A place was picked; `detail: { item }`; cancel it to stay put
  * @fires lw-ask - An assistant was asked; `detail: { engine, query }`
  * @fires lw-toggle - It opened or closed; `detail: { open }`

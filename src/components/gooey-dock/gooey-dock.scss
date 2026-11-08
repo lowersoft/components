@@ -1,8 +1,7 @@
 @use '../../styles' as lw;
 
 :host {
-  --_fill: var(--lw-gooey-dock-fill, #{lw.v(color-foreground)});
-  --_ink: var(--lw-gooey-dock-ink, #{lw.v(color-background)});
+  @include lw.gooey-colors(gooey-dock);
 
   display: inline-block;
   font-family: lw.v(font-sans);
@@ -18,8 +17,9 @@
   border-radius: lw.v(radius-full);
   background: var(--_fill);
   box-shadow:
+    0 0 0 1px light-dark(rgb(0 0 0 / 8%), rgb(255 255 255 / 9%)),
     0 1px 1px rgb(0 0 0 / 0.06),
-    0 10px 24px rgb(0 0 0 / 0.2);
+    0 10px 24px rgb(0 0 0 / 0.16);
 }
 
 .track {
