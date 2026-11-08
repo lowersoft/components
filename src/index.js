@@ -234,3 +234,4 @@ export * from './components/customer-stories/index.js';
 export * from './components/morphing-wordmarks/index.js';
 export * from './components/security-grid/index.js';
 export * from './components/workspace-composer/index.js';
+export * from './components/upload-stage/index.js';

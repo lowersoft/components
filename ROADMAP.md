@@ -237,6 +237,7 @@
 - [x] Morphing wordmarks
 - [x] Security grid
 - [x] Workspace composer
+- [x] Upload stage
 - [x] Stats headline
 - [x] Install headline
 - [x] Inline chips headline

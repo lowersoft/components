@@ -1,0 +1,453 @@
+@use '../../styles' as lw;
+
+:host {
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_edge: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+  --_ghost: color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent);
+  --_window: light-dark(#{lw.v(color-background)}, color-mix(in oklab, #{lw.v(color-foreground)} 6%, #{lw.v(color-background)}));
+  --_glass: color-mix(in oklab, #{lw.v(color-background)} 88%, transparent);
+  --_ease: cubic-bezier(0.22, 0.7, 0.2, 1);
+
+  container-type: inline-size;
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  color: lw.v(color-foreground);
+}
+
+h2,
+h3,
+p,
+ul {
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+// The eyebrow, the headline, a sentence and the actions, centred.
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.eyebrow {
+  margin-bottom: 1rem;
+  font: 500 lw.v(text-xs) lw.v(font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--_muted);
+}
+
+.title {
+  max-width: 40rem;
+  font-size: clamp(2rem, 5cqi, 3.25rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 34rem;
+  margin-top: 1.125rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--_muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+// The second action is drawn with a dashed edge, like a tray waiting for files.
+.secondary::part(button) {
+  border-style: dashed;
+}
+
+// The stage: a softened forest with the drop zone floating on it.
+.stage {
+  position: relative;
+  display: grid;
+  width: min(100%, 46rem);
+  min-height: clamp(18rem, 40cqi, 20rem);
+  box-sizing: border-box;
+  place-items: center;
+  isolation: isolate;
+  overflow: hidden;
+  margin: clamp(2.5rem, 6cqi, 3.5rem) auto 0;
+  padding: clamp(1.25rem, 4cqi, 2rem);
+  border-radius: 1.5rem;
+  background: #3e4230;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+
+// Redwoods out of focus: dark trunks on the left, the sun breaking through
+// at the upper right in long shafts, and undergrowth along the foot.
+.scene {
+  position: absolute;
+  z-index: -1;
+  inset: -10%;
+  background:
+    radial-gradient(36% 42% at 84% 6%, rgb(255 236 196 / 95%), transparent 72%),
+    linear-gradient(115deg, transparent 40%, rgb(255 240 210 / 22%) 45%, transparent 51%, transparent 57%, rgb(255 240 210 / 15%) 62%, transparent 68%),
+    linear-gradient(90deg, transparent 0 5%, #1d1913 5% 13%, transparent 13% 21%, #29221a 21% 25%, transparent 25% 68%, #241e16 68% 74%, transparent 74% 88%, #1a1611 88% 94%, transparent 94%),
+    radial-gradient(90% 38% at 50% 106%, #3a4925 0 55%, transparent 60%),
+    linear-gradient(180deg, #4b4a39 0%, #5f5b44 34%, #3f4630 64%, #252a1b 100%);
+  filter: blur(14px) saturate(1.05);
+
+  .stage[data-photo] & {
+    display: none;
+  }
+}
+
+.photo {
+  position: absolute;
+  z-index: -1;
+  inset: -4%;
+  width: 108%;
+  height: 108%;
+  object-fit: cover;
+  filter: blur(5px);
+}
+
+// The drop zone: glass around a dashed tray, the chips under it.
+.card {
+  box-sizing: border-box;
+  width: min(100%, 22.5rem);
+  padding: 0.5rem;
+  border: 1px solid var(--_edge);
+  border-radius: 1.375rem;
+  background: var(--_glass);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 25%) inset,
+    0 1.5rem 3rem -1rem rgb(0 0 0 / 45%);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+
+.zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.75rem 1.25rem 1.375rem;
+  border: 1.5px dashed color-mix(in oklab, #{lw.v(color-foreground)} 20%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, transparent);
+
+  @include lw.motion {
+    transition:
+      border-color 200ms var(--_ease),
+      background-color 200ms var(--_ease);
+  }
+
+  // Files over the zone light it up.
+  :host([data-dragging]) & {
+    border-color: lw.v(color-foreground);
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 7%, transparent);
+  }
+}
+
+// Three file cards fanned over the button; they spread when the zone is
+// pointed at or files are dragged over it.
+.fan {
+  position: relative;
+  width: 7.5rem;
+  height: 3.25rem;
+}
+
+.sheet {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  display: grid;
+  width: 2.25rem;
+  height: 2.75rem;
+  margin-left: -1.125rem;
+  place-items: center;
+  border: 1px solid var(--_edge);
+  border-radius: 0.45rem;
+  background: var(--_window);
+  box-shadow: 0 0.375rem 0.75rem -0.375rem rgb(0 0 0 / 35%);
+  color: var(--_muted);
+
+  @include lw.motion {
+    transition:
+      translate 400ms var(--_ease),
+      rotate 400ms var(--_ease);
+  }
+
+  &:nth-child(1) {
+    rotate: -14deg;
+    translate: -1.75rem 0.25rem;
+  }
+
+  &:nth-child(2) {
+    z-index: 1;
+    translate: 0 -0.15rem;
+  }
+
+  &:nth-child(3) {
+    rotate: 14deg;
+    translate: 1.75rem 0.25rem;
+  }
+
+  :is(.card:hover, :host([data-dragging]) .card) & {
+    &:nth-child(1) {
+      rotate: -20deg;
+      translate: -2.3rem 0.15rem;
+    }
+
+    &:nth-child(2) {
+      translate: 0 -0.5rem;
+    }
+
+    &:nth-child(3) {
+      rotate: 20deg;
+      translate: 2.3rem 0.15rem;
+    }
+  }
+}
+
+.hint {
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.625rem 0.25rem 0.25rem;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.625rem;
+  border: 1px solid var(--_edge);
+  border-radius: 0.5rem;
+  background: lw.v(color-background);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  box-shadow: lw.v(shadow-sm);
+
+  svg {
+    color: var(--_muted);
+  }
+}
+
+// Three cards of what the desk makes of each kind of file; stacked on
+// narrow screens.
+.features {
+  display: grid;
+  gap: 1rem;
+  margin-top: clamp(2.5rem, 6cqi, 3.5rem);
+  padding: 0;
+  list-style: none;
+
+  @container (min-width: 48rem) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.feature {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 0.75rem 0.75rem 1.5rem;
+  border: 1px solid var(--_line);
+  border-radius: 1.25rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, #{lw.v(color-background)});
+}
+
+.name {
+  margin: 1.25rem 0.5rem 0;
+  font-size: lw.v(text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.text {
+  margin: 0.5rem 0.5rem 0;
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--_muted);
+}
+
+// Every drawing takes the same height, so the titles under them line up.
+.art {
+  display: grid;
+  height: 8.75rem;
+}
+
+.window {
+  display: grid;
+  box-sizing: border-box;
+  align-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--_edge);
+  border-radius: 0.875rem;
+  background: var(--_window);
+  box-shadow: 0 0.5rem 1.25rem -0.75rem rgb(0 0 0 / 30%);
+  font-size: lw.v(text-xs);
+}
+
+.mock-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.file,
+.time {
+  font-family: lw.v(font-mono);
+  color: var(--_muted);
+}
+
+.badge {
+  padding: 0.125rem 0.5rem;
+  border-radius: lw.v(radius-full);
+  background: lw.v(color-foreground);
+  font-weight: 600;
+  color: lw.v(color-background);
+}
+
+.lines {
+  display: grid;
+  gap: 0.45rem;
+
+  i {
+    display: block;
+    height: 0.375rem;
+    border-radius: 1rem;
+    background: var(--_ghost);
+  }
+}
+
+.mock-foot {
+  color: var(--_muted);
+}
+
+// A flame graph, root at the foot, its hot path drawn solid.
+.flame {
+  position: relative;
+  height: 4.75rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3%, transparent);
+
+  i {
+    position: absolute;
+    bottom: calc(0.25rem + var(--depth) * 0.75rem);
+    height: 0.62rem;
+    border-radius: 2px;
+    background: var(--_ghost);
+    margin-left: 0.25rem;
+    max-width: calc(100% - 0.5rem);
+
+    @include lw.motion {
+      transition: background-color 400ms var(--_ease);
+    }
+  }
+
+  .hot {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 55%, transparent);
+
+    .feature:hover & {
+      background: lw.v(color-foreground);
+    }
+  }
+}
+
+.tag {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.375rem;
+  padding: 0.125rem 0.4375rem;
+  border: 1px solid var(--_edge);
+  border-radius: 0.375rem;
+  background: var(--_window);
+  font-weight: 600;
+}
+
+// A trace's timeline, the playhead moving on when pointed at, and its
+// spans with the slowest marked.
+.scrub {
+  padding: 0.375rem 0;
+}
+
+.track {
+  position: relative;
+  display: block;
+  height: 0.3125rem;
+  border-radius: 1rem;
+  background: var(--_ghost);
+}
+
+.done,
+.knob {
+  @include lw.motion {
+    transition:
+      width 900ms var(--_ease),
+      left 900ms var(--_ease);
+  }
+}
+
+.done {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 38%;
+  border-radius: inherit;
+  background: lw.v(color-foreground);
+
+  .feature:hover & {
+    width: 82%;
+  }
+}
+
+.knob {
+  position: absolute;
+  top: 50%;
+  left: 38%;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: lw.v(color-foreground);
+  box-shadow: 0 0 0 2px var(--_window);
+  translate: -50% -50%;
+
+  .feature:hover & {
+    left: 82%;
+  }
+}
+
+.spans {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.375rem;
+
+  i {
+    height: 1.75rem;
+    border-radius: 0.375rem;
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 7%, transparent);
+  }
+
+  .slow {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 18%, transparent);
+  }
+}
