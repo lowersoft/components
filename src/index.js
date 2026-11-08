@@ -227,3 +227,4 @@ export * from './components/signature-footer/index.js';
 export * from './components/spotlight-footer/index.js';
 export * from './components/pixel-footer/index.js';
 export * from './components/video-player/index.js';
+export * from './components/select/index.js';

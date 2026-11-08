@@ -1,7 +1,5 @@
 @use '../../styles' as lw;
 
-@include lw.picker;
-
 :host {
   --_line: #{lw.v(color-border)};
   --_muted: #{lw.v(color-muted-foreground)};
@@ -218,19 +216,26 @@ input {
   }
 }
 
-// The region, as a full-width select.
-.picker,
-.picker-trigger {
-  display: flex;
+// The region: the library's select, set in the form's well like the name.
+.region {
   width: 100%;
-}
+  font-size: inherit;
 
-.picker-trigger {
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--_line);
-  background: var(--_well);
-  font-size: lw.v(text-md);
+  &::part(label) {
+    margin-bottom: 0.625rem;
+  }
+
+  &::part(field) {
+    height: auto;
+    padding: 0.75rem 1rem;
+    border-color: var(--_line);
+    background: var(--_well);
+    font-size: lw.v(text-md);
+  }
+
+  &::part(field):hover {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 35%, transparent);
+  }
 }
 
 .visibility {

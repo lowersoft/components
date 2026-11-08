@@ -2,10 +2,8 @@ import { escapeHtml } from '../../core/dom.js';
 import { CHECK_ICON, iconStyles, SPINNER_ICON, strokeIcon } from '../../core/icons.js';
 import { globe, x } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
-import { menuStyles } from '../../core/menu.js';
-import { createPicker, pickerMarkup } from '../../core/picker.js';
-import { swapStyles } from '../../core/swap.js';
 import '../button/index.js';
+import '../select/index.js';
 import styles from './create-project-form.scss?inline';
 
 // How long typing rests before the name is checked.
@@ -63,7 +61,7 @@ const slugOf = (name) => name.toLowerCase().normalize('NFKD').replace(/\p{M}/gu,
  * @fires lw-create - The project was created; `detail: { name, slug, template, region, visibility }`
  */
 export class LwCreateProjectForm extends LwElement {
-  static styles = [iconStyles, menuStyles, swapStyles, styles];
+  static styles = [iconStyles, styles];
   static props = {
     heading: { default: 'New project' },
     description: { default: 'Builds on every push to main and ships a release binary for each target. You can change any of this later.' },
@@ -76,7 +74,6 @@ export class LwCreateProjectForm extends LwElement {
     taken: { type: Object, default: DEMO_TAKEN },
   };
 
-  #regionPicker;
   #checkTimer = 0;
   // The slug last checked, and whether it was free; null while checking.
   #checked = { slug: '', free: null };
@@ -85,15 +82,14 @@ export class LwCreateProjectForm extends LwElement {
     return `<form class="form" novalidate><header><h2 class="title"></h2><p class="description"></p></header>
 <section class="field"><label class="label" for="name">Project name</label><div class="name-box"><input class="name" id="name" type="text" autocomplete="off" spellcheck="false" placeholder="Billing daemon" aria-describedby="name-hint availability"><p class="address">${strokeIcon(globe, 16)}<span class="domain"></span><span class="slug"></span><span class="availability" id="availability" aria-live="polite"></span></p></div><p class="hint" id="name-hint">Becomes the project's address. Branches get their own.</p></section>
 <section class="field"><p class="label" id="template-label">Template</p><div class="templates" role="radiogroup" aria-labelledby="template-label"></div></section>
-<section class="field"><p class="label" id="region-label">Build region</p>${pickerMarkup('region-menu')}</section>
+<section class="field"><lw-select class="region" label="Build region"></lw-select></section>
 <section class="field"><p class="label" id="visibility-label">Visibility</p><div class="visibility" role="radiogroup" aria-labelledby="visibility-label"><button class="seg" type="button" role="radio" data-value="private">Private</button><button class="seg" type="button" role="radio" data-value="public">Public</button></div></section>
 <footer class="foot"><p class="error" role="alert"></p><lw-button class="create" type="submit">Create project</lw-button></footer></form>`;
   }
 
   connected() {
     const options = { signal: this.signal };
-    this.#regionPicker = createPicker(this.query('.picker'), this.signal, (value) => (this.region = value));
-    this.query('.picker-trigger').setAttribute('aria-labelledby', 'region-label');
+    this.query('.region').addEventListener('change', (event) => (this.region = event.target.value), options);
     this.query('.name').addEventListener('input', () => this.#typed(), options);
     this.query('.templates').addEventListener('click', (event) => {
       const card = event.target.closest('.template');
@@ -122,7 +118,9 @@ export class LwCreateProjectForm extends LwElement {
     }
     for (const card of this.shadowRoot.querySelectorAll('.template')) this.#check(card, card.dataset.id === this.template);
     for (const seg of this.shadowRoot.querySelectorAll('.seg')) this.#check(seg, seg.dataset.value === this.visibility);
-    this.#regionPicker?.set(this.regions.map((region) => ({ value: region.value, label: region.label, description: `${region.code} · ~${region.latency} ms` })), this.region);
+    const select = this.query('.region');
+    if (changed.has('regions')) select.options = this.regions.map((region) => ({ value: region.value, label: region.label, description: `${region.code} · ~${region.latency} ms` }));
+    select.value = this.region;
     this.#paintName();
   }
 

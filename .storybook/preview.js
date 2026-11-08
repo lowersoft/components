@@ -16,7 +16,7 @@ export default {
           'Controls', [
             'Buttons', ['Base', 'Actions', 'Social', 'Toggles', 'Styled'],
             'Fields', ['Text Input', 'Textarea', 'Floating Label', 'Number Input', 'Password Input', '*'],
-            'Choices', ['Checkbox', 'Radio Group', 'Switch', '*'],
+            'Choices', ['Checkbox', 'Radio Group', 'Select', 'Switch', '*'],
             'Sliders & Dials', ['Range', '*'],
             'Pickers',
             'Upload & Signature',

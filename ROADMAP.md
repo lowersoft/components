@@ -157,6 +157,7 @@
 - [x] Number input
 - [x] Checkbox
 - [x] Radio group
+- [x] Select
 - [x] Switch
 - [x] Range
 - [x] File upload

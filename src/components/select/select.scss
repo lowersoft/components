@@ -1,0 +1,70 @@
+@use '../../styles' as lw;
+
+// The label, box, hint and error come from the field styles; the box here
+// is the button that opens the menu.
+
+:host {
+  --_height: 2.5rem;
+}
+
+:host([size='sm']) {
+  --_height: 2rem;
+  --_padding: 0.625rem;
+  --_text: #{lw.v(text-xs)};
+}
+
+:host([size='lg']) {
+  --_height: 2.875rem;
+  --_padding: 0.875rem;
+  --_text: #{lw.v(text-md)};
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--_height);
+  padding: 0 var(--_padding);
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+
+  // Open, it keeps the ring it has while focused.
+  &[aria-expanded='true'] {
+    --_edge: var(--_line);
+    --_glow: color-mix(in oklab, #{lw.v(color-ring)} 30%, transparent);
+  }
+
+  > svg {
+    flex: none;
+    margin-left: auto;
+    color: lw.v(color-muted-foreground);
+
+    @include lw.motion {
+      transition: rotate 200ms lw.v(ease-out);
+    }
+  }
+
+  &[aria-expanded='true'] > svg {
+    rotate: 180deg;
+  }
+}
+
+.value {
+  min-width: 0;
+  white-space: nowrap;
+
+  > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :host([data-placeholder]) & {
+    color: lw.v(color-muted-foreground);
+  }
+}
