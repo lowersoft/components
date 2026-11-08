@@ -1,0 +1,220 @@
+@use '../../styles' as lw;
+
+@include lw.footer-base;
+
+:host {
+  --_accent: var(--lw-four-column-footer-accent, #{lw.v(brand-orange)});
+  --_dot: var(--lw-four-column-footer-dot, #{lw.v(brand-red)});
+  --_word: var(--lw-four-column-footer-word, #{lw.v(brand-navy)});
+  --_muted: #{lw.v(color-muted-foreground)};
+
+  overflow: clip;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+// Each band runs edge to edge, so its hairline does too; its content keeps
+// to the column.
+.band + .band {
+  border-top: 1px solid lw.v(color-border);
+}
+
+.container {
+  padding-block: 0;
+}
+
+.intro .container {
+  display: grid;
+  justify-items: start;
+  gap: 1.25rem;
+  padding-block: clamp(3rem, 7cqi, 4.5rem) clamp(2.75rem, 6cqi, 4rem);
+}
+
+// Lowersoft's wordmark is a long line; it keeps to the height of a word.
+.brand-logo {
+  height: 1.25rem;
+}
+
+.description {
+  max-width: 24rem;
+  line-height: 1.65;
+  color: var(--_muted);
+}
+
+.reach {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-top: 0.5rem;
+}
+
+.email {
+  font-weight: 500;
+  text-decoration: underline 1px transparent;
+  text-underline-offset: 0.3em;
+
+  @include lw.motion {
+    transition: text-decoration-color 150ms ease-out;
+  }
+
+  &:hover {
+    text-decoration-color: var(--_accent);
+  }
+}
+
+.socials {
+  display: flex;
+  gap: 0.125rem;
+  padding: 0;
+  list-style: none;
+}
+
+.social {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: lw.v(radius-md);
+  color: var(--_muted);
+
+  @include lw.motion {
+    transition: color 150ms ease-out;
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+// The columns at the start of the band, the stamp at its end; on a narrow
+// screen the columns pair up and the stamp follows them.
+.middle .container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 3rem;
+  padding-block: clamp(2.5rem, 6cqi, 3.5rem) clamp(3rem, 7cqi, 4.5rem);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 9.5rem));
+  gap: 2.5rem clamp(1.5rem, 4cqi, 3rem);
+
+  @container (min-width: 40rem) {
+    grid-template-columns: repeat(4, minmax(0, 9.5rem));
+  }
+}
+
+.column-title {
+  margin-bottom: 1.25rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--_muted);
+}
+
+// A link under the mouse is marked with a small square in the gutter.
+.link {
+  position: relative;
+
+  &::before {
+    position: absolute;
+    top: 50%;
+    left: -0.875rem;
+    width: 0.3125rem;
+    height: 0.3125rem;
+    background: var(--_accent);
+    content: '';
+    transform: translateY(-50%) scale(0);
+
+    @include lw.motion {
+      transition: transform 200ms lw.v(ease-out);
+    }
+  }
+
+  &:is(:hover, :focus-visible)::before {
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+.stamp {
+  display: grid;
+  align-content: start;
+  gap: 0.375rem;
+
+  @container (min-width: 56rem) {
+    justify-items: end;
+    text-align: end;
+  }
+}
+
+.note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+
+  &::before {
+    width: 0.375rem;
+    height: 0.375rem;
+    flex: none;
+    background: var(--_accent);
+    content: '';
+  }
+}
+
+.copyright {
+  color: var(--_muted);
+}
+
+// The name across the full width: heavy lowercase fading from left to right
+// into the word colour, with a square full stop, trimmed to its letters so
+// it stands on the footer's foot. A soft light rests near its start and
+// follows the mouse across it in the accent.
+.mark .container {
+  container-type: inline-size;
+  padding-top: clamp(2.5rem, 7cqi, 5rem);
+}
+
+.word {
+  --_from: light-dark(color-mix(in oklab, var(--_word) 36%, #{lw.v(color-background)}), color-mix(in oklab, var(--_word) 62%, #{lw.v(color-foreground)} 38%));
+  --_to: light-dark(color-mix(in oklab, var(--_word) 7%, #{lw.v(color-background)}), color-mix(in oklab, var(--_word) 40%, #{lw.v(color-background)}));
+  --_sheen: light-dark(color-mix(in oklab, var(--_word) 70%, #{lw.v(color-background)}), color-mix(in oklab, var(--_word) 30%, #{lw.v(color-foreground)}));
+
+  display: block;
+  width: max-content;
+  margin: calc(-1em * var(--_top, 0)) 0 calc(-1em * var(--_bottom, 0)) calc(-1em * var(--_lead, 0));
+  background:
+    radial-gradient(circle 0.9em at var(--spot-x, 14%) var(--spot-y, 22%), var(--_sheen), transparent),
+    linear-gradient(90deg, var(--_from), var(--_to));
+  background-clip: text;
+  font-size: min(calc(var(--_size, 18) * 1cqi), 18rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  white-space: nowrap;
+  color: transparent;
+  user-select: none;
+
+  &[data-lit] {
+    --_sheen: var(--_accent);
+  }
+}
+
+.dot {
+  display: inline-block;
+  width: 0.17em;
+  height: 0.17em;
+  margin-left: 0.07em;
+  background: var(--_dot);
+}
