@@ -51,7 +51,7 @@ The sidebar has eight roots. Pick the root by what the component is for, then th
 | Media | Pictures, video and sound | Players, Editors, Galleries, Carousels & Marquees |
 | Feedback | Status, progress and notices | Banners, Status & Progress |
 | Flows | A whole task in an app: signing in, a dialog, a form | Auth, Dialogs, Forms |
-| Sections | Full-width blocks of a marketing page | Heroes, Headlines, How It Works, Pricing (Plans, Tables, Usage & Checkout), Comparisons, Social Proof, FAQs, Footers |
+| Sections | Full-width blocks of a marketing page | Heroes, Headlines, Features, How It Works, Pricing (Plans, Tables, Usage & Checkout), Comparisons, Social Proof, FAQs, Footers |
 | Effects | Decoration behind or around content | Text (Cycling, Interactive, Accents), Backgrounds, Surfaces, Pointer |
 
 Split a group into subgroups only once it holds more than about fifteen components that fall into clear kinds. A new group or subgroup also needs a place in `storySort` in `.storybook/preview.js`, and the scaffold opens one only with `--new-category`:

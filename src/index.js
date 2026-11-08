@@ -232,3 +232,4 @@ export * from './components/metric-testimonials/index.js';
 export * from './components/morphing-logo-grid/index.js';
 export * from './components/customer-stories/index.js';
 export * from './components/morphing-wordmarks/index.js';
+export * from './components/security-grid/index.js';
