@@ -423,30 +423,31 @@
     }
   }
 
-  // The leaving menu fades out before the arriving one fades in, so their
-  // text never overlaps half-transparent while they slide.
+  // The leaving menu slides off and fades out first; the arriving one then
+  // glides the whole way in from the side of its trigger as it fades in, so
+  // the direction reads and their text never overlaps half-transparent.
   .content {
     &[data-motion='from-end'] {
       animation:
-        enter-from-end 250ms lw.v(ease-out),
-        fade-in 170ms ease 80ms backwards;
+        enter-from-end 250ms lw.v(ease-in-out) 80ms backwards,
+        fade-in 120ms ease 80ms backwards;
     }
 
     &[data-motion='from-start'] {
       animation:
-        enter-from-start 250ms lw.v(ease-out),
-        fade-in 170ms ease 80ms backwards;
+        enter-from-start 250ms lw.v(ease-in-out) 80ms backwards,
+        fade-in 120ms ease 80ms backwards;
     }
 
     &[data-motion='to-end'] {
       animation:
-        exit-to-end 250ms ease forwards,
+        exit-to-end 200ms ease forwards,
         fade-out 80ms ease forwards;
     }
 
     &[data-motion='to-start'] {
       animation:
-        exit-to-start 250ms ease forwards,
+        exit-to-start 200ms ease forwards,
         fade-out 80ms ease forwards;
     }
   }
@@ -480,25 +481,25 @@
 
 @keyframes enter-from-end {
   from {
-    transform: translateX(200px);
+    transform: translateX(150px);
   }
 }
 
 @keyframes enter-from-start {
   from {
-    transform: translateX(-200px);
+    transform: translateX(-150px);
   }
 }
 
 @keyframes exit-to-end {
   to {
-    transform: translateX(200px);
+    transform: translateX(150px);
   }
 }
 
 @keyframes exit-to-start {
   to {
-    transform: translateX(-200px);
+    transform: translateX(-150px);
   }
 }
 
