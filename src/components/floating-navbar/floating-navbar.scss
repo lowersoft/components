@@ -423,21 +423,31 @@
     }
   }
 
+  // The leaving menu fades out before the arriving one fades in, so their
+  // text never overlaps half-transparent while they slide.
   .content {
     &[data-motion='from-end'] {
-      animation: enter-from-end 250ms lw.v(ease-out);
+      animation:
+        enter-from-end 250ms lw.v(ease-out),
+        fade-in 170ms ease 80ms backwards;
     }
 
     &[data-motion='from-start'] {
-      animation: enter-from-start 250ms lw.v(ease-out);
+      animation:
+        enter-from-start 250ms lw.v(ease-out),
+        fade-in 170ms ease 80ms backwards;
     }
 
     &[data-motion='to-end'] {
-      animation: exit-to-end 250ms ease forwards;
+      animation:
+        exit-to-end 250ms ease forwards,
+        fade-out 80ms ease forwards;
     }
 
     &[data-motion='to-start'] {
-      animation: exit-to-start 250ms ease forwards;
+      animation:
+        exit-to-start 250ms ease forwards,
+        fade-out 80ms ease forwards;
     }
   }
 }
@@ -470,28 +480,24 @@
 
 @keyframes enter-from-end {
   from {
-    opacity: 0;
     transform: translateX(200px);
   }
 }
 
 @keyframes enter-from-start {
   from {
-    opacity: 0;
     transform: translateX(-200px);
   }
 }
 
 @keyframes exit-to-end {
   to {
-    opacity: 0;
     transform: translateX(200px);
   }
 }
 
 @keyframes exit-to-start {
   to {
-    opacity: 0;
     transform: translateX(-200px);
   }
 }
