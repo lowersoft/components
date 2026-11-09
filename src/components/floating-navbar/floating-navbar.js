@@ -34,8 +34,6 @@ const DEMO_ITEMS = [
       { label: 'FAQ', description: 'Quick answers to the questions we hear most.', href: '/faq' },
     ],
   },
-  { label: 'Work', href: '/work' },
-  { label: 'Forum', href: '/forum' },
   { label: 'LowerDB', href: '/lowerdb' },
 ];
 
