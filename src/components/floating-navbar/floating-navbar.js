@@ -1,12 +1,12 @@
 import '../button/index.js';
 import '../hamburger-menu/index.js';
+import '../switch-button/index.js';
 import { LOWERSOFT, themedImage } from '../../core/brand.js';
 import { escapeHtml } from '../../core/dom.js';
 import { hideHighlight, moveHighlight } from '../../core/highlight.js';
 import { strokeIcon } from '../../core/icons.js';
-import { arrowUpRight, chevronDown, contrast } from '../../core/lucide.js';
+import { arrowUpRight, chevronDown } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
-import { appliedTheme, setTheme, watchTheme } from '../../core/theme.js';
 import styles from './floating-navbar.scss?inline';
 
 // Every link is a route of its own, never an anchor on one long page.
@@ -162,7 +162,7 @@ export class LwFloatingNavbar extends LwElement {
 <nav class="nav"><ul class="list"></ul><span class="pill" aria-hidden="true"></span>
 <div class="stage" hidden><span class="indicator" aria-hidden="true"><span class="arrow"></span></span><div class="bridge"><div class="viewport" part="viewport"></div></div></div>
 </nav>
-<div class="end"><slot name="actions"><lw-button class="theme" variant="ghost" icon-only>${strokeIcon(contrast, 18)}<span class="visually-hidden theme-label"></span></lw-button><lw-button class="cta"></lw-button></slot><lw-hamburger-menu class="burger" variant="duo" size="20" aria-controls="mobile"></lw-hamburger-menu></div>
+<div class="end"><slot name="actions"><lw-switch-button class="theme" variant="outline" icon-only dark-label="Dark theme"></lw-switch-button><lw-button class="cta"></lw-button></slot><lw-hamburger-menu class="burger" variant="duo" size="20" aria-controls="mobile"></lw-hamburger-menu></div>
 </div>
 <div class="mobile" id="mobile" inert><div class="m-clip"><nav class="m-nav"><ul class="m-list"></ul></nav><lw-button class="cta m-cta"></lw-button></div></div>
 </div></div>
@@ -198,10 +198,6 @@ export class LwFloatingNavbar extends LwElement {
     document.addEventListener('pointerdown', (event) => {
       if (!event.composedPath().includes(nav)) this.#setOpen(-1);
     }, options);
-
-    this.query('.theme').addEventListener('click', () => setTheme(appliedTheme() === 'dark' ? 'light' : 'dark'), options);
-    watchTheme(() => this.#paintTheme(), this.signal);
-    this.#paintTheme();
 
     const burger = this.query('.burger');
     burger.addEventListener('lw-change', (event) => this.#setMobile(event.detail.open), options);
@@ -305,13 +301,6 @@ export class LwFloatingNavbar extends LwElement {
     brand.innerHTML = mark + words;
     // With the mark alone, its image names the link.
     if (this.mark && !this.logo) brand.querySelector('.brand-name')?.setAttribute('aria-hidden', 'true');
-  }
-
-  #paintTheme() {
-    const dark = appliedTheme() === 'dark';
-    const button = this.query('.theme');
-    button.toggleAttribute('data-dark', dark);
-    this.query('.theme-label').textContent = dark ? 'Switch to light theme' : 'Switch to dark theme';
   }
 
   // Marks the links to the page you are on, and the item of its section.

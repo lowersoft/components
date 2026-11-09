@@ -184,21 +184,6 @@
   gap: 0.25rem;
 }
 
-.theme svg {
-  @include lw.motion {
-    transition: rotate 400ms lw.v(ease-out);
-  }
-
-  // The glyph's filled half swaps sides with the theme.
-  path {
-    fill: currentColor;
-  }
-}
-
-.theme[data-dark] svg {
-  rotate: 180deg;
-}
-
 .burger {
   display: none;
   color: lw.v(color-muted-foreground);
