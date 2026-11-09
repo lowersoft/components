@@ -1,0 +1,657 @@
+@use '../../styles' as lw;
+
+:host {
+  --_radius: #{lw.v(radius-lg)};
+  --_edge: #{lw.v(color-border)};
+  --_shine: color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent);
+  // The bar's row and the links in it; the menus drop from the frame's foot,
+  // half their difference below the links, plus the frame (1px border,
+  // 3px padding) and the inner border.
+  --_row: 3rem;
+  --_item: 2rem;
+  --_drop: calc((var(--_row) - var(--_item)) / 2 + 5px);
+  --_gap: 0.625rem;
+
+  container-type: inline-size;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: block;
+  padding: max(0.75rem, env(safe-area-inset-top)) 0.75rem 0;
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+  // The padding round the bar lets clicks through to the page under it.
+  pointer-events: none;
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+.shell {
+  max-width: 52rem;
+  margin-inline: auto;
+  pointer-events: auto;
+}
+
+// Two frames: an outer rim of frosted glass round an inner panel, each
+// with its own hairline, the inner one lit along its top edge.
+.frame {
+  padding: 3px;
+  border: 1px solid var(--_edge);
+  border-radius: calc(var(--_radius) + 4px);
+  background: color-mix(in oklab, color-mix(in oklab, #{lw.v(color-muted)} 45%, #{lw.v(color-background)}) 60%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  backdrop-filter: blur(24px) saturate(1.5);
+
+  @include lw.motion {
+    transition: box-shadow lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  :host([data-scrolled]) & {
+    box-shadow: lw.v(shadow-md);
+  }
+}
+
+.inner {
+  border: 1px solid var(--_edge);
+  border-radius: var(--_radius);
+  background:
+    linear-gradient(90deg, transparent, var(--_shine), transparent) top / 100% 1px no-repeat,
+    color-mix(in oklab, #{lw.v(color-background)} 78%, transparent);
+}
+
+.bar {
+  display: flex;
+  height: var(--_row);
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 0.875rem 0.375rem;
+}
+
+.brand {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: lw.v(radius-sm);
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.brand-mark {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.brand-logo {
+  width: auto;
+  height: 0.8125rem;
+}
+
+.brand-name {
+  font-size: lw.v(text-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+// The links sit centred between the brand and the actions.
+.nav {
+  position: relative;
+  height: var(--_item);
+  margin-inline: auto;
+}
+
+.list {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  height: var(--_item);
+  align-items: center;
+  gap: 0.25rem;
+  padding-inline: 0.75rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  font: inherit;
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+
+  @include lw.motion {
+    transition: color lw.v(duration-fast) ease-out;
+  }
+
+  &:hover,
+  &[aria-expanded='true'],
+  &[data-current] {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.trigger {
+  padding-inline-end: 0.625rem;
+}
+
+.chevron {
+  display: inline-flex;
+  margin-top: 1px;
+  opacity: 0.7;
+
+  @include lw.motion {
+    transition: rotate lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  [aria-expanded='true'] > & {
+    rotate: 180deg;
+  }
+}
+
+.pill {
+  @include lw.sliding-highlight;
+
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, #{lw.v(color-foreground)} 5%, transparent);
+}
+
+.end {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.theme svg {
+  @include lw.motion {
+    transition: rotate 400ms lw.v(ease-out);
+  }
+
+  // The glyph's filled half swaps sides with the theme.
+  path {
+    fill: currentColor;
+  }
+}
+
+.theme[data-dark] svg {
+  rotate: 180deg;
+}
+
+.burger {
+  display: none;
+  color: lw.v(color-muted-foreground);
+}
+
+// The menus open below the frame in one panel, centred under the links,
+// over a strip that keeps the pointer inside on its way down from a trigger.
+.stage {
+  position: absolute;
+  top: calc(100% + var(--_drop));
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  perspective: 2000px;
+  pointer-events: none;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.bridge {
+  padding-top: var(--_gap);
+  pointer-events: auto;
+}
+
+.viewport {
+  position: relative;
+  // The menu's size, plus the border round it.
+  width: calc(var(--_width, 0px) + 2px);
+  height: calc(var(--_height, 0px) + 2px);
+  overflow: hidden;
+  border: 1px solid var(--_edge);
+  border-radius: calc(var(--_radius) + 4px);
+  background:
+    linear-gradient(90deg, transparent, var(--_shine), transparent) top / 100% 1px no-repeat,
+    lw.v(color-background);
+  box-shadow: lw.v(shadow-md);
+  transform-origin: top center;
+
+  @include lw.motion {
+    transition:
+      width 300ms lw.v(ease-out),
+      height 300ms lw.v(ease-out);
+  }
+}
+
+// An arrow on the panel's top edge, under the open trigger.
+.indicator {
+  position: absolute;
+  top: 0;
+  left: -0.625rem;
+  z-index: 1;
+  display: flex;
+  width: 1.25rem;
+  height: var(--_gap);
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+
+  @include lw.motion {
+    transition: translate 250ms lw.v(ease-out);
+  }
+}
+
+.arrow {
+  position: relative;
+  top: 70%;
+  width: 0.6875rem;
+  height: 0.6875rem;
+  border-top-left-radius: 2px;
+  background: color-mix(in oklab, var(--_edge), #{lw.v(color-foreground)} 14%);
+  rotate: 45deg;
+}
+
+.content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.75rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.125rem 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// The featured card fills the first column, the links stack in the second.
+.with-feature .links {
+  width: 37rem;
+  grid-template-rows: repeat(var(--rows), auto);
+  grid-auto-flow: column;
+}
+
+.columns .links {
+  width: 33rem;
+}
+
+.feature-cell {
+  grid-row: 1 / -1;
+  margin-inline-end: 0.25rem;
+}
+
+.feature {
+  display: flex;
+  height: 100%;
+  min-height: 12rem;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.25rem;
+  border-radius: lw.v(radius-md);
+  background: linear-gradient(to bottom, color-mix(in oklab, #{lw.v(color-muted)} 30%, #{lw.v(color-background)}), lw.v(color-muted));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+
+  @include lw.motion {
+    transition: box-shadow lw.v(duration-fast) ease-out;
+  }
+
+  &:hover {
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, #{lw.v(color-foreground)} 16%, transparent);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.feature-image {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: auto;
+}
+
+.feature-title {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 1.5rem;
+  font-size: lw.v(text-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.feature-text {
+  margin-top: 0.375rem;
+  font-size: lw.v(text-sm);
+  line-height: 1.45;
+  color: lw.v(color-muted-foreground);
+  text-wrap: pretty;
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border-radius: lw.v(radius-md);
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+
+  @include lw.motion {
+    transition: background-color lw.v(duration-fast) ease-out;
+  }
+
+  &:hover,
+  &[aria-current='page'] {
+    background: lw.v(color-muted);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+    outline-offset: -2px;
+  }
+}
+
+.link-title {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.link-text {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+  line-height: 1.45;
+  color: lw.v(color-muted-foreground);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.external {
+  display: inline-flex;
+  color: lw.v(color-muted-foreground);
+}
+
+// The panel scales in tipped back, and the menus slide past each other
+// in the direction of their triggers.
+@include lw.motion {
+  .stage[data-state='open'] {
+    .viewport {
+      animation: scale-in 200ms lw.v(ease-out);
+    }
+
+    .indicator {
+      animation: fade-in 200ms ease;
+    }
+  }
+
+  .stage[data-state='closed'] {
+    .viewport {
+      animation: scale-out 200ms ease forwards;
+    }
+
+    .indicator {
+      animation: fade-out 200ms ease forwards;
+    }
+  }
+
+  .content {
+    &[data-motion='from-end'] {
+      animation: enter-from-end 250ms lw.v(ease-out);
+    }
+
+    &[data-motion='from-start'] {
+      animation: enter-from-start 250ms lw.v(ease-out);
+    }
+
+    &[data-motion='to-end'] {
+      animation: exit-to-end 250ms ease forwards;
+    }
+
+    &[data-motion='to-start'] {
+      animation: exit-to-start 250ms ease forwards;
+    }
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: rotateX(-30deg) scale(0.9);
+  }
+}
+
+@keyframes scale-out {
+  to {
+    opacity: 0;
+    transform: rotateX(-10deg) scale(0.95);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes enter-from-end {
+  from {
+    opacity: 0;
+    transform: translateX(200px);
+  }
+}
+
+@keyframes enter-from-start {
+  from {
+    opacity: 0;
+    transform: translateX(-200px);
+  }
+}
+
+@keyframes exit-to-end {
+  to {
+    opacity: 0;
+    transform: translateX(200px);
+  }
+}
+
+@keyframes exit-to-start {
+  to {
+    opacity: 0;
+    transform: translateX(-200px);
+  }
+}
+
+// Narrow: the links fold into a menu below the bar, inside the frame.
+.mobile {
+  display: none;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition: grid-template-rows 350ms lw.v(ease-out);
+  }
+
+  &[data-open] {
+    grid-template-rows: 1fr;
+  }
+}
+
+.m-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.m-nav {
+  padding: 0.375rem;
+  border-top: 1px solid var(--_edge);
+}
+
+.m-list,
+.m-sublist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.m-link,
+.m-sublink {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  font: inherit;
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-fast) ease-out,
+      color lw.v(duration-fast) ease-out;
+  }
+
+  // A tap leaves no hover behind on a touch screen.
+  @media (hover: hover) {
+    &:hover {
+      background: color-mix(in oklab, #{lw.v(color-muted)} 70%, transparent);
+      color: lw.v(color-foreground);
+    }
+  }
+
+  &[aria-current='page'],
+  &[data-current] {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+    outline-offset: -2px;
+  }
+}
+
+.m-link {
+  justify-content: space-between;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.9375rem;
+}
+
+.m-sublink {
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-size: lw.v(text-sm);
+}
+
+.m-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition: grid-template-rows 300ms lw.v(ease-out);
+  }
+
+  &[data-open] {
+    grid-template-rows: 1fr;
+  }
+}
+
+.m-sublist {
+  margin: 0.125rem 0 0.25rem 0.75rem;
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--_edge);
+}
+
+.m-cta {
+  display: none;
+  width: calc(100% - 0.75rem);
+  margin: 0 0.375rem 0.375rem;
+
+  &::part(button) {
+    width: 100%;
+  }
+}
+
+@container (width < 50rem) {
+  .nav {
+    display: none;
+  }
+
+  .end {
+    margin-inline-start: auto;
+  }
+
+  .burger {
+    display: inline-grid;
+  }
+
+  .mobile {
+    display: grid;
+  }
+}
+
+@container (width < 40rem) {
+  .end .cta {
+    display: none;
+  }
+
+  .m-cta {
+    display: flex;
+  }
+
+  :host([data-own-actions]) .m-cta {
+    display: none;
+  }
+}

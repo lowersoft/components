@@ -244,3 +244,4 @@ export * from './components/quote-contact/index.js';
 export * from './components/blueprint-contact/index.js';
 export * from './components/channel-contact/index.js';
 export * from './components/map-contact/index.js';
+export * from './components/floating-navbar/index.js';

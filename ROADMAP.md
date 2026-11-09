@@ -163,6 +163,7 @@
 - [x] File upload
 - [ ] Smooth drawer
 - [x] Morphic navbar (Split Nav)
+- [x] Floating navbar
 
 ## Phase 3: Backgrounds and showcase cards
 
