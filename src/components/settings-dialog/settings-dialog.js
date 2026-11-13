@@ -146,7 +146,11 @@ export class LwSettingsDialog extends LwModal {
     // The highlights follow their items once laid out, and as they reflow.
     const observer = new ResizeObserver(() => this.#paintPills());
     observer.observe(this.query('.layout'));
-    this.signal.addEventListener('abort', () => observer.disconnect());
+    // The portrait stops morphing too, so nothing draws once the dialog is gone.
+    this.signal.addEventListener('abort', () => {
+      observer.disconnect();
+      this.#face?.stop();
+    });
     this.#face = drawPortrait(this.query('.portrait'), this.#draft.name ?? ' ');
   }
 

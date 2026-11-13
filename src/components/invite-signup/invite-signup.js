@@ -68,6 +68,8 @@ export class LwInviteSignup extends LwElement {
   connected() {
     const options = { signal: this.signal };
     this.query('.name').addEventListener('input', () => this.#paintSeat(), options);
+    // A portrait still morphing stops, so nothing draws once the form is gone.
+    this.signal.addEventListener('abort', () => this.#seat?.stop());
     this.query('.form').addEventListener('submit', (event) => {
       event.preventDefault();
       this.#accept();
