@@ -1,0 +1,934 @@
+@use '../../styles' as lw;
+
+// On top of the floating navbar's styles. At the top of the page the bar is
+// docked across the full width; once the page scrolls, or the search
+// opens, it shrinks into the floating frame. Every change runs on one
+// quick, decelerating curve, and the page under the bar never moves: the
+// bar keeps its docked height in the flow, and the floating frame drifts
+// down over the page instead.
+
+// Below this width the links fold into the menu button: docked, the brand,
+// the menus, the forum's sections and the actions need about 59rem.
+$fold: 62rem;
+// Shrunk into the floating frame: scrolled, searching, or with the narrow
+// menu open, so the menu looks the same wherever the page is.
+$compact: ':is([data-scrolled], [data-searching], [data-menu])';
+
+:host {
+  --_morph: 220ms #{lw.v(ease-out)};
+  // Docked, the frame has no padding, so the menus drop only past the
+  // inner border and the frame's lower border.
+  --_drop: calc((var(--_row) - var(--_item)) / 2 + 2px);
+
+  // The docked bar: the row, the inner border and the frame's border.
+  height: calc(var(--_row) + 4px + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) 0 0;
+}
+
+:host(#{$compact}) {
+  --_drop: calc((var(--_row) - var(--_item)) / 2 + 5px);
+}
+
+// Floating, the frame keeps clear of the window's edges by the shell's own
+// padding, not the host's: the host's width, which the layout follows, is
+// the same in both shapes.
+.shell {
+  max-width: 100%;
+  padding-inline: 0;
+  pointer-events: none;
+
+  @include lw.motion {
+    transition:
+      max-width var(--_morph),
+      padding-inline var(--_morph),
+      translate var(--_morph);
+  }
+
+  :host(#{$compact}) & {
+    max-width: calc(52rem + 1.5rem);
+    padding-inline: 0.75rem;
+    translate: 0 0.75rem;
+  }
+}
+
+// Docked, the frame meets the edges of the window: square, its borders
+// clear.
+.frame {
+  position: relative;
+  padding: 0;
+  border-color: transparent;
+  border-radius: 0;
+  pointer-events: auto;
+
+  @include lw.motion {
+    transition:
+      padding var(--_morph),
+      border-color var(--_morph),
+      border-radius var(--_morph),
+      box-shadow var(--_morph),
+      background-color var(--_morph),
+      backdrop-filter var(--_morph);
+  }
+
+  :host(#{$compact}) & {
+    padding: 3px;
+    border-color: var(--_edge);
+    border-radius: calc(var(--_radius) + 4px);
+  }
+
+  :host([data-searching]) & {
+    box-shadow: lw.v(shadow-md);
+  }
+}
+
+// Docked, the bar is bare until the page scrolls, as the floating navbar's
+// is. Searching from the top it takes its glass at once.
+:host([data-searching]) .frame {
+  border-color: var(--_edge);
+  background-color: var(--_glass);
+  -webkit-backdrop-filter: var(--_blur);
+  backdrop-filter: var(--_blur);
+
+  .inner {
+    border-color: var(--_edge);
+    background-color: color-mix(in oklab, #{lw.v(color-background)} 94%, transparent);
+    background-image: var(--_sheen);
+  }
+}
+
+.inner {
+  position: relative;
+  border-color: transparent;
+  border-radius: 0;
+
+  @include lw.motion {
+    transition:
+      border-color var(--_morph),
+      border-radius var(--_morph),
+      background-color var(--_morph);
+  }
+
+  :host(#{$compact}) & {
+    border-color: var(--_edge);
+    border-radius: var(--_radius);
+  }
+
+  // Holding the search, the glass turns nearly solid, so what is listed
+  // reads cleanly over the page.
+  :host([data-searching]) & {
+    background-color: color-mix(in oklab, #{lw.v(color-background)} 94%, transparent);
+  }
+}
+
+// The brand, the site's menus beside it, and the forum's sections and the
+// actions across from them. Searching, the row steps aside for the field.
+.bar {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1.25rem;
+  padding-inline: 1rem;
+
+  @include lw.motion {
+    transition:
+      gap var(--_morph),
+      padding-inline var(--_morph),
+      opacity 160ms ease 60ms,
+      visibility 0s;
+  }
+
+  :host(#{$compact}) & {
+    gap: 0.75rem;
+    padding-inline: 0.375rem;
+  }
+
+  :host([data-searching]) & {
+    opacity: 0;
+    visibility: hidden;
+
+    @include lw.motion {
+      transition:
+        gap var(--_morph),
+        padding-inline var(--_morph),
+        opacity 100ms ease,
+        visibility 0s 100ms;
+    }
+  }
+}
+
+// What folds away fades out before it is clipped, and back in once it has
+// room again.
+@mixin folding($open) {
+  max-width: $open;
+  overflow: hidden;
+
+  @include lw.motion {
+    transition:
+      max-width var(--_morph),
+      opacity 140ms ease 80ms;
+  }
+}
+
+@mixin folded {
+  max-width: 0;
+  opacity: 0;
+
+  @include lw.motion {
+    transition:
+      max-width var(--_morph),
+      opacity 90ms ease;
+  }
+}
+
+.brand {
+  @include lw.motion {
+    transition: gap var(--_morph);
+  }
+}
+
+.brand-logo,
+.brand-name {
+  @include folding(10rem);
+
+  object-fit: cover;
+  object-position: left;
+  white-space: nowrap;
+}
+
+// Shrunk on a wide screen, the brand is its mark alone: the wordmark slides
+// shut beside it. With the links folded away there is room, and the brand
+// stays whole.
+@container (width >= #{$fold}) {
+  :host(#{$compact}) {
+    .brand {
+      gap: 0;
+    }
+
+    .brand-logo,
+    .brand-name {
+      @include folded;
+    }
+  }
+}
+
+// The first item marked `end` and those after it face the menus from the
+// far side.
+.list > [data-end] {
+  margin-inline-start: auto;
+}
+
+// The menus drop under their triggers at the start of the bar.
+.stage {
+  justify-content: flex-start;
+}
+
+// The theme switch, search and sign-in share one height: 2.25rem, or 2rem
+// on a phone.
+.end {
+  --_control: 2.25rem;
+  // The member's avatar in their profile button: the button's height less
+  // a little room all round.
+  --_avatar: calc(var(--_control) - 0.5rem);
+}
+
+.theme,
+.search-button,
+.end .cta {
+  &::part(button) {
+    height: var(--_control);
+  }
+}
+
+.theme::part(button) {
+  width: var(--_control);
+}
+
+// The search button: its icon and the keys that open it.
+.search-button {
+  &::part(button) {
+    gap: 0.5rem;
+    padding-inline: 0.625rem 0.5rem;
+  }
+
+  &::part(key) {
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding-inline: 0.3125rem;
+    box-shadow: 0 1px 0 0 var(--_edge);
+    font-size: 0.6875rem;
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.search-button-icon,
+.cta-icon {
+  display: inline-flex;
+}
+
+// Shrunk, or on a narrow screen, the sign-in button is its account icon
+// alone, the same square as the theme switch beside it; the label stays for
+// screen readers.
+.end .cta {
+  .cta-label {
+    @include folding(8rem);
+
+    display: inline-block;
+  }
+
+  &::part(button) {
+    @include lw.motion {
+      transition:
+        padding-inline var(--_morph),
+        gap var(--_morph),
+        background-color lw.v(duration-fast) lw.v(ease-out),
+        transform lw.v(duration-fast) lw.v(ease-out);
+    }
+  }
+}
+
+// Signed in, the member's profile card is an outlined button like the
+// controls beside it: their avatar and name on one line, and its arrows.
+.profile {
+  &::part(trigger) {
+    width: auto;
+    height: var(--_control);
+    gap: 0.375rem;
+    padding: 0 0.5rem 0 calc((var(--_control) - var(--_avatar) - 2px) / 2);
+    border-radius: lw.v(radius-md);
+    background: transparent;
+
+    @include lw.motion {
+      transition:
+        padding var(--_morph),
+        gap var(--_morph),
+        background-color lw.v(duration-fast) lw.v(ease-out),
+        border-color lw.v(duration-fast) lw.v(ease-out);
+    }
+  }
+
+  &::part(trigger):hover {
+    background: color-mix(in oklab, #{lw.v(color-muted)} 60%, transparent);
+  }
+
+  &::part(trigger-identity) {
+    gap: 0.5rem;
+
+    @include lw.motion {
+      transition: gap var(--_morph);
+    }
+  }
+
+  &::part(trigger-avatar) {
+    width: var(--_avatar);
+    height: var(--_avatar);
+  }
+
+  &::part(trigger-name) {
+    @include folding(9rem);
+  }
+
+  &::part(trigger-icon) {
+    @include folding(1rem);
+  }
+}
+
+@mixin icon-only {
+  // The profile button folds to its avatar, a square like the rest.
+  .profile {
+    &::part(trigger) {
+      gap: 0;
+      padding-inline: calc((var(--_control) - var(--_avatar) - 2px) / 2);
+    }
+
+    &::part(trigger-identity) {
+      gap: 0;
+    }
+
+    &::part(trigger-name),
+    &::part(trigger-icon) {
+      @include folded;
+    }
+  }
+
+  .end .cta {
+    .cta-label {
+      @include folded;
+    }
+
+    // The button's own height across: the 16px icon, its border and the
+    // padding either side.
+    &::part(button) {
+      gap: 0;
+      padding-inline: calc((var(--_control) - 18px) / 2);
+    }
+  }
+}
+
+:host(#{$compact}) {
+  @include icon-only;
+}
+
+// The search field across the whole bar.
+.search {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  height: var(--_row);
+  align-items: center;
+  gap: 0.625rem;
+  padding-inline: 0.875rem 0.375rem;
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 0.25rem;
+
+  @include lw.motion {
+    transition:
+      opacity 100ms ease,
+      translate 100ms ease,
+      visibility 0s 100ms;
+  }
+
+  :host([data-searching]) & {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+
+    @include lw.motion {
+      transition:
+        opacity 180ms ease 70ms,
+        translate var(--_morph) 70ms,
+        visibility 0s;
+    }
+  }
+}
+
+.search-icon {
+  display: inline-flex;
+  flex: none;
+  color: lw.v(color-muted-foreground);
+}
+
+.search-input {
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: lw.v(color-foreground);
+  caret-color: lw.v(color-foreground);
+  outline: none;
+
+  &::placeholder {
+    color: lw.v(color-muted-foreground);
+    opacity: 1;
+  }
+}
+
+.search-close {
+  display: inline-grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-fast) ease-out,
+      color lw.v(duration-fast) ease-out;
+  }
+
+  &:hover {
+    background: lw.v(color-muted);
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: -2px;
+  }
+}
+
+// Searching, the bar grows down to hold the panel under the field: the
+// guide, the suggestions or the threads, and the keys along its foot. It
+// opens with the bar's width and folds away a little quicker.
+.results {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition: grid-template-rows 160ms lw.v(ease-out);
+  }
+
+  :host([data-searching]) & {
+    grid-template-rows: 1fr;
+
+    @include lw.motion {
+      transition: grid-template-rows 280ms lw.v(ease-out) 30ms;
+    }
+  }
+}
+
+// Laid out at its full size and clipped, so it unfolds from the top
+// instead of squeezing as the bar grows.
+.results-clip {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+
+  @include lw.motion {
+    transition: opacity 90ms ease;
+  }
+
+  :host([data-searching]) & {
+    opacity: 1;
+
+    @include lw.motion {
+      transition: opacity 200ms ease 90ms;
+    }
+  }
+
+  // The hairline between the field and the panel; content, not a border,
+  // so the folded panel takes no height at all.
+  &::before {
+    display: block;
+    height: 1px;
+    background: var(--_edge);
+    content: '';
+  }
+}
+
+// The field is painted once while hidden, so its first opening has nothing
+// new to draw.
+:host([data-warm]) .search {
+  visibility: visible;
+  opacity: 0.001;
+  transition: none;
+}
+
+.results-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.75rem 1rem 0.25rem;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.head-count {
+  margin-inline-end: 0.25rem;
+  font-weight: 500;
+}
+
+.filter {
+  display: inline-flex;
+  height: 1.5rem;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.375rem 0 0.5rem;
+  border: 1px solid var(--_edge);
+  border-radius: lw.v(radius-full);
+  background: color-mix(in oklab, #{lw.v(color-muted)} 50%, transparent);
+  font: inherit;
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-fast) ease-out,
+      color lw.v(duration-fast) ease-out;
+  }
+
+  strong {
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+
+  svg {
+    opacity: 0.7;
+  }
+
+  &:hover {
+    background: lw.v(color-muted);
+    color: lw.v(color-foreground);
+  }
+}
+
+.results-body {
+  max-height: min(26rem, calc(100dvh - 10rem));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.375rem;
+  scroll-padding-block: 0.375rem;
+}
+
+.search-list[hidden],
+.none[hidden] {
+  display: none;
+}
+
+.group + .group {
+  margin-top: 0.5rem;
+}
+
+.group-title {
+  padding: 0.5rem 0.625rem 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: lw.v(color-muted-foreground);
+}
+
+.option {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: lw.v(radius-md);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+
+  &[aria-selected='true'] {
+    background: lw.v(color-muted);
+  }
+}
+
+// The guide's tips: a sign, an example and what it does.
+.tip-sign {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--_edge);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  font-family: lw.v(font-mono);
+  font-size: lw.v(text-sm);
+  font-weight: 600;
+  color: lw.v(color-foreground);
+}
+
+.tip-text {
+  display: grid;
+  min-width: 0;
+  gap: 0.125rem;
+}
+
+.tip-example {
+  font-family: lw.v(font-mono);
+  font-size: 0.8125rem;
+  color: lw.v(color-foreground);
+}
+
+.tip-note {
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding: 0 0.625rem 0.5rem;
+}
+
+.chip {
+  height: 1.75rem;
+  gap: 0.375rem;
+  padding: 0 0.625rem;
+  border: 1px solid var(--_edge);
+  border-radius: lw.v(radius-full);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+
+  &[aria-selected='true'] {
+    border-color: transparent;
+  }
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  border-radius: 50%;
+  background: light-dark(oklch(0.62 0.13 var(--_hue)), oklch(0.74 0.12 var(--_hue)));
+
+  &.large {
+    width: 0.625rem;
+    height: 0.625rem;
+    margin-inline: 0.6875rem;
+  }
+}
+
+// A member or a category the `@` or `#` word can finish as.
+.suggestion-name {
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.suggestion-handle {
+  overflow: hidden;
+  font-family: lw.v(font-mono);
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.suggestion-count {
+  margin-inline-start: auto;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+  white-space: nowrap;
+}
+
+.avatar {
+  @include lw.person-tint;
+
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+// A thread found: its title, the words marked, over its category, author,
+// replies and age.
+.hit-text {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 0.25rem;
+}
+
+.hit-title {
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  mark {
+    padding-inline: 1px;
+    border-radius: 2px;
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 12%, transparent);
+    color: inherit;
+  }
+}
+
+.hit-meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.625rem;
+  overflow: hidden;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+  white-space: nowrap;
+}
+
+.hit-replies {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tag {
+  @include lw.person-tint;
+
+  padding: 0 0.375rem;
+  border-radius: lw.v(radius-sm);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.125rem;
+}
+
+.enter {
+  display: inline-flex;
+  flex: none;
+  margin-inline-start: auto;
+  color: lw.v(color-muted-foreground);
+  opacity: 0;
+
+  [aria-selected='true'] > & {
+    opacity: 1;
+  }
+}
+
+.none {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  padding: 2.25rem 1rem;
+  text-align: center;
+}
+
+.none-icon {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  margin-bottom: 0.5rem;
+  border-radius: 50%;
+  background: lw.v(color-muted);
+  color: lw.v(color-muted-foreground);
+}
+
+.none-title {
+  margin: 0;
+  font-size: lw.v(text-sm);
+  font-weight: 600;
+}
+
+.none-text {
+  margin: 0;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.results-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem 1.25rem;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--_edge);
+  border-radius: 0 0 calc(var(--_radius) - 1px) calc(var(--_radius) - 1px);
+  background: color-mix(in oklab, #{lw.v(color-muted)} 35%, #{lw.v(color-background)});
+  font-size: 0.6875rem;
+  color: lw.v(color-muted-foreground);
+
+  // Keys mean nothing on a touch screen.
+  @media (hover: none) {
+    display: none;
+  }
+}
+
+.hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+kbd {
+  display: inline-grid;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  place-items: center;
+  padding-inline: 0.25rem;
+  border: 1px solid var(--_edge);
+  border-radius: 0.25rem;
+  background: lw.v(color-background);
+  box-shadow: 0 1px 0 0 var(--_edge);
+  font: inherit;
+  font-size: 0.625rem;
+  line-height: 1;
+  color: lw.v(color-foreground);
+}
+
+// Narrower, the links fold into the menu button, the forum's sections as a
+// group of their own in it.
+.m-list > [data-end] {
+  margin-top: 0.25rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--_edge);
+}
+
+@container (width < #{$fold}) {
+  .nav {
+    display: none;
+  }
+
+  .burger {
+    display: inline-grid;
+  }
+
+  .mobile {
+    display: grid;
+  }
+}
+
+// On a phone sign-in stays on the bar as its icon, and search is its icon
+// too: there are no keys to show.
+@container (width < 40rem) {
+  // Four controls and the brand fit down to a 375px screen: smaller
+  // controls, closer together, and tighter edges.
+  .end {
+    --_control: 2rem;
+
+    gap: 0.125rem;
+  }
+
+  .bar {
+    gap: 0.375rem;
+    padding-inline: 0.625rem;
+  }
+
+  .brand {
+    margin-inline-start: 0.25rem;
+  }
+
+  :host(#{$compact}) {
+    .shell {
+      padding-inline: 0.375rem;
+    }
+
+    .bar {
+      padding-inline: 0.375rem;
+    }
+  }
+
+  .end .cta {
+    display: inline-flex;
+  }
+
+  @include icon-only;
+
+  .m-cta {
+    display: none;
+  }
+
+  .search-button {
+    &::part(button) {
+      width: var(--_control);
+      gap: 0;
+      padding: 0;
+    }
+
+    &::part(key) {
+      display: none;
+    }
+  }
+}
+
+// Narrower still, the brand is its mark alone, scrolled or not.
+@container (width < 23rem) {
+  .brand {
+    gap: 0;
+  }
+
+  .brand-logo,
+  .brand-name {
+    display: none;
+  }
+}

@@ -245,3 +245,4 @@ export * from './components/blueprint-contact/index.js';
 export * from './components/channel-contact/index.js';
 export * from './components/map-contact/index.js';
 export * from './components/floating-navbar/index.js';
+export * from './components/forum-navbar/index.js';
