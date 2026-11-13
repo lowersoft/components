@@ -222,6 +222,7 @@ let sessionOwner = null;
  * @fires lw-waiting - Playback stopped to buffer
  * @fires lw-can-play
  * @fires lw-loaded-metadata - `detail: { duration, width, height }`
+ * @fires lw-duration-change - `detail: { duration }`
  * @fires lw-time-update - `detail: { currentTime }`
  * @fires lw-seeking - `detail: { currentTime }`
  * @fires lw-seeked - `detail: { currentTime }`

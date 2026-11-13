@@ -34,6 +34,7 @@ const DEMO_CURRENT = { name: 'Free', limits: { Projects: '3', Seats: '1', 'Build
  * @attr {Array<object>} plans (JSON)
  * @attr {object} current (JSON)
  * @attr {Array<string>} team - Faces in the header (JSON)
+ * @fires lw-change - Billing changed; `detail: { billing }`
  * @fires lw-upgrade - The upgrade was chosen; `detail: { plan, billing, total }`
  */
 export class LwUpgradeDialog extends LwModal {
