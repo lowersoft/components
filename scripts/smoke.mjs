@@ -2,7 +2,8 @@
 // `npm run build-storybook`. Each story is opened in Chromium, then its
 // elements are taken out of the page and put back. A story fails when it
 // throws or logs an error, a request to the Storybook itself fails, or
-// something keeps animating once its elements are gone.
+// something keeps animating once its elements are gone. Demo media on other
+// hosts may be out of reach, as from a CI runner; that fails no story.
 //
 // Needs Playwright's Chromium once: npx playwright install chromium --only-shell
 import { existsSync, readFileSync, statSync } from 'node:fs';
@@ -62,13 +63,15 @@ const check = async (browser, story) => {
   const problems = [];
   let phase = 'render';
   page.on('pageerror', (error) => problems.push(`${phase}: ${error.message}`));
-  page.on('console', (message) => message.type() === 'error' && problems.push(`${phase}: console.error ${message.text()}`));
-  // Demo media on other hosts may be out of reach; the Storybook's own files may not.
+  // Chromium logs every failed load as an error; the Storybook's own are
+  // caught below, and those of other hosts are not the components' fault.
+  page.on('console', (message) => message.type() === 'error' && !message.text().startsWith('Failed to load resource') && problems.push(`${phase}: console.error ${message.text()}`));
   page.on('requestfailed', (request) => request.url().startsWith(origin) && problems.push(`${phase}: ${request.url()} ${request.failure()?.errorText}`));
   page.on('response', (response) => response.url().startsWith(origin) && response.status() >= 400 && problems.push(`${phase}: ${response.status()} ${response.url()}`));
   await page.addInitScript(probe);
   try {
-    await page.goto(`${origin}/iframe.html?id=${story.id}&viewMode=story`, { waitUntil: 'load' });
+    // Not waiting for every image: a slow host must not time the story out.
+    await page.goto(`${origin}/iframe.html?id=${story.id}&viewMode=story`, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => document.querySelector('#storybook-root')?.childElementCount > 0, null, { timeout: 10_000 });
     await page.waitForTimeout(500);
     phase = 'disconnect';
@@ -114,9 +117,15 @@ await Promise.all(
 await browser.close();
 server.close();
 
+// In GitHub Actions each failing story also becomes an annotation on the run.
+const annotate = process.env.GITHUB_ACTIONS === 'true';
+const escapeData = (text) => text.replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
+const escapeProperty = (text) => escapeData(text).replaceAll(':', '%3A').replaceAll(',', '%2C');
 for (const { story, problems } of failures.sort((a, b) => a.story.id.localeCompare(b.story.id))) {
+  const unique = [...new Set(problems)];
   console.error(`\n✗ ${story.title} › ${story.name} (${story.id})`);
-  for (const problem of [...new Set(problems)]) console.error(`  ${problem}`);
+  for (const problem of unique) console.error(`  ${problem}`);
+  if (annotate) console.log(`::error title=${escapeProperty(`${story.title} › ${story.name}`)}::${escapeData(unique.join('\n'))}`);
 }
 console.log(`\n${stories.length - failures.length} of ${stories.length} stories passed.`);
 process.exitCode = failures.length ? 1 : 0;
