@@ -1,5 +1,20 @@
 # @lowersoft/lw
 
+## 0.3.0
+
+### Minor Changes
+
+- b4155e9: Name the last kebab-case properties in camelCase, like every other property: `footnoteLink` and `footnoteHref` on `<lw-credit-plan-pricing>`, `guaranteeTitle` on `<lw-flat-rate-pricing>`, `questionHref` on `<lw-lifetime-pricing>` and `accentHeading` on `<lw-nested-feature-pricing>`. Their attributes are unchanged; code that set `element['footnote-link']` and the like now sets `element.footnoteLink`.
+- d1a1fb2: Add `<lw-floating-navbar>`: a site's navigation bar floating at the top of the page in a double frame of frosted glass, with the brand, the main links, a theme switch and the main action. Links with a menu open it in one panel below the bar that resizes to each menu while the menus slide past each other, an arrow following the open trigger; a featured link gets a tall card. Hover, click and the keyboard all open the menus, a pill slides behind the link under the pointer and rests on the current page's section, and on a narrow screen the links fold into a menu button with each menu as a list that opens in place.
+
+### Patch Changes
+
+- 0b76766: Document `lw-change` on `<lw-upgrade-dialog>`, fired when its billing switch changes, and `lw-duration-change` on `<lw-video-player>`.
+- 1a4daf7: Stop the portrait's morph in `<lw-settings-dialog>` and `<lw-invite-signup>` when they leave the page, so nothing goes on drawing after they are gone.
+- 1bba03d: Keep components working when they are taken out of the page and put back, as frameworks and drag-and-drop do. `<lw-action-toolbar>` and `<lw-filter-toolbar>` no longer throw, menus no longer gain a tooltip each time, `<lw-kinetic-type-hero>`, `<lw-glowing-border>` and `<lw-pixel-footer>` follow the pointer again, `<lw-terminal-hero>` plays its build again instead of freezing halfway, `<lw-inline-chips-headline>` no longer stays spinning, `<lw-fluted-glass>` stops drawing once gone and keeps its WebGL setup, and `<lw-video-player>` loads the captions, chapters and thumbnails a move cut short, without warning about them.
+- 0ced488: Fix smaller runtime bugs. `<lw-work-flow-hero>` no longer throws on a step with an unknown icon. A modal opened again while it fades out stays open instead of closing under its `open` attribute. `<lw-newsletter-footer>` and `<lw-pixel-footer>` send a sign-up once when Enter is pressed again while it is sending. Invalid JSON in an attribute now names the element and attribute in its error, and a property set to `NaN` again no longer counts as a change. Text from data is escaped in `<lw-date-range-brush>`'s busiest day, `<lw-carousel-cards>`' price and review count, the issue status and priority marks, and the workspace mark colour.
+- 85d768a: Ship `THIRD-PARTY-NOTICES.md` with the package, holding the licenses of the Lucide and Feather icons the components draw, and fill in the package's author, homepage and issue tracker.
+
 ## 0.2.0
 
 ### Minor Changes
