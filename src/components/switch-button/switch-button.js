@@ -22,7 +22,7 @@ const RAYS = [0, 45, 90, 135, 180, 225, 270, 315]
   })
   .join('');
 
-const ICON = `<svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><mask id="moon"><rect x="-4" y="-4" width="32" height="32" fill="white"/><circle class="bite" cx="17" cy="7" r="7.5" fill="black"/></mask><g mask="url(#moon)"><circle class="disc" cx="12" cy="12" r="4.75" fill="currentColor"/></g><g stroke="currentColor" stroke-width="2" stroke-linecap="round">${RAYS}</g></svg>`;
+const ICON = `<svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><mask id="moon"><rect x="-4" y="-4" width="32" height="32" fill="white"/><circle class="bite" cx="17" cy="7" r="7.5" fill="black"/></mask><g class="moon" mask="url(#moon)"><circle class="disc" cx="12" cy="12" r="4.75" fill="currentColor"/></g><g stroke="currentColor" stroke-width="2" stroke-linecap="round">${RAYS}</g></svg>`;
 
 let revealing = false;
 

@@ -9,9 +9,11 @@
   display: none;
 }
 
+// A whole number of pixels at every size (16px at the default), so the
+// drawing lands centred instead of a fraction off and blurred.
 .icon {
-  width: 1.15em;
-  height: 1.15em;
+  width: calc(1em + 2px);
+  height: calc(1em + 2px);
   flex: none;
   overflow: visible;
   pointer-events: none;
@@ -30,6 +32,12 @@
 }
 
 :host([theme='dark']) {
+  // The crescent's weight sits low and to the left of the disc's centre;
+  // nudged up and right, it looks centred in the button.
+  .moon {
+    translate: 1px -1px;
+  }
+
   .bite {
     translate: 0 0;
   }
@@ -61,7 +69,8 @@
 // Transition delays come from the destination state: rays retract one after
 // another; on the way back they wait for the bite to clear first.
 @include lw.motion {
-  .bite {
+  .bite,
+  .moon {
     transition: translate 380ms lw.v(ease-in-out);
   }
 
