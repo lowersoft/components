@@ -86,7 +86,7 @@ export class LwNestedFeaturePricing extends LwElement {
   static styles = [rollingStyles, pricingStyles, styles];
   static props = {
     heading: { default: 'Write from one desk' },
-    'accent-heading': { default: 'to the whole office.' },
+    accentHeading: { default: 'to the whole office.' },
     description: { default: 'Every plan builds on the one before it, so you only ever pay for what is new.' },
     billing: { default: 'monthly', reflect: true },
     discount: { type: Number, default: 20 },
@@ -112,7 +112,7 @@ export class LwNestedFeaturePricing extends LwElement {
 
   updated(changed) {
     this.query('.lead').textContent = this.heading ?? '';
-    this.query('.accent').textContent = this['accent-heading'] ?? '';
+    this.query('.accent').textContent = this.accentHeading ?? '';
     const description = this.query('.description');
     description.textContent = this.description ?? '';
     description.hidden = !this.description;

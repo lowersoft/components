@@ -68,8 +68,8 @@ export class LwCreditPlanPricing extends LwElement {
     save: { default: 'Save 20%' },
     badge: { default: 'Popular' },
     footnote: { default: 'Unused minutes roll over for one month.' },
-    'footnote-link': { default: 'Learn more' },
-    'footnote-href': { default: '#' },
+    footnoteLink: { default: 'Learn more' },
+    footnoteHref: { default: '#' },
     accent: {},
     plans: { type: Object, default: DEMO_PLANS },
   };
@@ -118,9 +118,9 @@ export class LwCreditPlanPricing extends LwElement {
     footnote.hidden = !this.footnote;
     this.query('.footnote-text').textContent = this.footnote ?? '';
     const link = this.query('.footnote-link');
-    link.hidden = !this['footnote-link'];
-    link.innerHTML = `${escapeHtml(this['footnote-link'] ?? '')}${strokeIcon(arrowUpRight, 14)}`;
-    link.href = this['footnote-href'] || '#';
+    link.hidden = !this.footnoteLink;
+    link.innerHTML = `${escapeHtml(this.footnoteLink ?? '')}${strokeIcon(arrowUpRight, 14)}`;
+    link.href = this.footnoteHref || '#';
     // A colour of your own takes white text.
     for (const [name, value] of [['--_accent', this.accent], ['--_on-accent', '#fff']]) {
       if (this.accent) this.style.setProperty(name, value);

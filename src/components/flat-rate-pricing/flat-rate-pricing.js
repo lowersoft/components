@@ -63,7 +63,7 @@ export class LwFlatRatePricing extends LwElement {
     note: { default: 'Fonts and stock images billed at cost.' },
     body: { default: 'Unlimited design requests, handled one at a time by a senior designer and delivered in two working days. Brand, product, web and campaigns, all for one monthly fee.' },
     action: { default: 'Book an intro call' },
-    'guarantee-title': { default: 'Pause any month' },
+    guaranteeTitle: { default: 'Pause any month' },
     guarantee: { default: 'Queue empty for a while? Hold your subscription and pick up where you left off, with the days you paid for still waiting.' },
     pill: { default: 'Cancel anytime' },
     columns: { type: Object, default: DEMO_COLUMNS },
@@ -96,11 +96,11 @@ export class LwFlatRatePricing extends LwElement {
     text('.note', this.note);
     text('.body', this.body);
     this.query('.action-text').textContent = this.action ?? '';
-    text('.promise-title', this['guarantee-title']);
+    text('.promise-title', this.guaranteeTitle);
     text('.promise-body', this.guarantee);
     this.query('.pill-text').textContent = this.pill ?? '';
     this.query('.pill').hidden = !this.pill;
-    this.query('.promise').hidden = !this['guarantee-title'] && !this.guarantee;
+    this.query('.promise').hidden = !this.guaranteeTitle && !this.guarantee;
     if (changed.has('columns') || changed.has('rows')) this.#buildTable();
   }
 

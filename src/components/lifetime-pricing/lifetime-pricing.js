@@ -60,7 +60,7 @@ export class LwLifetimePricing extends LwElement {
     currency: { default: '$' },
     badge: { default: 'Best value' },
     question: { default: 'Questions? Email us' },
-    'question-href': { default: 'mailto:info@lowersoft.com' },
+    questionHref: { default: 'mailto:info@lowersoft.com' },
     plans: { type: Object, default: DEMO_PLANS },
   };
 
@@ -99,7 +99,7 @@ export class LwLifetimePricing extends LwElement {
     description.textContent = this.description ?? '';
     description.hidden = !this.description;
     this.query('.question-text').textContent = this.question ?? '';
-    this.query('.question').href = this['question-href'] || '#';
+    this.query('.question').href = this.questionHref || '#';
     this.query('.ask').hidden = !this.question;
     if (changed.has('plans') || changed.has('badge') || changed.has('currency')) this.#build();
   }
