@@ -32,6 +32,11 @@ const THEMES = [
 ];
 
 const PANEL_W = 288;
+// The menu keeps this far from the window's edges (px).
+const EDGE = 8;
+// On a phone the menu opens as a sheet across the top of the screen.
+const SHEET = matchMedia('(max-width: 639px)');
+const RADIUS = 16;
 const SPRING = springFeel(0.3, 0);
 const NAV_KEYS = new Set(['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End']);
 const NUDGE_MS = 1400;
@@ -39,11 +44,17 @@ const NUDGE_MS = 1400;
 // A click fired by Enter or Space carries no pointer detail.
 const viaOf = (event) => (event.detail === 0 ? 'keyboard' : 'pointer');
 
+// The account's picture when it has one, else its initials on a tone.
 const avatar = (account, tone, size, status, attributes = '') =>
-  `<span class="avatar"${attributes} data-tone="${tone % 3}" style="--_size: ${size}px" aria-hidden="true">${escapeHtml(account.initials ?? initialsOf(account.name))}${status ? `<span class="dot" data-status="${status}"></span>` : ''}</span>`;
+  `<span class="avatar"${attributes} data-tone="${tone % 3}" style="--_size: ${size}px" aria-hidden="true">${account.avatar ? `<img class="photo" src="${escapeHtml(account.avatar)}" alt="" decoding="async">` : escapeHtml(account.initials ?? initialsOf(account.name))}${status ? `<span class="dot" data-status="${status}"></span>` : ''}</span>`;
 
-const identity = (account, tone, status, stacked) =>
-  `${avatar(account, tone, stacked ? 40 : 32, status, ' data-piece="avatar"')}<span class="text"><span class="name" data-piece="name">${escapeHtml(account.name)}</span><span class="email" data-piece="email">${escapeHtml(account.email)}</span></span>`;
+// The avatar, name and email, the email left out when there is none. In the
+// card, `parts` exposes them for styling from outside.
+const identity = (account, tone, status, stacked, parts = false) => {
+  const part = (name) => (parts ? ` part="trigger-${name}"` : '');
+  const email = account.email ? `<span class="email" data-piece="email"${part('email')}>${escapeHtml(account.email)}</span>` : '';
+  return `${avatar(account, tone, stacked ? 40 : 32, status, ` data-piece="avatar"${part('avatar')}`)}<span class="text"><span class="name" data-piece="name"${part('name')}>${escapeHtml(account.name)}</span>${email}</span>`;
+};
 
 // Where arrow keys move focus: rows go up and down, radios left and right.
 const nextTarget = (items, active, key) => {
@@ -65,11 +76,15 @@ const nextTarget = (items, active, key) => {
 
 /**
  * An account card that morphs into its own menu: the avatar, name and email
- * travel from the card into the menu's header as it grows out of the card.
+ * travel from the card into the menu's header as it grows out of the card,
+ * toward whichever side has room, and no wider than the window allows. On a
+ * phone it grows into a sheet across the top of the screen, over the page.
  * The menu sets a status, the page theme, has links, switches accounts on a
  * second page, and signs out on a long press.
  *
- * Accounts are `{ id, name, email, initials?, plan? }`. Items are
+ * Accounts are `{ id, name, email?, avatar?, initials?, plan? }`, where
+ * `avatar` is a picture's URL, shown in place of the initials, and without
+ * an `email` the name stands alone. Items are
  * `{ label, icon?, value?, href?, external? }`, where `icon` is the inner
  * markup of a 24 × 24 stroked SVG; an item with `href` is a link.
  *
@@ -85,6 +100,11 @@ const nextTarget = (items, active, key) => {
  * @fires lw-add-account - Add account was chosen
  * @fires lw-sign-out - Sign out was held to the end
  * @csspart trigger
+ * @csspart trigger-identity - The avatar, name and email in the card
+ * @csspart trigger-avatar
+ * @csspart trigger-name
+ * @csspart trigger-email
+ * @csspart trigger-icon - The arrows at the card's end
  * @csspart panel
  */
 export class LwProfileDropdown extends LwElement {
@@ -102,7 +122,10 @@ export class LwProfileDropdown extends LwElement {
   // The open spring runs 0 (the card) to 1 (the menu).
   #open = 0;
   #pageH = 0;
-  #from = { w: 0, h: 0 };
+  // The card's box in the panel's coordinates, where the morph starts.
+  #from = { x: 0, y: 0, w: 0, h: 0 };
+  // The menu's width, 288px or less where the window is narrower.
+  #panelW = PANEL_W;
   #pieces = [];
   #stops = { open: null, height: null };
   #hold = { timer: 0, nudge: 0 };
@@ -117,7 +140,7 @@ export class LwProfileDropdown extends LwElement {
         `<button class="theme" type="button" role="menuitemradio" tabindex="-1" data-menu-item data-row="theme" data-theme="${id}" aria-label="${label}">${strokeIcon(icon, 14)}</button>`,
     ).join('');
     const signOut = `${strokeIcon(logOut)}<span class="grow">Sign out</span><span class="hint"></span>`;
-    return `<button class="trigger" part="trigger" type="button" aria-haspopup="menu" aria-expanded="false"><span class="identity"></span>${strokeIcon(chevronsUpDown)}</button>
+    return `<button class="trigger" part="trigger" type="button" aria-haspopup="menu" aria-expanded="false"><span class="identity" part="trigger-identity"></span><span class="trigger-icon" part="trigger-icon">${strokeIcon(chevronsUpDown)}</span></button>
 <div class="panel" part="panel" hidden data-page="main">
   <div class="surface" aria-hidden="true"><div class="edge"></div><div class="fill"></div></div>
   <div class="content"><div class="pages">
@@ -160,8 +183,12 @@ export class LwProfileDropdown extends LwElement {
     for (const type of ['pointerup', 'pointercancel', 'blur']) signOut.addEventListener(type, () => this.#holdCancel(), options);
     signOut.addEventListener('contextmenu', (event) => event.preventDefault(), options);
     signOut.addEventListener('keyup', (event) => (event.key === 'Enter' || event.key === ' ') && this.#holdCancel(), options);
-    // A press anywhere outside closes, with the morph.
-    document.addEventListener('pointerdown', (event) => !event.composedPath().includes(this) && this.#closeMenu('pointer', false), { ...options, capture: true });
+    // A press anywhere outside closes, with the morph; so does one on the
+    // dimmed page behind a sheet, which lands on the panel itself.
+    document.addEventListener('pointerdown', (event) => {
+      const path = event.composedPath();
+      if (!path.includes(this) || path[0] === panel) this.#closeMenu('pointer', false);
+    }, { ...options, capture: true });
     watchTheme(() => this.#paintChoices(), this.signal);
     this.signal.addEventListener('abort', () => this.#finishClose());
   }
@@ -181,7 +208,7 @@ export class LwProfileDropdown extends LwElement {
     const account = this.#current;
     const tone = Math.max(0, this.accounts.indexOf(account));
     const others = this.accounts.filter((entry) => entry !== account);
-    this.query('.trigger .identity').innerHTML = identity(account, tone, this.status, false);
+    this.query('.trigger .identity').innerHTML = identity(account, tone, this.status, false, true);
     this.query('.head .identity').innerHTML = identity(account, tone, this.status, true);
     this.query('.plan').textContent = account.plan ?? '';
     this.query('.items').innerHTML = this.items
@@ -200,7 +227,7 @@ export class LwProfileDropdown extends LwElement {
     this.query('.list').innerHTML = this.accounts
       .map(
         (entry, i) =>
-          `<button class="item account" type="button" role="menuitemradio" tabindex="-1" data-menu-item data-row="account-${i}" data-account="${escapeHtml(entry.id)}" aria-checked="${entry === account}">${avatar(entry, i, 28, entry === account ? this.status : null)}<span class="text"><span class="name">${escapeHtml(entry.name)}</span><span class="email">${escapeHtml(entry.email)}</span></span>${entry === account ? strokeIcon(check) : ''}</button>`,
+          `<button class="item account" type="button" role="menuitemradio" tabindex="-1" data-menu-item data-row="account-${i}" data-account="${escapeHtml(entry.id)}" aria-checked="${entry === account}">${avatar(entry, i, 28, entry === account ? this.status : null)}<span class="text"><span class="name">${escapeHtml(entry.name)}</span>${entry.email ? `<span class="email">${escapeHtml(entry.email)}</span>` : ''}</span>${entry === account ? strokeIcon(check) : ''}</button>`,
       )
       .join('');
     if (this.#phase === 'open') this.#springHeight(this.#pageEl.offsetHeight, false);
@@ -237,25 +264,60 @@ export class LwProfileDropdown extends LwElement {
   // header's avatar, name and email along from where they sit in the card.
   #frame() {
     const p = this.#open;
-    const w = this.#from.w + (PANEL_W - this.#from.w) * p;
-    const h = this.#from.h + (this.#pageH - this.#from.h) * p;
-    const panel = this.query('.panel');
-    panel.style.setProperty('--_w', `${w}px`);
-    panel.style.setProperty('--_h', `${h}px`);
     const rest = 1 - p;
+    const from = this.#from;
+    const panel = this.query('.panel');
+    // The visible box grows from the card's box to the whole menu.
+    panel.style.setProperty('--_x', `${from.x * rest}px`);
+    panel.style.setProperty('--_y', `${from.y * rest}px`);
+    panel.style.setProperty('--_w', `${from.w + (this.#panelW - from.w) * p}px`);
+    panel.style.setProperty('--_h', `${from.h + (this.#pageH - from.h) * p}px`);
+    // A sheet ends square along the top of the screen, and dims the page.
+    const sheet = panel.dataset.side === 'sheet';
+    panel.style.setProperty('--_corner', `${sheet ? RADIUS * rest : RADIUS}px`);
+    panel.style.setProperty('--_rim', `${sheet ? rest : 1}px`);
+    panel.style.setProperty('--_scrim', String(sheet ? p : 0));
     for (const { el, dx, dy, scale } of this.#pieces) {
       el.style.transform = `translate(${dx * rest}px, ${dy * rest}px) scale(${1 + (scale - 1) * rest})`;
+    }
+  }
+
+  // The menu grows from the card toward the side with room: from the card's
+  // end when it fits there, else from its start, at most 288px wide and
+  // never past the window's edges.
+  #place() {
+    const panel = this.query('.panel');
+    const card = this.query('.trigger').getBoundingClientRect();
+    const view = document.documentElement.clientWidth;
+    let side;
+    if (SHEET.matches) {
+      // In the top layer, free of any transformed or filtered ancestor, so
+      // it spans the screen whatever the card sits in.
+      side = 'sheet';
+      this.#panelW = view;
+    } else {
+      const room = { end: card.right - EDGE, start: view - card.left - EDGE };
+      side = room.end >= PANEL_W || room.end >= room.start ? 'end' : 'start';
+      this.#panelW = Math.round(Math.max(card.width, Math.min(PANEL_W, room[side])));
+    }
+    panel.dataset.side = side;
+    panel.style.setProperty('--_panel-w', `${this.#panelW}px`);
+    if (side === 'sheet') {
+      panel.popover = 'manual';
+      panel.showPopover();
     }
   }
 
   // Offsets that put each header piece over its twin in the card.
   #measurePieces() {
     const trigger = this.query('.trigger');
-    this.#from = { w: trigger.offsetWidth, h: trigger.offsetHeight };
+    const card = trigger.getBoundingClientRect();
+    const panel = this.query('.panel').getBoundingClientRect();
+    this.#from = { x: card.left - panel.left, y: card.top - panel.top, w: trigger.offsetWidth, h: trigger.offsetHeight };
     this.#pieces = [...this.query('.head').querySelectorAll('[data-piece]')].map((el) => {
       el.style.transform = '';
       const to = el.getBoundingClientRect();
-      const from = trigger.querySelector(`[data-piece="${el.dataset.piece}"]`).getBoundingClientRect();
+      const from = trigger.querySelector(`[data-piece="${el.dataset.piece}"]`)?.getBoundingClientRect() ?? to;
       return { el, dx: from.left - to.left, dy: from.top - to.top, scale: from.height / to.height || 1 };
     });
   }
@@ -306,7 +368,10 @@ export class LwProfileDropdown extends LwElement {
     this.#setPage('main', true);
     this.toggleAttribute('data-open', true);
     this.query('.trigger').ariaExpanded = 'true';
-    if (!resume) this.#measurePieces();
+    if (!resume) {
+      this.#place();
+      this.#measurePieces();
+    }
     this.#pageH = this.#pageEl.offsetHeight;
     this.#stopAll();
     if (instant) {
@@ -350,6 +415,8 @@ export class LwProfileDropdown extends LwElement {
     this.#open = 0;
     this.#holdCancel(true);
     const panel = this.query('.panel');
+    if (panel.matches(':popover-open')) panel.hidePopover();
+    panel.removeAttribute('popover');
     panel.hidden = true;
     delete panel.dataset.phase;
     this.removeAttribute('data-open');

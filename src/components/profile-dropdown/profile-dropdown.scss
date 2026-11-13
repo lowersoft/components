@@ -7,6 +7,7 @@
   position: relative;
   isolation: isolate;
   display: inline-block;
+  max-width: 100%;
   font-family: lw.v(font-sans);
   color: lw.v(color-foreground);
 }
@@ -48,6 +49,8 @@ hr {
   align-items: center;
   gap: 0.625rem;
   width: 15rem;
+  // In a narrow column the card narrows with it; the name and email trim.
+  max-width: 100%;
   padding: 0.5rem 0.75rem 0.5rem 0.5rem;
   border: 1px solid lw.v(color-border);
   border-radius: 1rem;
@@ -68,24 +71,26 @@ hr {
     @include lw.focus-ring;
   }
 
-  > svg {
-    color: lw.v(color-muted-foreground);
-    transition: opacity lw.v(duration-fast) ease-out;
-  }
-
   .identity {
     flex: 1;
   }
 }
 
+.trigger-icon {
+  display: inline-flex;
+  flex: none;
+  color: lw.v(color-muted-foreground);
+  transition: opacity lw.v(duration-fast) ease-out;
+}
+
 // While the menu is open its header holds the avatar, name and email.
 :host([data-open]) .trigger {
   .identity > *,
-  > svg {
+  .trigger-icon {
     visibility: hidden;
   }
 
-  > svg {
+  .trigger-icon {
     opacity: 0;
   }
 }
@@ -164,6 +169,13 @@ hr {
     box-shadow: inset 0 0 0 1px lw.v(color-border);
   }
 
+  .photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
   .dot {
     position: absolute;
     right: 0;
@@ -199,8 +211,41 @@ hr {
   top: 0;
   right: 0;
   z-index: 1;
-  width: 288px;
+  width: var(--_panel-w, 288px);
   pointer-events: none;
+
+  // Grown from the card's start instead of its end.
+  &[data-side='start'] {
+    right: auto;
+    left: 0;
+  }
+
+  // On a phone: a sheet in the top layer, across the top of the screen,
+  // with the page dimmed behind it.
+  &[data-side='sheet'] {
+    position: fixed;
+    inset: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: none;
+    color: inherit;
+
+    // Pressing the dimmed page closes the sheet without reaching the page.
+    &::backdrop {
+      background: rgb(0 0 0 / calc(var(--_scrim, 0) * 0.3));
+      pointer-events: auto;
+    }
+
+    .page {
+      padding-top: max(0.375rem, env(safe-area-inset-top));
+    }
+  }
 
   &[hidden] {
     display: none;
@@ -219,22 +264,30 @@ hr {
 }
 
 // The border and fill layers and the content all clip to the growing box.
+// The visible box, `--_x`, `--_y`, `--_w` and `--_h` in the panel,
+// grows from the card's box to the whole menu; a sheet's top corners square
+// off as it lands.
 .edge {
   background: lw.v(color-border);
-  clip-path: inset(0 0 calc(100% - var(--_h)) calc(100% - var(--_w)) round 16px);
+  clip-path: inset(var(--_y) calc(100% - var(--_x) - var(--_w)) calc(100% - var(--_y) - var(--_h)) var(--_x) round var(--_corner) var(--_corner) 16px 16px);
 }
 
+// The fill sits inside a 1px rim, `--_rim` along the top and sides: a
+// sheet's rim thins to nothing there as it meets the screen's edges.
 .fill,
 .content {
-  clip-path: inset(1px 1px calc(100% - var(--_h) + 1px) calc(100% - var(--_w) + 1px) round 15px);
+  clip-path: inset(calc(var(--_y) + var(--_rim, 1px)) calc(100% - var(--_x) - var(--_w) + var(--_rim, 1px)) calc(100% - var(--_y) - var(--_h) + 1px) calc(var(--_x) + var(--_rim, 1px)) round max(0px, var(--_corner) - 1px) max(0px, var(--_corner) - 1px) 15px 15px);
 }
 
 .fill {
   background: var(--_surface);
 }
 
+// The second page waits beside the first; clipped, not scrolled, so it
+// never widens the page, and moving to it still slides.
 .content {
   position: relative;
+  overflow: clip;
 
   [data-phase='open'] & {
     pointer-events: auto;
@@ -248,14 +301,14 @@ hr {
   transition: transform 300ms var(--_ease);
 
   [data-page='accounts'] & {
-    transform: translateX(-288px);
+    transform: translateX(calc(-1 * var(--_panel-w, 288px)));
   }
 }
 
 .page {
   box-sizing: border-box;
   flex: none;
-  width: 288px;
+  width: var(--_panel-w, 288px);
   padding: 0.375rem;
   transition: opacity 300ms var(--_ease);
 

@@ -4,7 +4,7 @@ import './index.js';
 export default {
   title: 'Navigation/Menus/Profile Dropdown',
   component: 'lw-profile-dropdown',
-  render: (args) => `<div style="display: flex; justify-content: flex-end; width: 320px; height: 460px"><lw-profile-dropdown ${attributes(args)}></lw-profile-dropdown></div>`,
+  render: (args) => `<div style="display: flex; justify-content: flex-end; width: min(320px, 100%); height: 460px"><lw-profile-dropdown ${attributes(args)}></lw-profile-dropdown></div>`,
   argTypes: {
     status: { control: 'inline-radio', options: ['online', 'away', 'busy'] },
   },
