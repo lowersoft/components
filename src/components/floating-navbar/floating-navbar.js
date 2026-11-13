@@ -30,11 +30,11 @@ const DEMO_ITEMS = [
     links: [
       { label: 'Documentation', description: 'Guides, API reference and examples for every product.', href: '/docs' },
       { label: 'Report Issue', description: 'Found a bug? Tell us about it on GitHub.', href: 'https://github.com/lowersoft/components/issues/new', external: true },
-      { label: 'Support Portal', description: 'Talk to our team about your account and plan.', href: '/support' },
+      { label: 'LowerDB', description: 'Set up, query and scale the database behind your app.', href: '/lowerdb' },
       { label: 'FAQ', description: 'Quick answers to the questions we hear most.', href: '/faq' },
     ],
   },
-  { label: 'LowerDB', href: '/lowerdb' },
+  { label: 'Forum', href: 'https://forum.lowersoft.com' },
 ];
 
 // Hovering a trigger opens its menu after this long (ms), so a pointer only
@@ -160,9 +160,9 @@ export class LwFloatingNavbar extends LwElement {
 <nav class="nav"><ul class="list"></ul><span class="pill" aria-hidden="true"></span>
 <div class="stage" hidden><span class="indicator" aria-hidden="true"><span class="arrow"></span></span><div class="bridge"><div class="viewport" part="viewport"></div></div></div>
 </nav>
-<div class="end"><slot name="actions"><lw-switch-button class="theme" variant="outline" icon-only dark-label="Dark theme"></lw-switch-button><lw-button class="cta"></lw-button></slot><lw-hamburger-menu class="burger" variant="duo" size="20" aria-controls="mobile"></lw-hamburger-menu></div>
+<div class="end"><slot name="actions"><lw-switch-button class="theme" variant="outline" icon-only dark-label="Dark theme"></lw-switch-button><lw-button class="cta"><span class="cta-label"></span></lw-button></slot><lw-hamburger-menu class="burger" variant="duo" size="20" aria-controls="mobile"></lw-hamburger-menu></div>
 </div>
-<div class="mobile" id="mobile" inert><div class="m-clip"><nav class="m-nav"><ul class="m-list"></ul></nav><lw-button class="cta m-cta"></lw-button></div></div>
+<div class="mobile" id="mobile" inert><div class="m-clip"><nav class="m-nav"><ul class="m-list"></ul></nav><lw-button class="cta m-cta"><span class="cta-label"></span></lw-button></div></div>
 </div></div>
 </div>`;
   }
@@ -230,12 +230,16 @@ export class LwFloatingNavbar extends LwElement {
       const narrow = burger.checkVisibility();
       if (narrow) this.#setOpen(-1);
       else if (burger.open) burger.toggle(false);
-      this.#paintPill();
+      // The links moved with the layout: the pill moves with them, not after.
+      this.#paintPill(this.#hovered, true);
       if (this.#open === -1) return;
       this.#size(this.query('.viewport'), this.#panel(this.#open), true);
       this.#placeIndicator(false);
     });
     resize.observe(this);
+    // The links can move on their own too, as the forum navbar's do while
+    // its brand loads or its bar shrinks.
+    resize.observe(this.query('.nav'));
     this.signal.addEventListener('abort', () => {
       resize.disconnect();
       clearTimeout(this.#openTimer);
@@ -253,7 +257,7 @@ export class LwFloatingNavbar extends LwElement {
     }
     if (changed.has('action')) {
       for (const button of this.shadowRoot.querySelectorAll('.cta')) {
-        button.textContent = this.action ?? '';
+        button.querySelector('.cta-label').textContent = this.action ?? '';
         button.hidden = !this.action;
       }
     }
@@ -319,11 +323,11 @@ export class LwFloatingNavbar extends LwElement {
 
   // The pill sits behind the item under the pointer, else the open menu's
   // trigger, else the current section's item.
-  #paintPill(hovered = this.#hovered) {
+  #paintPill(hovered = this.#hovered, instant = false) {
     this.#hovered = hovered;
     const pill = this.query('.pill');
     const target = hovered ?? this.#trigger(this.#open) ?? this.query('.item[data-current]');
-    if (target && target.offsetParent) moveHighlight(pill, target);
+    if (target && target.offsetParent) moveHighlight(pill, target, { instant });
     else hideHighlight(pill);
   }
 
@@ -552,7 +556,17 @@ export class LwFloatingNavbar extends LwElement {
     const mobile = this.query('.mobile');
     mobile.toggleAttribute('data-open', open);
     mobile.inert = !open;
-    if (!open) for (const trigger of mobile.querySelectorAll('.m-trigger[aria-expanded="true"]')) this.#toggleGroup(trigger, false);
+    // The bar takes its scrolled shape, `data-menu`, while the menu is open
+    // and until it has folded away; a fold cut short ends it too.
+    if (open) {
+      this.toggleAttribute('data-menu', true);
+      return;
+    }
+    for (const trigger of mobile.querySelectorAll('.m-trigger[aria-expanded="true"]')) this.#toggleGroup(trigger, false);
+    const done = () => !mobile.hasAttribute('data-open') && this.removeAttribute('data-menu');
+    const folding = mobile.getAnimations().filter((animation) => animation instanceof CSSTransition);
+    if (folding.length) Promise.all(folding.map((animation) => animation.finished)).then(done, done);
+    else done();
   }
 
   #toggleGroup(trigger, open = trigger.ariaExpanded !== 'true') {

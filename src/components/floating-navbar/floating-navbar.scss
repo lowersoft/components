@@ -4,6 +4,12 @@
   --_radius: #{lw.v(radius-lg)};
   --_edge: #{lw.v(color-border)};
   --_shine: color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent);
+  // The bar's glass: the frame's frosted rim, the pane inside it and the
+  // light along the pane's top edge.
+  --_glass: color-mix(in oklab, color-mix(in oklab, #{lw.v(color-muted)} 45%, #{lw.v(color-background)}) 60%, transparent);
+  --_pane: color-mix(in oklab, #{lw.v(color-background)} 78%, transparent);
+  --_blur: blur(24px) saturate(1.5);
+  --_sheen: linear-gradient(90deg, transparent, var(--_shine), transparent);
   // The bar's row and the links in it; the menus drop from the frame's foot,
   // half their difference below the links, plus the frame (1px border,
   // 3px padding) and the inner border.
@@ -40,15 +46,19 @@
   padding: 3px;
   border: 1px solid var(--_edge);
   border-radius: calc(var(--_radius) + 4px);
-  background: color-mix(in oklab, color-mix(in oklab, #{lw.v(color-muted)} 45%, #{lw.v(color-background)}) 60%, transparent);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  backdrop-filter: blur(24px) saturate(1.5);
+  background: var(--_glass);
+  -webkit-backdrop-filter: var(--_blur);
+  backdrop-filter: var(--_blur);
 
   @include lw.motion {
-    transition: box-shadow lw.v(duration-normal) lw.v(ease-out);
+    transition:
+      box-shadow lw.v(duration-normal) lw.v(ease-out),
+      border-color lw.v(duration-normal) lw.v(ease-out),
+      background-color lw.v(duration-normal) lw.v(ease-out),
+      backdrop-filter lw.v(duration-normal) lw.v(ease-out);
   }
 
-  :host([data-scrolled]) & {
+  :host(:is([data-scrolled], [data-menu])) & {
     box-shadow: lw.v(shadow-md);
   }
 }
@@ -57,8 +67,36 @@
   border: 1px solid var(--_edge);
   border-radius: var(--_radius);
   background:
-    linear-gradient(90deg, transparent, var(--_shine), transparent) top / 100% 1px no-repeat,
-    color-mix(in oklab, #{lw.v(color-background)} 78%, transparent);
+    var(--_sheen) top / 100% 1px no-repeat,
+    var(--_pane);
+
+  @include lw.motion {
+    transition:
+      border-color lw.v(duration-normal) lw.v(ease-out),
+      background-color lw.v(duration-normal) lw.v(ease-out);
+  }
+}
+
+// Until the page scrolls the bar is bare, its links and actions alone on
+// the page. It takes its frame once the page scrolls, and so it does while
+// the narrow menu is open, until the menu has folded away: open at the top
+// or further down, the menu looks the same.
+:host(:not([data-scrolled], [data-menu])) .frame {
+  border-color: transparent;
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+
+  .inner {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+  }
+}
+
+// The narrow menu sits on a solid sheet, so the page never shows through.
+:host([data-menu]) .inner {
+  background-color: lw.v(color-background);
 }
 
 .bar {

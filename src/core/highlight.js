@@ -3,11 +3,12 @@
  * sliding between items instead of each item lighting up on its own. The box
  * is absolutely positioned in the items' offset parent and should transition
  * `translate`, `width` and `height`; the `visible` class shows it. Appearing,
- * it lands on the item without sliding from wherever it last was.
+ * it lands on the item without sliding from wherever it last was, and so it
+ * does with `instant`, for an item the layout moved rather than the user.
  */
-export const moveHighlight = (highlight, item) => {
+export const moveHighlight = (highlight, item, { instant = false } = {}) => {
   if (!item) return;
-  const appearing = !highlight.classList.contains('visible');
+  const appearing = instant || !highlight.classList.contains('visible');
   if (appearing) highlight.style.transition = 'none';
   highlight.style.translate = `${item.offsetLeft}px ${item.offsetTop}px`;
   highlight.style.width = `${item.offsetWidth}px`;
