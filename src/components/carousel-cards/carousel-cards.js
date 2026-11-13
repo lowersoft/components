@@ -130,9 +130,9 @@ export class LwCarouselCards extends LwElement {
         // Without an href it is a button: a bare "#" link would navigate.
         const title = escapeHtml(item.title);
         const link = item.href ? `<a class="link" href="${escapeHtml(item.href)}" draggable="false">${title}</a>` : `<button class="link" type="button">${title}</button>`;
-        const rating = item.rating === undefined ? '' : `<span class="rating">${STAR}${item.rating.toFixed(2)}${item.reviewCount === undefined ? '' : `<span class="muted">(${item.reviewCount})</span>`}</span>`;
+        const rating = item.rating === undefined ? '' : `<span class="rating">${STAR}${item.rating.toFixed(2)}${item.reviewCount === undefined ? '' : `<span class="muted">(${escapeHtml(item.reviewCount)})</span>`}</span>`;
         const dates = item.dates ? `<span class="muted dates">· ${escapeHtml(item.dates)}</span>` : '';
-        const price = `<span class="price">${escapeHtml(item.currency ?? '€')}${item.price}<span class="muted"> ${escapeHtml(item.priceLabel ?? 'total')}</span></span>`;
+        const price = `<span class="price">${escapeHtml(item.currency ?? '€')}${escapeHtml(item.price)}<span class="muted"> ${escapeHtml(item.priceLabel ?? 'total')}</span></span>`;
         return `<li class="card" data-id="${escapeHtml(item.id)}"><div class="tilt"><div class="picture">${picture}${item.badge ? `<span class="badge">${escapeHtml(item.badge)}</span>` : ''}<button class="heart" type="button" aria-label="Save ${title}" aria-pressed="false"><span class="glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${HEART}"/></svg><span class="fill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${HEART}"/></svg></span></span></button></div><div class="text"><h3>${link}</h3><p class="muted location">${escapeHtml(item.location)}</p><div class="details">${rating}${dates}${price}</div></div></div></li>`;
       })
       .join('');

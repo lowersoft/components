@@ -1,4 +1,5 @@
 import { addDays, formatDate, today, weekday } from '../../core/dates.js';
+import { escapeHtml } from '../../core/dom.js';
 import { LwElement } from '../../core/lw-element.js';
 import { roll, rollingStyles } from '../../core/rolling.js';
 import '../button/index.js';
@@ -147,7 +148,7 @@ export class LwDateRangeBrush extends LwElement {
     roll(this.query('.total-count'), whole.format(total));
     this.query('.total-text').textContent = whole.format(total);
     this.query('.rate').textContent = `${days} days · ${perDay.format(total / days)} a day`;
-    this.query('.busiest').innerHTML = `Busiest day <b>${formatDate(this.#dateOf(busiest), 'en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</b> · ${whole.format(most)} ${this.noun}`;
+    this.query('.busiest').innerHTML = `Busiest day <b>${formatDate(this.#dateOf(busiest), 'en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</b> · ${whole.format(most)} ${escapeHtml(this.noun ?? '')}`;
     this.query('.show').textContent = `Show ${whole.format(total)} ${this.noun}`;
     for (const edge of this.shadowRoot.querySelectorAll('.edge')) {
       const index = edge.dataset.edge === 'from' ? this.#from : this.#to;

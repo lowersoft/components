@@ -26,6 +26,7 @@ export class LwModal extends LwElement {
   };
 
   #reason = 'dismiss';
+  #closing = null; // the fade-out while the dialog closes
 
   render() {
     return `<dialog class="modal" part="dialog" aria-labelledby="modal-title"><button class="close" type="button" aria-label="Close">${strokeIcon(x, 18)}</button>${this.renderBody()}</dialog>`;
@@ -64,7 +65,10 @@ export class LwModal extends LwElement {
       if (!reducedMotion.matches) dialog.animate({ opacity: [0, 1], scale: [0.96, 1], translate: ['0 0.5rem', '0 0'] }, MOTION);
       this.opened?.();
       this.emit('open');
-    } else if (!this.open && dialog.open) {
+    } else if (this.open && this.#closing) {
+      // Opened again while fading out: it comes back instead of closing.
+      this.#closing.cancel();
+    } else if (!this.open && dialog.open && !this.#closing) {
       this.#closeDialog();
     }
   }
@@ -77,7 +81,12 @@ export class LwModal extends LwElement {
 
   async #closeDialog() {
     const dialog = this.dialog;
-    if (!reducedMotion.matches) await dialog.animate({ opacity: [1, 0], scale: [1, 0.97] }, { ...MOTION, duration: 160 }).finished.catch(() => {});
+    if (!reducedMotion.matches) {
+      this.#closing = dialog.animate({ opacity: [1, 0], scale: [1, 0.97] }, { ...MOTION, duration: 160 });
+      await this.#closing.finished.catch(() => {});
+      this.#closing = null;
+    }
+    if (this.open) return;
     dialog.close();
     this.emit('close', { reason: this.#reason });
     this.#reason = 'dismiss';

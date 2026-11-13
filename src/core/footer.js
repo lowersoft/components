@@ -57,12 +57,14 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * Wires a sign-up form of an `lw-text-input` and an `lw-button`: the button
  * or Enter checks the address, waits on `send(email)` with the button
  * loading, shows a failure's message on the field, and hands the address
- * to `done` once it went through. It sends once; later submits do nothing.
+ * to `done` once it went through. It sends once; later submits, and Enter
+ * pressed again while it is sending, do nothing.
  */
 export const wireSignup = (form, { input, button, send, done }, signal) => {
   let sent = false;
+  let sending = false;
   const submit = async () => {
-    if (sent) return;
+    if (sent || sending) return;
     const email = (input.value ?? '').trim();
     if (!EMAIL.test(email)) {
       input.error = email ? 'That address looks incomplete.' : 'Enter your email to subscribe.';
@@ -71,6 +73,7 @@ export const wireSignup = (form, { input, button, send, done }, signal) => {
     }
     input.error = '';
     button.loading = true;
+    sending = true;
     try {
       await send?.(email);
     } catch (error) {
@@ -78,6 +81,7 @@ export const wireSignup = (form, { input, button, send, done }, signal) => {
       return;
     } finally {
       button.loading = false;
+      sending = false;
     }
     sent = true;
     done(email);

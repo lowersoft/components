@@ -2,7 +2,7 @@ import { LOWERSOFT, paintMark } from '../../core/brand.js';
 import { escapeHtml } from '../../core/dom.js';
 import { heroIntro, paintHeroText } from '../../core/hero.js';
 import { CHECK_ICON, iconStyles, strokeIcon } from '../../core/icons.js';
-import { box, circleCheck, gitBranch, pause, play, rotateCcw, settings, squareTerminal } from '../../core/lucide.js';
+import { asterisk, box, circleCheck, gitBranch, pause, play, rotateCcw, settings, squareTerminal } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
 import { reducedMotion } from '../../core/motion.js';
 import { watchVisibility } from '../../core/visibility.js';

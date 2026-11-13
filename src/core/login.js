@@ -1,3 +1,4 @@
+import { escapeHtml } from './dom.js';
 import { avatarSeed, FaceView } from './face.js';
 
 // Shared pieces of the login components: the provider marks and buttons,
@@ -21,7 +22,7 @@ const GLYPHS = {
 };
 
 /** A workspace's mark: a tile in its colour with a glyph, `{ glyph, color }`. */
-export const markTile = (mark) => (mark ? `<span class="mark" style="--_mark: ${mark.color ?? '#3f6f5a'}" aria-hidden="true"><svg viewBox="0 0 16 16">${GLYPHS[mark.glyph] ?? GLYPHS.dot}</svg></span>` : '');
+export const markTile = (mark) => (mark ? `<span class="mark" style="--_mark: ${escapeHtml(mark.color ?? '#3f6f5a')}" aria-hidden="true"><svg viewBox="0 0 16 16">${GLYPHS[mark.glyph] ?? GLYPHS.dot}</svg></span>` : '');
 
 /**
  * Draws `name`'s portrait into `container`, the same face for the same name

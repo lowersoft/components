@@ -29,8 +29,8 @@ const setupProps = (ctor) => {
         return this[VALUES].get(name) ?? fallback;
       },
       set(value) {
-        if (!reflect) return this.setValue(name, value);
-        if (type === Boolean) this.toggleAttribute(attr, Boolean(value));
+        if (!reflect) this.setValue(name, value);
+        else if (type === Boolean) this.toggleAttribute(attr, Boolean(value));
         else if (value == null) this.removeAttribute(attr);
         else this.setAttribute(attr, value);
       },
@@ -88,7 +88,14 @@ export class LwElement extends HTMLElement {
   attributeChangedCallback(attr, oldValue, newValue) {
     if (oldValue === newValue) return;
     const { name, type } = this.constructor[ATTRS].get(attr);
-    this.setValue(name, fromAttribute(type, newValue));
+    let value;
+    try {
+      value = fromAttribute(type, newValue);
+    } catch (error) {
+      // Name the element and attribute, which JSON.parse alone leaves out.
+      throw new SyntaxError(`<${this.localName}> ${attr} takes JSON: ${error.message}`, { cause: error });
+    }
+    this.setValue(name, value);
   }
 
   /** Aborted on disconnect. Pass to `addEventListener` and animations for automatic cleanup. */
@@ -98,7 +105,8 @@ export class LwElement extends HTMLElement {
 
   /** Store a prop value without touching attributes and schedule an update. */
   setValue(name, value) {
-    if (this[VALUES].get(name) === value) return;
+    // Object.is, so setting NaN again is not a change.
+    if (Object.is(this[VALUES].get(name), value)) return;
     this[VALUES].set(name, value);
     if (this.#changed.size === 0 && this.#rendered) queueMicrotask(() => this.#flush());
     this.#changed.add(name);

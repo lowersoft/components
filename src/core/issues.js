@@ -54,11 +54,11 @@ const STATUS_ICONS = {
 
 /** The status mark, coloured by the `issue-marks` mixin. */
 export const statusIcon = (status) =>
-  `<svg class="status-icon" data-status="${status}" viewBox="0 0 16 16" width="16" height="16" role="img" aria-label="${STATUSES.find((each) => each.id === status)?.label ?? status}">${STATUS_ICONS[status] ?? STATUS_ICONS.todo}</svg>`;
+  `<svg class="status-icon" data-status="${escapeHtml(status)}" viewBox="0 0 16 16" width="16" height="16" role="img" aria-label="${escapeHtml(STATUSES.find((each) => each.id === status)?.label ?? status)}">${STATUS_ICONS[status] ?? STATUS_ICONS.todo}</svg>`;
 
 /** Signal bars for the priority, or an exclamation tile when urgent. */
 export const priorityIcon = (priority) => {
-  const label = PRIORITIES.find((each) => each.id === priority)?.label ?? priority;
+  const label = escapeHtml(PRIORITIES.find((each) => each.id === priority)?.label ?? priority);
   if (priority === 'urgent') return `<svg class="priority-icon" data-priority="urgent" viewBox="0 0 16 16" width="16" height="16" role="img" aria-label="${label}"><rect x="1" y="1" width="14" height="14" rx="3"/><path d="M8 4.5v4.5M8 11.2v.3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>`;
   const level = { high: 3, medium: 2, low: 1 }[priority] ?? 0;
   return `<svg class="priority-icon" viewBox="0 0 16 16" width="16" height="16" role="img" aria-label="${label}">${[0, 1, 2].map((i) => `<rect x="${2 + i * 5}" y="${10 - i * 3}" width="3" height="${4 + i * 3}" rx="1"${i < level ? ' data-on' : ''}/>`).join('')}</svg>`;
