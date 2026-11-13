@@ -8,9 +8,13 @@ import { swapText } from './swap.js';
 // values. Add `menuStyles`, `iconStyles` and `swapStyles` to the component's
 // `static styles`.
 
-/** The trigger and its menu; `icon` and `label` sit before the chosen value. */
-export const pickerMarkup = (id, { icon = '', label = '' } = {}) =>
-  `<span class="picker"><button class="picker-trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="${id}">${icon}${label ? `<span class="picker-label">${escapeHtml(label)}</span>` : ''}<span class="picker-value swap"></span>${strokeIcon(chevronDown, 14)}</button>${menuMarkup(id)}</span>`;
+/**
+ * The trigger and its menu; `icon` and `label` sit before the chosen value.
+ * Without `value`, the trigger keeps its label and shows no choice, for a
+ * menu of actions.
+ */
+export const pickerMarkup = (id, { icon = '', label = '', value = true } = {}) =>
+  `<span class="picker"><button class="picker-trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="${id}">${icon}${label ? `<span class="picker-label">${escapeHtml(label)}</span>` : ''}${value ? '<span class="picker-value swap"></span>' : ''}${strokeIcon(chevronDown, 14)}</button>${menuMarkup(id)}</span>`;
 
 /**
  * Wires the picker in `root` until `signal` aborts. `set(items, value)`
@@ -20,11 +24,12 @@ export const createPicker = (root, signal, onPick) => {
   const trigger = root.querySelector('.picker-trigger');
   const menu = new Menu({ trigger, menu: root.querySelector('.menu'), onPick });
   menu.connect(signal);
+  const shown = trigger.querySelector('.picker-value');
   return {
     set(items, value) {
       menu.setItems(items);
       menu.setChecked(value);
-      swapText(trigger.querySelector('.picker-value'), items.find((item) => item.value === value)?.label ?? '', trigger);
+      if (shown) swapText(shown, items.find((item) => item.value === value)?.label ?? '', trigger);
     },
   };
 };

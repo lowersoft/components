@@ -197,7 +197,13 @@ export class LwFlutedGlass extends LwElement {
 
   connected() {
     const options = { signal: this.signal };
-    this.#setup();
+    // The context and its program outlive a reconnect; only a lost one is redone.
+    if (!this.#gl) this.#setup();
+    this.query('.glass').addEventListener('webglcontextlost', (event) => {
+      event.preventDefault();
+      this.#gl = null;
+      this.toggleAttribute('data-fallback', true);
+    }, options);
     const stage = this.query('.stage');
     stage.addEventListener('pointermove', (event) => {
       const box = stage.getBoundingClientRect();
@@ -279,11 +285,6 @@ export class LwFlutedGlass extends LwElement {
     }
     this.#program = program;
     this.#gl = gl;
-    canvas.addEventListener('webglcontextlost', (event) => {
-      event.preventDefault();
-      this.#gl = null;
-      this.toggleAttribute('data-fallback', true);
-    }, { signal: this.signal });
   }
 
   // Rib edges across the width, each rib a little wider or narrower.
@@ -362,7 +363,8 @@ export class LwFlutedGlass extends LwElement {
 
   // Runs while there is something to move, it can be seen and motion is welcome.
   #run() {
-    const live = this.#gl && this.#ready && this.#visible && !document.hidden && !this.paused && !reducedMotion.matches;
+    // A picture that finishes loading after the element left does not start it.
+    const live = this.isConnected && this.#gl && this.#ready && this.#visible && !document.hidden && !this.paused && !reducedMotion.matches;
     if (live && !this.#frame) {
       this.#last = performance.now();
       this.#frame = requestAnimationFrame((now) => this.#tick(now));

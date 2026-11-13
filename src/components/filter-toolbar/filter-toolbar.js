@@ -43,8 +43,8 @@ export class LwFilterToolbar extends LwElement {
 
   render() {
     return `<div class="bar"><label class="search">${strokeIcon(search, 16)}<input class="query" type="search" placeholder="Search issues" aria-label="Search issues" autocomplete="off"><kbd aria-hidden="true">/</kbd></label>
-<span class="add-filter">${pickerMarkup('field-menu', { icon: strokeIcon(FILTER_ICON, 16), label: 'Filter' })}</span><span class="count" aria-live="polite"></span></div>
-<div class="chips"><div class="chip-list"></div><span class="add-more">${pickerMarkup('add-menu', { icon: strokeIcon(plus, 14), label: 'Add' })}</span><button class="clear" type="button">Clear</button></div><ul class="issues"></ul><p class="empty" hidden>No issues match. Loosen a filter.</p>`;
+<span class="add-filter">${pickerMarkup('field-menu', { icon: strokeIcon(FILTER_ICON, 16), label: 'Filter', value: false })}</span><span class="count" aria-live="polite"></span></div>
+<div class="chips"><div class="chip-list"></div><span class="add-more">${pickerMarkup('add-menu', { icon: strokeIcon(plus, 14), label: 'Add', value: false })}</span><button class="clear" type="button">Clear</button></div><ul class="issues"></ul><p class="empty" hidden>No issues match. Loosen a filter.</p>`;
   }
 
   connected() {
@@ -53,7 +53,6 @@ export class LwFilterToolbar extends LwElement {
     for (const holder of [this.query('.add-filter'), this.query('.add-more')]) {
       const picker = createPicker(holder, this.signal, (field) => this.#add(field));
       picker.set(fieldItems, '');
-      holder.querySelector('.picker-value').remove();
     }
     this.query('.query').addEventListener('input', () => this.#apply(), options);
     this.query('.clear').addEventListener('click', () => {

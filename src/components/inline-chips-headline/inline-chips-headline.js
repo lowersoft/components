@@ -48,7 +48,11 @@ export class LwInlineChipsHeadline extends LwElement {
   connected() {
     this.shadowRoot.addEventListener('click', (event) => event.target.closest('.status') && this.#run(), { signal: this.signal });
     watchVisibility(this, (visible) => visible && this.#show(), this.signal);
-    this.signal.addEventListener('abort', () => clearTimeout(this.#timer));
+    // A run cut short lands at once, so the status never stays spinning.
+    this.signal.addEventListener('abort', () => {
+      clearTimeout(this.#timer);
+      this.#land();
+    });
   }
 
   updated() {

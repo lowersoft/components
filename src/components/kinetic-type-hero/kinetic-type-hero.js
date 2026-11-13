@@ -52,6 +52,8 @@ export class LwKineticTypeHero extends LwElement {
     this.signal.addEventListener('abort', () => {
       fit.disconnect();
       cancelAnimationFrame(this.#frame);
+      // Cleared too, so the loop can start again on reconnecting.
+      this.#frame = 0;
     });
     watchVisibility(this, (visible) => {
       this.#visible = visible;

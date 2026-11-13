@@ -87,7 +87,11 @@ export class LwGlowingBorder extends LwElement {
       this.#light();
     }, { signal: this.signal });
     addEventListener('scroll', () => this.#pointer && (this.#frame ||= requestAnimationFrame(() => this.#light())), { ...options, capture: true });
-    this.signal.addEventListener('abort', () => cancelAnimationFrame(this.#frame));
+    // Cleared too, so the light can follow again on reconnecting.
+    this.signal.addEventListener('abort', () => {
+      cancelAnimationFrame(this.#frame);
+      this.#frame = 0;
+    });
   }
 
   updated() {

@@ -367,6 +367,8 @@ export class LwVideoPlayer extends LwElement {
   #tracksToken = 0;
   #chaptersToken = 0;
   #thumbsToken = 0;
+  // Loads cut short by a disconnect, by name, to run again on reconnecting.
+  #interrupted = new Map();
   #previewTimer = 0;
   #tipControl = null;
   #segments = [[0, 1]];
@@ -612,6 +614,8 @@ ${button('chapters', glyph(listVideo), ' aria-haspopup="menu"')}${button('captio
     this.#bindTooltips(options);
     this.#settings.connect(this.signal);
     this.#chapterMenu.connect(this.signal);
+    for (const load of this.#interrupted.values()) load();
+    this.#interrupted.clear();
 
     document.addEventListener('fullscreenchange', () => this.#syncFullscreen(), options);
     document.addEventListener('webkitfullscreenchange', () => this.#syncFullscreen(), options);
@@ -1222,11 +1226,19 @@ ${button('chapters', glyph(listVideo), ' aria-haspopup="menu"')}${button('captio
 
   // Each track is fetched and handed to the video as a same-origin WebVTT
   // file, so no CORS mode is needed on the video and SRT works too.
+  // A load cut short by a disconnect runs again once the player is back:
+  // at once when it already is by the time the abort lands, else on connecting.
+  #interrupt(name, load) {
+    if (this.isConnected) load();
+    else this.#interrupted.set(name, load);
+  }
+
   async #loadTracks() {
     const media = this.media;
     const list = this.#trackList();
     this.#lastTracks = JSON.stringify(list);
     const token = (this.#tracksToken += 1);
+    const { signal } = this;
     for (const element of media.querySelectorAll('track')) element.remove();
     for (const url of this.#trackUrls) URL.revokeObjectURL(url);
     this.#trackUrls = [];
@@ -1234,15 +1246,20 @@ ${button('chapters', glyph(listVideo), ' aria-haspopup="menu"')}${button('captio
     const loaded = await Promise.all(
       list.map(async (track) => {
         try {
-          const text = track.content ?? (await fetchText(new URL(track.src, document.baseURI).href, this.signal));
+          const text = track.content ?? (await fetchText(new URL(track.src, document.baseURI).href, signal));
           return { ...track, text: toVtt(text) };
         } catch (error) {
+          if (signal.aborted) return null;
           console.warn(`lw-video-player: could not load the track "${track.label ?? track.src}".`, error);
           return null;
         }
       }),
     );
     if (token !== this.#tracksToken) return;
+    if (signal.aborted) {
+      this.#interrupt('tracks', () => this.#loadTracks());
+      return;
+    }
     for (const track of loaded) {
       if (!track) continue;
       const kind = track.kind || 'subtitles';
@@ -1345,17 +1362,22 @@ ${button('chapters', glyph(listVideo), ' aria-haspopup="menu"')}${button('captio
 
   async #loadChapters() {
     const token = (this.#chaptersToken += 1);
+    const { signal } = this;
     const { list, url } = listOrUrl(this.chapters);
     let chapters = normalizeChapters(list);
     if (url) {
       try {
-        chapters = chaptersFromCues(parseCues(await fetchText(new URL(url, document.baseURI).href, this.signal)));
+        chapters = chaptersFromCues(parseCues(await fetchText(new URL(url, document.baseURI).href, signal)));
       } catch (error) {
-        console.warn('lw-video-player: could not load the chapters.', error);
+        if (!signal.aborted) console.warn('lw-video-player: could not load the chapters.', error);
         chapters = [];
       }
     }
     if (token !== this.#chaptersToken) return;
+    if (signal.aborted) {
+      this.#interrupt('chapters', () => this.#loadChapters());
+      return;
+    }
     const duration = this.#state.duration;
     this.#set({ chapters: duration ? chapters.map((chapter) => ({ ...chapter, end: Math.min(chapter.end, duration) })) : chapters });
     this.#set({ chapter: this.#chapterAt(this.currentTime) });
@@ -1363,18 +1385,23 @@ ${button('chapters', glyph(listVideo), ' aria-haspopup="menu"')}${button('captio
 
   async #loadThumbnails() {
     const token = (this.#thumbsToken += 1);
+    const { signal } = this;
     const { list, url } = listOrUrl(this.thumbnails);
     let thumbs = normalizeThumbnails(list);
     if (url) {
       try {
         const href = new URL(url, document.baseURI).href;
-        thumbs = thumbnailsFromCues(parseCues(await fetchText(href, this.signal)), href);
+        thumbs = thumbnailsFromCues(parseCues(await fetchText(href, signal)), href);
       } catch (error) {
-        console.warn('lw-video-player: could not load the thumbnails.', error);
+        if (!signal.aborted) console.warn('lw-video-player: could not load the thumbnails.', error);
         thumbs = [];
       }
     }
     if (token !== this.#thumbsToken) return;
+    if (signal.aborted) {
+      this.#interrupt('thumbnails', () => this.#loadThumbnails());
+      return;
+    }
     this.#thumbs = thumbs;
     this.toggleAttribute('data-thumbnails', thumbs.length > 0);
     // The sprite sheets load ahead, so the first preview is not blank.

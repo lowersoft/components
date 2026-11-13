@@ -114,7 +114,11 @@ export class LwPixelFooter extends LwElement {
       this.#run();
     }, options);
     wordmark.addEventListener('pointerleave', () => wordmark.toggleAttribute('data-lit', false), options);
-    this.signal.addEventListener('abort', () => cancelAnimationFrame(this.#frame));
+    // Cleared too, so the loop can start again on reconnecting.
+    this.signal.addEventListener('abort', () => {
+      cancelAnimationFrame(this.#frame);
+      this.#frame = 0;
+    });
   }
 
   updated(changed) {

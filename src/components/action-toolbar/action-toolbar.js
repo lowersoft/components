@@ -50,7 +50,7 @@ export class LwActionToolbar extends LwElement {
     return `<header class="head"><input class="all check" type="checkbox" aria-label="Select all"><h2 class="title">Inbox <span class="total"></span></h2></header><ul class="list" aria-label="Conversations"></ul>
 <div class="toolbar" role="toolbar" aria-label="Selected conversations" hidden><span class="count" aria-live="polite"></span><span class="sep"></span>
 <button class="act" type="button" data-action="archive">${strokeIcon(ARCHIVE, 16)}<span>Archive</span></button><button class="act" type="button" data-action="read">${strokeIcon(mail, 16)}<span class="read-label">Mark read</span></button>
-<span class="label-picker">${pickerMarkup('label-menu', { icon: strokeIcon(tag, 16), label: 'Label' })}</span><button class="act danger" type="button" data-action="delete">${strokeIcon(TRASH, 16)}<span>Delete</span></button><span class="sep"></span><button class="act clear" type="button" aria-label="Clear selection">${strokeIcon(x, 16)}</button></div>
+<span class="label-picker">${pickerMarkup('label-menu', { icon: strokeIcon(tag, 16), label: 'Label', value: false })}</span><button class="act danger" type="button" data-action="delete">${strokeIcon(TRASH, 16)}<span>Delete</span></button><span class="sep"></span><button class="act clear" type="button" aria-label="Clear selection">${strokeIcon(x, 16)}</button></div>
 <div class="undo-bar" role="status" hidden><span class="undo-text"></span><button class="undo" type="button">Undo</button></div>`;
   }
 
@@ -58,7 +58,6 @@ export class LwActionToolbar extends LwElement {
     const options = { signal: this.signal };
     const picker = createPicker(this.query('.label-picker'), this.signal, (label) => this.#act('label', label));
     picker.set(Object.keys(LABELS).map((label) => ({ value: label, label })), '');
-    this.query('.label-picker .picker-value').remove();
     this.query('.all').addEventListener('change', (event) => {
       this.#selected = event.target.checked ? new Set(this.#items.map((item) => item.id)) : new Set();
       this.#paint();

@@ -88,6 +88,8 @@ export class LwTerminalHero extends LwElement {
     this.signal.addEventListener('abort', () => {
       this.#play++;
       clearTimeout(this.#replay);
+      // A build cut short plays again from the top once it is back on screen.
+      this.#started = false;
     });
     watchVisibility(this, (visible) => {
       this.#visible = visible;

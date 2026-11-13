@@ -61,12 +61,19 @@ export class Menu {
     this.#canOpen = canOpen;
     this.#flip = flip;
     if (search) this.#addSearch(search);
-    this.#tooltip = Object.assign(document.createElement('span'), { className: 'menu-tooltip', role: 'tooltip', hidden: true });
+    // A menu built before, by an element that connects again, keeps its parts.
+    this.#tooltip = menu.querySelector(':scope > .menu-tooltip') ?? Object.assign(document.createElement('span'), { className: 'menu-tooltip', role: 'tooltip', hidden: true });
     menu.append(this.#tooltip);
   }
 
   // A search box fixed above a list that scrolls, with a line for no matches.
   #addSearch(placeholder) {
+    if (this.#menu.hasAttribute('data-search')) {
+      this.#search = this.#menu.querySelector('.menu-search input');
+      this.#list = this.#menu.querySelector('.menu-list');
+      this.#empty = this.#menu.querySelector('.menu-empty');
+      return;
+    }
     const header = Object.assign(document.createElement('div'), { className: 'menu-search' });
     this.#search = Object.assign(document.createElement('input'), { type: 'search', placeholder, autocomplete: 'off', spellcheck: false });
     this.#search.ariaLabel = placeholder;
