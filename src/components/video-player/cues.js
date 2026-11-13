@@ -18,7 +18,7 @@ export const parseTimestamp = (text) => {
  */
 export const parseCues = (source) => {
   const cues = [];
-  const blocks = String(source).replace(/^﻿/, '').replace(/\r\n?/g, '\n').split(/\n{2,}/);
+  const blocks = String(source).replace(/^\ufeff/, '').replace(/\r\n?/g, '\n').split(/\n{2,}/);
   for (const block of blocks) {
     const lines = block.split('\n');
     const at = lines.findIndex((line) => line.includes('-->'));
@@ -34,7 +34,7 @@ export const parseCues = (source) => {
 
 /** WebVTT from WebVTT or SRT text: SRT only needs a header and dots for commas. */
 export const toVtt = (source) => {
-  const text = String(source).replace(/^﻿/, '').replace(/\r\n?/g, '\n');
+  const text = String(source).replace(/^\ufeff/, '').replace(/\r\n?/g, '\n');
   if (/^WEBVTT/.test(text)) return text;
   return `WEBVTT\n\n${text.replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, '$1.$2')}`;
 };

@@ -177,7 +177,7 @@ export class LwEditProfileForm extends LwElement {
   }
 
   #paintTime() {
-    let time = '';
+    let time;
     try {
       time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', timeZone: this.#draft.timeZone }).format(new Date());
     } catch {

@@ -20,7 +20,6 @@ const STEP = 1 / 240;
 const SHAPE = springFeel(0.42, 0.12);
 // The neck follows the new icon a little quicker than the panel reshapes.
 const NECK = springFeel(0.3, 0.1);
-const SHAPE_KEYS = ['cx', 'w', 'h', 'bottom'];
 const NECK_KEYS = ['nx', 'neck'];
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 

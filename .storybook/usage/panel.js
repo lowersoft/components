@@ -102,7 +102,7 @@ const From = styled.span(({ theme }) => ({ display: 'block', marginTop: 4, fontS
 const name = ({ name, from }) => h(Fragment, null, h(Code, null, name || '(default)'), from && h(From, null, `from ${from}`));
 const description = ({ description }) => text(description);
 // Unions break after each bar instead of widening the table.
-const type = ({ type }) => type && h(Type, null, type.replaceAll('|', '|​'));
+const type = ({ type }) => type && h(Type, null, type.replaceAll('|', '|\u200b'));
 
 const Usage = ({ data }) => {
   const { markup, entries, reference } = data;

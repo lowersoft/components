@@ -1,4 +1,3 @@
-import { escapeHtml } from '../../core/dom.js';
 import { avatarSeed } from '../../core/face.js';
 import { strokeIcon } from '../../core/icons.js';
 import { drawPortrait, GOOGLE } from '../../core/login.js';

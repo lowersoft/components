@@ -270,7 +270,7 @@ export class LwSvgFire extends LwElement {
   // The SVG to burn, from the first source that has one.
   async #load() {
     const ticket = ++this.#loading;
-    let text = '';
+    let text;
     if (this.src) {
       try {
         const response = await fetch(this.src);

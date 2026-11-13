@@ -128,7 +128,7 @@ export class LwVerificationCode extends FormControl(LwElement) {
     if (!this.verify) return;
     this.#state = 'checking';
     this.#render();
-    let right = false;
+    let right;
     try {
       right = await this.verify(code);
     } catch {

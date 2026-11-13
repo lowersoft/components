@@ -1,4 +1,3 @@
-import { escapeHtml } from '../../core/dom.js';
 import { LwElement } from '../../core/lw-element.js';
 import { fixedStepLoop, reducedMotion, springFeel } from '../../core/motion.js';
 import styles from './water-progress-bar.scss?inline';

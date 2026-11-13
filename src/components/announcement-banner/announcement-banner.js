@@ -1,5 +1,4 @@
 import { closeButton, dismissBanner } from '../../core/banner.js';
-import { escapeHtml } from '../../core/dom.js';
 import { strokeIcon } from '../../core/icons.js';
 import { arrowRight, chevronLeft, chevronRight, pause, play } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';

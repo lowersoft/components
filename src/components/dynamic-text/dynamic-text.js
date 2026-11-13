@@ -61,7 +61,7 @@ export class LwDynamicText extends LwElement {
   #decoded = null; // what the cells settled on, so only changed cells scramble
 
   render() {
-    return '<span class="live"></span><span class="morph" aria-hidden="true"><span class="measure"></span><span class="strut">​</span></span><span class="decode" aria-hidden="true" hidden></span>';
+    return '<span class="live"></span><span class="morph" aria-hidden="true"><span class="measure"></span><span class="strut">\u200b</span></span><span class="decode" aria-hidden="true" hidden></span>';
   }
 
   connected() {

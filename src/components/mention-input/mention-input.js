@@ -142,7 +142,7 @@ export class LwMentionInput extends FormControl(LwElement) {
   #text(node) {
     let text = '';
     for (const child of node.childNodes) {
-      if (child.nodeType === Node.TEXT_NODE) text += child.data.replace(/ /g, ' ');
+      if (child.nodeType === Node.TEXT_NODE) text += child.data.replace(/\u00a0/g, ' ');
       else if (child.classList?.contains('mention')) text += `@${child.dataset.handle}`;
       else if (child.nodeName === 'BR') text += '\n';
       else {
@@ -259,7 +259,7 @@ export class LwMentionInput extends FormControl(LwElement) {
     const token = Object.assign(document.createElement('span'), { className: 'mention', contentEditable: 'false', textContent: `@${person.name}` });
     token.dataset.id = String(person.id);
     token.dataset.handle = person.handle;
-    const space = document.createTextNode(' ');
+    const space = document.createTextNode('\u00a0');
     range.insertNode(space);
     range.insertNode(token);
     this.#close();
