@@ -181,7 +181,7 @@ components/
 ```
 
 #### 2.3 Dependencies: none
-lw has **zero runtime dependencies**. Nothing is bundled from third parties, nothing is patched, and every component is a separate entry point, so you only pay for what you import. The shared runtime is about 2 kB (gzip).
+lw has **zero runtime dependencies**. No third-party code is bundled, nothing is patched, and every component is a separate entry point, so you only pay for what you import. The shared runtime is about 2 kB (gzip). The one outside contribution is icon artwork from Lucide, see [Third-party software](#third-party-software).
 
 #### 2.4 Component lifecycle
 Importing a component registers its custom element. From there the browser owns the lifecycle:
@@ -285,7 +285,7 @@ lw is released under the **[MIT License](LICENSE)**. You are free to use, copy, 
 The software is provided "as is", without warranty of any kind.
 
 #### Third-party software
-lw has no runtime dependencies, so nothing from third parties is shipped in your bundle.
+lw has no runtime dependencies. Its icons come from [Lucide](https://lucide.dev) (ISC), some of them derived from [Feather](https://feathericons.com) (MIT); their notices are in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md), which ships with the package.
 
 Questions about licensing or copyright? See [Contact](#contact).
 

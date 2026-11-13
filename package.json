@@ -3,10 +3,15 @@
   "version": "0.2.0",
   "description": "Animated UI components built with SCSS and vanilla JavaScript Web Components.",
   "license": "MIT",
+  "author": "LowerSoft",
   "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lowersoft/components.git"
+  },
+  "homepage": "https://github.com/lowersoft/components#readme",
+  "bugs": {
+    "url": "https://github.com/lowersoft/components/issues"
   },
   "keywords": [
     "web-components",
@@ -26,7 +31,8 @@
   "module": "./dist/index.js",
   "files": [
     "dist",
-    "src/styles"
+    "src/styles",
+    "THIRD-PARTY-NOTICES.md"
   ],
   "sideEffects": [
     "./dist/**",
