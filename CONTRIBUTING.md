@@ -94,6 +94,8 @@ export class LwExample extends LwElement {
 - `render()` runs once. Never re-render markup on prop changes; patch the DOM in `updated()`.
 - `updated(changed)` is batched: many prop changes in one task produce one call.
 - Pass `this.signal` to every listener, observer and animation so `disconnectedCallback` cleans them up.
+- An element can leave the page and come back, and `connected()` then runs again. Whatever the abort handler stops must be able to start again: reset a cancelled frame id to `0` and a "has played" flag to `false`.
+- Name props in camelCase (`footnoteLink`); the attribute is its kebab-case form (`footnote-link`).
 - Style variants with `:host([attr])` selectors and private `--_*` custom properties instead of JavaScript.
 - Events are dispatched as `lw-<name>`, bubbling and composed.
 
@@ -113,7 +115,8 @@ export class LwExample extends LwElement {
 - [ ] Looks right in light and dark themes
 - [ ] Stories cover the main props
 - [ ] Documented with JSDoc `@attr`, `@slot`, `@csspart`, `@fires` (Storybook's Usage tab is built from it)
-- [ ] `npm run build` passes
+- [ ] `npm run build` and `npm run lint` pass
+- [ ] `npm run build-storybook` then `npm test` passes (once: `npx playwright install chromium --only-shell`)
 - [ ] Changeset added (`npm run changeset`)
 
 ## Releasing

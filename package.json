@@ -47,6 +47,8 @@
     "build": "vite build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static",
+    "lint": "eslint .",
+    "test": "node scripts/smoke.mjs",
     "new": "node scripts/new-component.mjs",
     "changeset": "changeset",
     "version-packages": "changeset version",
@@ -57,8 +59,12 @@
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
+    "@eslint/js": "^10.0.1",
     "@storybook/web-components-vite": "^10.6.2",
+    "eslint": "^10.14.0",
+    "globals": "^17.14.0",
     "lit": "^3.3.3",
+    "playwright": "^1.65.0",
     "sass-embedded": "^1.105.2",
     "storybook": "^10.6.2",
     "vite": "^8.3.4"

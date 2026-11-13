@@ -148,6 +148,9 @@ SCSS users can reuse the token functions and mixins:
 | `npm install` | Install the development dependencies |
 | `npm run storybook` | Component docs and playground; each story's **Usage** tab has its markup and API |
 | `npm run build` | Library build into `dist/` |
+| `npm run lint` | Check the JavaScript with ESLint |
+| `npm run build-storybook` | Static Storybook build into `storybook-static/` |
+| `npm test` | Open every story of that build in Chromium and fail on errors and leaks |
 | `npm run new <name> <Category>` | Scaffold a new component in a Storybook category |
 
 Something broke? Delete `node_modules/` and `dist/`, run `npm install` again and retry. Still stuck? [Open an issue](https://github.com/lowersoft/components/issues).
@@ -173,7 +176,7 @@ components/
 │   ├── core/         The shared runtime: base class, registration, helpers
 │   ├── styles/       Tokens, functions, mixins and the default theme
 │   └── index.js      The full bundle
-├── scripts/          Component scaffolding (npm run new)
+├── scripts/          Component scaffolding (npm run new) and the story smoke test
 ├── .storybook/       Component docs and playground, with the Usage tab
 ├── .changeset/       Pending release notes
 ├── CONTRIBUTING.md
@@ -216,6 +219,8 @@ default theme ──install──▶ :root { --lw-* } ──read──▶ compon
 | **SCSS** | Source of all component styles and the exported token functions and mixins. |
 | **`npm run build`** | Builds the library into `dist/`, one entry point per component plus the full bundle. |
 | **Storybook** | Component docs and playground, started with `npm run storybook`. |
+| **ESLint** | `npm run lint` catches undefined names, unused code and other mistakes. |
+| **Smoke test** | `npm test` opens every story of the static Storybook, takes its elements out of the page and puts them back, and fails on errors or animations that keep running. CI runs it on every push. |
 | **`npm run new`** | Scaffolds a component (and its story) so every component starts with the same structure. |
 
 #### 2.7 Extending it
@@ -264,8 +269,8 @@ Our goal is to make building animated, accessible web UI easier, tidier and more
 
 #### Sending a pull request
 1. **Fork** the repository and create a branch from `main` (for example `fix/button-focus` or `feat/tooltip`).
-2. **Build** it with `npm run build` and make sure it compiles without warnings.
-3. **Test** it by opening the component in Storybook (`npm run storybook`).
+2. **Build** it with `npm run build` and make sure it compiles without warnings, and run `npm run lint`.
+3. **Test** it by opening the component in Storybook (`npm run storybook`), then run `npm run build-storybook` and `npm test`. The first test run needs Playwright's Chromium: `npx playwright install chromium --only-shell`.
 4. **Open the pull request** and describe what changed and why. Screenshots or recordings help for UI and animation changes.
 
 For larger changes, please open an issue first so we can agree on the direction before you invest the time.

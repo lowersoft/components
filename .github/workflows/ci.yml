@@ -5,6 +5,14 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
+# A newer push to the same branch or pull request supersedes a running check.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,5 +23,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - run: npm run lint
       - run: npm run build
       - run: npm run build-storybook
+      - run: npx playwright install --with-deps --only-shell chromium
+      - run: npm test
