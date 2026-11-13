@@ -22,7 +22,8 @@ lw is a set of *animated UI components* built with **SCSS** and **vanilla JavaSc
   <a href="#contact">Contact</a> ·
   <a href="#credits">Credits</a> ·
   <a href="#contribute">Contribute</a> ·
-  <a href="#license">License</a>
+  <a href="#license">License</a> ·
+  <a href="https://www.npmjs.com/package/@lowersoft/lw">NPM Page</a>
 </div>
 <hr>
 
