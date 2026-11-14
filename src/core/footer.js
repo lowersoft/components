@@ -45,10 +45,13 @@ export const socialIcon = (icon, size = 16) => {
   return strokeIcon(lucide[icon] ?? lucide.link2, size);
 };
 
-/** Social links as list items, each an icon named by its label: `[{ label, href?, icon }]`. */
+/**
+ * Social links as list items, each an icon named by its label:
+ * `[{ label, href?, icon, external? }]`. An external one opens in a new tab.
+ */
 export const socialLinks = (socials, size = 16) =>
   (Array.isArray(socials) ? socials : [])
-    .map((social) => `<li><a class="social" href="${escapeHtml(social.href ?? '#')}" aria-label="${escapeHtml(social.label)}" title="${escapeHtml(social.label)}">${socialIcon(social.icon, size)}</a></li>`)
+    .map((social) => `<li><a class="social" href="${escapeHtml(social.href ?? '#')}"${social.external ? ' target="_blank" rel="noopener noreferrer"' : ''} aria-label="${escapeHtml(social.label)}${social.external ? ' (opens in a new tab)' : ''}" title="${escapeHtml(social.label)}">${socialIcon(social.icon, size)}</a></li>`)
     .join('');
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

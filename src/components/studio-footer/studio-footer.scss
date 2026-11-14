@@ -1,0 +1,384 @@
+@use '../../styles' as lw;
+
+@include lw.footer-base;
+
+:host {
+  // Lowersoft's palette: the red square, the orange underline and, in a
+  // dark theme, the navy of the light from above.
+  --_square: var(--lw-studio-footer-square, #d60000);
+  --_underline: var(--lw-studio-footer-underline, #ff9100);
+  --_glow: var(--lw-studio-footer-glow, #1b3048);
+  --_edge: #{lw.v(color-border)};
+  --_shine: color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent);
+  // What the pointer rests on: a shade darker than the page in a light
+  // theme, whose foot is already muted, and lighter in a dark one.
+  --_hover: light-dark(color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent), color-mix(in oklab, #{lw.v(color-muted)} 80%, transparent));
+  // The arch's corners: wide on a big screen, tighter on a phone.
+  --_arch: 6rem;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-top: 0;
+  // A soft light from above: white on a light page, navy on a dark one,
+  // settling into the page's colour.
+  background: radial-gradient(
+    ellipse 90% 70% at 50% -10%,
+    light-dark(#{lw.v(color-background)}, color-mix(in oklab, var(--_glow) 45%, #{lw.v(color-background)})) 0%,
+    light-dark(#{lw.v(color-muted)}, #{lw.v(color-background)}) 72%
+  );
+
+  @container (width < 40rem) {
+    --_arch: 3rem;
+  }
+}
+
+// The top edge: the curve of a double frame of fine lines, like the
+// floating navbar's, lit along its top and brightest in the middle, fading
+// out to either side.
+.arch {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: 4rem;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(90deg, transparent, #000 clamp(4rem, 14%, 10rem), #000 calc(100% - clamp(4rem, 14%, 10rem)), transparent);
+}
+
+.arch-frame {
+  position: absolute;
+  top: 0;
+  right: -4rem;
+  left: -4rem;
+  height: 40rem;
+  padding: 3px;
+  border: 1px solid var(--_edge);
+  border-radius: var(--_arch) var(--_arch) 0 0;
+  box-shadow: 0 12px 24px light-dark(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.45));
+}
+
+.arch-inner {
+  position: relative;
+  height: 100%;
+  border: 1px solid var(--_edge);
+  border-radius: calc(var(--_arch) - 4px) calc(var(--_arch) - 4px) 0 0;
+
+  // The light along the top edge, and its bright middle.
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    height: 1px;
+  }
+
+  &::before {
+    inset-inline: 0;
+    background: linear-gradient(90deg, transparent, var(--_shine), transparent);
+  }
+
+  &::after {
+    left: 50%;
+    width: 14rem;
+    translate: -50% 0;
+    background: linear-gradient(90deg, transparent, light-dark(color-mix(in oklab, #{lw.v(color-foreground)} 30%, transparent), rgb(255 255 255 / 0.6)), transparent);
+  }
+}
+
+.arch-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 18rem;
+  height: 2.5rem;
+  translate: -50% 0;
+  // A glow under the bright middle, which only a dark page shows.
+  background: radial-gradient(ellipse at top, light-dark(transparent, rgb(255 255 255 / 0.12)), transparent 70%);
+  filter: blur(8px);
+}
+
+.container {
+  padding-top: clamp(4rem, 9cqi, 5.5rem);
+  padding-bottom: clamp(1.5rem, 4cqi, 2.5rem);
+}
+
+// The brand and its copy, with the columns across from them on a wide
+// screen and under them on a narrow one.
+.top {
+  display: grid;
+  gap: 2.75rem;
+
+  @container (width >= 60rem) {
+    grid-template-columns: minmax(0, 26rem) auto;
+    justify-content: space-between;
+    gap: 4rem;
+  }
+}
+
+.brand {
+  gap: 0.625rem;
+  border-radius: lw.v(radius-sm);
+}
+
+.brand-mark {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.brand-logo {
+  height: 1.0625rem;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.tagline {
+  max-width: 24rem;
+  margin-top: 1.25rem;
+  font-size: lw.v(text-md);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: lw.v(color-muted-foreground);
+}
+
+.lines {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  font-size: 0.84375rem;
+  line-height: 1.6;
+  color: lw.v(color-muted-foreground);
+}
+
+// The links in the copy: the text at full strength over an orange line,
+// which deepens under the pointer.
+.inline-link,
+.name {
+  font-weight: 500;
+  color: lw.v(color-foreground);
+}
+
+.inline-link {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--_underline) 55%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+
+  @include lw.motion {
+    transition:
+      text-decoration-color lw.v(duration-fast) ease-out,
+      text-decoration-thickness lw.v(duration-fast) ease-out;
+  }
+
+  &:hover {
+    text-decoration-color: var(--_underline);
+    text-decoration-thickness: 2px;
+  }
+}
+
+.socials {
+  display: flex;
+  gap: 0.125rem;
+  margin: 1rem 0 0 -0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.social {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: lw.v(radius-md);
+  color: color-mix(in oklab, #{lw.v(color-muted-foreground)} 85%, transparent);
+
+  @include lw.motion {
+    transition:
+      color lw.v(duration-fast) ease-out,
+      background-color lw.v(duration-fast) ease-out;
+  }
+
+  &:hover {
+    background: var(--_hover);
+    color: lw.v(color-foreground);
+  }
+}
+
+// Columns of links: two on a phone, three from there up. Each link is a
+// row the highlight can rest on, its text in line with the column's title.
+.columns {
+  position: relative;
+}
+
+.column-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem 1.5rem;
+
+  @container (width >= 34rem) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  // Beside the copy, one row of columns as wide as their links.
+  @container (width >= 60rem) {
+    grid-template-columns: none;
+    grid-auto-columns: minmax(7.5rem, auto);
+    grid-auto-flow: column;
+    gap: 2.5rem 3.5rem;
+  }
+}
+
+.column-title {
+  margin-bottom: 0.625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.links {
+  gap: 0.125rem;
+}
+
+.link {
+  position: relative;
+  z-index: 1;
+  height: 2rem;
+  gap: 0.25rem;
+  margin-inline: -0.625rem;
+  padding-inline: 0.625rem;
+  border-radius: lw.v(radius-md);
+  font-weight: 500;
+  white-space: nowrap;
+
+  &:focus-visible {
+    border-radius: lw.v(radius-md);
+  }
+}
+
+.external {
+  opacity: 0.5;
+
+  @include lw.motion {
+    transition:
+      opacity lw.v(duration-normal) lw.v(ease-out),
+      translate lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  .link:hover & {
+    opacity: 0.9;
+    translate: 1px -1px;
+  }
+}
+
+.pill {
+  @include lw.sliding-highlight;
+
+  background: var(--_hover);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, #{lw.v(color-foreground)} 5%, transparent);
+}
+
+// The name across the foot, beside the sign-off on a wide screen and over
+// it on a narrow one.
+.foot {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: clamp(3rem, 8cqi, 5rem);
+
+  @container (width >= 52rem) {
+    display: flex;
+    align-items: flex-end;
+    gap: 3rem;
+  }
+}
+
+// Lit from the top and fading out towards its foot, more texture than
+// text, and a square of colour for a full stop.
+.wordmark {
+  --_size: 18cqi;
+
+  display: flex;
+  min-width: 0;
+  align-items: flex-end;
+  font-size: var(--_size);
+  user-select: none;
+
+  @container (width >= 52rem) {
+    flex: 1 1 0;
+  }
+}
+
+.word {
+  --_ink: color-mix(in oklab, #{lw.v(color-foreground)} 10%, transparent);
+
+  margin: -0.2em;
+  padding: 0.2em;
+  background: linear-gradient(to bottom, var(--_ink) 0, var(--_ink) 0.2em, transparent 1.05em) no-repeat;
+  background-clip: text;
+  -webkit-background-clip: text;
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.065em;
+  white-space: nowrap;
+  color: transparent;
+}
+
+.square {
+  flex: none;
+  width: 0.2em;
+  height: 0.2em;
+  margin: 0 0 0.07em 0.07em;
+  background: var(--_square);
+}
+
+.signoff {
+  flex: none;
+  line-height: 1.5;
+
+  @container (width >= 52rem) {
+    padding-bottom: 0.25rem;
+    text-align: right;
+  }
+}
+
+.crafted {
+  font-weight: 500;
+}
+
+.copyright {
+  margin-top: 0.25rem;
+  color: lw.v(color-muted-foreground);
+}
+
+.legal {
+  position: relative;
+  margin-top: 0.5rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @container (width >= 52rem) {
+    justify-content: flex-end;
+  }
+
+  .link {
+    height: 1.75rem;
+    font-size: 0.78125rem;
+  }
+}
+
+[hidden] {
+  display: none;
+}
