@@ -220,15 +220,8 @@ $compact: ':is([data-scrolled], [data-searching], [data-menu])';
   justify-content: flex-start;
 }
 
-// The theme switch, search and sign-in share one height: 2.25rem, or 2rem
-// on a phone.
-.end {
-  --_control: 2.25rem;
-  // The member's avatar in their profile button: the button's height less
-  // a little room all round.
-  --_avatar: calc(var(--_control) - 0.5rem);
-}
-
+// The theme switch, search and sign-in share one height, the bar's
+// `--_control`: 2.25rem, or 2rem on a phone.
 .theme,
 .search-button,
 .end .cta {
@@ -284,17 +277,10 @@ $compact: ':is([data-scrolled], [data-searching], [data-menu])';
   }
 }
 
-// Signed in, the member's profile card is an outlined button like the
-// controls beside it: their avatar and name on one line, and its arrows.
+// The profile button folds to its avatar with the bar, its name and arrows
+// sliding shut.
 .profile {
   &::part(trigger) {
-    width: auto;
-    height: var(--_control);
-    gap: 0.375rem;
-    padding: 0 0.5rem 0 calc((var(--_control) - var(--_avatar) - 2px) / 2);
-    border-radius: lw.v(radius-md);
-    background: transparent;
-
     @include lw.motion {
       transition:
         padding var(--_morph),
@@ -304,21 +290,10 @@ $compact: ':is([data-scrolled], [data-searching], [data-menu])';
     }
   }
 
-  &::part(trigger):hover {
-    background: color-mix(in oklab, #{lw.v(color-muted)} 60%, transparent);
-  }
-
   &::part(trigger-identity) {
-    gap: 0.5rem;
-
     @include lw.motion {
       transition: gap var(--_morph);
     }
-  }
-
-  &::part(trigger-avatar) {
-    width: var(--_avatar);
-    height: var(--_avatar);
   }
 
   &::part(trigger-name) {
@@ -904,7 +879,7 @@ kbd {
 
   @include icon-only;
 
-  .m-cta {
+  .mobile .m-actions {
     display: none;
   }
 

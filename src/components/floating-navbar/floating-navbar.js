@@ -1,11 +1,12 @@
 import '../button/index.js';
 import '../hamburger-menu/index.js';
+import '../profile-dropdown/index.js';
 import '../switch-button/index.js';
 import { LOWERSOFT, themedImage } from '../../core/brand.js';
 import { escapeHtml } from '../../core/dom.js';
 import { hideHighlight, moveHighlight } from '../../core/highlight.js';
 import { strokeIcon } from '../../core/icons.js';
-import { arrowUpRight, chevronDown } from '../../core/lucide.js';
+import { arrowUpRight, chevronDown, settings, user } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
 import styles from './floating-navbar.scss?inline';
 
@@ -35,6 +36,12 @@ const DEMO_ITEMS = [
     ],
   },
   { label: 'Forum', href: 'https://forum.lowersoft.com' },
+];
+
+// A member's account menu: their profile and settings, no billing.
+const ACCOUNT_ITEMS = [
+  { label: 'Profile', icon: user },
+  { label: 'Settings', icon: settings },
 ];
 
 // Hovering a trigger opens its menu after this long (ms), so a pointer only
@@ -116,6 +123,12 @@ const mobileMarkup = (item, index) => {
  * and whose featured link may also have an `image`. The link for the page
  * you are on is marked current, and its section gets the pill.
  *
+ * Signed in, `user` puts the member's `<lw-profile-dropdown>` where the
+ * actions were: an outlined button with their avatar and name that opens
+ * their account menu, their role across from the avatar at its head. The
+ * menu sets the theme, so the theme switch steps aside. On a phone the
+ * button is the avatar alone and the menu drops from the top of the screen.
+ *
  * @attr {Array<object>} items - The links and menus, in order (JSON)
  * @attr {string} current - Path of the page you are on; the address bar's by default
  * @attr {string} brand - The brand's name, read out for its logo
@@ -123,8 +136,12 @@ const mobileMarkup = (item, index) => {
  * @attr {string} logo-dark - The wordmark for a dark theme
  * @attr {string} mark - The brand's mark, before the wordmark; none when empty
  * @attr {string} action - The main action's label; none when empty
+ * @attr {string} sign-in - The sign-in link's label, beside the main action; none when empty
+ * @attr {string} sign-in-href - Where the sign-in link goes
+ * @attr {object} user - The signed-in member, `{ name, avatar?, role?, email? }` with `avatar` a picture's URL and `role` such as Admin or Moderator; replaces the actions and the theme switch with their profile menu (JSON)
+ * @attr {'start'|'end'} theme-switch - Where the theme switch stands on a wide screen: beside the brand, or with the actions. Once the links fold into the menu button it stands with the actions either way
  * @attr {string} label - Accessible name of the navigation
- * @slot actions - Your own actions, such as links, instead of the theme switch and the button
+ * @slot actions - Your own actions, such as links, instead of the theme switch, the sign-in link and the button
  * @csspart frame - The bar's outer frame
  * @csspart bar - The row inside it
  * @csspart viewport - The panel the menus open in
@@ -139,6 +156,10 @@ export class LwFloatingNavbar extends LwElement {
     logoDark: { default: LOWERSOFT.wordmark.dark },
     mark: { default: LOWERSOFT.mark },
     action: { default: 'Get started' },
+    signIn: { default: 'Sign in' },
+    signInHref: { default: '/login' },
+    themeSwitch: { default: 'start' },
+    user: { type: Object },
     label: { default: 'Main' },
   };
 
@@ -156,13 +177,13 @@ export class LwFloatingNavbar extends LwElement {
     return `<div class="shell">
 <div class="frame" part="frame"><div class="inner">
 <div class="bar" part="bar">
-<a class="brand" href="/"></a>
+<div class="start"><a class="brand" href="/"></a><lw-switch-button class="theme" variant="outline" icon-only dark-label="Dark theme"></lw-switch-button></div>
 <nav class="nav"><ul class="list"></ul><span class="pill" aria-hidden="true"></span>
 <div class="stage" hidden><span class="indicator" aria-hidden="true"><span class="arrow"></span></span><div class="bridge"><div class="viewport" part="viewport"></div></div></div>
 </nav>
-<div class="end"><slot name="actions"><lw-switch-button class="theme" variant="outline" icon-only dark-label="Dark theme"></lw-switch-button><lw-button class="cta"><span class="cta-label"></span></lw-button></slot><lw-hamburger-menu class="burger" variant="duo" size="20" aria-controls="mobile"></lw-hamburger-menu></div>
+<div class="end"><slot name="actions"><lw-switch-button class="theme" variant="outline" icon-only dark-label="Dark theme"></lw-switch-button><a class="sign-in"></a><lw-button class="cta"><span class="cta-label"></span></lw-button><lw-profile-dropdown class="profile" hidden></lw-profile-dropdown></slot><lw-hamburger-menu class="burger" variant="duo" size="20" aria-controls="mobile"></lw-hamburger-menu></div>
 </div>
-<div class="mobile" id="mobile" inert><div class="m-clip"><nav class="m-nav"><ul class="m-list"></ul></nav><lw-button class="cta m-cta"><span class="cta-label"></span></lw-button></div></div>
+<div class="mobile" id="mobile" inert><div class="m-clip"><nav class="m-nav"><ul class="m-list"></ul></nav><div class="m-actions"><a class="m-sign-in"></a><lw-button class="cta m-cta"><span class="cta-label"></span></lw-button></div></div></div>
 </div></div>
 </div>`;
   }
@@ -249,18 +270,14 @@ export class LwFloatingNavbar extends LwElement {
 
   updated(changed) {
     if (changed.has('items')) this.#build();
-    if (changed.has('items') || changed.has('current')) this.#paintCurrent();
+    if (['items', 'current', 'signInHref'].some((name) => changed.has(name))) this.#paintCurrent();
     if (['brand', 'logo', 'logoDark', 'mark'].some((name) => changed.has(name))) this.#paintBrand();
     if (changed.has('label')) {
       this.query('.nav').ariaLabel = this.label;
       this.query('.m-nav').ariaLabel = this.label;
     }
-    if (changed.has('action')) {
-      for (const button of this.shadowRoot.querySelectorAll('.cta')) {
-        button.querySelector('.cta-label').textContent = this.action ?? '';
-        button.hidden = !this.action;
-      }
-    }
+    if (['action', 'signIn', 'signInHref', 'user'].some((name) => changed.has(name))) this.#paintActions();
+    if (changed.has('themeSwitch')) this.query('.bar').toggleAttribute('data-switch-start', this.themeSwitch === 'start');
   }
 
   get #items() {
@@ -303,6 +320,30 @@ export class LwFloatingNavbar extends LwElement {
     brand.innerHTML = mark + words;
     // With the mark alone, its image names the link.
     if (this.mark && !this.logo) brand.querySelector('.brand-name')?.setAttribute('aria-hidden', 'true');
+  }
+
+  // A guest has Sign in and the main action, and the theme switch. A
+  // member's profile menu takes their place, with their picture and name and
+  // no email; its menu sets the theme, so the switch steps aside too.
+  #paintActions() {
+    const member = this.user && typeof this.user === 'object' && this.user.name ? this.user : null;
+    for (const button of this.shadowRoot.querySelectorAll('.cta')) {
+      button.querySelector('.cta-label').textContent = this.action ?? '';
+      button.hidden = Boolean(member) || !this.action;
+    }
+    for (const link of this.shadowRoot.querySelectorAll('.sign-in, .m-sign-in')) {
+      link.textContent = this.signIn ?? '';
+      link.setAttribute('href', this.signInHref || '#');
+      link.hidden = Boolean(member) || !this.signIn;
+    }
+    // The narrow menu's foot holds the actions, and goes with them.
+    this.query('.m-actions').hidden = Boolean(member) || (!this.action && !this.signIn);
+    for (const theme of this.shadowRoot.querySelectorAll('.theme')) theme.hidden = Boolean(member);
+    const profile = this.query('.profile');
+    profile.hidden = !member;
+    profile.items = ACCOUNT_ITEMS;
+    // The role stands across from the avatar, where the menu shows a plan.
+    if (member) profile.accounts = [{ id: 'member', name: member.name, avatar: member.avatar, email: member.email, plan: member.role }];
   }
 
   // Marks the links to the page you are on, and the item of its section.

@@ -1,8 +1,7 @@
 import { strokeIcon } from '../../core/icons.js';
-import { search, settings, user, x } from '../../core/lucide.js';
+import { search, user, x } from '../../core/lucide.js';
 import { matchesShortcut, parseShortcut } from '../../core/shortcut.js';
 import { LwFloatingNavbar } from '../floating-navbar/floating-navbar.js';
-import '../profile-dropdown/index.js';
 import styles from './forum-navbar.scss?inline';
 import { DEMO_THREADS, FOOT_MARKUP, guideMarkup, noneMarkup, parseQuery, resultsMarkup, suggestionsMarkup, tokenAt } from './search.js';
 
@@ -16,12 +15,6 @@ const FORUM_LINKS = [
 // The search field that takes the bar's place, and the panel under it.
 const SEARCH_MARKUP = `<div class="search" role="search" inert><span class="search-icon" aria-hidden="true">${strokeIcon(search, 18)}</span><input class="search-input" type="text" role="combobox" aria-label="Search" aria-autocomplete="list" aria-expanded="false" aria-controls="search-list" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"><button class="search-close" type="button" aria-label="Close search">${strokeIcon(x, 16)}</button></div>`;
 const PANEL_MARKUP = `<div class="results" inert><div class="results-clip"><div class="results-head" hidden></div><div class="results-body"><div class="search-list" id="search-list" role="listbox" aria-label="Search"></div><div class="none" hidden></div></div><div class="results-foot" aria-hidden="true">${FOOT_MARKUP}</div><p class="search-status visually-hidden" aria-live="polite"></p></div></div>`;
-
-// A member's account menu: their profile and settings, no billing.
-const ACCOUNT_ITEMS = [
-  { label: 'Profile', icon: user },
-  { label: 'Settings', icon: settings },
-];
 
 // Keys that move the caret, possibly into or out of an `@` or `#` word.
 const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'Home', 'End']);
@@ -70,10 +63,12 @@ export class LwForumNavbar extends LwFloatingNavbar {
     ...LwFloatingNavbar.props,
     items: { type: Object, default: [...LwFloatingNavbar.props.items.default, ...FORUM_LINKS] },
     action: { default: 'Sign In' },
+    // Sign In is the main action here, and the theme switch stands with it.
+    signIn: { default: '' },
+    themeSwitch: { default: 'end' },
     threads: { type: Object, default: DEMO_THREADS },
     searchPlaceholder: { default: 'Search the forum' },
     searchShortcut: { default: 'mod+k' },
-    user: { type: Object },
   };
 
   // Index of the highlighted option in the panel, -1 when none is.
@@ -89,8 +84,6 @@ export class LwForumNavbar extends LwFloatingNavbar {
     // The account icon leads the sign-in button, and stays when its label goes.
     const cta = markup.querySelector('.end .cta');
     cta.insertAdjacentHTML('afterbegin', `<span class="cta-icon" slot="start">${strokeIcon(user, 16)}</span>`);
-    // Signed in, the member's profile menu stands where Sign In was.
-    cta.insertAdjacentHTML('afterend', '<lw-profile-dropdown class="profile" hidden></lw-profile-dropdown>');
     markup.querySelector('.end .theme').insertAdjacentHTML('afterend', `<lw-button class="search-button" variant="outline"><span class="search-button-icon" slot="start">${strokeIcon(search, 16)}</span><span class="visually-hidden">Search</span></lw-button>`);
     // The field over the bar's row, and the panel the bar grows down to hold.
     markup.querySelector('.inner .bar').insertAdjacentHTML('afterend', SEARCH_MARKUP + PANEL_MARKUP);
@@ -138,7 +131,6 @@ export class LwForumNavbar extends LwFloatingNavbar {
   updated(changed) {
     super.updated(changed);
     if (changed.has('items')) this.#markEnd();
-    if (changed.has('user') || changed.has('action')) this.#paintAccount();
     if (changed.has('searchPlaceholder')) this.query('.search-input').placeholder = this.searchPlaceholder ?? '';
     if (changed.has('searchShortcut')) this.query('.search-button').shortcut = this.searchShortcut || '';
     // New threads redraw the open panel, or the next one to open.
@@ -321,21 +313,6 @@ export class LwForumNavbar extends LwFloatingNavbar {
     input.focus({ preventScroll: true });
     input.setSelectionRange(caret, caret);
     this.#paintSearch();
-  }
-
-  // Sign In for a guest; for a member, their profile menu with their picture
-  // and name, and no email. Its menu sets the theme, so the theme switch
-  // steps aside for it.
-  #paintAccount() {
-    const member = this.user && typeof this.user === 'object' && this.user.name ? this.user : null;
-    const profile = this.query('.profile');
-    const cta = this.query('.end .cta');
-    profile.hidden = !member;
-    cta.hidden = Boolean(member) || !this.action;
-    this.query('.end .theme').hidden = Boolean(member);
-    profile.items = ACCOUNT_ITEMS;
-    // The role stands across from the avatar, where the menu shows a plan.
-    if (member) profile.accounts = [{ id: 'member', name: member.name, avatar: member.avatar, email: member.email, plan: member.role }];
   }
 
   // The first item marked `end` starts the group on the far side, and on a

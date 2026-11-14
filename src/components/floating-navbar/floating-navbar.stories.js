@@ -37,9 +37,24 @@ export default {
   args: { action: 'Get started' },
 };
 
+// The theme switch beside the brand, and Sign in beside the main action.
 // Hover Products or Support, then move between them: the panel resizes
 // while the menus slide past each other. Scroll to see the frame lift.
 export const Default = {};
+
+// One action and no sign-in, the theme switch beside it.
+export const SingleAction = {
+  args: { 'theme-switch': 'end' },
+  render: (args) => demo(`<lw-floating-navbar sign-in="" ${attributes(args)}></lw-floating-navbar>`),
+};
+
+// Signed in: the member's profile menu stands where the actions were, their
+// avatar and name on an outlined button and their role at the menu's head.
+// The menu sets the theme, so the theme switch steps aside. On a phone the
+// button is the avatar alone and the menu drops from the top of the screen.
+export const SignedIn = {
+  args: { user: JSON.stringify({ name: 'p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', role: 'Admin' }) },
+};
 
 // On a documentation page: Support carries the pill and Documentation is
 // marked as the page you are on.
@@ -47,18 +62,9 @@ export const CurrentPage = {
   args: { current: '/docs' },
 };
 
-// Your own actions in the `actions` slot replace the theme switch and the
-// button, here a sign-in link beside the main action.
-export const OwnActions = {
-  render: (args) =>
-    demo(`<lw-floating-navbar ${attributes(args)}>
-      <a slot="actions" href="/login" style="padding: 0 0.75rem; font: 500 0.875rem system-ui, sans-serif; color: var(--lw-color-muted-foreground); text-decoration: none">Sign in</a>
-      <lw-button slot="actions">Get started</lw-button>
-    </lw-floating-navbar>`),
-};
-
 // On a phone the links fold into the menu button, each menu a list that
-// opens in place, with the main action at the foot.
+// opens in place, with Sign in and the main action at the foot. The theme
+// switch moves to the menu button.
 export const Narrow = {
   render: (args) => demo(`<lw-floating-navbar ${attributes(args)}></lw-floating-navbar>`, 'max-width: 24rem; margin-inline: auto'),
 };
