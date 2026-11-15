@@ -1,4 +1,5 @@
 @use '../../styles' as lw;
+@use '../forum-sidebar/layout' as sidebar;
 
 // On top of the floating navbar's styles. At the top of the page the bar is
 // docked across the full width; once the page scrolls, or the search
@@ -48,6 +49,30 @@ $compact: ':is([data-scrolled], [data-searching], [data-menu])';
     max-width: calc(52rem + 1.5rem);
     padding-inline: 0.75rem;
     translate: 0 0.75rem;
+  }
+}
+
+// Beside the forum sidebar the floating frame runs from the sidebar, past
+// the gap the sidebar keeps from the window's edges, to the right edge.
+@media (width >= sidebar.$wide) {
+  :host([sidebar]#{$compact}) .shell {
+    max-width: 100%;
+    padding-inline: calc(#{sidebar.$width} + #{sidebar.$inset}) sidebar.$inset;
+  }
+}
+
+// Short of room there, the search button is its icon alone.
+@media (width >= sidebar.$wide) and (width < 72rem) {
+  :host([sidebar]#{$compact}) .search-button {
+    &::part(button) {
+      width: var(--_control);
+      gap: 0;
+      padding: 0;
+    }
+
+    &::part(key) {
+      display: none;
+    }
   }
 }
 
@@ -252,8 +277,38 @@ $compact: ':is([data-scrolled], [data-searching], [data-menu])';
 }
 
 .search-button-icon,
+.sidebar-button-icon,
 .cta-icon {
   display: inline-flex;
+}
+
+// The button that opens the forum sidebar, the controls' square at the very
+// start of the bar: on a window too narrow for the sidebar beside the page,
+// and only with one to open.
+.start {
+  --_control: 2.25rem;
+}
+
+.sidebar-button {
+  display: none;
+
+  &::part(button) {
+    width: var(--_control);
+    height: var(--_control);
+  }
+}
+
+@media (width < sidebar.$wide) {
+  :host([sidebar]) {
+    .sidebar-button {
+      display: inline-flex;
+    }
+
+    // The brand keeps the bar's gap from the button, not its own inset.
+    .brand {
+      margin-inline-start: 0;
+    }
+  }
 }
 
 // Shrunk, or on a narrow screen, the sign-in button is its account icon
@@ -643,7 +698,8 @@ $compact: ':is([data-scrolled], [data-searching], [data-menu])';
   height: 0.5rem;
   flex: none;
   border-radius: 50%;
-  background: light-dark(oklch(0.62 0.13 var(--_hue)), oklch(0.74 0.12 var(--_hue)));
+
+  @include lw.hue-swatch;
 
   &.large {
     width: 0.625rem;
@@ -854,6 +910,10 @@ kbd {
     gap: 0.125rem;
   }
 
+  .start {
+    --_control: 2rem;
+  }
+
   .bar {
     gap: 0.375rem;
     padding-inline: 0.625rem;
@@ -905,5 +965,34 @@ kbd {
   .brand-logo,
   .brand-name {
     display: none;
+  }
+}
+
+// The sidebar's button takes its room from the brand. Shrunk on a phone the
+// wordmark slides shut beside the mark, as it does on a wide screen, and a
+// little narrower the mark stands alone at the top as well.
+@container (width < 26rem) {
+  :host([sidebar]#{$compact}) {
+    .brand {
+      gap: 0;
+    }
+
+    .brand-logo,
+    .brand-name {
+      @include folded;
+    }
+  }
+}
+
+@container (width < 24rem) {
+  :host([sidebar]) {
+    .brand {
+      gap: 0;
+    }
+
+    .brand-logo,
+    .brand-name {
+      display: none;
+    }
   }
 }

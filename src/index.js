@@ -247,3 +247,4 @@ export * from './components/map-contact/index.js';
 export * from './components/floating-navbar/index.js';
 export * from './components/forum-navbar/index.js';
 export * from './components/studio-footer/index.js';
+export * from './components/forum-sidebar/index.js';

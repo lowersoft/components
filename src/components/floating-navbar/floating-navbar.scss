@@ -1,15 +1,8 @@
 @use '../../styles' as lw;
 
 :host {
-  --_radius: #{lw.v(radius-lg)};
-  --_edge: #{lw.v(color-border)};
-  --_shine: color-mix(in oklab, #{lw.v(color-foreground)} 14%, transparent);
-  // The bar's glass: the frame's frosted rim, the pane inside it and the
-  // light along the pane's top edge.
-  --_glass: color-mix(in oklab, color-mix(in oklab, #{lw.v(color-muted)} 45%, #{lw.v(color-background)}) 60%, transparent);
-  --_pane: color-mix(in oklab, #{lw.v(color-background)} 78%, transparent);
-  --_blur: blur(24px) saturate(1.5);
-  --_sheen: linear-gradient(90deg, transparent, var(--_shine), transparent);
+  @include lw.glass-frame;
+
   // The bar's row and the links in it; the menus drop from the frame's foot,
   // half their difference below the links, plus the frame (1px border,
   // 3px padding) and the inner border.
@@ -23,6 +16,11 @@
   top: 0;
   z-index: 50;
   display: block;
+  // The bar's own height in the flow: the room above it, and its row inside
+  // the two frames (1px border, 3px padding, 1px inner border, each side).
+  // The narrow menu grows the frame down over the page, which never moves
+  // for it.
+  height: calc(max(0.75rem, env(safe-area-inset-top)) + var(--_row) + 10px);
   padding: max(0.75rem, env(safe-area-inset-top)) 0.75rem 0;
   font-family: lw.v(font-sans);
   color: lw.v(color-foreground);

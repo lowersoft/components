@@ -8,6 +8,7 @@ import { hideHighlight, moveHighlight } from '../../core/highlight.js';
 import { strokeIcon } from '../../core/icons.js';
 import { arrowUpRight, chevronDown, settings, user } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
+import { inSection, pathOf } from '../../core/route.js';
 import styles from './floating-navbar.scss?inline';
 
 // Every link is a route of its own, never an anchor on one long page.
@@ -65,19 +66,6 @@ const linksOf = (item) => [item.featured, ...(item.links ?? [])].filter(Boolean)
 
 const linkAttributes = (link) =>
   `href="${escapeHtml(link.href ?? '#')}"${link.external ? ' target="_blank" rel="noopener noreferrer"' : ''}`;
-
-// A path without its trailing slash, for an internal href; null for another site's.
-const pathOf = (href) => {
-  try {
-    const url = new URL(href, location.href);
-    return url.origin === location.origin ? url.pathname.replace(/(.)\/$/, '$1') : null;
-  } catch {
-    return null;
-  }
-};
-
-// The section a page is in: its own path, or one it sits under.
-const inSection = (path, current) => path !== null && (path === current || (path !== '/' && current.startsWith(`${path}/`)));
 
 const featureMarkup = (link) =>
   `<li class="feature-cell"><a class="feature" ${linkAttributes(link)}>${link.image ? `<img class="feature-image" src="${escapeHtml(link.image)}" alt="" decoding="async">` : ''}<span class="feature-title">${escapeHtml(link.label)}${link.external ? EXTERNAL : ''}</span>${link.description ? `<span class="feature-text">${escapeHtml(link.description)}</span>` : ''}</a></li>`;

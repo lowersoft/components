@@ -1,5 +1,5 @@
 import { strokeIcon } from '../../core/icons.js';
-import { search, user, x } from '../../core/lucide.js';
+import { panelLeftOpen, search, user, x } from '../../core/lucide.js';
 import { matchesShortcut, parseShortcut } from '../../core/shortcut.js';
 import { LwFloatingNavbar } from '../floating-navbar/floating-navbar.js';
 import styles from './forum-navbar.scss?inline';
@@ -49,12 +49,21 @@ const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'Home', 'End']);
  * avatar alone once the bar shrinks. The menu sets the theme, so the theme
  * switch steps aside.
  *
+ * With `sidebar` it shares the page with `<lw-forum-sidebar navbar>`, which
+ * sets it. On a window 64rem (1024px) or wider the bar spans the window
+ * over the sidebar at the top, and as it shrinks it runs from the sidebar to
+ * the window's right edge instead of the middle, leaving the sidebar room to
+ * rise beside it. Narrower, an outlined button at the very start of the bar
+ * opens the sidebar from the window's left edge.
+ *
  * @attr {Array<object>} items - The menus and links, in order; `{ label, href, end: true }` for the forum's sections (JSON)
  * @attr {string} action - The sign-in button's label, also its accessible name once only the icon shows; none when empty
  * @attr {object} user - The signed-in member, `{ name, avatar?, role?, email? }` with `avatar` a picture's URL and `role` such as Admin or Moderator; replaces Sign In with their profile menu (JSON)
  * @attr {Array<object>} threads - The threads to search (JSON)
  * @attr {string} search-placeholder - The search field's placeholder
  * @attr {string} search-shortcut - Opens the search from anywhere on the page, as `mod+k`; none when empty
+ * @attr {boolean} sidebar - Stands with `<lw-forum-sidebar navbar>`, which sets it: leaves it room at the left once the bar shrinks, or, narrower than 64rem, shows the button that opens it
+ * @fires lw-sidebar - Its sidebar button was pressed; `<lw-forum-sidebar navbar>` opens
  * @fires lw-search - The query changed; `detail: { query, words, member, category }`, the filters as typed, without `@` and `#`
  */
 export class LwForumNavbar extends LwFloatingNavbar {
@@ -69,6 +78,7 @@ export class LwForumNavbar extends LwFloatingNavbar {
     threads: { type: Object, default: DEMO_THREADS },
     searchPlaceholder: { default: 'Search the forum' },
     searchShortcut: { default: 'mod+k' },
+    sidebar: { type: Boolean, reflect: true },
   };
 
   // Index of the highlighted option in the panel, -1 when none is.
@@ -82,6 +92,8 @@ export class LwForumNavbar extends LwFloatingNavbar {
     template.innerHTML = super.render();
     const markup = template.content;
     // The account icon leads the sign-in button, and stays when its label goes.
+    // The button that opens the forum sidebar, before the brand.
+    markup.querySelector('.start').insertAdjacentHTML('afterbegin', `<lw-button class="sidebar-button" variant="outline" icon-only><span class="sidebar-button-icon" slot="start">${strokeIcon(panelLeftOpen, 16)}</span><span class="visually-hidden">Open sidebar</span></lw-button>`);
     const cta = markup.querySelector('.end .cta');
     cta.insertAdjacentHTML('afterbegin', `<span class="cta-icon" slot="start">${strokeIcon(user, 16)}</span>`);
     markup.querySelector('.end .theme').insertAdjacentHTML('afterend', `<lw-button class="search-button" variant="outline"><span class="search-button-icon" slot="start">${strokeIcon(search, 16)}</span><span class="visually-hidden">Search</span></lw-button>`);
@@ -96,6 +108,12 @@ export class LwForumNavbar extends LwFloatingNavbar {
     const input = this.query('.search-input');
     const panel = this.query('.results');
     this.query('.search-button').addEventListener('click', () => this.openSearch(), options);
+    // The sidebar opens over the narrow menu, which closes under it.
+    this.query('.sidebar-button').addEventListener('click', () => {
+      const burger = this.query('.burger');
+      if (burger.open) burger.toggle(false);
+      this.emit('sidebar');
+    }, options);
     this.query('.search-close').addEventListener('click', () => this.closeSearch(), options);
     input.addEventListener('input', () => this.#paintSearch(), options);
     input.addEventListener('keydown', (event) => this.#searchKey(event), options);

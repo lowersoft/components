@@ -1,0 +1,12 @@
+// Where the forum sidebar stands, shared with the forum navbar beside it.
+
+// From this window width the sidebar is a column beside the page; below
+// it, a bar across the top.
+$wide: 64rem;
+// The column's width, and how far its frame keeps from the window's edges
+// once the page scrolls, as the navbar's does.
+$width: 16rem;
+$inset: 0.75rem;
+// The forum navbar at the top of the page: its row, its inner border and
+// its frame's border.
+$navbar-height: calc(3rem + 4px + env(safe-area-inset-top));

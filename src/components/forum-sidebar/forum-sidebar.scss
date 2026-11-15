@@ -1,0 +1,803 @@
+@use '../../styles' as lw;
+@use 'layout';
+
+// Every change of shape runs on the forum navbar's quick, decelerating
+// curve, so the sidebar and the bar move as one.
+
+$morph: 220ms;
+
+:host {
+  @include lw.glass-frame;
+
+  --_morph: #{$morph} #{lw.v(ease-out)};
+  --_row: 3rem;
+  // The room either side of the links.
+  --_pad: 0.375rem;
+
+  display: block;
+  box-sizing: border-box;
+  font-family: lw.v(font-sans);
+  color: lw.v(color-foreground);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+// The navbar's two frames: an outer rim of frosted glass round an inner
+// pane, each with its own hairline, the pane lit along its top edge. Bare
+// until the sidebar takes its frame.
+.frame {
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 0;
+
+  @include lw.motion {
+    transition:
+      width var(--_morph),
+      margin var(--_morph),
+      translate var(--_morph),
+      padding var(--_morph),
+      border-color var(--_morph),
+      border-radius var(--_morph),
+      box-shadow var(--_morph),
+      background-color var(--_morph),
+      backdrop-filter var(--_morph);
+  }
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 0;
+
+  @include lw.motion {
+    transition:
+      border-color var(--_morph),
+      border-radius var(--_morph),
+      background-color var(--_morph);
+  }
+}
+
+@mixin framed {
+  .frame {
+    padding: 3px;
+    border-color: var(--_edge);
+    border-radius: calc(var(--_radius) + 4px);
+    background-color: var(--_glass);
+    box-shadow: lw.v(shadow-md);
+    -webkit-backdrop-filter: var(--_blur);
+    backdrop-filter: var(--_blur);
+  }
+
+  .inner {
+    border-color: var(--_edge);
+    border-radius: var(--_radius);
+    background:
+      var(--_sheen) top / 100% 1px no-repeat,
+      var(--_pane);
+  }
+}
+
+// The sidebar as a column the height of its room, beside the page or in
+// the drawer: the links scroll between its top and the foot, whose button
+// closes it.
+@mixin column {
+  .frame,
+  .inner {
+    height: 100%;
+  }
+
+  .toggle {
+    display: none;
+  }
+
+  .body,
+  .body-clip {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .scroller {
+    min-height: 0;
+    flex: 1;
+  }
+
+  .content {
+    padding: 0.5rem var(--_pad) 1rem;
+  }
+
+  .close {
+    display: inline-flex;
+  }
+
+  // Pressed, the button darkens a little, or lightens in a dark theme,
+  // instead of shrinking.
+  .close::part(button):active {
+    transform: none;
+    background: color-mix(in oklab, transparent 82%, #{lw.v(color-foreground)});
+  }
+}
+
+// The links fade out at an edge they scroll past.
+.scroller {
+  --_above: 0px;
+  --_below: 0px;
+
+  // Only ever up and down: the pill, hidden, may keep a width the links
+  // have since lost to a scrollbar.
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  outline: none;
+  scrollbar-color: color-mix(in oklab, #{lw.v(color-foreground)} 18%, transparent) transparent;
+  scrollbar-width: thin;
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--_above), #000 calc(100% - var(--_below)), transparent);
+
+  &[data-more-above] {
+    --_above: 1.5rem;
+  }
+
+  &[data-more-below] {
+    --_below: 2rem;
+  }
+}
+
+.content {
+  position: relative;
+  padding: var(--_pad);
+}
+
+// The page you are on keeps its background; a lighter pill follows the
+// pointer from link to link over the rest.
+.pill {
+  @include lw.sliding-highlight;
+
+  background: color-mix(in oklab, #{lw.v(color-muted)} 65%, transparent);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// A page, or the button that folds more links open: an icon, or a
+// category's square, and the label.
+.link {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  height: 2.25rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 0.75rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  font: inherit;
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition:
+      color lw.v(duration-fast) ease-out,
+      background-color lw.v(duration-fast) ease-out;
+  }
+
+  &:hover,
+  &[data-current],
+  &[aria-expanded='true'] {
+    color: lw.v(color-foreground);
+  }
+
+  &[data-current] {
+    background: lw.v(color-muted);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, #{lw.v(color-foreground)} 5%, transparent);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: -2px;
+  }
+}
+
+.icon {
+  display: inline-grid;
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  place-items: center;
+}
+
+.swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 3px;
+
+  @include lw.hue-swatch;
+}
+
+.label {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.external {
+  display: inline-flex;
+  flex: none;
+  color: lw.v(color-muted-foreground);
+}
+
+.chevron {
+  display: inline-flex;
+  flex: none;
+  opacity: 0.7;
+
+  @include lw.motion {
+    transition: rotate lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  [aria-expanded='true'] > & {
+    rotate: 180deg;
+  }
+}
+
+// A list folds open and shut from the top: laid out at its full height and
+// clipped, so it never squeezes.
+.fold {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition: grid-template-rows 300ms lw.v(ease-out);
+  }
+
+  &[data-open] {
+    grid-template-rows: 1fr;
+  }
+}
+
+.fold-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.more + .fold .list {
+  padding-top: 1px;
+}
+
+// Categories, tags: a hairline above, and a heading that folds the list away.
+.section {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--_edge);
+}
+
+.section-toggle {
+  display: flex;
+  width: 100%;
+  height: 2rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 0.75rem;
+  border: 0;
+  border-radius: lw.v(radius-md);
+  background: none;
+  font: inherit;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: lw.v(color-muted-foreground);
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: color lw.v(duration-fast) ease-out;
+  }
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: -2px;
+  }
+
+  // Open, the arrow points down at the list; folded, at the label.
+  .chevron {
+    rotate: -90deg;
+  }
+
+  &[aria-expanded='true'] .chevron {
+    rotate: 0deg;
+  }
+}
+
+// The foot, under the links: the forum software's version and the
+// copyright, across from the button that closes the sidebar beside the
+// page.
+// Its hairline runs the sidebar's full width; the version lines up with
+// the links' icons and the button with their right edge.
+.foot {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem var(--_pad) 0.75rem calc(var(--_pad) + 0.75rem);
+  border-top: 1px solid var(--_edge);
+}
+
+.credits {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 0.125rem;
+  margin: 0;
+  font-size: lw.v(text-xs);
+  line-height: 1.4;
+  color: lw.v(color-muted-foreground);
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [hidden] {
+    display: none;
+  }
+}
+
+.version {
+  font-weight: 500;
+  color: lw.v(color-foreground);
+}
+
+.close {
+  display: none;
+  flex: none;
+}
+
+.button-icon {
+  display: inline-flex;
+}
+
+.reopen {
+  display: none;
+}
+
+// The bar a narrow screen shows instead: the page you are on, and the arrow
+// that folds the links open under it.
+.toggle {
+  display: flex;
+  width: 100%;
+  height: var(--_row);
+  flex: none;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 0.875rem 0.625rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: lw.v(color-foreground);
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition:
+      color var(--_morph),
+      background-color lw.v(duration-fast) ease-out;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: -2px;
+  }
+
+  .chevron {
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+.toggle-current {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 0.75rem;
+
+  .icon {
+    color: lw.v(color-muted-foreground);
+  }
+}
+
+@media (width < layout.$wide) {
+  // A button at the top of the page naming the page you are on, in its row
+  // in the flow, clear of the window's top edge or under its notch. The
+  // links fold open over the page, never pushing it down.
+  :host(:not([data-drawer])) {
+    --_top: max(#{layout.$inset}, env(safe-area-inset-top));
+
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: calc(var(--_top) + var(--_row) + 10px);
+    padding-top: var(--_top);
+    // The button's width runs between its label's and the window's.
+    interpolate-size: allow-keywords;
+  }
+
+  // Under the navbar the button stays in the page, and the navbar floats
+  // alone, minding the notch for both.
+  :host([navbar]:not([data-drawer])) {
+    --_top: #{layout.$inset};
+
+    position: relative;
+  }
+
+  // The double frame takes the button as the page scrolls, and the links'
+  // sheet while they are open, so they look the same wherever the page is.
+  :host(:is(:not([navbar])[data-scrolled], [data-menu])) {
+    @include framed;
+  }
+
+  // Shut, the button is as wide as the name of the page; open, it spreads
+  // across the window into the sheet of links, which never widen it.
+  :host(:not([data-drawer])) .frame {
+    width: fit-content;
+    margin-inline: layout.$inset;
+    padding: 3px;
+    border-radius: calc(var(--_radius) + 4px);
+  }
+
+  :host([data-menu]) .frame {
+    width: calc(100% - #{2 * layout.$inset});
+  }
+
+  .inner {
+    border-radius: var(--_radius);
+  }
+
+  // Shut, it is dark on a light theme and light on a dark one, as a
+  // primary button is.
+  :host(:not([data-menu], [data-drawer])) {
+    .frame .inner {
+      background-color: lw.v(color-primary);
+    }
+
+    .toggle,
+    .toggle .chevron,
+    .toggle-current .icon {
+      color: lw.v(color-primary-foreground);
+    }
+
+    .toggle:hover {
+      background-color: color-mix(in oklab, #{lw.v(color-primary)} 88%, #{lw.v(color-primary-foreground)});
+    }
+  }
+
+  // The open links sit on a solid sheet, so the page never shows through.
+  :host([data-menu]) .frame .inner {
+    background-color: lw.v(color-background);
+  }
+
+  .toggle-current .icon {
+    @include lw.motion {
+      transition: color var(--_morph);
+    }
+  }
+
+  .toggle .chevron {
+    @include lw.motion {
+      transition:
+        rotate lw.v(duration-normal) lw.v(ease-out),
+        color var(--_morph);
+    }
+  }
+
+  :host(:not([data-drawer])) .body {
+    display: grid;
+    grid-template-rows: 0fr;
+    contain: inline-size;
+
+    @include lw.motion {
+      transition: grid-template-rows 350ms lw.v(ease-out);
+    }
+
+    &[data-open] {
+      grid-template-rows: 1fr;
+    }
+  }
+
+  :host(:not([data-drawer])) .body-clip {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  // The open links keep within the window, under the bar, above the foot
+  // (about 3.5rem) and inside the room round the frame.
+  :host(:not([data-drawer])) .scroller {
+    max-height: calc(100dvh - var(--_top) - var(--_row) - 5.75rem);
+    border-top: 1px solid var(--_edge);
+  }
+
+  :host([navbar]:not([data-drawer])) .scroller {
+    max-height: calc(100dvh - var(--_top) - var(--_row) - 5.75rem - #{layout.$navbar-height});
+  }
+
+  // Under the navbar the sidebar keeps no row of its own: the navbar's
+  // button opens its links in the drawer.
+  :host([data-drawer]) {
+    height: 0;
+  }
+
+  :host([data-drawer]) .panel {
+    display: none;
+  }
+
+  // Painted once, unseen, while the page is idle, so the drawer's first
+  // opening has no new text to draw.
+  :host([data-warm][data-drawer]) .panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 18rem;
+    height: 100dvh;
+    overflow: hidden;
+    opacity: 0.001;
+    pointer-events: none;
+  }
+}
+
+// The drawer: a modal dialog across the window, the sidebar at its left
+// edge over the dimmed page. It slides in on a long, settling curve, and
+// out again quicker, gathering speed, the page dimming and clearing with
+// it.
+.drawer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: clip;
+  border: 0;
+  background: none;
+  color: inherit;
+  outline: none;
+
+  &::backdrop {
+    background: none;
+  }
+
+  @include framed;
+  @include column;
+
+  // Over the dimmed page the rim is solid, with nothing to blur as it
+  // slides, and the links sit on a solid sheet.
+  .frame {
+    background-color: color-mix(in oklab, #{lw.v(color-muted)} 45%, #{lw.v(color-background)});
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .frame .inner {
+    background-color: lw.v(color-background);
+  }
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.5);
+  opacity: 0;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+
+  @include lw.motion {
+    transition: opacity 250ms lw.v(ease-in-out);
+  }
+
+  .drawer[data-open] & {
+    opacity: 1;
+
+    @include lw.motion {
+      transition: opacity 400ms lw.v(ease-out);
+    }
+  }
+}
+
+// Clear of the window's edges, and of its notch, as the navbar is; off the
+// window's left edge, its shadow too, until it opens.
+:host([data-drawer]) .drawer .panel {
+  position: absolute;
+  top: max(#{layout.$inset}, env(safe-area-inset-top));
+  bottom: max(#{layout.$inset}, env(safe-area-inset-bottom));
+  left: max(#{layout.$inset}, env(safe-area-inset-left));
+  display: block;
+  width: min(18rem, calc(100% - 4rem));
+  translate: calc(-100% - 2rem) 0;
+
+  @include lw.motion {
+    transition: translate 250ms lw.v(ease-in-out);
+  }
+}
+
+:host([data-drawer]) .drawer[data-open] .panel {
+  translate: 0 0;
+
+  @include lw.motion {
+    transition: translate 400ms lw.v(ease-out);
+  }
+}
+
+@media (width >= layout.$wide) {
+  // A column the window's height, stuck to the top. Under the navbar it
+  // starts behind the bar, its links below it, and rises as the bar shrinks.
+  // Closed, the column narrows to nothing as the sidebar slides out past
+  // the window's left edge, its right edge and the page's meeting all the
+  // way.
+  :host {
+    --_pad: 0.75rem;
+
+    position: sticky;
+    top: 0;
+    // Over the page, so the button that brings it back shows over a footer
+    // too; under the navbar.
+    z-index: 40;
+    width: layout.$width;
+    height: 100dvh;
+
+    @include lw.motion {
+      transition: width var(--_morph);
+    }
+  }
+
+  :host([navbar]) {
+    margin-top: calc(-1 * #{layout.$navbar-height});
+  }
+
+  :host([closed]) {
+    width: 0;
+  }
+
+  .panel {
+    box-sizing: border-box;
+    width: layout.$width;
+    height: 100%;
+
+    @include lw.motion {
+      transition:
+        padding var(--_morph),
+        translate var(--_morph),
+        visibility 0s;
+    }
+  }
+
+  :host([navbar]) .panel {
+    padding-top: layout.$navbar-height;
+  }
+
+  // Scrolled, the frame keeps clear of the window's edges as the navbar's
+  // does, and of the page by the same gap the bar leaves it.
+  :host([data-scrolled]) {
+    --_pad: 0.375rem;
+
+    @include framed;
+
+    .panel {
+      padding: layout.$inset 0 layout.$inset layout.$inset;
+    }
+  }
+
+  :host([closed]) .panel {
+    visibility: hidden;
+    translate: -100% 0;
+
+    @include lw.motion {
+      transition:
+        padding var(--_morph),
+        translate var(--_morph),
+        visibility 0s $morph;
+    }
+  }
+
+  @include column;
+
+  // Docked, the icons line up under the navbar's mark.
+  .content {
+    @include lw.motion {
+      transition: padding var(--_morph);
+    }
+  }
+
+  .foot {
+    @include lw.motion {
+      transition: padding var(--_morph);
+    }
+  }
+
+  .open::part(button):active {
+    transform: none;
+  }
+
+  // The button that brings the sidebar back, in the window's lower left
+  // corner where the sidebar's foot was: a small floating frame of the same
+  // glass. It shows once the sidebar is on its way out.
+  .reopen {
+    position: absolute;
+    bottom: layout.$inset;
+    left: layout.$inset;
+    display: block;
+    padding: 3px;
+    border: 1px solid var(--_edge);
+    border-radius: calc(#{lw.v(radius-md)} + 4px);
+    background-color: var(--_glass);
+    box-shadow: lw.v(shadow-md);
+    opacity: 0;
+    visibility: hidden;
+    scale: 0.9;
+    -webkit-backdrop-filter: var(--_blur);
+    backdrop-filter: var(--_blur);
+
+    @include lw.motion {
+      transition:
+        opacity 120ms ease,
+        scale 120ms ease,
+        visibility 0s 120ms;
+    }
+  }
+
+  :host([closed]) .reopen {
+    opacity: 1;
+    visibility: visible;
+    scale: 1;
+
+    @include lw.motion {
+      transition:
+        opacity 180ms ease 120ms,
+        scale 220ms lw.v(ease-out) 120ms,
+        visibility 0s;
+    }
+  }
+
+  .open::part(button) {
+    border-color: var(--_edge);
+    background:
+      var(--_sheen) top / 100% 1px no-repeat,
+      var(--_pane);
+  }
+
+  // Hovered, it darkens a little, or lightens in a dark theme.
+  .open::part(button):hover {
+    background-color: color-mix(in oklab, #{lw.v(color-background)} 94%, #{lw.v(color-foreground)});
+  }
+}

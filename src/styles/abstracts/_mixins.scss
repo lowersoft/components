@@ -110,6 +110,25 @@
   color: light-dark(oklch(0.42 0.05 var(--_hue)), oklch(0.86 0.04 var(--_hue)));
 }
 
+/// A category's colour from `--_hue`, as `hueOf()` in `core/people.js` gives
+/// it: the forum search's dots and the forum sidebar's squares.
+@mixin hue-swatch {
+  background: light-dark(oklch(0.62 0.13 var(--_hue)), oklch(0.74 0.12 var(--_hue)));
+}
+
+/// The floating navbar's double frame of frosted glass, as tokens on the
+/// host: the corners, the hairlines, the frame's frosted rim, the pane
+/// inside it and the light along the pane's top edge.
+@mixin glass-frame {
+  --_radius: #{fn.v(radius-lg)};
+  --_edge: #{fn.v(color-border)};
+  --_shine: color-mix(in oklab, #{fn.v(color-foreground)} 14%, transparent);
+  --_glass: color-mix(in oklab, color-mix(in oklab, #{fn.v(color-muted)} 45%, #{fn.v(color-background)}) 60%, transparent);
+  --_pane: color-mix(in oklab, #{fn.v(color-background)} 78%, transparent);
+  --_blur: blur(24px) saturate(1.5);
+  --_sheen: linear-gradient(90deg, transparent, var(--_shine), transparent);
+}
+
 /// A keycap tinted from a foreground and a background. The cap stands 2px
 /// above its base; `[data-pressed]` sinks it with a translate and a shorter
 /// shadow, never a scale.
