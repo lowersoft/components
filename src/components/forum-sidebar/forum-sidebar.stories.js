@@ -45,7 +45,7 @@ const demo = (markup) => {
 const withNavbar = (args, { footer = '', user } = {}) => demo(`<lw-forum-navbar ${attributes({ sidebar: true, current: args.current, user })}></lw-forum-navbar><div class="forum-demo"><lw-forum-sidebar ${attributes({ ...args, navbar: true })}></lw-forum-sidebar><div class="forum-page">${PAGE}${footer}</div></div>`);
 const FOOTER = '<lw-studio-footer></lw-studio-footer>';
 // The member the forum navbar's Signed In story shows.
-const MEMBER = JSON.stringify({ name: 'p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', role: 'Admin' });
+const MEMBER = JSON.stringify({ name: 'p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', banner: 'https://raw.githubusercontent.com/lowersoft/.github/refs/heads/main/bg_1.jpg', role: 'Admin' });
 
 export default {
   title: 'Navigation/Bars & Tabs/Forum Sidebar',
@@ -76,7 +76,7 @@ export const WithNavbarAndFooter = {
 };
 
 // Signed in, with the footer too: the member's profile menu stands on the
-// bar where Sign In was, and the sidebar beside the page as before.
+// bar where Sign In was, and opens under their banner.
 export const SignedInWithNavbarAndFooter = {
   name: 'Signed In / With Navbar & Footer',
   render: (args) => withNavbar(args, { footer: FOOTER, user: MEMBER }),

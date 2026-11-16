@@ -243,7 +243,7 @@ hr {
     }
 
     .page {
-      padding-top: max(0.375rem, env(safe-area-inset-top));
+      --_top: max(0.375rem, env(safe-area-inset-top));
     }
   }
 
@@ -306,10 +306,13 @@ hr {
 }
 
 .page {
+  // The room above the menu, clear of a notch in a sheet.
+  --_top: 0.375rem;
+
   box-sizing: border-box;
   flex: none;
   width: var(--_panel-w, 288px);
-  padding: 0.375rem;
+  padding: var(--_top) 0.375rem 0.375rem;
   transition: opacity 300ms var(--_ease);
 
   &[inert] {
@@ -351,6 +354,76 @@ hr {
   padding-top: 0.125rem;
   font-size: lw.v(text-xs);
   color: lw.v(color-muted-foreground);
+}
+
+.banner {
+  display: none;
+}
+
+// With a banner: a picture across the top of the menu, edge to edge and
+// clipped to its corners, fading in as the menu grows out of the card. The
+// avatar sits centred on its lower edge in a ring of the menu's own colour,
+// the name under it, and the plan just under the name.
+.head[data-banner] {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 0;
+
+  .identity,
+  .text {
+    display: contents;
+  }
+
+  // Out past the page's room and the header's, 1rem each side.
+  .banner {
+    display: block;
+    align-self: stretch;
+    height: calc(5.5rem + var(--_top));
+    margin: calc(-1 * var(--_top)) -1rem 0;
+    background: lw.v(color-muted);
+  }
+
+  .avatar {
+    margin-top: calc(var(--_size) / -2);
+    outline: 3px solid var(--_surface);
+
+    .dot {
+      right: 1px;
+      bottom: 1px;
+      width: 0.875rem;
+      height: 0.875rem;
+      box-shadow: 0 0 0 3px var(--_surface);
+    }
+  }
+
+  .name {
+    order: 1;
+    max-width: 100%;
+    margin-top: 0.5rem;
+    font-size: lw.v(text-md);
+    font-weight: 600;
+    // The card's line, grown as the type is, 16px to its 14px, so the name
+    // scales evenly as it travels from the card.
+    line-height: calc(1.25rem * 8 / 7);
+  }
+
+  .plan {
+    order: 2;
+    padding-top: 0;
+  }
+
+  .email {
+    order: 3;
+    max-width: 100%;
+  }
+}
+
+.banner-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .menu {

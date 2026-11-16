@@ -50,10 +50,10 @@ const avatar = (account, tone, size, status, attributes = '') =>
 
 // The avatar, name and email, the email left out when there is none. In the
 // card, `parts` exposes them for styling from outside.
-const identity = (account, tone, status, stacked, parts = false) => {
+const identity = (account, tone, status, size, parts = false) => {
   const part = (name) => (parts ? ` part="trigger-${name}"` : '');
   const email = account.email ? `<span class="email" data-piece="email"${part('email')}>${escapeHtml(account.email)}</span>` : '';
-  return `${avatar(account, tone, stacked ? 40 : 32, status, ` data-piece="avatar"${part('avatar')}`)}<span class="text"><span class="name" data-piece="name"${part('name')}>${escapeHtml(account.name)}</span>${email}</span>`;
+  return `${avatar(account, tone, size, status, ` data-piece="avatar"${part('avatar')}`)}<span class="text"><span class="name" data-piece="name"${part('name')}>${escapeHtml(account.name)}</span>${email}</span>`;
 };
 
 // Where arrow keys move focus: rows go up and down, radios left and right.
@@ -82,9 +82,12 @@ const nextTarget = (items, active, key) => {
  * The menu sets a status, the page theme, has links, switches accounts on a
  * second page, and signs out on a long press.
  *
- * Accounts are `{ id, name, email?, avatar?, initials?, plan? }`, where
- * `avatar` is a picture's URL, shown in place of the initials, and without
- * an `email` the name stands alone. Items are
+ * Accounts are `{ id, name, email?, avatar?, banner?, initials?, plan? }`,
+ * where `avatar` is a picture's URL, shown in place of the initials, and
+ * without an `email` the name stands alone. `banner`, a wide picture's URL,
+ * runs edge to edge across the top of the menu: the avatar, larger, sits
+ * centred on its lower edge in a ring of the menu's own colour, and the
+ * plan moves from across the avatar to just under the name. Items are
  * `{ label, icon?, value?, href?, external? }`, where `icon` is the inner
  * markup of a 24 × 24 stroked SVG; an item with `href` is a link.
  *
@@ -145,7 +148,7 @@ export class LwProfileDropdown extends LwElement {
   <div class="surface" aria-hidden="true"><div class="edge"></div><div class="fill"></div></div>
   <div class="content"><div class="pages">
     <div class="page main">
-      <div class="head"><span class="identity stacked"></span><span class="plan body"></span></div>
+      <div class="head"><span class="banner body" aria-hidden="true"></span><span class="identity stacked"></span><span class="plan body"></span></div>
       <div class="menu body" role="menu" tabindex="-1">
         <div class="field" role="group" aria-label="Status"><span class="caption">Status</span><span class="radios">${statuses}</span></div>
         <div class="field" role="group" aria-label="Theme"><span class="caption">Theme</span><span class="themes"><span class="theme-plate" aria-hidden="true"></span>${themes}</span></div>
@@ -208,8 +211,12 @@ export class LwProfileDropdown extends LwElement {
     const account = this.#current;
     const tone = Math.max(0, this.accounts.indexOf(account));
     const others = this.accounts.filter((entry) => entry !== account);
-    this.query('.trigger .identity').innerHTML = identity(account, tone, this.status, false, true);
-    this.query('.head .identity').innerHTML = identity(account, tone, this.status, true);
+    this.query('.trigger .identity').innerHTML = identity(account, tone, this.status, 32, true);
+    // Under a banner the header's avatar grows, to sit on the banner's edge.
+    const banner = account.banner ? `<img class="banner-photo" src="${escapeHtml(account.banner)}" alt="" decoding="async">` : '';
+    this.query('.head').toggleAttribute('data-banner', Boolean(banner));
+    this.query('.banner').innerHTML = banner;
+    this.query('.head .identity').innerHTML = identity(account, tone, this.status, banner ? 56 : 40);
     this.query('.plan').textContent = account.plan ?? '';
     this.query('.items').innerHTML = this.items
       .map((item, i) => {

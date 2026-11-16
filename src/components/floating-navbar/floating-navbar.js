@@ -113,9 +113,11 @@ const mobileMarkup = (item, index) => {
  *
  * Signed in, `user` puts the member's `<lw-profile-dropdown>` where the
  * actions were: an outlined button with their avatar and name that opens
- * their account menu, their role across from the avatar at its head. The
- * menu sets the theme, so the theme switch steps aside. On a phone the
- * button is the avatar alone and the menu drops from the top of the screen.
+ * their account menu, their role across from the avatar at its head. With
+ * a `banner` the menu opens under it, the avatar on its lower edge and the
+ * role under the name. The menu sets the theme, so the theme switch steps
+ * aside. On a phone the button is the avatar alone and the menu drops from
+ * the top of the screen.
  *
  * @attr {Array<object>} items - The links and menus, in order (JSON)
  * @attr {string} current - Path of the page you are on; the address bar's by default
@@ -126,7 +128,7 @@ const mobileMarkup = (item, index) => {
  * @attr {string} action - The main action's label; none when empty
  * @attr {string} sign-in - The sign-in link's label, beside the main action; none when empty
  * @attr {string} sign-in-href - Where the sign-in link goes
- * @attr {object} user - The signed-in member, `{ name, avatar?, role?, email? }` with `avatar` a picture's URL and `role` such as Admin or Moderator; replaces the actions and the theme switch with their profile menu (JSON)
+ * @attr {object} user - The signed-in member, `{ name, avatar?, banner?, role?, email? }` with `avatar` and `banner` pictures' URLs and `role` such as Admin or Moderator; replaces the actions and the theme switch with their profile menu (JSON)
  * @attr {'start'|'end'} theme-switch - Where the theme switch stands on a wide screen: beside the brand, or with the actions. Once the links fold into the menu button it stands with the actions either way
  * @attr {string} label - Accessible name of the navigation
  * @slot actions - Your own actions, such as links, instead of the theme switch, the sign-in link and the button
@@ -330,8 +332,9 @@ export class LwFloatingNavbar extends LwElement {
     const profile = this.query('.profile');
     profile.hidden = !member;
     profile.items = ACCOUNT_ITEMS;
-    // The role stands across from the avatar, where the menu shows a plan.
-    if (member) profile.accounts = [{ id: 'member', name: member.name, avatar: member.avatar, email: member.email, plan: member.role }];
+    // The role stands where the menu shows a plan: across from the avatar,
+    // or under the name below a banner.
+    if (member) profile.accounts = [{ id: 'member', name: member.name, avatar: member.avatar, banner: member.banner, email: member.email, plan: member.role }];
   }
 
   // Marks the links to the page you are on, and the item of its section.

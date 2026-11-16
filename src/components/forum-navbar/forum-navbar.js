@@ -45,9 +45,9 @@ const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'Home', 'End']);
  *
  * Signed in, `user` puts the member's `<lw-profile-dropdown>` where Sign In
  * was: an outlined button with their avatar and name that opens their
- * account menu, their role across from the avatar at its head, and the
- * avatar alone once the bar shrinks. The menu sets the theme, so the theme
- * switch steps aside.
+ * account menu, their role across from the avatar at its head, or under
+ * their name below a `banner`, and the avatar alone once the bar shrinks.
+ * The menu sets the theme, so the theme switch steps aside.
  *
  * With `sidebar` it shares the page with `<lw-forum-sidebar navbar>`, which
  * sets it. On a window 64rem (1024px) or wider the bar spans the window
@@ -58,7 +58,7 @@ const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'Home', 'End']);
  *
  * @attr {Array<object>} items - The menus and links, in order; `{ label, href, end: true }` for the forum's sections (JSON)
  * @attr {string} action - The sign-in button's label, also its accessible name once only the icon shows; none when empty
- * @attr {object} user - The signed-in member, `{ name, avatar?, role?, email? }` with `avatar` a picture's URL and `role` such as Admin or Moderator; replaces Sign In with their profile menu (JSON)
+ * @attr {object} user - The signed-in member, `{ name, avatar?, banner?, role?, email? }` with `avatar` and `banner` pictures' URLs and `role` such as Admin or Moderator; replaces Sign In with their profile menu (JSON)
  * @attr {Array<object>} threads - The threads to search (JSON)
  * @attr {string} search-placeholder - The search field's placeholder
  * @attr {string} search-shortcut - Opens the search from anywhere on the page, as `mod+k`; none when empty

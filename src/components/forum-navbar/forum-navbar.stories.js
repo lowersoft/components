@@ -51,10 +51,11 @@ export const Searching = {
 };
 
 // Signed in: the member's profile menu stands where Sign In was, their
-// avatar and name on an outlined button and their role at the menu's head;
-// scroll, and it folds to the avatar.
+// avatar and name on an outlined button; scroll, and it folds to the
+// avatar. The menu opens under their banner, the avatar on its lower edge
+// and their role under their name.
 export const SignedIn = {
-  args: { user: JSON.stringify({ name: 'p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', role: 'Admin' }) },
+  args: { user: JSON.stringify({ name: 'p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', banner: 'https://raw.githubusercontent.com/lowersoft/.github/refs/heads/main/bg_1.jpg', role: 'Admin' }) },
 };
 
 // On the Latest page: its link carries the pill across from the menus.

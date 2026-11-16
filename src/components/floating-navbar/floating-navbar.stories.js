@@ -49,11 +49,12 @@ export const SingleAction = {
 };
 
 // Signed in: the member's profile menu stands where the actions were, their
-// avatar and name on an outlined button and their role at the menu's head.
-// The menu sets the theme, so the theme switch steps aside. On a phone the
+// avatar and name on an outlined button. The menu opens under their banner,
+// the avatar on its lower edge and their role under their name. The menu
+// sets the theme, so the theme switch steps aside. On a phone the
 // button is the avatar alone and the menu drops from the top of the screen.
 export const SignedIn = {
-  args: { user: JSON.stringify({ name: 'p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', role: 'Admin' }) },
+  args: { user: JSON.stringify({ name: 'p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', banner: 'https://raw.githubusercontent.com/lowersoft/.github/refs/heads/main/bg_1.jpg', role: 'Admin' }) },
 };
 
 // On a documentation page: Support carries the pill and Documentation is
