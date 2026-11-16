@@ -1,4 +1,5 @@
 import { attributes } from '../../../.storybook/attributes.js';
+import '../auth-dialog/index.js';
 import '../forum-navbar/index.js';
 import '../studio-footer/index.js';
 import './index.js';
@@ -41,8 +42,17 @@ const demo = (markup) => {
 };
 
 // Beside the forum navbar, signed in with `user`, if any, and under it with
-// a footer, if any, in the page's column.
-const withNavbar = (args, { footer = '', user } = {}) => demo(`<lw-forum-navbar ${attributes({ sidebar: true, current: args.current, user })}></lw-forum-navbar><div class="forum-demo"><lw-forum-sidebar ${attributes({ ...args, navbar: true })}></lw-forum-sidebar><div class="forum-page">${PAGE}${footer}</div></div>`);
+// a footer, if any, in the page's column. A guest's Sign In opens the sign-in
+// dialog, always on signing in.
+const withNavbar = (args, { footer = '', user } = {}) => {
+  const root = demo(`<lw-forum-navbar ${attributes({ sidebar: true, current: args.current, user })}></lw-forum-navbar><div class="forum-demo"><lw-forum-sidebar ${attributes({ ...args, navbar: true })}></lw-forum-sidebar><div class="forum-page">${PAGE}${footer}</div></div><lw-auth-dialog></lw-auth-dialog>`);
+  root.addEventListener('lw-action', () => {
+    const dialog = root.querySelector('lw-auth-dialog');
+    dialog.view = 'sign-in';
+    dialog.open = true;
+  });
+  return root;
+};
 const FOOTER = '<lw-studio-footer></lw-studio-footer>';
 // The member the forum navbar's Signed In story shows.
 const MEMBER = JSON.stringify({ name: 'p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', banner: 'https://raw.githubusercontent.com/lowersoft/.github/refs/heads/main/bg_1.jpg', role: 'Admin' });
@@ -64,6 +74,8 @@ export const Default = {};
 // sidebar stands under it at the left. Scroll, and the bar shrinks from the
 // sidebar to the right edge while the sidebar rises into the room it leaves.
 // On a phone the button at the start of the bar opens it from the left.
+// Sign In opens the sign-in dialog; Create an account there slides on to
+// the sign-up.
 export const WithNavbar = {
   render: (args) => withNavbar(args),
 };

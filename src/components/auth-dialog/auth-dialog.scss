@@ -1,0 +1,67 @@
+@use '../../styles' as lw;
+
+// The frame, as wide as the cards, leaves room round it for the close
+// button on its corner, which it does not clip.
+.modal {
+  --_width: 26rem;
+  --_radius: 1.25rem;
+
+  max-width: calc(100vw - 3rem);
+  max-height: none;
+  overflow: visible;
+  border-radius: var(--_radius);
+}
+
+// The cards share one cell, the one shown giving its height, and slide past
+// each other inside the frame's rounded edge; a card too tall for the window
+// scrolls. No scrollbar shows, not even for the moment a taller card slides
+// in ahead of the frame growing to it.
+.viewport {
+  display: grid;
+  max-height: calc(100dvh - 3rem);
+  overflow: hidden auto;
+  border-radius: calc(var(--_radius) - 1px);
+  outline: none;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// The frame draws the card's edge and fill.
+.card {
+  grid-area: 1 / 1;
+  align-self: start;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  background: none;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// Round, centred on the frame's top right corner, outside its border.
+.close {
+  top: -1px;
+  right: -1px;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--_line);
+  border-radius: 50%;
+  background: lw.v(color-background);
+  box-shadow: lw.v(shadow-md);
+  translate: 50% -50%;
+
+  &:hover {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, #{lw.v(color-background)});
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}

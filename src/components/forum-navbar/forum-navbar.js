@@ -63,6 +63,7 @@ const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'Home', 'End']);
  * @attr {string} search-placeholder - The search field's placeholder
  * @attr {string} search-shortcut - Opens the search from anywhere on the page, as `mod+k`; none when empty
  * @attr {boolean} sidebar - Stands with `<lw-forum-sidebar navbar>`, which sets it: leaves it room at the left once the bar shrinks, or, narrower than 64rem, shows the button that opens it
+ * @fires lw-action - Sign In was pressed, on the bar or at the foot of the narrow menu
  * @fires lw-sidebar - Its sidebar button was pressed; `<lw-forum-sidebar navbar>` opens
  * @fires lw-search - The query changed; `detail: { query, words, member, category }`, the filters as typed, without `@` and `#`
  */

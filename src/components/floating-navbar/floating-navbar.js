@@ -132,6 +132,7 @@ const mobileMarkup = (item, index) => {
  * @attr {'start'|'end'} theme-switch - Where the theme switch stands on a wide screen: beside the brand, or with the actions. Once the links fold into the menu button it stands with the actions either way
  * @attr {string} label - Accessible name of the navigation
  * @slot actions - Your own actions, such as links, instead of the theme switch, the sign-in link and the button
+ * @fires lw-action - The main action was pressed, on the bar or at the foot of the narrow menu
  * @csspart frame - The bar's outer frame
  * @csspart bar - The row inside it
  * @csspart viewport - The panel the menus open in
@@ -216,6 +217,14 @@ export class LwFloatingNavbar extends LwElement {
       if (trigger) this.#toggleGroup(trigger);
       else if (event.target.closest('a')) burger.toggle(false);
     }, options);
+    // The main action is the page's to answer, with a dialog or a page of its
+    // own; pressed in the narrow menu, the menu closes under it.
+    for (const button of this.shadowRoot.querySelectorAll('.cta')) {
+      button.addEventListener('click', () => {
+        if (burger.open) burger.toggle(false);
+        this.emit('action');
+      }, options);
+    }
     this.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape' || !burger.open) return;
       burger.toggle(false);
