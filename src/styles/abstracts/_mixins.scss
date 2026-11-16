@@ -536,6 +536,12 @@
     }
   }
 
+  // A button's leading mark, boxed to its own size rather than a line of
+  // text, so it centres on the label instead of sitting on its baseline.
+  lw-button > [slot='start'] {
+    display: inline-flex;
+  }
+
   .divider {
     display: flex;
     align-items: center;
