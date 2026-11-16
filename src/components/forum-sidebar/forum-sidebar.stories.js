@@ -40,9 +40,12 @@ const demo = (markup) => {
   return root;
 };
 
-// Beside the forum navbar, and under it with a footer, if any, in the
-// page's column.
-const withNavbar = (args, footer = '') => demo(`<lw-forum-navbar sidebar current="${args.current ?? ''}"></lw-forum-navbar><div class="forum-demo"><lw-forum-sidebar ${attributes({ ...args, navbar: true })}></lw-forum-sidebar><div class="forum-page">${PAGE}${footer}</div></div>`);
+// Beside the forum navbar, signed in with `user`, if any, and under it with
+// a footer, if any, in the page's column.
+const withNavbar = (args, { footer = '', user } = {}) => demo(`<lw-forum-navbar ${attributes({ sidebar: true, current: args.current, user })}></lw-forum-navbar><div class="forum-demo"><lw-forum-sidebar ${attributes({ ...args, navbar: true })}></lw-forum-sidebar><div class="forum-page">${PAGE}${footer}</div></div>`);
+const FOOTER = '<lw-studio-footer></lw-studio-footer>';
+// The member the forum navbar's Signed In story shows.
+const MEMBER = JSON.stringify({ name: 'p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', role: 'Admin' });
 
 export default {
   title: 'Navigation/Bars & Tabs/Forum Sidebar',
@@ -69,7 +72,14 @@ export const WithNavbar = {
 // the sidebar, and over it, closed, the button that brings it back.
 export const WithNavbarAndFooter = {
   name: 'With Navbar & Footer',
-  render: (args) => withNavbar(args, '<lw-studio-footer></lw-studio-footer>'),
+  render: (args) => withNavbar(args, { footer: FOOTER }),
+};
+
+// Signed in, with the footer too: the member's profile menu stands on the
+// bar where Sign In was, and the sidebar beside the page as before.
+export const SignedInWithNavbarAndFooter = {
+  name: 'Signed In / With Navbar & Footer',
+  render: (args) => withNavbar(args, { footer: FOOTER, user: MEMBER }),
 };
 
 // On a category's page: its square keeps the background.
@@ -77,8 +87,8 @@ export const CurrentCategory = {
   args: { current: '/c/lowersync' },
 };
 
-// On a phone the sidebar is a button naming the page you are on; it spreads
-// across the window as its links fold open under it.
+// On a phone an outlined button at the top of the page opens the sidebar
+// as a drawer from the left, as the navbar's does in With Navbar.
 export const Narrow = {
   globals: { viewport: { value: 'mobile2', isRotated: false } },
 };

@@ -20,7 +20,6 @@ import {
   list,
   mail,
   messageCircle,
-  panelLeft,
   panelLeftClose,
   panelLeftOpen,
   settings,
@@ -156,9 +155,10 @@ const sectionMarkup = (section, index) => {
  * back. The focus moves to whichever button undoes it.
  *
  * Put it first in a grid of two columns, `auto` and the page, that stacks
- * below 64rem (1024px). There it is a button at the top naming the page
- * you are on, dark on a light theme and light on a dark one; it spreads
- * across the window as its links fold open under it.
+ * below 64rem (1024px). There an outlined button at the top of the page,
+ * bare until the page scrolls, opens it as a drawer from the window's left
+ * edge, over the dimmed page; Escape, a press on the page, a link or the
+ * button at its foot slides it away again.
  *
  * Items are `{ label, href, icon?, external? }`, or `{ label, icon?, links }`
  * for links that fold open under it, such as More. Sections are
@@ -174,15 +174,14 @@ const sectionMarkup = (section, index) => {
  * it. As the bar shrinks it runs from the sidebar to the window's right
  * edge, and the sidebar rises into the room it leaves; the two take their
  * frames together. Closed, the sidebar gives the bar that room back.
- * Narrower than 64rem it keeps no row of its own: an outlined button at the
- * start of the bar opens it as a drawer from the window's left edge, over
- * the dimmed page, and Escape, a press on the page, a link or the button at
- * its foot slides it away again, the focus going back to the bar.
+ * Narrower than 64rem it keeps no row of its own: the outlined button at
+ * the start of the bar opens the drawer instead, and the focus goes back to
+ * the bar as it closes.
  *
  * @attr {Array<object>} items - The forum's pages, in order (JSON)
  * @attr {Array<object>} sections - The lists under them, such as categories and tags (JSON)
  * @attr {string} current - Path of the page you are on; the address bar's by default
- * @attr {boolean} closed - Slid out of the page, leaving the button that brings it back; a window narrower than 64rem keeps its bar
+ * @attr {boolean} closed - Slid out of the page, leaving the button that brings it back; a window narrower than 64rem keeps the button that opens it
  * @attr {string} version - The forum software's name and version, at the foot; none when empty
  * @attr {string} company - The owner in the copyright line at the foot, after the year; none when empty
  * @attr {boolean} navbar - Stands under `<lw-forum-navbar sidebar>`, the first before it in the page, and rises as the bar shrinks
@@ -209,21 +208,21 @@ export class LwForumSidebar extends LwElement {
   #shape = null;
   // The navbar the sidebar stands under, with `navbar`.
   #bar = null;
+  // The drawer is open, or opening.
+  #open = false;
 
   render() {
     return `<div class="panel"><div class="frame" part="frame"><div class="inner">
-<button class="toggle" type="button" aria-expanded="false" aria-controls="body"><span class="toggle-current"></span>${CHEVRON}</button>
-<div class="body" id="body"><div class="body-clip"><nav class="scroller"><div class="content"><span class="pill" aria-hidden="true"></span><ul class="list items"></ul><div class="sections"></div></div></nav>
-<div class="foot"><p class="credits"><span class="version"></span><span class="copyright"></span></p><lw-button class="close" variant="outline" size="sm" icon-only><span class="button-icon" slot="start">${strokeIcon(panelLeftClose, 16)}</span><span class="visually-hidden">Close sidebar</span></lw-button></div></div></div>
+<nav class="scroller"><div class="content"><span class="pill" aria-hidden="true"></span><ul class="list items"></ul><div class="sections"></div></div></nav>
+<div class="foot"><p class="credits"><span class="version"></span><span class="copyright"></span></p><lw-button class="close" variant="outline" size="sm" icon-only><span class="button-icon" slot="start">${strokeIcon(panelLeftClose, 16)}</span><span class="visually-hidden">Close sidebar</span></lw-button></div>
 </div></div></div>
-<div class="reopen" inert><lw-button class="open" variant="outline" icon-only><span class="button-icon" slot="start">${strokeIcon(panelLeftOpen, 16)}</span><span class="visually-hidden">Open sidebar</span></lw-button></div>
+<div class="opener" inert><lw-button class="open" variant="outline" icon-only><span class="button-icon" slot="start">${strokeIcon(panelLeftOpen, 16)}</span><span class="visually-hidden">Open sidebar</span></lw-button></div>
 <dialog class="drawer"><div class="scrim"></div></dialog>`;
   }
 
   connected() {
     const options = { signal: this.signal };
     const content = this.query('.content');
-    const toggle = this.query('.toggle');
 
     content.addEventListener('pointerover', (event) => {
       const link = event.pointerType !== 'touch' && event.target.closest('.link');
@@ -233,24 +232,13 @@ export class LwForumSidebar extends LwElement {
     content.addEventListener('click', (event) => {
       const button = event.target.closest('.more, .section-toggle');
       if (button) this.#fold(button);
-      // Following a link closes the narrow menu.
+      // Following a link closes the drawer.
       else if (event.target.closest('a')) this.#setOpen(false);
     }, options);
     content.addEventListener('keydown', (event) => this.#key(event), options);
 
-    toggle.addEventListener('click', () => this.#setOpen(toggle.ariaExpanded !== 'true'), options);
-    this.addEventListener('keydown', (event) => {
-      if (event.key !== 'Escape' || toggle.ariaExpanded !== 'true') return;
-      // The drawer gives the focus back to the navbar's button itself.
-      const drawn = this.#drawn;
-      this.#setOpen(false);
-      if (!drawn) toggle.focus();
-    }, options);
-    document.addEventListener('pointerdown', (event) => {
-      if (!event.composedPath().includes(this)) this.#setOpen(false);
-    }, options);
     this.query('.close').addEventListener('click', () => (this.#drawn ? this.#setOpen(false) : this.#setClosed(true)), options);
-    this.query('.open').addEventListener('click', () => this.#setClosed(false), options);
+    this.query('.open').addEventListener('click', () => (this.#drawn ? this.#setOpen(true) : this.#setClosed(false)), options);
 
     // The links fade out at an edge there are more past.
     const scroller = this.query('.scroller');
@@ -262,24 +250,19 @@ export class LwForumSidebar extends LwElement {
 
     // The drawer slides away before it closes, on Escape or a press on the
     // dimmed page as on its button, and the page under it stays put: only
-    // the links scroll.
+    // the links scroll. Closed at once all the same, it takes its links back.
     const drawer = this.query('.drawer');
     drawer.addEventListener('cancel', (event) => {
       event.preventDefault();
       this.#setOpen(false);
     }, options);
+    drawer.addEventListener('close', () => drawer.open || this.#setOpen(false), options);
     this.query('.scrim').addEventListener('click', () => this.#setOpen(false), options);
     const hold = (event) => event.composedPath().includes(scroller) || event.preventDefault();
     drawer.addEventListener('wheel', hold, { passive: false, signal: this.signal });
     drawer.addEventListener('touchmove', hold, { passive: false, signal: this.signal });
     // Taken off the page, the sidebar takes its links back at once.
-    this.signal.addEventListener('abort', () => {
-      toggle.ariaExpanded = 'false';
-      this.query('.body').removeAttribute('data-open');
-      this.removeAttribute('data-menu');
-      drawer.removeAttribute('data-open');
-      this.#shut();
-    });
+    this.signal.addEventListener('abort', () => this.#shut());
 
     // Lists folding, the frame settling and the window resizing all move the
     // links; the pill moves with them, not after.
@@ -291,10 +274,11 @@ export class LwForumSidebar extends LwElement {
     resize.observe(scroller);
     this.signal.addEventListener('abort', () => resize.disconnect());
 
-    // Crossing into the other layout closes the narrow menu.
+    // Crossing into the wide layout puts the links back beside the page at
+    // once.
     this.#wide = matchMedia(WIDE);
     const layout = () => {
-      this.#setOpen(false);
+      if (this.#wide.matches) this.#shut();
       this.#paintLayout();
     };
     this.#wide.addEventListener('change', layout, options);
@@ -317,7 +301,7 @@ export class LwForumSidebar extends LwElement {
 
   updated(changed) {
     if (changed.has('items') || changed.has('sections')) this.#build();
-    if (['items', 'sections', 'current', 'label'].some((name) => changed.has(name))) this.#paintCurrent();
+    if (['items', 'sections', 'current'].some((name) => changed.has(name))) this.#paintCurrent();
     if (changed.has('label')) this.query('.scroller').ariaLabel = this.query('.drawer').ariaLabel = this.label;
     if (changed.has('navbar')) this.#keepShape();
     if (changed.has('closed')) this.#paintLayout();
@@ -391,17 +375,7 @@ export class LwForumSidebar extends LwElement {
     section?.toggleAttribute('data-current', true);
     const fold = section?.closest('.fold:not([data-open])');
     if (fold) this.#fold(this.query(`[aria-controls="${fold.id}"]`), true);
-    this.#paintToggle(section);
     this.#paintPill();
-  }
-
-  // The narrow button names the page you are on, with its icon; on none, the
-  // navigation's own name.
-  #paintToggle(link) {
-    const label = escapeHtml(this.label ?? '');
-    this.query('.toggle-current').innerHTML = link
-      ? `${link.querySelector('.icon').outerHTML}<span class="label"><span class="visually-hidden">${label}: </span>${escapeHtml(link.querySelector('.label').textContent)}</span>`
-      : `<span class="icon" aria-hidden="true">${strokeIcon(panelLeft, 16)}</span><span class="label">${label}</span>`;
   }
 
   // The pill follows the pointer from link to link, and fades once it
@@ -433,46 +407,25 @@ export class LwForumSidebar extends LwElement {
     items[Math.max(0, Math.min(to, items.length - 1))].focus();
   }
 
-  // Narrow, under the navbar, the links open in a drawer from the window's
-  // left edge, from the navbar's button.
+  // Narrower than the column beside the page, the links open in a drawer
+  // from the window's left edge.
   get #drawn() {
-    return Boolean(this.#bar) && !this.#wide?.matches;
-  }
-
-  // On a narrow screen the links fold open under the bar. The sidebar keeps
-  // its frame, `data-menu`, while they are open and until they have folded
-  // away; a fold cut short ends it too.
-  #setOpen(open) {
-    const toggle = this.query('.toggle');
-    if ((open && this.#wide?.matches) || (toggle.ariaExpanded === 'true') === open) return;
-    toggle.ariaExpanded = String(open);
-    const body = this.query('.body');
-    body.toggleAttribute('data-open', open);
-    this.#paintLayout();
-    if (this.#drawn || this.query('.drawer').open) {
-      this.#slide(open);
-      return;
-    }
-    if (open) {
-      this.toggleAttribute('data-menu', true);
-      return;
-    }
-    const done = () => !body.hasAttribute('data-open') && this.removeAttribute('data-menu');
-    const folding = body.getAnimations().filter((animation) => animation instanceof CSSTransition);
-    if (folding.length) Promise.all(folding.map((animation) => animation.finished)).then(done, done);
-    else done();
+    return !this.#wide?.matches;
   }
 
   // The drawer is a modal dialog the panel moves into while it is open: it
   // slides in over the dimming page, and out again before the dialog closes
   // and the panel goes back. Opened again on its way out, it turns back.
-  #slide(open) {
+  #setOpen(open) {
+    if ((open && !this.#drawn) || this.#open === open) return;
+    this.#open = open;
+    this.#paintLayout();
     const drawer = this.query('.drawer');
     if (open) {
       // Unless it was closed again first, it slides in, and the focus goes
       // to the page you are on, or else the first link.
       const show = () => {
-        if (!drawer.open || this.query('.toggle').ariaExpanded !== 'true') return;
+        if (!drawer.open || !this.#open) return;
         drawer.toggleAttribute('data-open', true);
         (this.query('a.link[aria-current], a.link[data-current]') ?? this.query('a.link'))?.focus();
       };
@@ -488,19 +441,21 @@ export class LwForumSidebar extends LwElement {
       return;
     }
     drawer.removeAttribute('data-open');
-    const done = () => !drawer.hasAttribute('data-open') && this.#shut();
+    const done = () => !this.#open && this.#shut();
     const sliding = drawer.getAnimations({ subtree: true }).filter((animation) => animation instanceof CSSTransition);
     if (sliding.length) Promise.all(sliding.map((animation) => animation.finished)).then(done, done);
     else done();
   }
 
-  // Closes the drawer, the focus going back to where it was, and puts the
-  // panel back in its place.
+  // Closes the drawer at once, the focus going back to where it was, and
+  // puts the panel back in its place.
   #shut() {
+    this.#open = false;
     const drawer = this.query('.drawer');
+    drawer.removeAttribute('data-open');
     if (drawer.open) drawer.close();
     const panel = this.query('.panel');
-    if (panel.parentNode === drawer) this.query('.reopen').before(panel);
+    if (panel.parentNode === drawer) this.query('.opener').before(panel);
   }
 
   // Closes or opens the sidebar from its buttons, and moves the focus to the
@@ -514,17 +469,15 @@ export class LwForumSidebar extends LwElement {
   }
 
   // Beside the page the links are there unless the sidebar is closed, and
-  // the button that brings it back only while it is; under the narrow button
-  // or in the drawer the links are there only while they are open. A closed
-  // sidebar gives the navbar its room back; narrow, the navbar keeps the
-  // button that opens it.
+  // the button that brings it back only while it is. Narrow, the links are
+  // there only in the open drawer, and the button that opens it stands at
+  // the top of the page, unless the navbar has its own. A closed sidebar
+  // gives the navbar its room back; narrow, the navbar keeps its button.
   #paintLayout() {
-    const wide = Boolean(this.#wide?.matches);
-    const closed = wide && this.closed;
-    this.toggleAttribute('data-drawer', Boolean(this.#bar));
-    this.query('.body').inert = !wide && this.query('.toggle').ariaExpanded !== 'true';
-    this.query('.panel').inert = closed;
-    this.query('.reopen').inert = !closed;
+    const wide = !this.#drawn;
+    this.toggleAttribute('data-bar', Boolean(this.#bar));
+    this.query('.panel').inert = wide ? Boolean(this.closed) : !this.#open;
+    this.query('.opener').inert = wide ? !this.closed : Boolean(this.#bar);
     if (this.#bar) this.#bar.sidebar = !wide || !this.closed;
   }
 
