@@ -249,3 +249,4 @@ export * from './components/forum-navbar/index.js';
 export * from './components/studio-footer/index.js';
 export * from './components/forum-sidebar/index.js';
 export * from './components/auth-dialog/index.js';
+export * from './components/user-hover-card/index.js';
