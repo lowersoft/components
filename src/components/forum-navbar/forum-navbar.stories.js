@@ -28,7 +28,7 @@ const demo = (markup, style = '') => {
 };
 
 export default {
-  title: 'Navigation/Bars & Tabs/Forum Navbar',
+  title: 'Forum/Navigation/Forum Navbar',
   component: 'lw-forum-navbar',
   parameters: { layout: 'fullscreen' },
   render: (args) => demo(`<lw-forum-navbar ${attributes(args)}></lw-forum-navbar>`),

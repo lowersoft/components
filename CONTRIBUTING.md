@@ -41,7 +41,7 @@ The second argument is the component's category in Storybook, and its story appe
 
 ### Where a component goes
 
-The sidebar has eight roots. Pick the root by what the component is for, then the group inside it:
+The sidebar has nine roots. Pick the root by what the component is for, then the group inside it:
 
 | Root | For | Groups |
 | --- | --- | --- |
@@ -51,6 +51,7 @@ The sidebar has eight roots. Pick the root by what the component is for, then th
 | Media | Pictures, video and sound | Players, Editors, Galleries, Carousels & Marquees |
 | Feedback | Status, progress and notices | Banners, Status & Progress |
 | Flows | A whole task in an app: signing in, a dialog, a form | Auth, Dialogs, Forms |
+| Forum | Anything made for a forum, whatever its kind: its bars, threads, posts and members | Navigation, Lists, Threads, Widgets, Members |
 | Sections | Full-width blocks of a marketing page | Heroes, Headlines, Features, How It Works, Pricing (Plans, Tables, Usage & Checkout), Comparisons, Social Proof, FAQs, Contact, Footers |
 | Effects | Decoration behind or around content | Text (Cycling, Interactive, Accents), Backgrounds, Surfaces, Pointer |
 

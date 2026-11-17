@@ -108,7 +108,7 @@ const demo = (markup, top = '22rem') => {
 };
 
 export default {
-  title: 'Data Display/Cards/User Hover Card',
+  title: 'Forum/Members/User Hover Card',
   component: 'lw-user-hover-card',
   render: (args) => demo(`<p class="muted">Started by <lw-user-hover-card ${attributes(args)}><a class="member" href="/u/mayachen">Maya Chen</a></lw-user-hover-card> in LowerSync · 2h ago</p>`),
   args: { user: JSON.stringify(MEMBERS.maya), followed: false, open: false },

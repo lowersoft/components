@@ -58,7 +58,7 @@ const FOOTER = '<lw-studio-footer></lw-studio-footer>';
 const MEMBER = JSON.stringify({ name: 'p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', banner: 'https://raw.githubusercontent.com/lowersoft/.github/refs/heads/main/bg_1.jpg', role: 'Admin' });
 
 export default {
-  title: 'Navigation/Bars & Tabs/Forum Sidebar',
+  title: 'Forum/Navigation/Forum Sidebar',
   component: 'lw-forum-sidebar',
   parameters: { layout: 'fullscreen' },
   render: (args) => demo(`<div class="forum-demo"><lw-forum-sidebar ${attributes(args)}></lw-forum-sidebar>${PAGE}</div>`),
