@@ -61,3 +61,6 @@ export const splitWords = (root) => {
   }
   return [...root.querySelectorAll('.word')];
 };
+
+/** Lowercase without accents, so "turk" finds "Türkiye" and "yil" "Yılmaz". */
+export const foldText = (text) => String(text ?? '').normalize('NFKD').replace(/\p{M}/gu, '').replace(/ı/g, 'i').toLowerCase();
