@@ -1,0 +1,594 @@
+@use '../../styles' as lw;
+
+:host {
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  line-height: 1.45;
+  color: lw.v(color-foreground);
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+@include lw.forum-member(1.75rem);
+
+// The rows fit the room the component has, not the window: see the
+// container queries at the end.
+.groups {
+  --_surface: #{lw.v(color-background)};
+  --_line: #{lw.v(color-border)};
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_hover: color-mix(in oklab, #{lw.v(color-foreground)} 2.5%, var(--_surface));
+
+  container: categories / inline-size;
+  display: grid;
+  gap: 1rem;
+}
+
+// A group: the kanban board's column frame, its head over a card of rows.
+.group {
+  @include lw.frame;
+}
+
+// The arrow, the title with its count and what the group holds, and the
+// labels of the rows' columns, lined up with them: the head's sides are the
+// card's border and the rows' padding in.
+.head {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.875rem;
+  padding: 0.5rem calc(1rem + 1px) 0.75rem;
+  border-radius: 0.75rem;
+
+  @include lw.motion {
+    transition: padding-bottom 300ms lw.v(ease-out);
+  }
+
+  [data-folded] > & {
+    padding-bottom: 0.5rem;
+  }
+
+  &:has(.toggle:focus-visible) {
+    outline: 2px solid lw.v(color-ring);
+    outline-offset: -2px;
+  }
+}
+
+// Open, the arrow points down at the categories; folded, at the title.
+.chevron {
+  display: grid;
+  grid-row: 1;
+  grid-column: 1;
+  place-items: center;
+  justify-self: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: lw.v(radius-md);
+  color: var(--_muted);
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-fast) lw.v(ease-out),
+      color lw.v(duration-fast) lw.v(ease-out);
+
+    svg {
+      transition: rotate lw.v(duration-normal) lw.v(ease-out);
+    }
+  }
+
+  .head:hover & {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 6%, transparent);
+    color: lw.v(color-foreground);
+  }
+
+  [data-folded] & svg {
+    rotate: -90deg;
+  }
+}
+
+.group-heading {
+  display: flex;
+  grid-row: 1;
+  grid-column: 2;
+  align-items: baseline;
+  gap: 0.5rem;
+  align-self: baseline;
+  min-width: 0;
+  margin: 0;
+  font-size: lw.v(text-md);
+  font-weight: 600;
+  line-height: 1.375;
+  letter-spacing: -0.01em;
+}
+
+// The title is the button, and the button covers the head.
+.toggle {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: start;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+}
+
+.count {
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+  color: var(--_muted);
+}
+
+.group-description {
+  grid-row: 2;
+  grid-column: 2;
+  align-self: baseline;
+  margin: 0.125rem 0 0;
+  color: var(--_muted);
+}
+
+// Over no rows, folded away or none at all, the labels fade.
+// The labels stand on the head's last line, on its text's baseline.
+.columns,
+.column-latest {
+  display: none;
+  grid-row: 2;
+  align-self: baseline;
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: var(--_muted);
+
+  @include lw.motion {
+    transition:
+      opacity 300ms lw.v(ease-out),
+      visibility 300ms;
+  }
+
+  :is([data-folded], [data-empty]) & {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .head:not(:has(.group-description)) & {
+    grid-row: 1;
+  }
+}
+
+// The categories fold away from the top: laid out at their full height and
+// clipped, so they never squeeze.
+.fold {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition: grid-template-rows 300ms lw.v(ease-out);
+  }
+
+  &[data-open] {
+    grid-template-rows: 1fr;
+  }
+}
+
+.fold-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.card {
+  @include lw.frame-card;
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  margin: 0;
+  padding: 1rem;
+  color: var(--_muted);
+}
+
+// A category: its icon, then its name with the rest under it. The name's
+// link covers the row; the row's other links stand over it.
+.row {
+  --_bg: var(--_surface);
+
+  position: relative;
+  display: grid;
+  grid-template:
+    'tile main' auto
+    'tile stats' auto
+    'tile latest' auto / 2.5rem minmax(0, 1fr);
+  align-content: center;
+  align-items: start;
+  column-gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: var(--_bg);
+
+  @include lw.motion {
+    transition: background-color lw.v(duration-fast) lw.v(ease-out);
+  }
+
+  & + & {
+    border-top: 1px solid var(--_line);
+  }
+
+  &:first-child {
+    border-top-left-radius: calc(1rem - 1px);
+    border-top-right-radius: calc(1rem - 1px);
+  }
+
+  &:last-child {
+    border-bottom-right-radius: calc(1rem - 1px);
+    border-bottom-left-radius: calc(1rem - 1px);
+  }
+
+  &:hover {
+    --_bg: var(--_hover);
+  }
+
+  &:has(.link:focus-visible) {
+    outline: 2px solid lw.v(color-ring);
+    outline-offset: -2px;
+  }
+}
+
+// The category's icon, or the forum sidebar's square in its colour; inverted
+// while it has threads you have not read.
+.tile {
+  display: grid;
+  grid-area: tile;
+  place-items: center;
+  box-sizing: border-box;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--_line);
+  border-radius: 0.75rem;
+  background: var(--_surface);
+  color: var(--_muted);
+
+  .row[data-unread] & {
+    border-color: transparent;
+    background: lw.v(color-primary);
+    color: lw.v(color-primary-foreground);
+  }
+}
+
+.swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 3px;
+
+  @include lw.hue-swatch;
+}
+
+.main {
+  display: grid;
+  grid-area: main;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-size: lw.v(text-md);
+  font-weight: 500;
+  line-height: 1.375;
+  overflow-wrap: anywhere;
+
+  .row[data-unread] & {
+    font-weight: 600;
+  }
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+  outline: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.description {
+  margin: 0;
+  color: var(--_muted);
+  overflow-wrap: anywhere;
+}
+
+// The links on the row stand over the name's.
+.sub,
+.more,
+.latest-title {
+  position: relative;
+  z-index: 1;
+}
+
+.subs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+// The sub-forums as the issue lists' labels, each with a dot in its colour.
+.sub,
+.more {
+  @include lw.label-chip;
+
+  background: var(--_surface);
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+  outline: none;
+
+  @include lw.motion {
+    transition:
+      color lw.v(duration-fast) lw.v(ease-out),
+      border-color lw.v(duration-fast) lw.v(ease-out);
+  }
+
+  &:hover {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 25%, var(--_surface));
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.sub {
+  --_label: #{lw.$hue-tint};
+
+  &[data-unread] {
+    font-weight: 500;
+    color: lw.v(color-foreground);
+  }
+}
+
+.more {
+  font-family: inherit;
+  cursor: pointer;
+
+  &::before {
+    content: none;
+  }
+}
+
+// Narrow, the counts follow the name on a line: "48 threads · 1.3K messages".
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  grid-area: stats;
+  gap: 0 0.5rem;
+  margin: 0.5rem 0 0;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+.stat {
+  display: flex;
+  gap: 0.25rem;
+
+  dt {
+    text-transform: lowercase;
+  }
+
+  dd {
+    order: -1;
+    margin: 0;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: lw.v(color-foreground);
+  }
+
+  & + &::before {
+    content: '·';
+    order: -2;
+    margin-right: 0.25rem;
+  }
+}
+
+// The thread posted in last: its author's avatar, its title, and when and
+// by whom.
+.latest {
+  display: flex;
+  grid-area: latest;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, #{lw.v(color-foreground)} 3.5%, var(--_bg));
+
+  &[data-none] {
+    margin-top: 0.5rem;
+    padding: 0;
+    background: none;
+  }
+}
+
+.latest-text {
+  display: grid;
+  gap: 0.0625rem;
+  min-width: 0;
+}
+
+.latest-title {
+  overflow: hidden;
+  line-height: 1.4;
+  color: inherit;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  text-underline-offset: 0.2em;
+  white-space: nowrap;
+  outline: none;
+
+  &[href]:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    border-radius: 0.25rem;
+  }
+}
+
+.latest-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-width: 0;
+  margin: 0;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+  white-space: nowrap;
+}
+
+.time {
+  flex: none;
+}
+
+lw-user-hover-card {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.none {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: lw.v(text-xs);
+  color: var(--_muted);
+}
+
+// With room for it, the latest thread takes a column of its own beside the
+// name, labelled in the head, and the counts stay under the name.
+@container categories (width >= 34rem) {
+  .head,
+  .row {
+    grid-template-columns: 2.5rem minmax(0, 1fr) 13rem;
+    column-gap: 1rem;
+  }
+
+  .column-latest {
+    display: block;
+    grid-column: 3;
+  }
+
+  .row {
+    grid-template-areas:
+      'tile main latest'
+      'tile stats latest';
+    align-items: center;
+  }
+
+  .main {
+    align-self: end;
+  }
+
+  .stats {
+    align-self: start;
+  }
+
+  .latest {
+    margin: 0;
+    padding: 0;
+    background: none;
+
+    &[data-none] {
+      margin: 0;
+    }
+  }
+
+  .avatar {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.6875rem;
+  }
+}
+
+// With more, the counts take columns of their own too, labelled in the
+// head, and the rows keep only the numbers.
+@container categories (width >= 46rem) {
+  .head,
+  .row {
+    grid-template-columns: 2.5rem minmax(0, 1fr) 9rem 15rem;
+    column-gap: 1.25rem;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column: 3;
+    text-align: center;
+  }
+
+  .column-latest {
+    grid-column: 4;
+  }
+
+  .row {
+    grid-template-areas: 'tile main stats latest';
+  }
+
+  .main,
+  .stats {
+    align-self: center;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0;
+    font-size: lw.v(text-sm);
+    text-align: center;
+  }
+
+  .stat {
+    justify-content: center;
+
+    dt {
+      @include lw.visually-hidden;
+    }
+
+    & + &::before {
+      content: none;
+    }
+
+    // None yet reads quieter than a count.
+    dd:has(data[value='0']) {
+      color: var(--_muted);
+    }
+  }
+}

@@ -250,6 +250,7 @@ export * from './components/studio-footer/index.js';
 export * from './components/forum-sidebar/index.js';
 export * from './components/auth-dialog/index.js';
 export * from './components/user-hover-card/index.js';
+export * from './components/forum-categories/index.js';
 export * from './components/members-online/index.js';
 export * from './components/trending-threads/index.js';
 export * from './components/profile-posts/index.js';
