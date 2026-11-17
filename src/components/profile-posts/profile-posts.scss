@@ -1,0 +1,226 @@
+@use '../../styles' as lw;
+
+:host {
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  line-height: 1.45;
+  color: lw.v(color-foreground);
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+@include lw.forum-member(2rem);
+
+.frame {
+  @include lw.frame;
+}
+
+.head {
+  @include lw.frame-head;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.card {
+  @include lw.frame-card;
+}
+
+// The status field at the top, beside the member's own avatar.
+.compose {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  border-bottom: 1px solid lw.v(color-border);
+
+  &[hidden] {
+    display: none;
+  }
+
+  .avatar {
+    margin-top: 0.25rem;
+  }
+}
+
+.compose-avatar {
+  display: contents;
+}
+
+// No narrower column for the field's own width: the native field asks for
+// twenty characters' room.
+.compose-body {
+  flex: 1;
+  width: 0;
+}
+
+.status {
+  display: block;
+  width: 100%;
+
+  // Named for screen readers by its label, which the placeholder stands in
+  // for on screen.
+  &::part(label) {
+    @include lw.visually-hidden;
+  }
+}
+
+// The Post button folds in under the field while it is in use.
+.compose-fold {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition: grid-template-rows 250ms lw.v(ease-out);
+  }
+
+  .compose:is(:focus-within, [data-filled]) & {
+    grid-template-rows: 1fr;
+  }
+}
+
+.compose-actions {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0 -0.25rem;
+  padding: 0 0.25rem;
+
+  lw-button {
+    margin: 0.5rem 0 0.25rem;
+  }
+}
+
+.posts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  margin: 0;
+  padding: 0.875rem;
+  color: lw.v(color-muted-foreground);
+}
+
+.post {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+
+  & + & {
+    border-top: 1px solid lw.v(color-border);
+  }
+
+  > .avatar {
+    margin-top: 0.125rem;
+  }
+}
+
+.body {
+  display: grid;
+  flex: 1;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+// The author, and after an arrow the member it was left for.
+.who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.25rem;
+  min-width: 0;
+  margin: 0;
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.to {
+  display: inline-flex;
+  color: lw.v(color-muted-foreground);
+}
+
+// Longer than four lines, the text folds under Show more.
+.text {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+
+  &[data-open] {
+    display: block;
+  }
+}
+
+.more {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 500 #{lw.v(text-xs)} / 1.45 #{lw.v(font-sans)};
+  color: lw.v(color-muted-foreground);
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    border-radius: 0.25rem;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.image {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-height: 10rem;
+  margin-top: 0.25rem;
+  border: 1px solid lw.v(color-border);
+  border-radius: 0.75rem;
+  object-fit: cover;
+}
+
+.meta {
+  margin: 0;
+  font-size: lw.v(text-xs);
+  color: lw.v(color-muted-foreground);
+}
+
+.time-link {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+  outline: none;
+
+  &:hover {
+    color: lw.v(color-foreground);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    border-radius: 0.25rem;
+  }
+}

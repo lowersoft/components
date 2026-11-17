@@ -1,0 +1,132 @@
+@use '../../styles' as lw;
+
+:host {
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  line-height: 1.6;
+  color: lw.v(color-foreground);
+}
+
+@include lw.forum-member(1.5rem);
+
+.frame {
+  @include lw.frame;
+}
+
+.head {
+  @include lw.frame-head;
+}
+
+// The first faces, overlapping, each in a ring of the frame's tint.
+.faces {
+  display: flex;
+  flex: none;
+
+  .avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+    box-shadow: 0 0 0 2px color-mix(in oklab, #{lw.v(color-foreground)} 2%, #{lw.v(color-background)});
+    font-size: 0.5625rem;
+
+    & + .avatar {
+      margin-left: -0.5rem;
+    }
+  }
+}
+
+.card {
+  @include lw.frame-card;
+}
+
+// The names run on as a line of text, a comma after each.
+.names {
+  margin: 0;
+  padding: 0.75rem 0.875rem;
+  list-style: none;
+
+  li {
+    display: inline;
+
+    &:not(:last-child, :nth-last-child(2):has(+ .rest))::after {
+      content: ', ';
+      color: lw.v(color-muted-foreground);
+    }
+
+    &:nth-last-child(2):has(+ .rest)::after {
+      content: ' ';
+    }
+  }
+
+  .member {
+    font-weight: 400;
+
+    &[data-role] {
+      font-weight: 600;
+    }
+  }
+}
+
+.rest {
+  color: lw.v(color-muted-foreground);
+}
+
+.rest-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, currentcolor 40%, transparent);
+  text-underline-offset: 0.2em;
+  outline: none;
+
+  &:hover {
+    color: lw.v(color-foreground);
+    text-decoration-color: currentcolor;
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    border-radius: 0.25rem;
+  }
+}
+
+.empty {
+  margin: 0;
+  padding: 0.75rem 0.875rem;
+  color: lw.v(color-muted-foreground);
+}
+
+// How many are here: in all, then members and guests.
+.totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.125rem 0.75rem;
+  margin: 0;
+  padding: 0.625rem 0.875rem;
+  border-top: 1px solid lw.v(color-border);
+  font-size: lw.v(text-xs);
+  line-height: 1.45;
+  color: lw.v(color-muted-foreground);
+
+  b {
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: lw.v(color-foreground);
+  }
+}
+
+.total {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-right: auto;
+}
+
+// Online, in the member card's colour for it.
+.live {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 3px color-mix(in oklab, #10b981 20%, transparent);
+}
