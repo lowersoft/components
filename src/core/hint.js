@@ -19,8 +19,9 @@ export const termMarkup = (label, hint, id) =>
 
 /**
  * Opens the hint of any term inside `container` on hover or keyboard focus,
- * below the term, or above when there is no room below, kept on screen.
- * Escape, scrolling and resizing close it.
+ * below the term, or above when there is no room below, kept on screen;
+ * a term with `data-hint-align="center"` has it centred under it. The hint
+ * is the term's next sibling. Escape, scrolling and resizing close it.
  */
 export const wireHints = (host, container) => {
   const options = { signal: host.signal };
@@ -38,7 +39,9 @@ export const wireHints = (host, container) => {
     const anchor = term.getBoundingClientRect();
     const { offsetWidth: width, offsetHeight: height } = tip;
     const below = anchor.bottom + GAP + height <= innerHeight - MARGIN;
-    tip.style.left = `${Math.min(Math.max(anchor.left, MARGIN), innerWidth - width - MARGIN)}px`;
+    // Under its left edge, or centred on it with `data-hint-align="center"`.
+    const start = term.dataset.hintAlign === 'center' ? anchor.left + anchor.width / 2 - width / 2 : anchor.left;
+    tip.style.left = `${Math.min(Math.max(start, MARGIN), innerWidth - width - MARGIN)}px`;
     tip.style.top = `${below ? anchor.bottom + GAP : anchor.top - GAP - height}px`;
     tip.dataset.side = below ? 'bottom' : 'top';
     if (!reducedMotion.matches) tip.animate({ opacity: [0, 1], translate: [below ? '0 -0.25rem' : '0 0.25rem', '0 0'] }, { duration: 150, easing: 'ease-out' });

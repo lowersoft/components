@@ -64,3 +64,28 @@ export const splitWords = (root) => {
 
 /** Lowercase without accents, so "turk" finds "Türkiye" and "yil" "Yılmaz". */
 export const foldText = (text) => String(text ?? '').normalize('NFKD').replace(/\p{M}/gu, '').replace(/ı/g, 'i').toLowerCase();
+
+// The textarea's styles that decide where its text falls.
+const MIRRORED = ['boxSizing', 'width', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'fontStyle', 'fontVariant', 'fontWeight', 'fontStretch', 'fontSize', 'fontFamily', 'lineHeight', 'letterSpacing', 'wordSpacing', 'textTransform', 'textIndent', 'tabSize'];
+
+/**
+ * Where the caret, or `index`, stands in a textarea, as a rect on the
+ * screen: a copy of its text up to there, laid out the same off screen,
+ * says where the next character falls.
+ */
+export const caretRectIn = (textarea, index = textarea.selectionStart) => {
+  const style = getComputedStyle(textarea);
+  const mirror = document.createElement('div');
+  for (const name of MIRRORED) mirror.style[name] = style[name];
+  Object.assign(mirror.style, { position: 'absolute', top: '0', left: '-9999px', visibility: 'hidden', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', overflow: 'hidden', height: 'auto' });
+  mirror.textContent = textarea.value.slice(0, index);
+  const marker = Object.assign(document.createElement('span'), { textContent: textarea.value.slice(index, index + 1) || '.' });
+  mirror.append(marker);
+  textarea.parentNode.append(mirror);
+  const box = textarea.getBoundingClientRect();
+  const lineHeight = Number.parseFloat(style.lineHeight) || marker.offsetHeight;
+  const top = box.top + Number.parseFloat(style.borderTopWidth) + marker.offsetTop - textarea.scrollTop;
+  const left = box.left + Number.parseFloat(style.borderLeftWidth) + marker.offsetLeft - textarea.scrollLeft;
+  mirror.remove();
+  return { left, right: left, top, bottom: top + lineHeight, width: 0, height: lineHeight };
+};

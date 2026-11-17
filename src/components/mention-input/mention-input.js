@@ -1,5 +1,5 @@
-import { hideHighlight, moveHighlight } from '../../core/highlight.js';
 import { LwElement } from '../../core/lw-element.js';
+import { closeMentionList, findPeople, mentionListMarkup, mentionListStyles, openMentionList, setMentionActive } from '../../core/mention-list.js';
 import { reducedMotion } from '../../core/motion.js';
 import { hueOf, initialsOf } from '../../core/people.js';
 import '../button/index.js';
@@ -23,9 +23,7 @@ const DEMO_PEOPLE = [
   { id: 'tim', name: 'Tim Berners-Lee', handle: 'timbl' },
 ];
 
-const fold = (text) => text.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase();
-
-/** An initials avatar tinted by the name. */
+/** An initials avatar tinted by the name, for the "Will notify" stack. */
 const avatar = ({ name, avatarUrl }) => {
   const el = Object.assign(document.createElement('span'), { className: 'avatar' });
   if (avatarUrl) el.append(Object.assign(document.createElement('img'), { src: avatarUrl, alt: '' }));
@@ -56,7 +54,7 @@ const avatar = ({ name, avatarUrl }) => {
  * @csspart listbox
  */
 export class LwMentionInput extends FormControl(LwElement) {
-  static styles = styles;
+  static styles = [mentionListStyles, styles];
   static props = {
     people: { type: Object, default: DEMO_PEOPLE },
     placeholder: { default: 'Add a comment… Type @ to mention someone' },
@@ -73,7 +71,7 @@ export class LwMentionInput extends FormControl(LwElement) {
   #formDisabled = false;
 
   render() {
-    return '<div class="box"><div class="editor" part="editor" contenteditable="true" role="textbox" aria-multiline="true" aria-autocomplete="list" aria-controls="listbox" aria-expanded="false"></div><ul class="listbox" id="listbox" role="listbox" part="listbox" aria-label="People" hidden><li class="highlight" role="presentation" aria-hidden="true"></li></ul><div class="footer"><div class="notify" aria-live="polite"><span class="notify-label">Will notify</span><span class="stack"></span><span class="names"></span></div><lw-button class="send" size="sm"></lw-button></div></div>';
+    return `<div class="box"><div class="editor" part="editor" contenteditable="true" role="textbox" aria-multiline="true" aria-autocomplete="list" aria-controls="listbox" aria-expanded="false"></div>${mentionListMarkup()}<div class="footer"><div class="notify" aria-live="polite"><span class="notify-label">Will notify</span><span class="stack"></span><span class="names"></span></div><lw-button class="send" size="sm"></lw-button></div></div>`;
   }
 
   connected() {
@@ -192,36 +190,10 @@ export class LwMentionInput extends FormControl(LwElement) {
 
   // The people whose name or handle starts with what is typed, at the caret.
   #open(query, range) {
-    const term = fold(query);
-    const results = this.#people
-      .filter(({ name, handle }) => !term || fold(handle ?? '').startsWith(term) || fold(name).split(/\s+/).some((part) => part.startsWith(term)))
-      .slice(0, MAX_RESULTS);
-    this.#results = results;
-    const list = this.query('.listbox');
-    const box = list.querySelector('.highlight');
-    hideHighlight(box);
-    const options = results.map((person, index) => {
-      const option = Object.assign(document.createElement('li'), { id: `person-${index}`, role: 'option' });
-      option.dataset.index = index;
-      const text = Object.assign(document.createElement('span'), { className: 'person-text' });
-      text.append(
-        Object.assign(document.createElement('span'), { className: 'person-name', textContent: person.name }),
-        Object.assign(document.createElement('span'), { className: 'person-handle', textContent: `@${person.handle}` }),
-      );
-      option.append(avatar(person), text);
-      return option;
-    });
-    if (options.length === 0) options.push(Object.assign(document.createElement('li'), { className: 'empty', textContent: `No one called “${query}”` }));
-    list.replaceChildren(box, ...options);
-    list.hidden = false;
+    this.#results = findPeople(this.#people, query, MAX_RESULTS);
+    openMentionList(this.query('.listbox'), this.#results, query, range.getBoundingClientRect(), this.query('.box'));
     this.query('.editor').ariaExpanded = 'true';
-    // Under the caret, kept inside the box.
-    const caret = range.getBoundingClientRect();
-    const host = this.query('.box').getBoundingClientRect();
-    const left = Math.min(Math.max(caret.left - host.left - 8, 0), host.width - list.offsetWidth);
-    list.style.left = `${left}px`;
-    list.style.top = `${caret.bottom - host.top + 6}px`;
-    if (results.length) this.#setActive(0);
+    if (this.#results.length) this.#setActive(0);
   }
 
   #close() {
@@ -229,22 +201,17 @@ export class LwMentionInput extends FormControl(LwElement) {
     this.#results = [];
     const list = this.query('.listbox');
     if (list.hidden) return;
-    list.hidden = true;
-    hideHighlight(list.querySelector('.highlight'));
+    closeMentionList(list);
     const editor = this.query('.editor');
     editor.ariaExpanded = 'false';
     editor.removeAttribute('aria-activedescendant');
   }
 
   #setActive(index, scroll = true) {
-    const options = [...this.shadowRoot.querySelectorAll('[role="option"]')];
-    if (options.length === 0) return;
-    this.#active = (index + options.length) % options.length;
-    options.forEach((option, i) => (option.ariaSelected = String(i === this.#active)));
-    const active = options[this.#active];
-    moveHighlight(this.query('.listbox .highlight'), active);
-    if (scroll) active.scrollIntoView({ block: 'nearest' });
-    this.query('.editor').setAttribute('aria-activedescendant', active.id);
+    const active = setMentionActive(this.query('.listbox'), index, scroll);
+    if (!active) return;
+    this.#active = active.index;
+    this.query('.editor').setAttribute('aria-activedescendant', active.option.id);
   }
 
   // "@name" becomes a token for the person, and a space after it.
