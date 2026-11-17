@@ -255,3 +255,4 @@ export * from './components/members-online/index.js';
 export * from './components/trending-threads/index.js';
 export * from './components/profile-posts/index.js';
 export * from './components/forum-stats/index.js';
+export * from './components/member-profile/index.js';
