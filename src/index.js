@@ -257,4 +257,5 @@ export * from './components/profile-posts/index.js';
 export * from './components/forum-stats/index.js';
 export * from './components/member-profile/index.js';
 export * from './components/notable-members/index.js';
+export * from './components/forum-thread/index.js';
 export * from './components/post-composer/index.js';
