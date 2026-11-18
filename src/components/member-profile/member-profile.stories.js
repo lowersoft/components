@@ -39,6 +39,7 @@ const P0UNTER = {
   banner: 'https://raw.githubusercontent.com/lowersoft/.github/refs/heads/main/bg_1.jpg',
   role: 'Admin',
   title: 'Founder',
+  customStatus: { emoji: '🚀', text: 'Shipping the forum, one component at a time' },
   status: 'online',
   now: { text: 'Viewing their own profile' },
   bio: 'Building LowerSoft and the lw components. Bug reports welcome, a repro even more so.',
@@ -70,8 +71,10 @@ export const Default = {
   args: { 'postings-href': '/u/mayachen/postings' },
 };
 
-// p0unter's own page: Edit profile, Edit banner, and a field for their
-// status.
+// p0unter's own page: Edit profile across from the avatar, its pencil alone
+// on a phone; rest the pointer on the banner or the avatar for a pencil
+// that edits it, press the status bubble to edit the status, and use the
+// field for a status post.
 export const OwnProfile = {
   args: {
     member: USER,
@@ -86,8 +89,8 @@ export const Guest = {
   render: (args) => demo(page({ ...args, user: null })),
 };
 
-// A member who has just joined, on their own page: every tab says what will
-// go there.
+// A member who has just joined, on their own page: the bubble offers to
+// set a status, and every tab says what will go there.
 export const NewMember = {
   args: {
     member: JSON.stringify({ name: 'SevenAndAHalf', handle: 'sevenandahalf', href: '/u/sevenandahalf', title: 'New member', seen: ago(4), now: { text: 'Viewing their own profile' }, posts: 1, reactions: 0, points: 1, joined: '2026-10-24' }),
@@ -103,8 +106,16 @@ export const InTheForum = {
   render: (args) => demo(forumFrame(page(args), { current: '/members', user: USER })),
 };
 
-// On a phone the avatar rises into the banner with the buttons across from
-// it, and the counts go two by two.
+// On a phone the avatar rises into the banner with the status beside it,
+// the buttons follow the name, and the counts go two by two.
 export const Narrow = {
+  globals: { viewport: { value: 'mobile2', isRotated: false } },
+};
+
+// p0unter's own page on a phone: Edit profile keeps its corner as its pencil
+// alone, and the pencils over the banner and the avatar always show.
+export const OwnProfileNarrow = {
+  name: 'Own Profile / Narrow',
+  args: { ...OwnProfile.args },
   globals: { viewport: { value: 'mobile2', isRotated: false } },
 };

@@ -21,6 +21,7 @@
   --_line: #{lw.v(color-border)};
   --_muted: #{lw.v(color-muted-foreground)};
   --_hover: color-mix(in oklab, #{lw.v(color-foreground)} 2.5%, var(--_surface));
+  --_bubble: color-mix(in oklab, #{lw.v(color-foreground)} 4%, var(--_surface));
   --_portrait: 5.5rem;
   --_inset: 1.25rem;
 
@@ -71,20 +72,116 @@
   display: inline-flex;
 }
 
-// Narrow, the avatar rises into the banner over the name, and the buttons
-// follow the name.
+// On their own page, a pencil over the banner and over the avatar: a dark
+// glass square that shows as the pointer rests on either, the whole of it
+// pressing it. On a touch screen it always shows.
+.edit-banner,
+.edit-avatar {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgb(0 0 0 / 0);
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: background-color lw.v(duration-fast) lw.v(ease-out);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: rgb(0 0 0 / 0.16);
+
+    .edit-chip {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+
+.edit-banner {
+  &:focus-visible {
+    outline: 2px solid lw.v(color-ring);
+    outline-offset: -2px;
+    border-radius: inherit;
+  }
+
+  .edit-chip {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+}
+
+.edit-avatar {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+
+  &:hover,
+  &:focus-visible {
+    background: rgb(0 0 0 / 0.3);
+  }
+
+  &:focus-visible {
+    outline: 2px solid lw.v(color-ring);
+    outline-offset: 6px;
+  }
+}
+
+.edit-chip {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  box-sizing: border-box;
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: 0.625rem;
+  background: rgb(9 9 11 / 0.55);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+  opacity: 0;
+  scale: 0.9;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+
+  @include lw.motion {
+    transition:
+      opacity lw.v(duration-fast) lw.v(ease-out),
+      scale lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+// The avatar rises into the banner, their status beside it in a thought
+// bubble, and the buttons across from it; the name and all under it
+// follow below the avatar. Narrow, a visitor's buttons follow the name;
+// the member's own Edit profile keeps its corner, as its pencil alone.
 .identity {
   display: grid;
   grid-template:
-    'portrait' auto
-    'who' auto
-    'actions' auto / minmax(0, 1fr);
-  column-gap: 1rem;
+    'portrait bubble' auto
+    'who who' auto
+    'actions actions' auto / auto minmax(0, 1fr);
+  column-gap: 0.75rem;
   padding: 0 var(--_inset);
+
+  &.own {
+    grid-template:
+      'portrait bubble actions' auto
+      'who who who' auto / auto minmax(0, 1fr) auto;
+  }
 }
 
 .portrait {
   position: relative;
+  z-index: 1;
   grid-area: portrait;
   align-self: start;
   justify-self: start;
@@ -102,6 +199,7 @@
   position: absolute;
   right: 4%;
   bottom: 4%;
+  pointer-events: none;
   width: calc(var(--_portrait) * 0.2);
   height: calc(var(--_portrait) * 0.2);
   border-radius: 50%;
@@ -133,6 +231,15 @@
   &:empty {
     display: none;
   }
+
+  .own > & {
+    justify-content: flex-end;
+    padding-top: 0.75rem;
+  }
+}
+
+.edit-full {
+  display: none;
 }
 
 .who {
@@ -141,6 +248,95 @@
   gap: 0.25rem;
   min-width: 0;
   padding-top: 0.75rem;
+}
+
+// Their status, as a thought: a bubble beside the avatar, two rising dots
+// trailing from it to the avatar. On their own page it edits the status.
+.bubble {
+  position: relative;
+  display: flex;
+  grid-area: bubble;
+  align-items: flex-start;
+  align-self: center;
+  justify-self: start;
+  gap: 0.375rem;
+  min-width: 0;
+  max-width: min(100%, 28rem);
+  box-sizing: border-box;
+  margin: 0.75rem 0 0 0.75rem;
+  padding: 0.4375rem 0.75rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: var(--_bubble);
+  font: inherit;
+  font-size: lw.v(text-sm);
+  line-height: 1.4;
+  color: lw.v(color-foreground);
+  text-align: start;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    box-sizing: border-box;
+    border: 1px solid var(--_line);
+    border-radius: 50%;
+    background: var(--_bubble);
+  }
+
+  &::before {
+    top: -0.25rem;
+    left: -0.8125rem;
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+
+  &::after {
+    top: -0.8125rem;
+    left: -1.25rem;
+    width: 0.3125rem;
+    height: 0.3125rem;
+  }
+}
+
+button.bubble {
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: background-color lw.v(duration-fast) lw.v(ease-out);
+  }
+
+  &:hover {
+    --_bubble: color-mix(in oklab, #{lw.v(color-foreground)} 8%, var(--_surface));
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  // None yet: an offer to set one.
+  &[data-empty] {
+    align-items: center;
+    color: var(--_muted);
+  }
+}
+
+.bubble-emoji {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 1.4em;
+}
+
+.bubble-text {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .name-row {
@@ -674,13 +870,17 @@
     height: 10rem;
   }
 
-  .banner-actions {
+  .banner-actions,
+  .edit-banner .edit-chip {
     top: 1rem;
     right: 1rem;
   }
 
-  .identity {
-    grid-template: 'portrait who actions' auto / auto minmax(0, 1fr) auto;
+  .identity,
+  .identity.own {
+    grid-template:
+      'portrait bubble actions' auto
+      'who who who' auto / auto minmax(0, 1fr) auto;
     column-gap: 1.25rem;
   }
 
@@ -690,6 +890,15 @@
 
   .actions {
     justify-content: flex-end;
+  }
+
+  // With room, Edit profile says so.
+  .edit-full {
+    display: inline-flex;
+  }
+
+  .edit-icon {
+    display: none;
   }
 
   .label-long {

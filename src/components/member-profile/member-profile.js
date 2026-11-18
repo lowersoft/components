@@ -8,13 +8,13 @@ import {
   circleCheck,
   flag,
   heart,
-  image,
   link2,
   mapPin,
   messageCircle,
   messageSquareText,
   messagesSquare,
   pencil,
+  plus,
   reply,
 } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
@@ -53,6 +53,7 @@ const ACTIVITY = {
 const DEMO_MEMBER = {
   ...DEMO_MEMBERS.maya,
   title: 'Sync whisperer',
+  customStatus: { emoji: '🧪', text: 'Testing the iOS 18 sync fix, again' },
   now: { text: 'Viewing the thread', label: 'Sync conflicts: last write wins, or merge?', href: '/t/sync-conflicts' },
   website: 'https://mayachen.dev',
   followers: 1204,
@@ -101,12 +102,18 @@ const linkOr = (label, href, className) => (href ? `<a class="${className}" href
 
 /**
  * A member's page on a forum. Its head carries their banner, a large avatar
- * with whether they are around, their name, role and title, what they are
- * doing now, when they joined, where they are and their website, a short
- * bio, and their messages, reaction score, solutions and points. Beside
- * the name a visitor finds Follow, with the member's followers, and
- * Message, and on the banner Report; on their own page the member finds
- * Edit profile, and Edit banner on the banner.
+ * with whether they are around and, beside it in a thought bubble, their
+ * status; under the avatar their name, role and title, what they are doing
+ * now, when they joined, where they are and their website, a short bio, and
+ * their messages, reaction score, solutions and points. Across from the
+ * avatar a visitor finds Follow, with the member's followers, and Message,
+ * and on the banner Report.
+ *
+ * On their own page the member finds Edit profile across from the avatar,
+ * its pencil alone on a phone. Resting the pointer on the banner or the
+ * avatar shows a pencil over it, and the whole of either edits it; on a
+ * touch screen the pencils always show. Their status bubble edits their
+ * status, or offers to set one.
  *
  * Tabs under the head hold the profile posts left for them, with a field to
  * write one when someone is signed in; their latest activity; the threads
@@ -115,7 +122,8 @@ const linkOr = (label, href, className) => (href ? `<a class="${className}" href
  * that member's card. The head lays itself out for the room it has.
  *
  * The member is as `<lw-user-hover-card>` takes one, with `title` a line
- * under the name, `now` what they are doing, `{ text, label?, href? }`,
+ * under the name, `customStatus` their status, `{ text, emoji? }` or the
+ * text alone, `now` what they are doing, `{ text, label?, href? }`,
  * `website`, `followers`, `following`, `points` and `about`, a longer bio.
  * Profile posts are as `<lw-profile-posts>` takes them. Activity is `{ type,
  * title?, href?, excerpt?, time, category? }` with `type` thread, reply,
@@ -135,7 +143,7 @@ const linkOr = (label, href, className) => (href ? `<a class="${className}" href
  * @fires lw-change - Before following or unfollowing; `detail: { followed }` is the new state. Cancelable.
  * @fires lw-message - Message was pressed
  * @fires lw-report - Report was pressed
- * @fires lw-edit - Edit profile or Edit banner was pressed; `detail: { part }`, `profile` or `banner`
+ * @fires lw-edit - On their own page, something to edit was pressed; `detail: { part }`: `profile`, `banner`, `avatar` or `status`
  * @fires lw-post - From the profile posts' field, before a post goes up; `detail: { text }`. Cancelable.
  * @csspart header - The head
  * @csspart tabs - The tab list
@@ -169,12 +177,14 @@ export class LwMemberProfile extends LwElement {
     const tablist = this.query('.tablist');
 
     header.addEventListener('click', (event) => {
-      const button = event.target.closest('lw-button');
+      const button = event.target.closest('lw-button, button');
       if (!button) return;
       if (button.matches('.message')) this.emit('message');
       else if (button.matches('.report')) this.emit('report');
       else if (button.matches('.edit')) this.emit('edit', { part: 'profile' });
       else if (button.matches('.edit-banner')) this.emit('edit', { part: 'banner' });
+      else if (button.matches('.edit-avatar')) this.emit('edit', { part: 'avatar' });
+      else if (button.matches('.bubble')) this.emit('edit', { part: 'status' });
     }, options);
 
     // The follow button's own change, as the profile's.
@@ -265,19 +275,39 @@ export class LwMemberProfile extends LwElement {
       .join('');
 
     const followers = countOf(member.followers);
+    // Their own page: Edit profile, its pencil alone on a phone.
     const actions = own
-      ? `<lw-button class="edit" variant="outline"><span class="button-icon" slot="start">${strokeIcon(pencil, 14)}</span>Edit profile</lw-button>`
+      ? `<lw-button class="edit edit-full" variant="outline"><span class="button-icon" slot="start">${strokeIcon(pencil, 14)}</span>Edit profile</lw-button><lw-button class="edit edit-icon" variant="outline" icon-only><span class="button-icon" slot="start">${strokeIcon(pencil, 16)}</span><span class="visually-hidden">Edit profile</span></lw-button>`
       : `<lw-follow-button class="follow"${followers !== null ? ` count="${followers}"` : ''} count-label="followers"${this.followed ? ' following' : ''}></lw-follow-button><lw-button class="message" variant="outline"><span class="button-icon" slot="start">${strokeIcon(messageCircle, 14)}</span>Message</lw-button>`;
+    // On their own page the whole banner and the whole avatar edit them, a
+    // pencil showing over each.
+    const pencilChip = `<span class="edit-chip" aria-hidden="true">${strokeIcon(pencil, 16)}</span>`;
     const bannerAction = own
-      ? `<lw-button class="edit-banner" variant="secondary" size="sm"><span class="button-icon" slot="start">${strokeIcon(image, 14)}</span>Edit banner</lw-button>`
-      : `<lw-button class="report" variant="secondary" size="sm"><span class="button-icon" slot="start">${strokeIcon(flag, 14)}</span>Report</lw-button>`;
+      ? `<button class="edit-banner" type="button" aria-label="Edit banner">${pencilChip}</button>`
+      : `<div class="banner-actions"><lw-button class="report" variant="secondary" size="sm"><span class="button-icon" slot="start">${strokeIcon(flag, 14)}</span>Report</lw-button></div>`;
+    const avatarAction = own ? `<button class="edit-avatar" type="button" aria-label="Edit avatar">${pencilChip}</button>` : '';
 
-    this.query('.header').innerHTML = `<div class="banner" style="--_hue: ${hue}">${member.banner ? `<img class="banner-photo" src="${escapeHtml(member.banner)}" alt="" decoding="async">` : ''}<div class="banner-actions">${member.name ? bannerAction : ''}</div></div>
-<div class="identity"><span class="portrait">${photo}${status ? `<span class="dot" data-status="${status}"><span class="visually-hidden">${STATUSES[status]}</span></span>` : ''}</span>
-<div class="who"><div class="name-row"><h${level} class="name">${escapeHtml(member.name)}</h${level}>${member.role ? `<span class="role">${escapeHtml(member.role)}</span>` : ''}</div>${member.title ? `<p class="title">${escapeHtml(member.title)}</p>` : ''}${meta ? `<p class="meta">${meta}</p>` : ''}${now}</div>
-<div class="actions">${member.name ? actions : ''}</div></div>
+    this.query('.header').innerHTML = `<div class="banner" style="--_hue: ${hue}">${member.banner ? `<img class="banner-photo" src="${escapeHtml(member.banner)}" alt="" decoding="async">` : ''}${member.name ? bannerAction : ''}</div>
+<div class="identity${own ? ' own' : ''}"><span class="portrait">${photo}${avatarAction}${status ? `<span class="dot" data-status="${status}"><span class="visually-hidden">${STATUSES[status]}</span></span>` : ''}</span>${this.#bubbleMarkup(member, own)}
+<div class="actions">${member.name ? actions : ''}</div>
+<div class="who"><div class="name-row"><h${level} class="name">${escapeHtml(member.name)}</h${level}>${member.role ? `<span class="role">${escapeHtml(member.role)}</span>` : ''}</div>${member.title ? `<p class="title">${escapeHtml(member.title)}</p>` : ''}${meta ? `<p class="meta">${meta}</p>` : ''}${now}</div></div>
 ${member.bio ? `<p class="bio">${escapeHtml(member.bio)}</p>` : ''}${facts ? `<ul class="facts" role="list">${facts}</ul>` : ''}
 ${stats ? `<dl class="stats">${stats}</dl>` : ''}`;
+  }
+
+  // Their status, in a thought bubble beside the avatar. On their own page
+  // it edits the status, or offers to set one.
+  #bubbleMarkup(member, own) {
+    const given = member.customStatus;
+    const text = String((given && typeof given === 'object' ? given.text : given) ?? '').trim();
+    const emoji = given && typeof given === 'object' ? String(given.emoji ?? '').trim() : '';
+    const words = `${emoji ? `<span class="bubble-emoji" aria-hidden="true">${escapeHtml(emoji)}</span>` : ''}<span class="bubble-text">${escapeHtml(text)}</span>`;
+    if (own) {
+      return text
+        ? `<button class="bubble" type="button" title="${escapeHtml(text)}"><span class="visually-hidden">Your status: </span>${words}<span class="visually-hidden">, edit</span></button>`
+        : `<button class="bubble" type="button" data-empty><span class="bubble-emoji" aria-hidden="true">${strokeIcon(plus, 14)}</span><span class="bubble-text">Set a status</span></button>`;
+    }
+    return text ? `<p class="bubble" title="${escapeHtml(text)}"><span class="visually-hidden">Status: </span>${words}</p>` : '';
   }
 
   // The profile posts, with a field to write one for whoever is signed in:
