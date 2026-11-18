@@ -293,73 +293,7 @@ button {
   display: none;
 }
 
-.pages {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.page-list {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.page-link,
-.page-step {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  min-width: 2rem;
-  height: 2rem;
-  box-sizing: border-box;
-  padding: 0 0.5rem;
-  border: 1px solid transparent;
-  border-radius: lw.v(radius-md);
-  background: none;
-  font-size: lw.v(text-sm);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  color: var(--_muted);
-  text-decoration: none;
-  cursor: pointer;
-  outline: none;
-
-  &:hover {
-    background: var(--_hover);
-    color: lw.v(color-foreground);
-  }
-
-  &[aria-current] {
-    background: lw.v(color-primary);
-    color: lw.v(color-primary-foreground);
-  }
-
-  &:focus-visible {
-    @include lw.focus-ring;
-  }
-}
-
-.page-step {
-  border-color: var(--_line);
-  color: lw.v(color-foreground);
-}
-
-.page-gap {
-  padding: 0 0.25rem;
-  color: var(--_muted);
-}
-
-.page-of {
-  margin-left: auto;
-  font-size: lw.v(text-xs);
-  color: var(--_muted);
-}
+@include lw.forum-pager;
 
 // The posts, each a card: its author, then the post.
 .posts {

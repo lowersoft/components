@@ -51,7 +51,7 @@ The sidebar has nine roots. Pick the root by what the component is for, then the
 | Media | Pictures, video and sound | Players, Editors, Galleries, Carousels & Marquees |
 | Feedback | Status, progress and notices | Banners, Status & Progress |
 | Flows | A whole task in an app: signing in, a dialog, a form | Auth, Dialogs, Forms |
-| Forum | Anything made for a forum, whatever its kind: its bars, threads, posts and members | Navigation, Lists, Threads, Widgets, Members |
+| Forum | Anything made for a forum, whatever its kind: its bars, threads, posts, media and members | Navigation, Lists, Threads, Media, Widgets, Members |
 | Sections | Full-width blocks of a marketing page | Heroes, Headlines, Features, How It Works, Pricing (Plans, Tables, Usage & Checkout), Comparisons, Social Proof, FAQs, Contact, Footers |
 | Effects | Decoration behind or around content | Text (Cycling, Interactive, Accents), Backgrounds, Surfaces, Pointer |
 

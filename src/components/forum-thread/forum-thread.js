@@ -1,8 +1,8 @@
 import { writeClipboard } from '../../core/clipboard.js';
 import { escapeHtml } from '../../core/dom.js';
-import { avatarMarkup, countOf, DEMO_MEMBERS, formatWhole, memberMarkup, memberOf, minutesAgo, tickTimes, timeMarkup } from '../../core/forum.js';
+import { avatarMarkup, countOf, DEMO_MEMBERS, formatWhole, memberMarkup, memberOf, minutesAgo, pagerMarkup, tickTimes, timeMarkup } from '../../core/forum.js';
 import { strokeIcon } from '../../core/icons.js';
-import { arrowUpRight, bell, check, chevronLeft, chevronRight, circleCheck, copy, download, eye, file, link2, messageCircle, reply } from '../../core/lucide.js';
+import { arrowUpRight, bell, check, chevronRight, circleCheck, copy, download, eye, file, link2, messageCircle, reply } from '../../core/lucide.js';
 import { LwElement } from '../../core/lw-element.js';
 import { renderMarkdown } from '../../core/markdown.js';
 import { reducedMotion } from '../../core/motion.js';
@@ -152,11 +152,6 @@ const blockMarkup = (block, id, mentions) => {
 
 // The pages to offer: the first, the last, and those around the current one,
 // with a gap where some are left out.
-const pageList = (page, pages) => {
-  const shown = [...new Set([1, page - 1, page, page + 1, pages])].filter((n) => n >= 1 && n <= pages).sort((a, b) => a - b);
-  return shown.flatMap((n, i) => (i && n - shown[i - 1] > 1 ? ['gap', n] : [n]));
-};
-
 /**
  * A thread on a forum. Its head holds the way to it, its title with a label
  * such as a version, who started it and when, its replies and views, Watch,
@@ -448,20 +443,8 @@ export class LwForumThread extends LwElement {
 
   #paintPager() {
     const { page, pages } = this.#pages;
-    const markup = pages > 1 ? this.#pagerMarkup(page, pages) : '';
+    const markup = pages > 1 ? pagerMarkup(page, pages, { href: this.pageHref, label: 'Pages of posts' }) : '';
     for (const pager of this.shadowRoot.querySelectorAll('.pager')) pager.innerHTML = markup;
-  }
-
-  #pagerMarkup(page, pages) {
-    const control = (n, label, className, current = false) => {
-      const href = this.pageHref ? this.pageHref.replace('{page}', String(n)) : '';
-      const attributes = `class="${className}" data-page="${n}"${current ? ' aria-current="page"' : ''}`;
-      return href ? `<a ${attributes} href="${escapeHtml(href)}">${label}</a>` : `<button type="button" ${attributes}>${label}</button>`;
-    };
-    const items = pageList(page, pages).map((n) => (n === 'gap' ? '<li class="page-gap" aria-hidden="true">…</li>' : `<li>${control(n, n, 'page-link', n === page)}</li>`));
-    const prev = page > 1 ? control(page - 1, `${strokeIcon(chevronLeft, 14)}<span class="step-label">Previous</span>`, 'page-step') : '';
-    const next = page < pages ? control(page + 1, `<span class="step-label">Next</span>${strokeIcon(chevronRight, 14)}`, 'page-step') : '';
-    return `<nav class="pages" aria-label="Pages of posts">${prev}<ol class="page-list" role="list">${items.join('')}</ol>${next}<span class="page-of">Page ${page} of ${pages}</span></nav>`;
   }
 
   // Everyone in the thread, whom a reply can mention.

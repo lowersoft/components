@@ -1,0 +1,967 @@
+@use '../../styles' as lw;
+
+:host {
+  --_muted: #{lw.v(color-muted-foreground)};
+  --_line: #{lw.v(color-border)};
+
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  line-height: 1.45;
+  color: lw.v(color-foreground);
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+@include lw.forum-member(1.25rem);
+@include lw.forum-pager;
+
+[hidden] {
+  display: none !important;
+}
+
+button {
+  font-family: inherit;
+}
+
+.button-icon {
+  display: inline-flex;
+}
+
+.root {
+  container: media / inline-size;
+  scroll-margin-top: var(--lw-media-gallery-scroll-margin, 5rem);
+}
+
+// Over the grid: its pages, and across from them Mark viewed and Add media.
+// "Page 2 of 21" waits for the pages at the foot.
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+
+  &:not([data-pages], [data-actions]) {
+    display: none;
+  }
+
+  .page-of {
+    display: none;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.pager-bottom {
+  margin-top: 0.75rem;
+}
+
+.pager:empty {
+  display: none;
+}
+
+.frame {
+  @include lw.frame;
+}
+
+// The head: the filters in use, or All media, and how many show, across
+// from the button that folds the filters open.
+.head {
+  @include lw.frame-head(0.5rem);
+
+  flex-wrap: wrap;
+}
+
+.summary {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 0.625rem;
+  min-width: 0;
+}
+
+.summary-all {
+  font-size: lw.v(text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.summary-count {
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--_muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 1.75rem;
+  padding: 0 0.5rem 0 0.625rem;
+  border: 1px solid var(--_line);
+  border-radius: 999px;
+  background: lw.v(color-background);
+  font-size: lw.v(text-xs);
+  font-weight: 500;
+  color: lw.v(color-foreground);
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-fast) lw.v(ease-out),
+      border-color lw.v(duration-fast) lw.v(ease-out);
+  }
+
+  svg {
+    color: var(--_muted);
+  }
+
+  &:hover {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 25%, var(--_line));
+
+    svg {
+      color: lw.v(color-foreground);
+    }
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+}
+
+.filters-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2rem;
+  padding: 0 0.5rem 0 0.625rem;
+  border: 1px solid var(--_line);
+  border-radius: lw.v(radius-md);
+  background: lw.v(color-background);
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  color: lw.v(color-foreground);
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: background-color lw.v(duration-fast) lw.v(ease-out);
+  }
+
+  &:hover,
+  &[aria-expanded='true'] {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 5%, #{lw.v(color-background)});
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+  }
+
+  > svg {
+    color: var(--_muted);
+  }
+}
+
+.filters-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: lw.v(color-primary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: lw.v(color-primary-foreground);
+}
+
+.chevron {
+  display: inline-flex;
+  color: var(--_muted);
+
+  @include lw.motion {
+    transition: rotate lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  [aria-expanded='true'] > & {
+    rotate: 180deg;
+  }
+}
+
+// The filters fold open from the head, laid out at their full height and
+// clipped, so they never squeeze.
+.fold {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  @include lw.motion {
+    transition: grid-template-rows 280ms lw.v(ease-out);
+  }
+
+  &[data-open] {
+    grid-template-rows: 1fr;
+  }
+}
+
+.fold-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  margin: 0 0 0.5rem;
+  padding: 0.875rem;
+  border: 1px solid var(--_line);
+  border-radius: 1rem;
+  background: lw.v(color-background);
+}
+
+.filter-actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+// The thumbnails: two across on a phone, three, four, then six.
+.card {
+  @include lw.frame-card;
+
+  container: media-grid / inline-size;
+}
+
+.grid {
+  --_columns: 2;
+
+  display: grid;
+  grid-template-columns: repeat(var(--_columns), minmax(0, 1fr));
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0.375rem;
+  list-style: none;
+}
+
+@container media-grid (width >= 26rem) {
+  .grid {
+    --_columns: 3;
+  }
+}
+
+@container media-grid (width >= 46rem) {
+  .grid {
+    --_columns: 4;
+  }
+}
+
+@container media-grid (width >= 72rem) {
+  .grid {
+    --_columns: 6;
+  }
+}
+
+// A thumbnail: its picture, its marks in the corners, and over its foot
+// its title, who added it and when, and its counts. The title's link covers
+// the whole of it; the name stands over the link.
+.tile {
+  position: relative;
+  display: grid;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: calc(1rem - 0.375rem - 1px);
+  background: lw.v(color-muted);
+  isolation: isolate;
+  color: #fff;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+
+  &:has(.tile-link:focus-visible) {
+    outline: 2px solid lw.v(color-ring);
+    outline-offset: 2px;
+  }
+}
+
+.thumb-box {
+  display: block;
+  overflow: hidden;
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  @include lw.motion {
+    transition: scale 500ms lw.v(ease-out);
+  }
+
+  .tile:hover & {
+    scale: 1.05;
+  }
+}
+
+.broken {
+  display: none;
+  place-items: center;
+  height: 100%;
+  color: var(--_muted);
+}
+
+.tile[data-broken] {
+  .thumb {
+    display: none;
+  }
+
+  .broken {
+    display: grid;
+  }
+}
+
+.new,
+.type {
+  position: absolute;
+  top: 0.5rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  height: 1.375rem;
+  padding: 0 0.4375rem;
+  box-sizing: border-box;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.new {
+  left: 0.5rem;
+  background: lw.v(color-primary);
+  color: lw.v(color-primary-foreground);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+}
+
+.type {
+  right: 0.5rem;
+  background: rgb(0 0 0 / 0.55);
+  color: #fff;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.duration {
+  font-variant-numeric: tabular-nums;
+}
+
+// Over the thumbnail's foot, on a shade that keeps the words readable over
+// any picture; it rises into view with the pointer or the focus, and
+// always shows on a touch screen.
+.overlay {
+  z-index: 1;
+  display: grid;
+  align-content: end;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 2.5rem 0.625rem 0.5rem;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.78), rgb(0 0 0 / 0.45) 55%, transparent);
+  opacity: 0;
+  translate: 0 0.375rem;
+
+  @include lw.motion {
+    transition:
+      opacity lw.v(duration-fast) lw.v(ease-out),
+      translate lw.v(duration-normal) lw.v(ease-out);
+  }
+
+  .tile:is(:hover, :focus-within) & {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.tile-link {
+  overflow: hidden;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  outline: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.tile-by,
+.tile-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-width: 0;
+  margin: 0;
+  font-size: lw.v(text-xs);
+  color: rgb(255 255 255 / 0.78);
+  white-space: nowrap;
+}
+
+.tile-by {
+  .member {
+    color: #fff;
+  }
+
+  lw-user-hover-card {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .time {
+    flex: none;
+  }
+
+  // On a phone the thumbnails are small: the title and the counts are
+  // enough.
+  @container media-grid (width < 26rem) {
+    display: none;
+  }
+}
+
+.tile-stats {
+  gap: 0.625rem;
+}
+
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-variant-numeric: tabular-nums;
+
+  &[data-none] {
+    opacity: 0.75;
+  }
+}
+
+.sep {
+  opacity: 0.7;
+}
+
+// Nothing to show: none yet, or none the filters keep.
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 0.375rem;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.empty-icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.375rem;
+  border-radius: 50%;
+  background: lw.v(color-muted);
+  color: var(--_muted);
+}
+
+.empty-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.empty-text {
+  margin: 0 0 0.5rem;
+  color: var(--_muted);
+}
+
+@container media (width >= 40rem) {
+  .filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    align-items: end;
+  }
+}
+
+// Narrow, Previous and Next keep their arrows alone.
+@container media (width < 30rem) {
+  .step-label {
+    @include lw.visually-hidden;
+  }
+
+  .page-of {
+    display: none;
+  }
+}
+
+// The viewer: the media over the darkened page, its place in the media
+// shown and its page across the top, its title, who added it, when and
+// where, and its counts along the foot. Dark whatever the theme, so the
+// media keeps its colours.
+.viewer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: none;
+  font-family: lw.v(font-sans);
+  color: #fff;
+  outline: none;
+
+  &[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  &::backdrop {
+    background: none;
+  }
+
+  .member {
+    color: #fff;
+  }
+}
+
+.viewer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgb(9 9 11 / 0.96);
+  opacity: 0;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+
+  @include lw.motion {
+    transition: opacity 180ms lw.v(ease-out);
+  }
+}
+
+.viewer-top,
+.viewer-stage,
+.viewer-info {
+  opacity: 0;
+
+  @include lw.motion {
+    transition:
+      opacity 180ms lw.v(ease-out),
+      scale 260ms lw.v(ease-out);
+  }
+}
+
+.viewer-stage {
+  scale: 0.97;
+}
+
+.viewer[data-open] {
+  .viewer-backdrop,
+  .viewer-top,
+  .viewer-stage,
+  .viewer-info {
+    opacity: 1;
+  }
+
+  .viewer-stage {
+    scale: 1;
+  }
+}
+
+.viewer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) 0.75rem max(1rem, env(safe-area-inset-left));
+}
+
+.viewer-count {
+  font-size: lw.v(text-sm);
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.65);
+}
+
+.viewer-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// The viewer's controls: round, on a light veil over the dark.
+@mixin viewer-control {
+  border: 0;
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+
+  @include lw.motion {
+    transition: background-color lw.v(duration-fast) ease-out;
+  }
+
+  &:hover {
+    background: rgb(255 255 255 / 0.2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgb(255 255 255 / 0.75);
+    outline-offset: 2px;
+  }
+}
+
+.viewer-page {
+  @include viewer-control;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2.5rem;
+  padding: 0 0.875rem 0 1rem;
+  border-radius: 999px;
+  font-size: lw.v(text-sm);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.viewer-close,
+.viewer-step {
+  @include viewer-control;
+
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.viewer-step {
+  width: 2.75rem;
+  height: 2.75rem;
+
+  &:disabled {
+    opacity: 0.25;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+.viewer-stage {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 0;
+  padding: 0 max(0.75rem, env(safe-area-inset-right)) 0 max(0.75rem, env(safe-area-inset-left));
+  touch-action: pan-y;
+}
+
+.viewer-media {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  min-width: 0;
+  container-type: size;
+
+  > * {
+    max-width: 100%;
+  }
+}
+
+.viewer-image {
+  position: relative;
+  display: grid;
+  max-height: 100cqh;
+  overflow: hidden;
+  border-radius: 0.5rem;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+
+  &[data-sized] {
+    width: min(100cqw, 100cqh * var(--_ratio));
+    aspect-ratio: var(--_ratio);
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.viewer-full,
+.viewer-placeholder {
+  display: block;
+  max-width: 100cqw;
+  max-height: 100cqh;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.viewer-placeholder {
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+  object-fit: cover;
+  filter: blur(16px) brightness(0.8);
+  scale: 1.04;
+}
+
+.viewer-full {
+  opacity: 0;
+
+  @include lw.motion {
+    transition: opacity 220ms ease-out;
+  }
+
+  [data-loaded] > & {
+    opacity: 1;
+  }
+}
+
+// Loaded, the full size takes the place the thumbnail kept.
+.viewer-image[data-loaded] .viewer-placeholder {
+  display: none;
+}
+
+.viewer-image[data-broken] {
+  &::after {
+    content: 'This image could not be loaded';
+    display: grid;
+    place-items: center;
+    grid-area: 1 / 1;
+    padding: 2rem;
+    font-size: lw.v(text-sm);
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .viewer-full {
+    display: none;
+  }
+}
+
+.viewer-media lw-video-player {
+  width: min(100cqw, 100cqh * 16 / 9, 80rem);
+}
+
+.viewer-media lw-audio-player-card {
+  width: min(100cqw, 28rem);
+}
+
+.viewer-embed {
+  position: relative;
+  display: grid;
+  width: min(100cqw, 100cqh * 16 / 9, 56rem);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: #18181b;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.viewer-embed-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.3;
+  filter: blur(8px);
+  scale: 1.06;
+}
+
+// Over the faded poster, which its opacity lifts into a layer of its own.
+.viewer-embed-text {
+  z-index: 1;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.625rem;
+  padding: 1.5rem;
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: lw.v(text-md);
+    font-weight: 500;
+  }
+}
+
+.viewer-embed-icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.12);
+}
+
+.viewer-embed-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  background: #fff;
+  font-size: lw.v(text-sm);
+  font-weight: 600;
+  color: #09090b;
+  text-decoration: none;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid rgb(255 255 255 / 0.75);
+    outline-offset: 2px;
+  }
+}
+
+.viewer-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  width: min(100%, 72rem);
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 0.875rem max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+}
+
+.viewer-text {
+  display: grid;
+  flex: 1 1 20rem;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.viewer-title {
+  margin: 0;
+  font-size: lw.v(text-md);
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.viewer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+  font-size: lw.v(text-xs);
+  color: rgb(255 255 255 / 0.65);
+
+  a:not(.member) {
+    color: #fff;
+    text-decoration: none;
+    text-underline-offset: 0.2em;
+    outline: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgb(255 255 255 / 0.75);
+      outline-offset: 2px;
+      border-radius: 0.125rem;
+    }
+  }
+}
+
+.viewer-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.viewer-description {
+  display: -webkit-box;
+  margin: 0.125rem 0 0;
+  overflow: hidden;
+  font-size: lw.v(text-sm);
+  color: rgb(255 255 255 / 0.78);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.viewer-stats {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  font-size: lw.v(text-sm);
+  color: rgb(255 255 255 / 0.85);
+
+  .stat svg {
+    color: rgb(255 255 255 / 0.6);
+  }
+}
+
+// On a phone a swipe steps through the media; the buttons step aside.
+@media (width < 40rem) {
+  .viewer-stage {
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: 0;
+  }
+
+  .viewer-step {
+    display: none;
+  }
+
+  .viewer-image {
+    border-radius: 0;
+  }
+
+  .viewer-page span {
+    @include lw.visually-hidden;
+  }
+
+  .viewer-page {
+    width: 2.5rem;
+    padding: 0;
+    justify-content: center;
+  }
+}

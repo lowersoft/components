@@ -1,0 +1,123 @@
+@use '../../styles' as lw;
+
+:host {
+  display: block;
+  font-family: lw.v(font-sans);
+  font-size: lw.v(text-sm);
+  line-height: 1.45;
+  color: lw.v(color-foreground);
+}
+
+.visually-hidden {
+  @include lw.visually-hidden;
+}
+
+.frame {
+  @include lw.frame;
+}
+
+.head {
+  @include lw.frame-head;
+}
+
+.card {
+  @include lw.frame-card;
+}
+
+.empty {
+  margin: 0;
+  padding: 0.875rem;
+  color: lw.v(color-muted-foreground);
+}
+
+// The categories, then the albums, a hairline between them.
+.list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0.375rem;
+  list-style: none;
+
+  & + & {
+    border-top: 1px solid lw.v(color-border);
+  }
+}
+
+// A page: an icon or a category's square, the label and how much it holds.
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border-radius: lw.v(radius-md);
+  font-weight: 500;
+  color: lw.v(color-muted-foreground);
+  text-decoration: none;
+  outline: none;
+
+  @include lw.motion {
+    transition:
+      background-color lw.v(duration-fast) lw.v(ease-out),
+      color lw.v(duration-fast) lw.v(ease-out);
+  }
+
+  &:hover {
+    background: color-mix(in oklab, #{lw.v(color-foreground)} 4%, #{lw.v(color-background)});
+    color: lw.v(color-foreground);
+  }
+
+  &[data-current] {
+    background: lw.v(color-muted);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, #{lw.v(color-foreground)} 5%, transparent);
+    color: lw.v(color-foreground);
+  }
+
+  &:focus-visible {
+    @include lw.focus-ring;
+
+    outline-offset: -2px;
+  }
+}
+
+.icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+}
+
+.swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 3px;
+
+  @include lw.hue-swatch;
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count {
+  flex: none;
+  min-width: 1.75rem;
+  padding: 0.0625rem 0.4375rem;
+  box-sizing: border-box;
+  border: 1px solid lw.v(color-border);
+  border-radius: 999px;
+  font-size: lw.v(text-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: lw.v(color-muted-foreground);
+
+  [data-current] > & {
+    border-color: color-mix(in oklab, #{lw.v(color-foreground)} 12%, transparent);
+    color: lw.v(color-foreground);
+  }
+}

@@ -26,7 +26,7 @@ export default {
           'Media', ['Players', 'Editors', 'Galleries', 'Carousels & Marquees'],
           'Feedback', ['Banners', 'Status & Progress'],
           'Flows', ['Auth', 'Dialogs', 'Forms'],
-          'Forum', ['Navigation', 'Lists', 'Threads', 'Widgets', 'Members'],
+          'Forum', ['Navigation', 'Lists', 'Threads', 'Media', 'Widgets', 'Members'],
           'Sections', ['Heroes', 'Headlines', 'Features', 'How It Works', 'Pricing', ['Plans', 'Tables', 'Usage & Checkout'], 'Comparisons', 'Social Proof', 'FAQs', 'Contact', 'Footers'],
           'Effects', ['Text', ['Cycling', 'Interactive', 'Accents'], 'Backgrounds', 'Surfaces', 'Pointer'],
         ],

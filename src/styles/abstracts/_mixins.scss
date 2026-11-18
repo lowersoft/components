@@ -208,6 +208,80 @@ $hue-tint: light-dark(oklch(0.62 0.13 var(--_hue)), oklch(0.74 0.12 var(--_hue))
   }
 }
 
+/// Pages to pick from, as `pagerMarkup()` in `core/forum.js` writes them:
+/// Previous and Next outlined, the pages bare, the page you are on filled,
+/// and "Page 2 of 4" at the far end.
+@mixin forum-pager {
+  .pages {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .page-list {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .page-link,
+  .page-step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 2rem;
+    height: 2rem;
+    box-sizing: border-box;
+    padding: 0 0.5rem;
+    border: 1px solid transparent;
+    border-radius: fn.v(radius-md);
+    background: none;
+    font-family: inherit;
+    font-size: fn.v(text-sm);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: fn.v(color-muted-foreground);
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+
+    &:hover {
+      background: color-mix(in oklab, #{fn.v(color-foreground)} 6%, transparent);
+      color: fn.v(color-foreground);
+    }
+
+    &[aria-current] {
+      background: fn.v(color-primary);
+      color: fn.v(color-primary-foreground);
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+
+  .page-step {
+    border-color: fn.v(color-border);
+    color: fn.v(color-foreground);
+  }
+
+  .page-gap {
+    padding: 0 0.25rem;
+    color: fn.v(color-muted-foreground);
+  }
+
+  .page-of {
+    margin-left: auto;
+    font-size: fn.v(text-xs);
+    color: fn.v(color-muted-foreground);
+  }
+}
+
 /// Markdown from `core/markdown.js`, set as a post's text: the forum
 /// thread's replies and the post composer's preview.
 @mixin markdown {

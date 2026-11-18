@@ -260,3 +260,6 @@ export * from './components/notable-members/index.js';
 export * from './components/forum-thread/index.js';
 export * from './components/post-composer/index.js';
 export * from './components/forum-nav-sidebar/index.js';
+export * from './components/media-gallery/index.js';
+export * from './components/media-navigation/index.js';
+export * from './components/trending-media/index.js';
