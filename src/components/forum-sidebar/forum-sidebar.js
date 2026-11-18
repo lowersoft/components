@@ -178,6 +178,15 @@ const sectionMarkup = (section, index) => {
  * the start of the bar opens the drawer instead, and the focus goes back to
  * the bar as it closes.
  *
+ * With `joined` as well, the two take one frame once the page scrolls,
+ * instead of floating clear of the window's edges: the sidebar meets the
+ * window's left, top and bottom edges and the bar its top and right, one
+ * sheet of glass round their panes, which keep a gap between them. A line
+ * runs along the bar's foot and turns down the sidebar's edge on a round,
+ * the page's corner. While it stands beside the page the bar leaves the
+ * forum's sections to it, and shows them again once it closes. Alone, it
+ * meets the edges all the same, the line down its edge.
+ *
  * @attr {Array<object>} items - The forum's pages, in order (JSON)
  * @attr {Array<object>} sections - The lists under them, such as categories and tags (JSON)
  * @attr {string} current - Path of the page you are on; the address bar's by default
@@ -185,6 +194,7 @@ const sectionMarkup = (section, index) => {
  * @attr {string} version - The forum software's name and version, at the foot; none when empty
  * @attr {string} company - The owner in the copyright line at the foot, after the year; none when empty
  * @attr {boolean} navbar - Stands under `<lw-forum-navbar sidebar>`, the first before it in the page, and rises as the bar shrinks
+ * @attr {boolean} joined - Takes one frame with the navbar once the page scrolls, flush with the window's edges, and joins the navbar to it; beside the page only
  * @attr {string} label - Accessible name of the navigation
  * @fires lw-toggle - Its buttons closed or opened the sidebar; `detail: { open }`
  * @csspart frame - The sidebar's outer frame
@@ -199,6 +209,7 @@ export class LwForumSidebar extends LwElement {
     version: { default: 'LowerForum 1.4.2' },
     company: { default: 'Lowersoft Inc.' },
     navbar: { type: Boolean, reflect: true },
+    joined: { type: Boolean, reflect: true },
     label: { default: 'Forum' },
   };
 
@@ -304,7 +315,7 @@ export class LwForumSidebar extends LwElement {
     if (['items', 'sections', 'current'].some((name) => changed.has(name))) this.#paintCurrent();
     if (changed.has('label')) this.query('.scroller').ariaLabel = this.query('.drawer').ariaLabel = this.label;
     if (changed.has('navbar')) this.#keepShape();
-    if (changed.has('closed')) this.#paintLayout();
+    if (changed.has('closed') || changed.has('joined')) this.#paintLayout();
     if (changed.has('version') || changed.has('company')) this.#paintCredits();
   }
 
@@ -332,7 +343,7 @@ export class LwForumSidebar extends LwElement {
     this.signal.addEventListener('abort', () => controller.abort(), { once: true });
 
     const navbar = this.navbar ? this.#navbar() : null;
-    if (this.#bar && this.#bar !== navbar) this.#bar.sidebar = false;
+    if (this.#bar && this.#bar !== navbar) Object.assign(this.#bar, { sidebar: false, joined: false });
     this.#bar = navbar;
     this.#paintLayout();
     if (navbar) {
@@ -340,7 +351,16 @@ export class LwForumSidebar extends LwElement {
       const follow = () => this.toggleAttribute('data-scrolled', navbar.matches('[data-scrolled], [data-searching]'));
       const observer = new MutationObserver(follow);
       observer.observe(navbar, { attributes: true, attributeFilter: ['data-scrolled', 'data-searching'] });
-      controller.signal.addEventListener('abort', () => observer.disconnect());
+      // Joined, the line down the sidebar's edge starts where the bar's
+      // frame ends, which grows down for its search.
+      const frame = navbar.shadowRoot?.querySelector('[part~="frame"]');
+      const foot = new ResizeObserver(() => this.style.setProperty('--_bar-foot', `${frame.getBoundingClientRect().bottom}px`));
+      if (frame) foot.observe(frame);
+      controller.signal.addEventListener('abort', () => {
+        observer.disconnect();
+        foot.disconnect();
+        this.style.removeProperty('--_bar-foot');
+      });
       follow();
       return;
     }
@@ -473,12 +493,13 @@ export class LwForumSidebar extends LwElement {
   // there only in the open drawer, and the button that opens it stands at
   // the top of the page, unless the navbar has its own. A closed sidebar
   // gives the navbar its room back; narrow, the navbar keeps its button.
+  // Joined, the navbar is too.
   #paintLayout() {
     const wide = !this.#drawn;
     this.toggleAttribute('data-bar', Boolean(this.#bar));
     this.query('.panel').inert = wide ? Boolean(this.closed) : !this.#open;
     this.query('.opener').inert = wide ? !this.closed : Boolean(this.#bar);
-    if (this.#bar) this.#bar.sidebar = !wide || !this.closed;
+    if (this.#bar) Object.assign(this.#bar, { sidebar: !wide || !this.closed, joined: Boolean(this.joined) });
   }
 
   #paintCredits() {

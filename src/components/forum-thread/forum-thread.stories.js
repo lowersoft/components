@@ -1,6 +1,5 @@
 import { attributes } from '../../../.storybook/attributes.js';
-import '../forum-navbar/index.js';
-import '../forum-sidebar/index.js';
+import { forumFrame } from '../../../.storybook/forum-frame.js';
 import '../forum-stats/index.js';
 import '../members-online/index.js';
 import '../profile-posts/index.js';
@@ -12,17 +11,18 @@ const STYLE = `<style>
   .thread-demo.with-widgets { width: min(84rem, 100%); }
   .with-widgets .columns { display: grid; gap: 1rem; align-items: start; }
   .with-widgets aside { display: grid; gap: 1rem; }
-  .forum-demo { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 100dvh; }
-  .forum-demo .forum-page { min-width: 0; }
+  /* Beside the posts the authors stop under the navbar: floating over the
+     page, or from 64rem joined with the sidebar, flush with the window's top. */
+  lw-forum-nav-sidebar lw-forum-thread { --lw-forum-thread-sticky-top: 5rem; }
   @media (width >= 64rem) {
-    .forum-demo { grid-template-columns: auto minmax(0, 1fr); }
-    .forum-demo .thread-demo { padding-inline: 2.5rem; }
+    lw-forum-nav-sidebar .thread-demo { padding-inline: 2.5rem; }
+    lw-forum-nav-sidebar lw-forum-thread { --lw-forum-thread-sticky-top: 4.5rem; }
   }
   @media (width >= 72rem) {
     .with-widgets .columns { grid-template-columns: minmax(0, 1fr) 20rem; gap: 1.5rem; }
   }
   @media (72rem <= width < 84rem) {
-    .forum-demo .with-widgets .columns { grid-template-columns: minmax(0, 1fr); }
+    lw-forum-nav-sidebar .with-widgets .columns { grid-template-columns: minmax(0, 1fr); }
   }
 </style>`;
 
@@ -45,22 +45,18 @@ const demo = (markup) => {
   return root;
 };
 
-const page = (args, style = '') => `<main class="thread-demo"><lw-forum-thread ${attributes(args)}${style ? ` style="${style}"` : ''}></lw-forum-thread></main>`;
+const page = (args) => `<main class="thread-demo"><lw-forum-thread ${attributes(args)}></lw-forum-thread></main>`;
 
 // The member the forum navbar's Signed In story shows.
 const USER = JSON.stringify({ name: 'p0unter', handle: 'p0unter', href: '/u/p0unter', avatar: 'https://avatars.githubusercontent.com/u/138019503?v=4', role: 'Admin', status: 'online' });
 
 // The posts with the forum's widgets beside them: who is online, what is
 // trending, the latest profile posts and the forum's statistics.
-const withWidgets = (args, style = '') =>
-  `<main class="thread-demo with-widgets"><div class="columns"><lw-forum-thread ${attributes(args)}${style ? ` style="${style}"` : ''}></lw-forum-thread><aside aria-label="Around the forum"><lw-members-online></lw-members-online><lw-trending-threads></lw-trending-threads><lw-profile-posts user="${USER.replaceAll('"', '&quot;')}"></lw-profile-posts><lw-forum-stats></lw-forum-stats></aside></div></main>`;
+const withWidgets = (args) =>
+  `<main class="thread-demo with-widgets"><div class="columns"><lw-forum-thread ${attributes(args)}></lw-forum-thread><aside aria-label="Around the forum"><lw-members-online></lw-members-online><lw-trending-threads></lw-trending-threads><lw-profile-posts user="${USER.replaceAll('"', '&quot;')}"></lw-profile-posts><lw-forum-stats></lw-forum-stats></aside></div></main>`;
 
-// Under the forum navbar, signed in, and beside the forum sidebar.
-const inTheForum = (content) =>
-  demo(`<lw-forum-navbar ${attributes({ sidebar: true, current: '/c/lowersync', user: USER })}></lw-forum-navbar><div class="forum-demo"><lw-forum-sidebar ${attributes({ navbar: true, current: '/c/lowersync' })}></lw-forum-sidebar><div class="forum-page">${content}</div></div>`);
-
-// Beside the posts the authors stop under the navbar.
-const UNDER_NAVBAR = '--lw-forum-thread-sticky-top: 5rem';
+// In Forum Nav & Sidebar, signed in, on the thread's category.
+const inTheForum = (content) => demo(forumFrame(content, { current: '/c/lowersync', user: USER }));
 
 export default {
   title: 'Forum/Threads/Forum Thread',
@@ -110,10 +106,10 @@ export const Paged = {
   args: { page: 2, pages: 4, 'page-href': '/r/lowersync-recovery-kit/discussion/page-{page}' },
 };
 
-// With its head, in the forum, beside the forum sidebar and under the navbar.
+// With its head, in the forum: in Forum Nav & Sidebar.
 export const InTheForum = {
   args: { headless: false },
-  render: (args) => inTheForum(page(args, UNDER_NAVBAR)),
+  render: (args) => inTheForum(page(args)),
 };
 
 // The posts with the forum's widgets beside them; narrower than 72rem the
@@ -123,11 +119,11 @@ export const PostsOnlyWithWidgets = {
   render: (args) => demo(withWidgets(args)),
 };
 
-// The same in the forum: under the navbar, beside the sidebar, the widgets
-// keeping their column from 84rem.
+// The same in the forum, in Forum Nav & Sidebar, the widgets keeping their
+// column from 84rem.
 export const PostsOnlyWithWidgetsInTheForum = {
   name: 'Posts Only / With Widgets & In Forum',
-  render: (args) => inTheForum(withWidgets(args, UNDER_NAVBAR)),
+  render: (args) => inTheForum(withWidgets(args)),
 };
 
 // On a phone each post's author stands over it.

@@ -163,6 +163,9 @@ export class LwFloatingNavbar extends LwElement {
   #hoverOpenedAt = -Infinity;
   // A menu closed by a click stays closed while the pointer stays on its trigger.
   #clickClosed = -1;
+  // What moves the pill with the layout, and the items on the bar it watches.
+  #resize = null;
+  #watched = [];
 
   render() {
     return `<div class="shell">
@@ -258,10 +261,14 @@ export class LwFloatingNavbar extends LwElement {
     });
     resize.observe(this);
     // The links can move on their own too, as the forum navbar's do while
-    // its brand loads or its bar shrinks.
+    // its brand loads or its bar shrinks, and a layout can leave some off the
+    // bar or bring them back, as the forum navbar does beside its sidebar.
     resize.observe(this.query('.nav'));
+    this.#resize = resize;
+    this.#watchItems();
     this.signal.addEventListener('abort', () => {
       resize.disconnect();
+      this.#resize = null;
       clearTimeout(this.#openTimer);
       clearTimeout(this.#closeTimer);
     });
@@ -307,6 +314,16 @@ export class LwFloatingNavbar extends LwElement {
       .join('');
     this.query('.viewport').innerHTML = items.map((item, index) => (hasMenu(item) ? panelMarkup(item, index) : '')).join('');
     this.query('.m-list').innerHTML = items.map(mobileMarkup).join('');
+    this.#watchItems();
+  }
+
+  // Each item on the bar, so the pill follows one that shows or hides.
+  #watchItems() {
+    const resize = this.#resize;
+    if (!resize) return;
+    for (const item of this.#watched) resize.unobserve(item);
+    this.#watched = [...this.query('.list').children];
+    for (const item of this.#watched) resize.observe(item);
   }
 
   #paintBrand() {
@@ -532,7 +549,8 @@ export class LwFloatingNavbar extends LwElement {
   #listKey(event) {
     const item = event.target.closest('.item');
     if (!item) return;
-    const items = [...this.shadowRoot.querySelectorAll('.list .item')];
+    // Only the items that show: a layout may leave some off the bar.
+    const items = [...this.shadowRoot.querySelectorAll('.list .item')].filter((entry) => entry.checkVisibility());
     const at = items.indexOf(item);
     const isTrigger = item.classList.contains('trigger');
     const index = Number(item.dataset.index);

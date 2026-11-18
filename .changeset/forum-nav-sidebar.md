@@ -1,0 +1,5 @@
+---
+'@lowersoft/lw': minor
+---
+
+Add `<lw-forum-nav-sidebar>`: a forum's navbar and sidebar round its page, joined. Put `<lw-forum-navbar>` in its `navbar` slot, `<lw-forum-sidebar>` in its `sidebar` slot and the page, with a footer if any, in the default slot; it lays them out and joins them. Once the page scrolls, on a window 64rem or wider, the two take one frame flush with the window's edges instead of floating clear of them: the sidebar meets the window's left, top and bottom edges and the bar its top and right, one sheet of frosted glass round their panes, which keep a gap between them, and a line along the bar's foot turns down the sidebar's edge on a round, the page's corner, drawing as the two settle and clearing at once as they dock again. The corner moves down as the bar grows to hold its search, and slides out with the sidebar as it closes, leaving the line across the window's width. The bar's forum sections, such as Latest, Media and Members, show only while the sidebar is closed, fading back in as it slides out. `joined` on `<lw-forum-sidebar navbar>` does the same without it, and sets `joined` on the navbar.

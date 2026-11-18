@@ -1,6 +1,5 @@
 import { attributes } from '../../../.storybook/attributes.js';
-import '../forum-navbar/index.js';
-import '../forum-sidebar/index.js';
+import { forumFrame } from '../../../.storybook/forum-frame.js';
 import '../forum-stats/index.js';
 import '../members-online/index.js';
 import '../profile-posts/index.js';
@@ -11,7 +10,6 @@ const STYLE = `<style>
   .categories-demo { box-sizing: border-box; width: min(60rem, 100%); margin: 0 auto; padding: 2.5rem 1.5rem 4rem; font-family: system-ui, sans-serif; color: var(--lw-color-foreground); }
   .categories-demo .eyebrow { margin: 0; font-size: 0.875rem; color: var(--lw-color-muted-foreground); }
   .categories-demo h1 { margin: 0.5rem 0 2rem; font-size: clamp(1.75rem, 5vw, 2.5rem); line-height: 1.1; letter-spacing: -0.03em; }
-  .forum-demo { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 100dvh; }
   .categories-demo.with-widgets { width: min(84rem, 100%); }
   .with-widgets .columns { display: grid; gap: 1rem; }
   .with-widgets aside { display: grid; gap: 1rem; align-content: start; }
@@ -19,12 +17,10 @@ const STYLE = `<style>
     .with-widgets .columns { grid-template-columns: minmax(0, 1fr) 20rem; gap: 1.5rem; }
   }
   @media (72rem <= width < 84rem) {
-    .forum-demo .with-widgets .columns { grid-template-columns: minmax(0, 1fr); }
+    lw-forum-nav-sidebar .with-widgets .columns { grid-template-columns: minmax(0, 1fr); }
   }
-  .forum-demo .forum-page { min-width: 0; }
   @media (width >= 64rem) {
-    .forum-demo { grid-template-columns: auto minmax(0, 1fr); }
-    .forum-demo .categories-demo { padding-inline: 2.5rem; }
+    lw-forum-nav-sidebar .categories-demo { padding-inline: 2.5rem; }
   }
 </style>`;
 
@@ -69,11 +65,11 @@ export default {
 // the latest thread, then the counts, stack under the names.
 export const Default = {};
 
-// The forum's page of categories, with the forum navbar over it and the
-// forum sidebar beside it, open on All categories.
+// The forum's page of categories in Forum Nav & Sidebar, open on All
+// categories: the forum navbar over it and the forum sidebar beside it,
+// joined into one frame once the page scrolls.
 export const InTheForum = {
-  render: (args) =>
-    demo(`<lw-forum-navbar ${attributes({ sidebar: true, current: '/categories' })}></lw-forum-navbar><div class="forum-demo"><lw-forum-sidebar ${attributes({ navbar: true, current: '/categories' })}></lw-forum-sidebar><div class="forum-page">${page(`<lw-forum-categories ${attributes(args)}></lw-forum-categories>`)}</div></div>`),
+  render: (args) => demo(forumFrame(page(`<lw-forum-categories ${attributes(args)}></lw-forum-categories>`), { current: '/categories' })),
 };
 
 // The front page of the forum: the categories, and beside them the
@@ -84,14 +80,12 @@ export const WithWidgets = {
   render: (args) => demo(widgetsPage(args)),
 };
 
-// The same front page in the forum, without the page's title: under the
-// forum navbar, signed in as p0unter, and beside the forum sidebar, open on
-// All categories. Beside the sidebar the widgets keep their column from
-// 84rem.
+// The same front page in the forum, without the page's title: in Forum
+// Nav & Sidebar, signed in as p0unter and open on All categories. Beside
+// the sidebar the widgets keep their column from 84rem.
 export const WithWidgetsInTheForum = {
   name: 'With Widgets & In Forum',
-  render: (args) =>
-    demo(`<lw-forum-navbar ${attributes({ sidebar: true, current: '/categories', user: MEMBER })}></lw-forum-navbar><div class="forum-demo"><lw-forum-sidebar ${attributes({ navbar: true, current: '/categories' })}></lw-forum-sidebar><div class="forum-page">${widgetsPage(args, { heading: false })}</div></div>`),
+  render: (args) => demo(forumFrame(widgetsPage(args, { heading: false }), { current: '/categories', user: MEMBER })),
 };
 
 // On a phone: under each name its counts, then its latest thread.

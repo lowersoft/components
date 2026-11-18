@@ -606,6 +606,57 @@ $morph: 220ms;
     }
   }
 
+  // Joined with the navbar (`joined`), the frame meets the window's left,
+  // top and bottom edges, one sheet of glass with the bar's, its pane keeping
+  // the gap the frame's padding leaves round it. Its borders clear, a line
+  // runs down its edge from where the bar's turns down, following the
+  // bar's foot as it grows for its search (`--_bar-foot`, from the window's
+  // top); alone, the whole way. It draws once the frame has all but
+  // settled, with the bar's, and clears at once as the frame docks again.
+  :host([joined]) .frame {
+    position: relative;
+
+    &::after {
+      position: absolute;
+      top: calc(var(--_bar-foot, #{layout.$joined-height}) - 2px + #{layout.$joined-radius});
+      right: -1px;
+      bottom: -1px;
+      width: 1px;
+      background: transparent;
+      pointer-events: none;
+      content: '';
+
+      @include lw.motion {
+        transition: background-color layout.$joined-draw ease-out;
+      }
+    }
+  }
+
+  :host([joined]:not([data-bar])) .frame::after {
+    top: -1px;
+  }
+
+  :host([joined][data-scrolled]) {
+    .panel {
+      padding: 0;
+    }
+
+    .frame {
+      padding: 2px 3px 2px 2px;
+      border-color: transparent;
+      border-radius: 0;
+      box-shadow: none;
+
+      &::after {
+        background: var(--_edge);
+
+        @include lw.motion {
+          transition: background-color layout.$joined-draw ease-out layout.$joined-settle;
+        }
+      }
+    }
+  }
+
   :host([closed]) .panel {
     visibility: hidden;
     translate: -100% 0;

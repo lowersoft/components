@@ -1,15 +1,11 @@
 import { attributes } from '../../../.storybook/attributes.js';
-import '../forum-navbar/index.js';
-import '../forum-sidebar/index.js';
+import { forumFrame } from '../../../.storybook/forum-frame.js';
 import './index.js';
 
 const STYLE = `<style>
   .profile-demo { box-sizing: border-box; width: min(60rem, 100%); margin: 0 auto; padding: 2rem 1.5rem 4rem; font-family: system-ui, sans-serif; color: var(--lw-color-foreground); }
-  .forum-demo { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 100dvh; }
-  .forum-demo .forum-page { min-width: 0; }
   @media (width >= 64rem) {
-    .forum-demo { grid-template-columns: auto minmax(0, 1fr); }
-    .forum-demo .profile-demo { padding-inline: 2.5rem; }
+    lw-forum-nav-sidebar .profile-demo { padding-inline: 2.5rem; }
   }
 </style>`;
 
@@ -102,10 +98,9 @@ export const NewMember = {
   },
 };
 
-// Maya's page in the forum, beside the forum sidebar and under the navbar.
+// Maya's page in the forum: in Forum Nav & Sidebar, on Members.
 export const InTheForum = {
-  render: (args) =>
-    demo(`<lw-forum-navbar ${attributes({ sidebar: true, current: '/members', user: USER })}></lw-forum-navbar><div class="forum-demo"><lw-forum-sidebar ${attributes({ navbar: true, current: '/members' })}></lw-forum-sidebar><div class="forum-page">${page(args)}</div></div>`),
+  render: (args) => demo(forumFrame(page(args), { current: '/members', user: USER })),
 };
 
 // On a phone the avatar rises into the banner with the buttons across from

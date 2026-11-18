@@ -10,3 +10,13 @@ $inset: 0.75rem;
 // The forum navbar at the top of the page: its row, its inner border and
 // its frame's border.
 $navbar-height: calc(3rem + 4px + env(safe-area-inset-top));
+// Joined with `joined`: the navbar's frame from the window's top edge to
+// the line along its foot (its row, the panes' borders, the frame's padding
+// and border), and the round on which that line turns down the sidebar's
+// edge, the page's corner.
+$joined-height: calc(3rem + 9px + env(safe-area-inset-top));
+$joined-radius: 0.75rem;
+// Joined, the lines draw once the frames have all but settled, over the
+// last of their change of shape, and clear at once as the frames part.
+$joined-settle: 120ms;
+$joined-draw: 100ms;

@@ -14,9 +14,11 @@ $fold: 62rem;
 // Shrunk into the floating frame: scrolled, searching, or with the narrow
 // menu open, so the menu looks the same wherever the page is.
 $compact: ':is([data-scrolled], [data-searching], [data-menu])';
+// Every change of shape takes this long.
+$morph: 220ms;
 
 :host {
-  --_morph: 220ms #{lw.v(ease-out)};
+  --_morph: #{$morph} #{lw.v(ease-out)};
   // Docked, the frame has no padding, so the menus drop only past the
   // inner border and the frame's lower border.
   --_drop: calc((var(--_row) - var(--_item)) / 2 + 2px);
@@ -74,6 +76,183 @@ $compact: ':is([data-scrolled], [data-searching], [data-menu])';
       display: none;
     }
   }
+}
+
+// Joined with the forum sidebar, the frame shrinks into a bar flush with
+// the window's top and right edges and the sidebar's, one sheet of glass
+// with the sidebar. Its pane keeps the gap the frame's padding leaves
+// round it; the frame's borders clear, a line runs along its foot instead.
+@media (width >= sidebar.$wide) {
+  // Nothing of the bar reaches past the window's edges, such as the pill
+  // the bar carries along as it shrinks once its item has left the bar.
+  :host([joined]) {
+    overflow-x: clip;
+  }
+
+  :host([joined]#{$compact}) {
+    .shell {
+      max-width: 100%;
+      padding-inline: 0;
+      translate: 0 0;
+    }
+
+    .frame {
+      padding: 2px 2px 3px;
+      border-color: transparent;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+
+  :host([joined][sidebar]#{$compact}) .shell {
+    padding-inline: sidebar.$width 0;
+  }
+
+  // The line along the frame's foot, from where it turns down the
+  // sidebar's edge to the window's edge, or the window's width without the
+  // sidebar beside it. Under what the bar holds, so its menus, the profile
+  // menu and the search stand over it. It draws once the frame has all but
+  // settled, and clears at once as it docks again.
+  :host([joined]) .frame {
+    isolation: isolate;
+
+    &::after {
+      position: absolute;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      z-index: -1;
+      height: 1px;
+      background-color: transparent;
+      pointer-events: none;
+      content: '';
+
+      @include lw.motion {
+        transition: background-color sidebar.$joined-draw ease-out;
+      }
+    }
+  }
+
+  :host([joined][sidebar]) .frame::after {
+    left: calc(#{sidebar.$joined-radius} - 2px);
+  }
+
+  // As the sidebar closes the line reaches across once the round has slid
+  // out with it.
+  :host([joined]#{$compact}) .frame::after {
+    background-color: var(--_edge);
+
+    @include lw.motion {
+      transition:
+        background-color sidebar.$joined-draw ease-out sidebar.$joined-settle,
+        left 0s $morph;
+    }
+  }
+
+  :host([joined][sidebar]#{$compact}) .frame::after {
+    @include lw.motion {
+      transition: background-color sidebar.$joined-draw ease-out sidebar.$joined-settle;
+    }
+  }
+
+  // The round under the frame's foot, where the line turns down the
+  // sidebar's edge, the page's corner, and the sidebar's own line takes it
+  // on. Glass, blurred as the frame's is, fills the corner outside the
+  // round. As the sidebar closes the round slides out with it, then goes.
+  :host([joined]) .joint {
+    position: relative;
+    display: block;
+    height: 0;
+
+    &::before,
+    &::after {
+      position: absolute;
+      pointer-events: none;
+      content: '';
+    }
+
+    &::before {
+      top: 0;
+      left: 0;
+      width: calc(#{sidebar.$joined-radius} - 1px);
+      height: calc(#{sidebar.$joined-radius} - 1px);
+      background: var(--_glass);
+      opacity: 0;
+      -webkit-backdrop-filter: var(--_blur);
+      backdrop-filter: var(--_blur);
+      mask-image: radial-gradient(circle at 100% 100%, transparent calc(#{sidebar.$joined-radius} - 0.5px), #000 calc(#{sidebar.$joined-radius} + 0.5px));
+
+      @include lw.motion {
+        transition: opacity sidebar.$joined-draw ease-out;
+      }
+    }
+
+    &::after {
+      top: -1px;
+      left: -1px;
+      width: sidebar.$joined-radius;
+      height: sidebar.$joined-radius;
+      box-sizing: border-box;
+      border: 0 solid transparent;
+      border-width: 1px 0 0 1px;
+      border-top-left-radius: sidebar.$joined-radius;
+
+      @include lw.motion {
+        transition: border-color sidebar.$joined-draw ease-out;
+      }
+    }
+  }
+
+  :host([joined]#{$compact}) .joint::after {
+    border-color: var(--_edge);
+
+    @include lw.motion {
+      transition: border-color sidebar.$joined-draw ease-out sidebar.$joined-settle;
+    }
+  }
+
+  :host([joined][sidebar]#{$compact}) .joint::before {
+    opacity: 1;
+
+    @include lw.motion {
+      transition: opacity sidebar.$joined-draw ease-out sidebar.$joined-settle;
+    }
+  }
+
+  :host([joined]:not([sidebar])) .joint {
+    &::before {
+      opacity: 0;
+
+      @include lw.motion {
+        transition: opacity 0s $morph;
+      }
+    }
+
+    &::after {
+      border-left-width: 0;
+      border-top-left-radius: 0;
+
+      @include lw.motion {
+        transition:
+          border-color sidebar.$joined-draw ease-out,
+          border-left-width 0s $morph,
+          border-top-left-radius 0s $morph;
+      }
+    }
+  }
+
+  :host([joined]:not([sidebar])#{$compact}) .joint::after {
+    @include lw.motion {
+      transition:
+        border-color sidebar.$joined-draw ease-out sidebar.$joined-settle,
+        border-left-width 0s $morph,
+        border-top-left-radius 0s $morph;
+    }
+  }
+}
+
+.joint {
+  display: none;
 }
 
 // Docked, the frame meets the edges of the window: square, its borders
@@ -238,6 +417,28 @@ $compact: ':is([data-scrolled], [data-searching], [data-menu])';
 // far side.
 .list > [data-end] {
   margin-inline-start: auto;
+}
+
+// Joined with the forum sidebar, the forum's sections leave the bar while
+// the sidebar stands beside the page, and fade back once it closes.
+@media (width >= sidebar.$wide) {
+  :host([joined][sidebar]) .list > :is([data-end], [data-end] ~ *) {
+    display: none;
+  }
+
+  // The item fades, not its row: it already stands over the pill, which a
+  // fading row would cover it with.
+  :host([joined]) .list > :is([data-end], [data-end] ~ *) > .item {
+    @include lw.motion {
+      animation: sections-in var(--_morph);
+    }
+  }
+}
+
+@keyframes sections-in {
+  from {
+    opacity: 0;
+  }
 }
 
 // The menus drop under their triggers at the start of the bar.

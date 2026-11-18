@@ -259,3 +259,4 @@ export * from './components/member-profile/index.js';
 export * from './components/notable-members/index.js';
 export * from './components/forum-thread/index.js';
 export * from './components/post-composer/index.js';
+export * from './components/forum-nav-sidebar/index.js';

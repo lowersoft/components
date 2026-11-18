@@ -1,17 +1,13 @@
 import { attributes } from '../../../.storybook/attributes.js';
-import '../forum-navbar/index.js';
-import '../forum-sidebar/index.js';
+import { forumFrame } from '../../../.storybook/forum-frame.js';
 import './index.js';
 
 const STYLE = `<style>
   .members-demo { box-sizing: border-box; width: min(76rem, 100%); margin: 0 auto; padding: 2.5rem 1.5rem 4rem; font-family: system-ui, sans-serif; color: var(--lw-color-foreground); }
   .members-demo .eyebrow { margin: 0; font-size: 0.875rem; color: var(--lw-color-muted-foreground); }
   .members-demo h1 { margin: 0.5rem 0 2rem; font-size: clamp(1.75rem, 5vw, 2.5rem); line-height: 1.1; letter-spacing: -0.03em; }
-  .forum-demo { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 100dvh; }
-  .forum-demo .forum-page { min-width: 0; }
   @media (width >= 64rem) {
-    .forum-demo { grid-template-columns: auto minmax(0, 1fr); }
-    .forum-demo .members-demo { padding-inline: 2.5rem; }
+    lw-forum-nav-sidebar .members-demo { padding-inline: 2.5rem; }
   }
 </style>`;
 
@@ -52,10 +48,9 @@ export const FullList = {
   args: { view: 'messages' },
 };
 
-// In the forum, beside the forum sidebar and under the navbar.
+// In the forum: in Forum Nav & Sidebar, on Members.
 export const InTheForum = {
-  render: (args) =>
-    demo(`<lw-forum-navbar ${attributes({ sidebar: true, current: '/members' })}></lw-forum-navbar><div class="forum-demo"><lw-forum-sidebar ${attributes({ navbar: true, current: '/members' })}></lw-forum-sidebar><div class="forum-page">${page(args)}</div></div>`),
+  render: (args) => demo(forumFrame(page(args), { current: '/members' })),
 };
 
 // On a phone the menu runs along the top, over Find member and the lists.

@@ -56,6 +56,15 @@ const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'Home', 'End']);
  * rise beside it. Narrower, an outlined button at the very start of the bar
  * opens the sidebar from the window's left edge.
  *
+ * With `joined`, which `<lw-forum-sidebar navbar joined>` sets, the bar
+ * shrinks on a window 64rem or wider into a frame flush with the window's
+ * top and right edges and the sidebar's, one sheet of glass with the
+ * sidebar: a line runs along its foot and turns down the sidebar's edge on
+ * a round, the page's corner. Without the sidebar beside it the line runs
+ * the window's width. The forum's sections, the items marked `end`, leave
+ * the bar to the sidebar while it stands beside the page, and come back
+ * once it closes.
+ *
  * @attr {Array<object>} items - The menus and links, in order; `{ label, href, end: true }` for the forum's sections (JSON)
  * @attr {string} action - The sign-in button's label, also its accessible name once only the icon shows; none when empty
  * @attr {object} user - The signed-in member, `{ name, avatar?, banner?, role?, email? }` with `avatar` and `banner` pictures' URLs and `role` such as Admin or Moderator; replaces Sign In with their profile menu (JSON)
@@ -63,6 +72,7 @@ const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'Home', 'End']);
  * @attr {string} search-placeholder - The search field's placeholder
  * @attr {string} search-shortcut - Opens the search from anywhere on the page, as `mod+k`; none when empty
  * @attr {boolean} sidebar - Stands with `<lw-forum-sidebar navbar>`, which sets it: leaves it room at the left once the bar shrinks, or, narrower than 64rem, shows the button that opens it
+ * @attr {boolean} joined - Takes one frame with `<lw-forum-sidebar navbar joined>`, which sets it, flush with the window's edges once the bar shrinks, on a window 64rem or wider; the forum's sections show only while the sidebar is closed
  * @fires lw-action - Sign In was pressed, on the bar or at the foot of the narrow menu
  * @fires lw-sidebar - Its sidebar button was pressed; `<lw-forum-sidebar navbar>` opens
  * @fires lw-search - The query changed; `detail: { query, words, member, category }`, the filters as typed, without `@` and `#`
@@ -80,6 +90,7 @@ export class LwForumNavbar extends LwFloatingNavbar {
     searchPlaceholder: { default: 'Search the forum' },
     searchShortcut: { default: 'mod+k' },
     sidebar: { type: Boolean, reflect: true },
+    joined: { type: Boolean, reflect: true },
   };
 
   // Index of the highlighted option in the panel, -1 when none is.
@@ -100,6 +111,8 @@ export class LwForumNavbar extends LwFloatingNavbar {
     markup.querySelector('.end .theme').insertAdjacentHTML('afterend', `<lw-button class="search-button" variant="outline"><span class="search-button-icon" slot="start">${strokeIcon(search, 16)}</span><span class="visually-hidden">Search</span></lw-button>`);
     // The field over the bar's row, and the panel the bar grows down to hold.
     markup.querySelector('.inner .bar').insertAdjacentHTML('afterend', SEARCH_MARKUP + PANEL_MARKUP);
+    // Joined, the line under the frame that turns down the sidebar's edge.
+    markup.querySelector('.frame').insertAdjacentHTML('afterend', '<span class="joint" aria-hidden="true"></span>');
     return template.innerHTML;
   }
 
